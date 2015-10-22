@@ -2,6 +2,16 @@
 
 formatcomma <- function(x) {
   format(x, big.mark=",", scientific=FALSE) 
+} 
+
+formatdollar <- function(x,digit=0) {
+  if (!is.null(x)) {
+  if (x>=0) {
+    paste0("$",x %>% round(digit) %>% formatcomma()) 
+  } else {
+    paste0("-$",-x %>% round(digit) %>% formatcomma()) 
+  }
+  }
 }
 
 
