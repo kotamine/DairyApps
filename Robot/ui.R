@@ -585,7 +585,8 @@ shinyUI(
                                                          h5("Net annual impact with inflation, as annualized net present value (NPV)")),
                                                   column(width=3, uiOutput("impact_with_inflation"))                          
                                          ),
-                                         
+                                        br(),
+                                         span(h4("Now make changes in Data Entry and immediately see the resposnses at the bottom of page."),style="color: steelblue; "), 
                                          br(),br()
                                   ))
                )

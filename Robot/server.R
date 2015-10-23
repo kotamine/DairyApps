@@ -531,10 +531,10 @@ shinyServer(function(input, output, session) {
   
   
   output$IOFC <- renderUI({
-    if (input$IOFC=="per cow")
-    {
     IOFC <- IOFC()
     IOFC2 <- IOFC2()
+    if (input$IOFC=="per cow")
+    {
     diff <- IOFC2 - IOFC
     if (IOFC>663) { 
       style <- "background-color: #3EA055; color:white;"
@@ -551,8 +551,8 @@ shinyServer(function(input, output, session) {
         h5("under robot"))
     } 
     else {
-    IOFC_cow <- IOFC()/365 /input$milk_cow_day * 330
-    IOFC2_cow <- IOFC2()/365 /(input$milk_cow_day + input$milk_change) * 330
+    IOFC_cow <- IOFC/365 /input$milk_cow_day * 330
+    IOFC2_cow <- IOFC2/365 /(input$milk_cow_day + input$milk_change) * 330
     diff <- IOFC2_cow - IOFC_cow
     
     if (IOFC_cow > 8) { 
