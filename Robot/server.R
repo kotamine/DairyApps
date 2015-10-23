@@ -2,7 +2,7 @@ library(shiny)
 library(shinyBS)
 library(shinyjs)
 suppressPackageStartupMessages(library(dplyr))
-# library(magrittr)
+library(ggplot2)
 
 source("helper.R")
 
@@ -212,10 +212,11 @@ shinyServer(function(input, output, session) {
   })
 
   IOFC2 <- reactive({ # under_robot
-    rv$IOFC <- ((input$milk_cow_day + input$milk_change) * input$price_milk/100 - DMI_day() * input$cost_DM )*330 +
+    rv$IOFC2 <- ((input$milk_cow_day + input$milk_change) * input$price_milk/100 - 
+                   + DMI_day() * input$cost_DM )*330 +
       - input$additional_labor - input$additional_cost +
       - (input$culling_rate + input$death_rate)/100 * input$cost_heifer + input$cull_price * input$culling_rate/100
-    rv$IOFC
+    rv$IOFC2
   })
   
  observe(
@@ -240,7 +241,8 @@ shinyServer(function(input, output, session) {
  inc_rev_herd_size  <- reactive({
    # rv$inc_rev_herd_size <- input$herd_increase * IOFC()
    ## Modified as follows 
-   rv$inc_rev_herd_size <- (input$milk_cow_day + input$milk_change) * 330 * (input$price_milk/100) * input$herd_increase
+   rv$inc_rev_herd_size <- (input$milk_cow_day + input$milk_change) * 330 *
+     (input$price_milk/100) * input$herd_increase
    rv$inc_rev_herd_size
  })
  
@@ -529,16 +531,44 @@ shinyServer(function(input, output, session) {
   
   
   output$IOFC <- renderUI({
+    if (input$IOFC=="per cow")
+    {
     IOFC <- IOFC()
-    if (IOFC>0) { 
+    IOFC2 <- IOFC2()
+    diff <- IOFC2 - IOFC
+    if (IOFC>663) { 
       style <- "background-color: #3EA055; color:white;"
     } 
-    else {
+    else if (IOFC>331) {
+      style <-  "background-color: #FFA62F; color:white;" 
+    } else {
       style <-  "background-color: #F70D1A; color:white;" 
     }
-    div(class="well", style=style, 
+    div(class="well", style=style,  align="center",
         IOFC %>% formatdollar() %>% strong() %>% h3(),
-        h5("IOFC ($/cow/year)"))
+        h5("IOFC ($/cow/year)"), h5("plus"),
+        diff %>% formatdollar2() %>% strong() %>% h3(), 
+        h5("under robot"))
+    } 
+    else {
+    IOFC_cow <- IOFC()/365 /input$milk_cow_day * 330
+    IOFC2_cow <- IOFC2()/365 /(input$milk_cow_day + input$milk_change) * 330
+    diff <- IOFC2_cow - IOFC_cow
+    
+    if (IOFC_cow > 8) { 
+      style <- "background-color: #3EA055; color:white;"
+    } 
+    else if (IOFC_cow > 4) {
+      style <-  "background-color: #FFA62F; color:white;" 
+    } else {
+      style <-  "background-color: #F70D1A; color:white;" 
+    }
+    div(class="well", style=style,  align="center",
+        IOFC_cow  %>% formatdollar(2) %>% strong() %>% h3(),
+        h5("IOFC ($/cwt)"), h5("plus"),
+        diff  %>% formatdollar2(2) %>% strong() %>% h3(),
+        h5("under robot"))
+    }
   })  
   
   output$NAI <- renderUI({
@@ -549,9 +579,9 @@ shinyServer(function(input, output, session) {
     else {
       style <-  "background-color: #F70D1A; color:white;" 
     }
-    div(class="well", style=style, 
+    div(class="well", style=style, align="center",
         NAI %>% formatdollar() %>% strong() %>% h3(),
-        h5("Net Impact ($/year)"))
+        h5("Net Impact ($/year)"),h5("under robot"))
   }) 
   
   milk_current <- reactive({
@@ -651,8 +681,8 @@ shinyServer(function(input, output, session) {
       scale_fill_brewer(palette="Reds", breaks=c(1,0), labels=c("Robots","Current")) +
       theme_minimal() +
       scale_x_discrete(
-        limits=c("repair","labor"),   
-        labels=c(" Repair \n Expenses","Labor \n Expenses")    
+        limits=c( "repair", "labor"),   
+        labels=c(" Repair \n Expenses", "Labor \n Expenses")    
       ) + 
       theme(
         axis.title.x=element_blank(), 
@@ -667,7 +697,7 @@ shinyServer(function(input, output, session) {
   })
   
   output$plot3 <- renderPlot({ 
-    a <- data.frame("vars"=c("capital_housing","capital_robot"), 
+    a <- data.frame("vars"=c("capital_robot","capital_housing"), 
                     "values"=c(inc_exp_capital_recovery(),capital_recovery_housing())/1000,"type"= c(1,1)) 
     
     a$label <- apply(cbind(a$values),2,round,0)
@@ -682,8 +712,8 @@ shinyServer(function(input, output, session) {
               vjust=0.5, hjust=1.2, color="white", position = position_dodge(0.9), size=5) +
     theme_minimal() + 
     scale_x_discrete(
-      limits=c("capital_housing","capital_robot"),   
-      labels=c("Housing \n Recovery","Robot \n Recovery")    
+      limits=c("capital_robot","capital_housing"),   
+      labels=c("Robot \n Recovery","Housing \n Recovery")    
     ) + 
     theme(
       axis.title.x=element_blank(), 

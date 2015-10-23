@@ -2,8 +2,8 @@ library(shiny)
 library(shinyBS)
 library(shinyjs)
 suppressPackageStartupMessages(library(dplyr))
+library(ggplot2)
 
-#source("helpers.R")
 
 shinyUI(
   navbarPage(
@@ -413,7 +413,8 @@ shinyUI(
                                 column(4,
                                        fluidRow(
                                          column(6,
-                                                uiOutput("IOFC")),
+                                                uiOutput("IOFC"),
+                                                radioButtons("IOFC",NULL,choices=c("per cow","per cwt"))),
                                          column(6,
                                                 uiOutput("NAI"))
                                        )),
@@ -438,8 +439,8 @@ shinyUI(
     # ---------- Partial Budget Analysis -----------
     tabPanel("Economic Analysis",
              conditionalPanel("input.budget==0",
-                              div(bsButton("budget","Calculate",disabled = TRUE, icon = icon("ban")),align="center"),
-                              span(helpText("Please review all tabs in Data Entry."),align="center")
+                              div(bsButton("budget","Calculate",disabled = TRUE, icon = icon("ban")),
+                                  helpText("Please review all tabs in Data Entry."),align="center")
              ),
              fluidRow(
                conditionalPanel("input.budget>0",
