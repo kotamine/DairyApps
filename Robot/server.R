@@ -565,7 +565,7 @@ shinyServer(function(input, output, session) {
     }
     div(class="well", style=style,  align="center",
         IOFC_cow  %>% formatdollar(2) %>% strong() %>% h3(),
-        h5("IOFC ($/cwt)"), h5("plus"),
+        h5("current IOFC ($/cwt)"), h5("plus"),
         diff  %>% formatdollar2(2) %>% strong() %>% h3(),
         h5("under robot"))
     }
@@ -580,7 +580,7 @@ shinyServer(function(input, output, session) {
       style <-  "background-color: #F70D1A; color:white;" 
     }
     div(class="well", style=style, align="center",
-        NAI %>% formatdollar() %>% strong() %>% h3(),
+        NAI %>% formatdollar2() %>% strong() %>% h3(),
         h5("Net Impact ($/year)"),h5("under robot"))
   }) 
   
@@ -612,21 +612,21 @@ shinyServer(function(input, output, session) {
   })
 
   output$milk_feed <- renderUI({
-     val <- (feed_robot() - feed_current() + milk_robot() -  milk_current()) 
+     val <- -(feed_robot() - feed_current()) + milk_robot() -  milk_current() 
      div(class="well well-sm", style= "background-color: #1569C7; color:white;", 
          val %>% formatdollar2() %>% strong() %>% h4(),
          h5("under robot"))
   })  
   
   output$labor_repair <- renderUI({
-    val <- (labor_robot() - labor_current() +inc_exp_repair())
+    val <- -(labor_robot() - labor_current() +inc_exp_repair())
     div(class="well well-sm", style= "background-color: #FF926F; color:white;", 
         val %>% formatdollar2() %>% strong() %>% h4(),
         h5("under robot"))
   })  
   
   output$captial_cost <- renderUI({
-    val <- inc_exp_capital_recovery() + capital_recovery_housing()
+    val <- -(inc_exp_capital_recovery() + capital_recovery_housing())
     div(class="well well-sm", style= "background-color: #64E986; color:white;", 
         val %>% formatdollar2() %>% strong() %>% h4(),
         h5("under robot"))
@@ -650,7 +650,7 @@ shinyServer(function(input, output, session) {
     theme_minimal() +
     scale_x_discrete(
       limits=c("feed","milk"),   
-      labels=c("Feed \n Expenses","Milk \n Income")    
+      labels=c("Feed \n Cost","Milk \n Income")    
     ) + 
     theme(
       axis.title.x=element_blank(), 
@@ -682,7 +682,7 @@ shinyServer(function(input, output, session) {
       theme_minimal() +
       scale_x_discrete(
         limits=c( "repair", "labor"),   
-        labels=c(" Repair \n Expenses", "Labor \n Expenses")    
+        labels=c(" Additional \n Repair \n Cost", "Labor \n Cost")    
       ) + 
       theme(
         axis.title.x=element_blank(), 
@@ -713,7 +713,7 @@ shinyServer(function(input, output, session) {
     theme_minimal() + 
     scale_x_discrete(
       limits=c("capital_robot","capital_housing"),   
-      labels=c("Robot \n Recovery","Housing \n Recovery")    
+      labels=c("Robot \n Recovery \n Cost","Housing \n Recovery \n Cost")    
     ) + 
     theme(
       axis.title.x=element_blank(), 
