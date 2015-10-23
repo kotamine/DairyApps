@@ -14,6 +14,15 @@ formatdollar <- function(x,digit=0) {
   }
 }
 
+formatdollar2 <- function(x,digit=0) {
+  if (!is.null(x)) {
+    if (x>=0) {
+      paste0("+$",x %>% round(digit) %>% formatcomma()) 
+    } else {
+      paste0("-$",-x %>% round(digit) %>% formatcomma()) 
+    }
+  }
+}
 
 # --- Common Excel Financial Functions  ---
 # \url{http://cvs.moodle.org/contrib/patches/question_calculated_extended/calculated/packages/financial/financial_class.php?view=co}
