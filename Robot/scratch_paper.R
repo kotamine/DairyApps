@@ -88,4 +88,104 @@ ggplot(data=a, aes(x=vars, y=values, fill=type)) +
 
 
 
+A <- data.frame("vars"=c("v1","v2"), "values"=c(1.2,1.4),"type"= c(1,1)) 
+A <- A[FALSE,]
+colnames(A)
+A
+A <- rbind(A,c("v1",2,0))
+A
+
+A <- data.frame("vars"=c("v1","v2"), "values"=c(1.2,1.4),"type"= c(1,1)) 
+A <- as.matrix(A)
+
+A <- nulls(1,3) 
+A <- A[FALSE,]
+colnames(A)
+A
+A <- rbind(A,c("v1",2,0))
+A
+A <- data.frame(A)
+A
+
+my_add_row <- function(A,a) {
+# A: data.frame
+# a: row vector that is going to be appended to A   
+  A <- as.matrix(A)
+  A <- rbind(A,a)
+  data.frame(A)
+}
+
+
+
+A <- nulls(1,3)
+colnames(A) <- c("vars","values","type")
+A <- A[FALSE,]
+A
+A <- rbind(A,c("v1",2,0))
+
+
+A
+A <- data.frame(A)
+A
+
+A <- data.frame("vars"=c("v1","v2"), "values"=c(1.2,1.4),"type"= c(1,1)) 
+A <- A[FALSE,]
+A <- as.matrix(A)
+A
+A <- rbind(A,c("v1",2,0))
+
+
+df <- data.frame(Doubles=double(),
+                 Ints=integer(),
+                 Factors=factor(),
+                 Logicals=logical(),
+                 Characters=character(),
+                 stringsAsFactors=FALSE)
+
+A <- data.frame( vars=character(),
+                 values=double(),
+                 type=factor())
+A <- rbind(A,a)
+a <- c("v1",2,0)
+
+
+A <- data.frame(Column1 = numeric(0), Column2 = numeric(0), Column3=character())
+A
+
+
+A <- data.frame(Column1 = numeric(0))
+A
+a <- matrix(c(2,0.1113,"B"),nrow=1)
+colnames(a) <- c("v1","v2","v3")
+A <- rbind(A,a)
+A <- rbind(A,a)
+A
+
+A <- apply(A[,-3],2,as.numeric)
+apply(A,2,round,0)
+
+
+b <- matrix(c(4,5),nrow=1)
+# colnames(b) <- c("v1","v3")
+A <- rbind(A,b)
+A
+
+
+
+A <- data.frame(Row1 = numeric(0))
+A
+a <- matrix(c(2,0),ncol=1)
+rownames(a) <- c("v1","v2")
+A <- cbind(A,a)
+
+
+a <- matrix(c(2,0.113,"abc"),nrow=1)
+apply(a,2,round, 2)
+
+apply(a, 2, is.numeric)
+
+apply(a[is.numeric(a)],2,round, 2)
+
+
+
 

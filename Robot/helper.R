@@ -1,5 +1,18 @@
 
 
+zeros <- function(r,c) matrix(c(mat.or.vec(r,c)),nrow=r,ncol=c) 
+ones <- function(r,c) matrix(c(rep(1,r*c)),nrow=r,ncol=c) 
+nulls <- function(r,c) matrix(c(rep(NA,r*c)),nrow=r,ncol=c)
+
+my_add_row <- function(A,a) {
+  # A: data.frame
+  # a: row vector that is going to be appended to A   
+  A <- as.matrix(A)
+  A <- rbind(A,a)
+  data.frame(A)
+}
+
+
 formatcomma <- function(x) {
   format(x, big.mark=",", scientific=FALSE) 
 } 
@@ -23,6 +36,17 @@ formatdollar2 <- function(x,digit=0) {
     }
   }
 }
+
+formatdollar2b <- function(x,digit=0) {
+  if (!is.null(x)) {
+    if (x>=0) {
+      paste0("( +$",x %>% round(digit) %>% formatcomma()," )") 
+    } else {
+      paste0("( -$",-x %>% round(digit) %>% formatcomma()," )") 
+    }
+  }
+}
+
 
 # --- Common Excel Financial Functions  ---
 # \url{http://cvs.moodle.org/contrib/patches/question_calculated_extended/calculated/packages/financial/financial_class.php?view=co}
@@ -56,6 +80,178 @@ pmt <- function(rate, nper, pv, fv=0, type=0) {
 }
 
 #---
+
+
+# ----- dashboard features -----
+
+dash_IOFC <- function(IOFC, IOFC2, basis,
+                      milk_cow_day, milk_change, cutoffs=NULL,
+                      compare=NULL, compare2=NULL) {
+  
+  if (basis=="per cow")
+  {  if (is.null(cutoffs)) { cutoffs <- c(663,331) } 
+    digit <- 0
+    IOFC_unit <- "IOFC ($/cow/year)"
+  }
+  else {
+    if (is.null(cutoffs)) { cutoffs <- c(8,4) } 
+    digit <- 2
+    IOFC_unit <- "IOFC ($/cwt)"
+  }
+  diff <- IOFC2 - IOFC
+  
+  if (IOFC > cutoffs[1]) { 
+    style <- "background-color: #3EA055; color:white;"
+  } 
+  else if (IOFC > cutoffs[2]) {
+    style <-  "background-color: #FFA62F; color:white;" 
+  } else {
+    style <-  "background-color: #F70D1A; color:white;" 
+  }
+  
+  if (is.null(compare)) {
+    div(class="well", style=style,  align="center",
+        diff  %>% formatdollar2(digit) %>% strong() %>% h3(),
+        h5(IOFC_unit), h5("under robot"))
+  } 
+  else {
+    diff1 <- compare2 - compare 
+    diff2 <-  diff - diff1
+    div(class="well", style=style,  align="center",
+        diff  %>% formatdollar2(digit) %>% strong() %>% h3(),
+        diff2 %>% formatdollar2b(digit) %>% strong() %>% h4())
+  }
+}
+
+
+
+dash_NAI <- function(NAI,cutoff=0, compare=NULL) {
+  if (NAI>cutoff) { 
+    style <- "background-color: #306EFF; color:white;"
+  } 
+  else {
+    style <-  "background-color: #F70D1A; color:white;" 
+  }
+  
+  if (is.null(compare)) {
+  div(class="well", style=style, align="center",
+      NAI %>% formatdollar2() %>% strong() %>% h3(),
+      h5("Net Impact ($/year)"),h5("under robot"))
+  } 
+  else {
+    diff <- NAI - compare
+    div(class="well", style=style, align="center",
+        NAI %>% formatdollar2() %>% strong() %>% h3(),
+        diff %>% formatdollar2b() %>% strong() %>% h4())
+  }
+}
+
+
+dash_plot1 <- function(feed_current,feed_robot,milk_current,milk_robot) { 
+  a <- data.frame("vars"=c("feed","feed","milk", "milk"), 
+                  "values"=c(feed_current,feed_robot,milk_current,milk_robot)/1000,"type"= c(0,1,0,1)) 
+  a$label <- apply(cbind(a$values),2,round,0)
+  a$label <- apply(a$label, 2,formatcomma) 
+  a$label <- apply(a$label, 2, function(x) { paste0("$", x,"k") })
+  
+  ggplot(data=a, aes(x=vars, y=values, fill= factor(type))) + 
+    geom_bar(stat="identity", position=position_dodge()) +
+    coord_flip() +
+    #   ggtitle("Milk vs Feed")+ 
+    geom_text(aes(label=label, ymax=max(values)*1.1), 
+              vjust=0.5, hjust=1.2, color="white", position = position_dodge(0.9), size=5) +
+    scale_fill_brewer(palette="Paired", breaks=c(1,0), labels=c("Robots","Current")) +
+    theme_minimal() +
+    scale_x_discrete(
+      limits=c("feed","milk"),   
+      labels=c("Feed \n Cost","Milk \n Income")    
+    ) + 
+    theme(
+      axis.title.x=element_blank(), 
+      axis.title.y=element_blank(),  #removes y-axis label
+      axis.text.x = element_blank(),
+      axis.ticks = element_blank(),
+      text=element_text(family="sans", size=14),                       #changes font on entire graph
+      plot.title=element_text(face="bold",hjust=c(0,0)),  #changes font face and location for graph title
+      legend.title=element_blank(), 
+      legend.position=c(0.85,0.10)
+    )
+}
+
+dash_plot2 <- function(inc_exp_repair,labor_current,labor_robot) {
+  a <- data.frame("vars"=c("repair","repair","labor", "labor"), 
+                  "values"=c(0,inc_exp_repair,labor_current,labor_robot)/1000,"type"= c(0,1,0,1)) 
+  
+  a$label <- apply(cbind(a$values),2,round,0)
+  a$label <- apply(a$label, 2,formatcomma) 
+  a$label <- apply(a$label, 2, function(x) { paste0("$", x,"k") })
+  
+  ggplot(data=a, aes(x=vars, y=values, fill= factor(type))) + 
+    geom_bar(stat="identity", position=position_dodge()) +
+    coord_flip() +
+    #   ggtitle("Labor vs Repair") + 
+    geom_text(aes(label=label, ymax=max(values)*1.1), 
+              vjust=0.5, hjust=1.2, color="white", position = position_dodge(0.9), size=5) +
+    scale_fill_brewer(palette="Reds", breaks=c(1,0), labels=c("Robots","Current")) +
+    theme_minimal() +
+    scale_x_discrete(
+      limits=c( "repair", "labor"),   
+      labels=c(" Additional \n Repair \n Cost", "Labor \n Cost")    
+    ) + 
+    theme(
+      axis.title.x=element_blank(), 
+      axis.title.y=element_blank(),  #removes y-axis label
+      axis.text.x = element_blank(),
+      axis.ticks = element_blank(),
+      text=element_text(family="sans", size=14),                       #changes font on entire graph
+      plot.title=element_text(face="bold",hjust=c(0,0)),  #changes font face and location for graph title
+      legend.title=element_blank(), 
+      legend.position=c(0.85,0.10)
+    )
+}
+
+dash_plot3 <- function(inc_exp_capital_recovery,capital_recovery_housing,
+                       robot_end_PV, input_NAI) { 
+  if (input_NAI=="w/o housing") {
+    capital_recovery_housing_show <- 0
+    robot_end_PV_show <- 0
+  } else if (input_NAI=="w/ housing") {
+    capital_recovery_housing_show <- capital_recovery_housing
+    robot_end_PV_show <- 0
+  } else {
+    capital_recovery_housing_show <- capital_recovery_housing
+    robot_end_PV_show <- robot_end_PV
+  }
+  a <- data.frame("vars"=c("capital_robot","capital_housing","robot_end_PV"), 
+                  "values"=c(inc_exp_capital_recovery,capital_recovery_housing_show,robot_end_PV_show)/1000,
+                  "values_shadow"=c(inc_exp_capital_recovery,capital_recovery_housing,robot_end_PV)/1000,
+                  "type"= c(1,1,1))  
+  
+  a$label <- apply(cbind(a$values),2,round,0)
+  a$label <- apply(a$label, 2,formatcomma) 
+  a$label <- apply(a$label, 2, function(x) { paste0("$", x,"k") })
+  
+  ggplot(data=a, aes(x=vars, y=values, fill=factor(type))) + 
+    geom_bar(stat="identity", position=position_dodge(),width=0.7, fill="seagreen3") +
+    coord_flip() +
+    # ggtitle("Cost of Capital") + 
+    geom_text(aes(label=label,ymax=max(values_shadow)*1.0), 
+              vjust=0.5, hjust=1.2, color="white", position = position_dodge(0.9), size=5) +
+    theme_minimal() + 
+    scale_x_discrete(
+      limits=c("robot_end_PV", "capital_housing","capital_robot"),   
+      labels=c("Robot \n Salvage \n PV", 
+               "Housing \n Capital \n Recovery \n Cost","Robot \n Capital\n Recovery \n Cost")    
+    ) + 
+    theme(
+      axis.title.x=element_blank(), 
+      axis.title.y=element_blank(),  #removes y-axis label
+      axis.text.x = element_blank(),
+      axis.ticks = element_blank(),
+      text=element_text(family="sans", size=14),                       #changes font on entire graph
+      plot.title=element_text(face="bold",hjust=c(0,0))  #changes font face and location for graph title
+    )
+}
 
 
 
