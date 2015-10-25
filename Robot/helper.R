@@ -19,11 +19,11 @@ formatcomma <- function(x) {
 
 formatdollar <- function(x,digit=0) {
   if (!is.null(x)) {
-  if (x>=0) {
-    paste0("$",x %>% round(digit) %>% formatcomma()) 
-  } else {
-    paste0("-$",-x %>% round(digit) %>% formatcomma()) 
-  }
+    if (x>=0) {
+      paste0("$",x %>% round(digit) %>% formatcomma()) 
+    } else {
+      paste0("-$",-x %>% round(digit) %>% formatcomma()) 
+    }
   }
 }
 
@@ -134,9 +134,9 @@ dash_NAI <- function(NAI,cutoff=0, compare=NULL) {
   }
   
   if (is.null(compare)) {
-  div(class="well", style=style, align="center",
-      NAI %>% formatdollar2() %>% strong() %>% h3(),
-      h5("Net Impact ($/year)"),h5("under robot"))
+    div(class="well", style=style, align="center",
+        NAI %>% formatdollar2() %>% strong() %>% h3(),
+        h5("Net Impact ($/year)"),h5("under robot"))
   } 
   else {
     diff <- NAI - compare

@@ -48,14 +48,14 @@ shinyUI(
                                                 column(width=3, helpText("animals", align="center"))
                                        ), 
                                        conditionalPanel("input.herd_increase!=0", 
-                                       fluidRow(column(width=6, helpText("Additional labor expense with herd expansion")),
-                                                column(width=3,  numericInput("additional_labor",NULL,value=450,step=50,min=0)),
-                                                column(width=3, helpText("dollars/additional cow/year", align="center"))
-                                       ), 
-                                       fluidRow(column(width=6, helpText("Other expense with herd expansion")),
-                                                column(width=3,  numericInput("additional_cost",NULL,value=200,step=50,min=0)),
-                                                column(width=3, helpText("dollars/additional cow/year", align="center"))
-                                       )),
+                                                        fluidRow(column(width=6, helpText("Additional labor expense with herd expansion")),
+                                                                 column(width=3,  numericInput("additional_labor",NULL,value=450,step=50,min=0)),
+                                                                 column(width=3, helpText("dollars/additional cow/year", align="center"))
+                                                        ), 
+                                                        fluidRow(column(width=6, helpText("Other expense with herd expansion")),
+                                                                 column(width=3,  numericInput("additional_cost",NULL,value=200,step=50,min=0)),
+                                                                 column(width=3, helpText("dollars/additional cow/year", align="center"))
+                                                        )),
                                        fluidRow(column(width=6, helpText("Herd size with robots")),
                                                 column(width=3, uiOutput("herd_size2")),
                                                 column(width=3, helpText("animals", align="center"))
@@ -263,10 +263,10 @@ shinyUI(
                                        ), br(),
                                        ## This is just an alternative way to show/hide a section 
                                        # checkboxInput("customDMI","Show calculations of projected DMI change",value=FALSE),
-
+                                       
                                        # conditionalPanel("input.customDMI",
-                                      a(id = "customDMI","Show/hide calculations of projected DMI change"),
-                                      shinyjs::hidden(
+                                       a(id = "customDMI","Show/hide calculations of projected DMI change"),
+                                       shinyjs::hidden(
                                          div(id = "DMI_inputs",
                                              div(style="background-color: #616D7E; color:white;",
                                                  fluidRow(column(width=6, h5(strong("Item"), align="center")),
@@ -312,11 +312,11 @@ shinyUI(
                                                       column(width=3, uiOutput("DMI_change_copy"))
                                              ), 
                                              fluidRow(column(width=3, offset=9,
-                                                      span(actionButton("coeff_reset","reset"),align="center"))
+                                                             span(actionButton("coeff_reset","reset"),align="center"))
                                              ),
                                              br(), br()
                                          ))
-                                    )
+                                     )
                                    ), 
                                    icon=icon("truck")),
                           tabPanel("Replacement", 
@@ -378,7 +378,7 @@ shinyUI(
                                                 column(width=3, numericInput("change_chemical",NULL,value=1.50,step=0.25)),
                                                 column(width=3, helpText("dollars", align="center"))
                                        )
-                                       )), 
+                                     )), 
                                    icon=icon("lightbulb-o")),
                           tabPanel("Inflations", 
                                    fluidRow(
@@ -412,7 +412,7 @@ shinyUI(
                                    icon=icon("money"))         
              ), 
              conditionalPanel("input.budget>0",
-                             # hr(),
+                              # hr(),
                               fluidRow(
                                 column(4,
                                        fluidRow(
@@ -428,83 +428,83 @@ shinyUI(
                                        )),
                                 column(8,
                                        div(align="center", fluidRow(
-                                column(4,
-                                       plotOutput("plot1", height = 200),
-                                       uiOutput("milk_feed")),
-                                column(4,
-                                       plotOutput("plot2", height = 200),
-                                       uiOutput("labor_repair")),
-                                column(4,
-                                       plotOutput("plot3", height = 200),
-                                       uiOutput("captial_cost"))
-                              ),
-                              uiOutput("misc")))
-                             
-                             ), 
-    # ---------- Sensitivity Analysis -----------   
-    conditionalPanel('input.robust=="Sensitivity"', 
-                     hr(), 
-                     h4("Sensitivity Analysis"),
-                     fluidRow(column(5,
-                                     selectInput("c_choice",NULL,
-                                                 c("Estimated cost per robot"="c1",
-                                                   "Related housing changes needed per cow"="c2",
-                                                   "Estimated annual change in milking system repair"="c3",
-                                                   "Robots: years of useful life"="c4",
-                                                   "Value of the robots after useful life"="c5",
-                                                   "Anticipated savings in milking & chore labor"="c6",
-                                                   "Projected change in milk production"="c7"
-                                                   ))),
-                              column(2,
-                                     numericInput("c_val","% Change:", value=20, step=10)
-                              ),
-                              column(3,
-                                     uiOutput("c_text")
-                              ),  
-                              column(2,
-                                     actionButton("c_store","Add to Table")
+                                         column(4,
+                                                plotOutput("plot1", height = 200),
+                                                uiOutput("milk_feed")),
+                                         column(4,
+                                                plotOutput("plot2", height = 200),
+                                                uiOutput("labor_repair")),
+                                         column(4,
+                                                plotOutput("plot3", height = 200),
+                                                uiOutput("captial_cost"))
+                                       ),
+                                       uiOutput("misc")))
+                                
+                              ), 
+                              # ---------- Sensitivity Analysis -----------   
+                              conditionalPanel('input.robust=="Sensitivity"', 
+                                               hr(), 
+                                               h4("Sensitivity Analysis"),
+                                               fluidRow(column(5,
+                                                               selectInput("c_choice",NULL,
+                                                                           c("Estimated cost per robot"="c1",
+                                                                             "Related housing changes needed per cow"="c2",
+                                                                             "Estimated annual change in milking system repair"="c3",
+                                                                             "Robots: years of useful life"="c4",
+                                                                             "Value of the robots after useful life"="c5",
+                                                                             "Anticipated savings in milking & chore labor"="c6",
+                                                                             "Projected change in milk production"="c7"
+                                                                           ))),
+                                                        column(2,
+                                                               numericInput("c_val","% Change:", value=20, step=10)
+                                                        ),
+                                                        column(3,
+                                                               uiOutput("c_text")
+                                                        ),  
+                                                        column(2,
+                                                               actionButton("c_store","Add to Table")
+                                                        )
+                                               ),
+                                               fluidRow(
+                                                 column(4,
+                                                        fluidRow(
+                                                          column(6,
+                                                                 uiOutput("c_IOFC")),
+                                                          column(6,
+                                                                 uiOutput("c_NAI")) 
+                                                        )),
+                                                 column(8,
+                                                        div(align="center", fluidRow(
+                                                          column(4,
+                                                                 plotOutput("c_plot1", height = 200),
+                                                                 uiOutput("c_milk_feed")),
+                                                          column(4,
+                                                                 plotOutput("c_plot2", height = 200),
+                                                                 uiOutput("c_labor_repair")),
+                                                          column(4,
+                                                                 plotOutput("c_plot3", height = 200),
+                                                                 uiOutput("c_captial_cost"))
+                                                        ),
+                                                        uiOutput("c_misc")))
+                                               ),
+                                               fluidRow(column(2,offset=8,
+                                                               actionButton("c_clear","Clear")),
+                                                        column(2, 
+                                                               actionButton("c_download","Download"))
+                                               ),
+                                               tabsetPanel(
+                                                 tabPanel("Sensitivity",DT::dataTableOutput("table_sensitivity")),
+                                                 tabPanel("Variables",DT::dataTableOutput("table_input"))
+                                               ) 
                               )
-                     ),
-                     fluidRow(
-                       column(4,
-                              fluidRow(
-                                column(6,
-                                       uiOutput("c_IOFC")),
-                                column(6,
-                                       uiOutput("c_NAI")) 
-                              )),
-                       column(8,
-                              div(align="center", fluidRow(
-                                column(4,
-                                       plotOutput("c_plot1", height = 200),
-                                       uiOutput("c_milk_feed")),
-                                column(4,
-                                       plotOutput("c_plot2", height = 200),
-                                       uiOutput("c_labor_repair")),
-                                column(4,
-                                       plotOutput("c_plot3", height = 200),
-                                       uiOutput("c_captial_cost"))
-                              ),
-                              uiOutput("c_misc")))
-                     ),
-                     fluidRow(column(2,offset=8,
-                              actionButton("c_clear","Clear")),
-                              column(2, 
-                                     actionButton("c_download","Download"))
-                              ),
-                     tabsetPanel(
-                       tabPanel("Sensitivity",DT::dataTableOutput("table_sensitivity")),
-                       tabPanel("Variables",DT::dataTableOutput("table_input"))
-                     ) 
-                     )
-                     ),
-    # ---------- Scenarios Analysis -----------         
-    conditionalPanel('input.robust=="Scenarios"', 
-                     helpText("Additional Controls and Displays Scenario Analysis")),
-    # ---------- Cash Flow Analysis -----------         
-    conditionalPanel('input.robust=="Cash Flow"', 
-                     helpText("Additional Controls and Displays for Cash Flow Analysis")
-                     ),
+             ),
+             # ---------- Scenarios Analysis -----------         
+             conditionalPanel('input.robust=="Scenarios"', 
+                              helpText("Additional Controls and Displays Scenario Analysis")),
+             # ---------- Cash Flow Analysis -----------         
+             conditionalPanel('input.robust=="Cash Flow"', 
+                              helpText("Additional Controls and Displays for Cash Flow Analysis")
+             ),
              br(), br()
     ),
     # ---------- Partial Budget Analysis -----------
@@ -660,7 +660,7 @@ shinyUI(
                                                          h5("Net annual impact with inflation, as annualized net present value (NPV)")),
                                                   column(width=3, uiOutput("impact_with_inflation"))                          
                                          ),
-                                        br(),
+                                         br(),
                                          span(h4("Now make changes in Data Entry and immediately see the resposnses at the bottom of page."),style="color: steelblue; "), 
                                          br(),br()
                                   ))
@@ -671,17 +671,17 @@ shinyUI(
                tabPanel("Robustness Check Tools",
                         fluidRow(column(10, offset=1, 
                                         fluidRow(column(6, offset=3,
-                radioButtons("robust", "Robustness analysis options", 
-                             choices=c("Off","Sensitivity","Scenarios", "Cash Flow")))),
-               conditionalPanel('input.robust=="Sensitivity"', 
-                                helpText("Explanation about Sensitivity Analysis")),
-               conditionalPanel('input.robust=="Scenarios"', 
-                                helpText("Explanation about Scenario Analysis")),
-               conditionalPanel('input.robust=="Cash Flow"', 
-                                helpText("Explanation about Cash Flow Analysis"))
-               ))),
+                                                        radioButtons("robust", "Robustness analysis options", 
+                                                                     choices=c("Off","Sensitivity","Scenarios", "Cash Flow")))),
+                                        conditionalPanel('input.robust=="Sensitivity"', 
+                                                         helpText("Explanation about Sensitivity Analysis")),
+                                        conditionalPanel('input.robust=="Scenarios"', 
+                                                         helpText("Explanation about Scenario Analysis")),
+                                        conditionalPanel('input.robust=="Cash Flow"', 
+                                                         helpText("Explanation about Cash Flow Analysis"))
+                        ))),
                tabPanel("Investment with New Parlor")
-               ),
+    ),
     # ---------- About -----------
     tabPanel("About",
              fluidRow(column(width=1),
