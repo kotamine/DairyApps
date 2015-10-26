@@ -1,6 +1,7 @@
 library(shiny)
 library(shinyjs)
 library(shinyBS)
+library(xlsx)
 library(XLConnect)
 
 shinyUI(fluidPage(
