@@ -4,14 +4,12 @@ library(shinyjs)
 library(DT)
 suppressPackageStartupMessages(library(dplyr))
 library(ggplot2)
-
+library(xlsx)
+library(XLConnect)
+# library(XLConnectJars)
 source("helper.R")
 
 
-func1_for_feature_1 <- function(input, output, session) {
-  # do some calculation for feature 1
-  
-}
 
 shinyServer(function(input, output, session) {
   
@@ -19,7 +17,7 @@ shinyServer(function(input, output, session) {
   rv <- reactiveValues(input_id=0)
   conv_factor <- 2.2046  # conversion factor from kg to pound 
   
-  func1_for_feature_1(input, output, session)
+
   
   # ---------- Fill out the calclated values in Data Entry ----------
   # --- Calculations of variables (stored as functions), followed by rendering to User Interface ---
@@ -34,7 +32,7 @@ shinyServer(function(input, output, session) {
       updateNumericInput(session, "additional_cost",NULL,value=200,step=50,min=0)
     }
   })
-  
+
   herd_size2 <- reactive({
     rv$herd_size2 <- input$herd_size + input$herd_increase
     rv$herd_size2
@@ -43,7 +41,7 @@ shinyServer(function(input, output, session) {
   robot_invest <- reactive({
     rv$robot_invest <- input$n_robot * input$cost_robot
     rv$robot_invest
-  })
+  }) 
   
   cost_housing <- reactive({
     rv$cost_housing <- input$cost_housing_cow * herd_size2()
@@ -747,8 +745,8 @@ shinyServer(function(input, output, session) {
       rb$var <- "Robots: years of useful life"
       rb$value <-   input$robot_years 
       rb$new_value <- (input$robot_years  *(1 + input$c_val/100))
-      val0 <-  rb$value %>% formatdollar()
-      val1 <-  rb$new_value %>% formatdollar()
+      val0 <-  rb$value  %>% round(2)
+      val1 <-  rb$new_value  %>% round(2)
       unit <- "years"
     }
     else if (input$c_choice=="c5") {
@@ -763,16 +761,16 @@ shinyServer(function(input, output, session) {
       rb$var <-  "Anticipated savings in milking & chore labor"
       rb$value <-  input$hr_sv_milking 
       rb$new_value <- (  input$hr_sv_milking  *(1 + input$c_val/100))
-      val0 <-  rb$value %>% formatdollar()
-      val1 <-  rb$new_value %>% formatdollar()
+      val0 <-  rb$value %>% round(2)
+      val1 <-  rb$new_value  %>% round(2)
       unit <- "hrs/day"
     }
     else if (input$c_choice=="c7") {
       rb$var <- "Projected change in milk production"
       rb$value <-   input$milk_change
       rb$new_value <- ( input$milk_change *(1 + input$c_val/100))
-      val0 <-  rb$value %>% formatdollar()
-      val1 <-  rb$new_value %>% formatdollar()
+      val0 <-  rb$value %>% round(2)
+      val1 <-  rb$new_value  %>% round(2)
       unit <- "lb/cow/day"
     }
     paste("from", val0," to ",val1, unit) %>% h5()
@@ -1043,6 +1041,8 @@ shinyServer(function(input, output, session) {
                    "labor + repair", "change: labor + repair",
                    "capital cost", "change: capital cost",
                    "the rest", "change: the rest")
+  rb$order1 <- c("input_id","variable", "% change","value","new value",
+                 "net impact w/ salvage", "change: impact w/ salvage")
   
   rb$table_sensitivity <- data.frame(Column1 = numeric(0)) # creating an emptry table
   
@@ -1101,8 +1101,8 @@ shinyServer(function(input, output, session) {
   
   output$table_sensitivity <- DT::renderDataTable({
     if (dim( rb$table_sensitivity)[1]>0) {
-      # order1 <- c()
-      tbl <- rb$table_sensitivity # [,order1] 
+      # 
+      tbl <- rb$table_sensitivity[, rb$order1] 
       DT::datatable(tbl,
                     rownames = FALSE,
                     extensions = 'ColVis',
@@ -1132,6 +1132,62 @@ shinyServer(function(input, output, session) {
       return()
     }
   })
+  
+  rv$test_data <- matrix(c(1:6),nrow=2)
+  
+  output$c_download <- downloadHandler(
+    # browser() 
+    filename = "test.xlsx", 
+    
+    content = function(file) { 
+#       write.table(c(1:10), file, sep = ",",
+#                   row.names = FALSE)
+            wb <- XLConnect::loadWorkbook(file, create = TRUE)
+            XLConnect::createSheet(wb, name = "Sheet1")
+            XLConnect::createSheet(wb, name = "Sheet2")
+            XLConnect::writeWorksheet(wb, c(1:3), sheet = "Sheet1") # writes numbers 1:3 in file
+            XLConnect::writeWorksheet(wb, rv$test_data, sheet = "Sheet2") # writes numbers 1:3 in file
+            XLConnect::saveWorkbook(wb)
+    } 
+#     filename = function() { "my_robot_data.xlsx" },
+#     
+#     content = function(file){
+#       browser()
+#       fname <- paste(file,"xlsx",sep=".")
+#       wb <- loadWorkbook(fname, create = TRUE)
+#       createSheet(isolate(rv$table_input), name = "user_input")
+#       writeWorksheet(wb, sheet = "user_input") 
+#       saveWorkbook(wb)
+#       file.rename(fname,file)
+#     }
+    
+  ) 
+    
+  
+  
+  output$sheet1 <- renderTable({
+    
+    inFile <- input$user_data
+    if (is.null(inFile))
+    { return(NULL)}
+    
+    browser()
+    wb <- loadWorkbook(inFile$datapath)
+    sheets <- getSheets(wb)
+#     XLConnect::createSheet(wb, name = "Sheet3")
+    
+#     demoExcelFile <- system.file("demoFiles/mtcars.xlsx", package = "XLConnect")
+#     wb <- loadWorkbook(demoExcelFile)
+#     # Read worksheet 'mtcars' (providing no specific area bounds;
+#     # with default header = TRUE)
+#     data <-  XLConnect::readWorksheet(wb, sheet = "mtcars")
+#     
+    # sheet1 <- readWorksheet(inFile, sheet=1)
+    # read.csv(inFile$datapath)
+#     XLConnect::readWorksheet(wb, sheet=1)
+    read.xlsx(inFile$datapath, sheetIndex = 2)
+  })
+  
   
   
 })

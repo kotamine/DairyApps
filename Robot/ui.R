@@ -446,7 +446,7 @@ shinyUI(
                                                hr(), 
                                                h4("Sensitivity Analysis"),
                                                fluidRow(column(5,
-                                                               selectInput("c_choice",NULL,
+                                                               selectInput("c_choice",NULL, width="100%",
                                                                            c("Estimated cost per robot"="c1",
                                                                              "Related housing changes needed per cow"="c2",
                                                                              "Estimated annual change in milking system repair"="c3",
@@ -487,11 +487,6 @@ shinyUI(
                                                         ),
                                                         uiOutput("c_misc")))
                                                ),
-                                               fluidRow(column(2,offset=8,
-                                                               actionButton("c_clear","Clear")),
-                                                        column(2, 
-                                                               actionButton("c_download","Download"))
-                                               ),
                                                tabsetPanel(
                                                  tabPanel("Sensitivity",DT::dataTableOutput("table_sensitivity")),
                                                  tabPanel("Variables",DT::dataTableOutput("table_input"))
@@ -504,6 +499,21 @@ shinyUI(
              # ---------- Cash Flow Analysis -----------         
              conditionalPanel('input.robust=="Cash Flow"', 
                               helpText("Additional Controls and Displays for Cash Flow Analysis")
+             ),
+             # --------- Data Table ---------
+             fluidRow(column(1,offset=9,
+                             actionButton("c_clear","Clear")),
+                      column(2, 
+                             downloadButton("c_download","Download"))
+             ), 
+             fileInput('user_data', 'Upload data',
+                          accept=c('.xlsx', "application/vnd.ms-excel",
+                                   '.csv')),
+             tabsetPanel(
+               tabPanel(
+             tableOutput('sheet1')),
+             tabPanel(
+             tableOutput('sheet2'))
              ),
              br(), br()
     ),
