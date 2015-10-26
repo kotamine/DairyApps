@@ -1,4 +1,5 @@
 library(shiny)
+library(shinythemes)
 library(shinyjs)
 library(shinyBS)
 library(xlsx)
@@ -12,6 +13,8 @@ get_time_human <- function() {
 
 
 shinyServer(function(input, output, session) {
+  
+  updateTextInput(session, "timestamp", value = get_time_human())
   
   # Define session specific variables, read only once in the beginning 
   rv <- reactiveValues()
@@ -62,12 +65,17 @@ shinyServer(function(input, output, session) {
     }
   })
   
+  # Subtract a row from table 2
+  observeEvent(input$subtract, {
+    if (dim(rv$table_2)[1]==0) return() 
+    rv$table_2 <-rv$table_2[-dim(rv$table_2)[1],]
+  })
+  
   # Clear tables 
   observeEvent(input$clear, {
     rv$table_1 <- data.frame(Column1 = numeric(0))
     rv$table_2 <- data.frame(Column1 = numeric(0))
   })
-  
   
   
   # Download the tables as an Excel file   

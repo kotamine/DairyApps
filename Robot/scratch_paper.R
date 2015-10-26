@@ -188,4 +188,31 @@ apply(a[is.numeric(a)],2,round, 2)
 
 
 
+list1 <- c("a","b","c")
+
+A <- list()
+lapply(list1, 
+       function(x) {
+         str <- paste0("A$",x, " <- paste(' ",
+                       x, "1')")
+         eval(parse(text=str))
+       }
+)
+
+
+
+
+library(shiny)
+runApp(list(
+  ui = fluidPage(lapply(1:10, function(i) {
+    uiOutput(paste0('x', i))
+  })),
+  server = function(input, output) {
+    lapply(1:10, function(i) {
+      output[[paste0('x', i)]] = renderUI(paste('Hi, this is', i))
+    })
+  }
+)) 
+
+
 

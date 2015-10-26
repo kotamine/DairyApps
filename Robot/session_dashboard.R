@@ -1,0 +1,125 @@
+
+
+# ------ Dashboard features ------
+
+NAI <- reactive({
+  if (input$NAI=="w/o housing") {
+    NAI <- impact_without_housing()
+  } 
+  else if (input$NAI=="w/ housing") {
+    NAI <- impact_with_housing()
+  } else {
+    NAI <- impact_with_robot_salvage()
+  }
+  rv$NAI <- NAI
+  rv$NAI
+})
+
+capital_cost <- reactive({
+  if(input$NAI=="w/o housing") {
+    rv$capital_cost <- -inc_exp_capital_recovery()
+  } else if (input$NAI=="w/ housing") {
+    rv$capital_cost <- -(inc_exp_capital_recovery() + capital_recovery_housing())
+  } else  {
+    rv$capital_cost <- -(inc_exp_capital_recovery() + capital_recovery_housing()) +
+      + robot_end_PV()
+  } 
+  rv$capital_cost
+}) 
+
+milk_current <- reactive({
+  input$herd_size * 330 * input$milk_cow_day * (input$price_milk/100 + 
+                                                  +  input$scc_premium/100 * input$scc_average/1000) 
+})
+
+milk_robot <- reactive({
+  herd_size2() * 330 * (input$milk_cow_day + input$milk_change) *
+    (input$price_milk/100 + input$scc_premium/100 * input$scc_average*(1-input$scc_change/100)/1000) 
+})
+
+labor_current <- reactive({
+  (input$hr_heat_detection + input$hours_milking) * input$labor_rate*365
+})
+
+labor_robot <- reactive({
+  (input$anticipated_hours_heat + anticipated_hours_milking()) * input$labor_rate *365 + 
+    + (input$increase_rc_mgt - input$decrease_lab_mgt) * input$labor_rate_rc_mgt * 365 +
+    + input$additional_labor * input$herd_increase 
+}) 
+
+feed_current <- reactive({
+  DMI_day() * input$cost_DM * 330 * input$herd_size
+})
+
+feed_robot <- reactive({
+  (DMI_projected() * input$cost_DM + input$pellets * input$cost_pellets/2000) * 330 * herd_size2()
+})
+
+output$IOFC <- renderUI({
+  if (input$IOFC=="per cow") {
+    dash_IOFC(IOFC(), IOFC2(), basis=input$IOFC)
+  } else {
+    dash_IOFC(IOFC_cwt(), IOFC2_cwt(), basis=input$IOFC)
+  }
+})  
+
+output$NAI <- renderUI({
+  dash_NAI(NAI(),cutoff=0)
+}) 
+
+output$milk_feed <- renderUI({
+  rv$milk_feed <- -(feed_robot() - feed_current()) + milk_robot() -  milk_current() 
+  validate(
+    need(!is.na(rv$milk_feed),"NA")
+  )
+  div(class="well well-sm", style= "background-color: #1569C7; color:white;", 
+      rv$milk_feed %>% formatdollar2() %>% strong() %>% h4(),
+      h5("Milk Income - Feed Cost"), h5("under robot"))
+})  
+
+output$labor_repair <- renderUI({
+  rv$labor_repair <- -(labor_robot() - labor_current() +inc_exp_repair())
+  validate(
+    need(!is.na(rv$labor_repair),"NA")
+  )
+  div(class="well well-sm", style= "background-color: #FF926F; color:white;", 
+      rv$labor_repair %>% formatdollar2() %>% strong() %>% h4(),
+      h5("Labor + Repair Cost"), h5("under robot"))
+})  
+
+output$captial_cost <- renderUI({
+  validate(
+    need(!is.na(capital_cost()),"NA")
+  )
+  div(class="well well-sm", style= "background-color: #64E986; color:white;", 
+      capital_cost() %>% formatdollar2() %>% strong() %>% h4(),
+      h5("Cost of Capital"),  h5("under robot"))
+})  
+
+output$misc <- renderUI({
+  NAI <- NAI()
+  milk_feed <- -(feed_robot() - feed_current()) + milk_robot() -  milk_current() 
+  labor_repair <- -(labor_robot() - labor_current() +inc_exp_repair())
+  capital_cost <- capital_cost()
+  
+  rv$misc <- NAI - (milk_feed + labor_repair + capital_cost)
+  validate(
+    need(!is.na(rv$misc),"NA")
+  )
+  div(class="well well-sm", style= "background-color: #C2B280; color:white;", 
+      rv$misc %>% formatdollar2() %>% strong %>% h4(), 
+      h5("The Rest"), h5("under robot"))
+})  
+
+output$plot1 <- renderPlot({ 
+  dash_plot1(feed_current(),feed_robot(),milk_current(),milk_robot())
+})
+
+output$plot2 <- renderPlot({
+  dash_plot2(inc_exp_repair(),labor_current(),labor_robot()) 
+})
+
+output$plot3 <- renderPlot({ 
+  dash_plot3(inc_exp_capital_recovery(),capital_recovery_housing(),robot_end_PV(),input$NAI)  
+})
+

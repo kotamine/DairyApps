@@ -13,14 +13,15 @@ shinyUI(
     tabPanel("Introduction",
              fluidRow(column(width=1),
                       column(width=10,
-                             div(class="well", style="background-color: #616D7E; color:white;",
-                                 h4("Why robots?"),
-                                 p("...")),
-                             h4("Where to start?"),
-                             p("..."),
-                             h4("How will this tool help me?"),
-                             p("..."),
-                             helpText("* Do we want to put some picture here?")
+                             includeMarkdown(file.path("text", sprintf("%s.md", x)))
+#                              div(class="well", style="background-color: #616D7E; color:white;",
+#                                  h4("Why robots?"),
+#                                  p("...")),
+#                              h4("Where to start?"),
+#                              p("..."),
+#                              h4("How will this tool help me?"),
+#                              p("..."),
+#                              helpText("* Do we want to put some picture here?")
                       ))
     ),
     # ---------- Data Entry -----------

@@ -18,33 +18,33 @@ formatcomma <- function(x) {
 } 
 
 formatdollar <- function(x,digit=0) {
-  if (!is.null(x)) {
+  if (is.na(x)) { return(NA) }
+  if (is.null(x)) { return(NA) }
     if (x>=0) {
       paste0("$",x %>% round(digit) %>% formatcomma()) 
     } else {
       paste0("-$",-x %>% round(digit) %>% formatcomma()) 
     }
-  }
 }
 
 formatdollar2 <- function(x,digit=0) {
-  if (!is.null(x)) {
-    if (x>=0) {
-      paste0("+$",x %>% round(digit) %>% formatcomma()) 
-    } else {
-      paste0("-$",-x %>% round(digit) %>% formatcomma()) 
-    }
+  if (is.na(x)) { return(NA) }
+  if (is.null(x)) { return(NA) }
+  if (x>=0) {
+    paste0("+$",x %>% round(digit) %>% formatcomma()) 
+  } else {
+    paste0("-$",-x %>% round(digit) %>% formatcomma()) 
   }
 }
 
 formatdollar2b <- function(x,digit=0) {
-  if (!is.null(x)) {
-    if (x>=0) {
+  if (is.na(x)) { return(NA) }
+  if (is.null(x)) { return(NA) }
+  if (x>=0) {
       paste0("( +$",x %>% round(digit) %>% formatcomma()," )") 
     } else {
       paste0("( -$",-x %>% round(digit) %>% formatcomma()," )") 
     }
-  }
 }
 
 
@@ -87,6 +87,10 @@ pmt <- function(rate, nper, pv, fv=0, type=0) {
 dash_IOFC <- function(IOFC, IOFC2, basis,
                       milk_cow_day, milk_change, cutoffs=NULL,
                       compare=NULL, compare2=NULL) {
+  validate( 
+    need(!(is.na(IOFC) | is.na(IOFC2)), 
+                 "NA")
+    ) 
   
   if (basis=="per cow")
   {  if (is.null(cutoffs)) { cutoffs <- c(663,331) } 
@@ -126,6 +130,12 @@ dash_IOFC <- function(IOFC, IOFC2, basis,
 
 
 dash_NAI <- function(NAI,cutoff=0, compare=NULL) {
+
+  validate( 
+    need(!is.na(NAI), 
+         "NA")
+  )     
+  
   if (NAI>cutoff) { 
     style <- "background-color: #306EFF; color:white;"
   } 
@@ -148,6 +158,13 @@ dash_NAI <- function(NAI,cutoff=0, compare=NULL) {
 
 
 dash_plot1 <- function(feed_current,feed_robot,milk_current,milk_robot) { 
+
+  validate( 
+    need(!(is.na(feed_current) | is.na(feed_robot) | 
+             is.na(milk_current) | is.na(milk_robot)), 
+         "NA")
+  )      
+  
   a <- data.frame("vars"=c("feed","feed","milk", "milk"), 
                   "values"=c(feed_current,feed_robot,milk_current,milk_robot)/1000,"type"= c(0,1,0,1)) 
   a$label <- apply(cbind(a$values),2,round,0)
@@ -179,6 +196,13 @@ dash_plot1 <- function(feed_current,feed_robot,milk_current,milk_robot) {
 }
 
 dash_plot2 <- function(inc_exp_repair,labor_current,labor_robot) {
+  
+  validate( 
+    need(!(is.na(inc_exp_repair) | is.na(labor_current) | 
+              is.na(labor_robot)), 
+         "NA")
+  )     
+  
   a <- data.frame("vars"=c("repair","repair","labor", "labor"), 
                   "values"=c(0,inc_exp_repair,labor_current,labor_robot)/1000,"type"= c(0,1,0,1)) 
   
@@ -212,6 +236,13 @@ dash_plot2 <- function(inc_exp_repair,labor_current,labor_robot) {
 
 dash_plot3 <- function(inc_exp_capital_recovery,capital_recovery_housing,
                        robot_end_PV, input_NAI) { 
+  
+  validate( 
+    need(!(is.na(inc_exp_capital_recovery) | is.na(capital_recovery_housing) | 
+             is.na(robot_end_PV)), 
+         "NA")
+  )
+  
   if (input_NAI=="w/o housing") {
     capital_recovery_housing_show <- 0
     robot_end_PV_show <- 0
