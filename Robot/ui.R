@@ -55,7 +55,12 @@ shinyUI(
                               # ---------- Sensitivity Analysis -----------   
                               conditionalPanel('input.robust=="Sensitivity"', 
                                                tags$hr(), 
-                                               h4("Sensitivity Analysis"),
+                                               h4("Sensitivity Analysis"), 
+                                               actionButton("sensitivity_calculate","Calculate"),
+                                               a(id = "sensitivity_show","Show/hide sensitivity control"),
+                                               shinyjs::hidden(
+                                                 div(id = "sensitivity_control",
+                                              fluidRow(column(2,offset=5, h5("% Change"))),
                                                fluidRow(column(5,
                                                                selectInput("c_choice",NULL, width="100%",
                                                                            c("Estimated cost per robot"="c1",
@@ -67,15 +72,17 @@ shinyUI(
                                                                              "Projected change in milk production"="c7"
                                                                            ))),
                                                         column(2,
-                                                               numericInput("c_val","% Change:", value=20, step=10)
+                                                               numericInput("c_val",NULL, value=20, step=10)
                                                         ),
                                                         column(3,
                                                                uiOutput("c_text")
-                                                        ),  
-                                                        column(2,
-                                                               actionButton("c_store","Add to Table")
-                                                        )
-                                               ),
+                                                        ) #,  
+#                                                         column(2,
+#                                                                # actionButton("c_store","Add to Table")
+#                                                         )
+                                                   )
+                                                 )
+                                              ),
                                                fluidRow(
                                                  column(4,
                                                         fluidRow(

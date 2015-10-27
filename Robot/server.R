@@ -33,12 +33,18 @@ shinyServer(function(input, output, session) {
   # ----------- Sensitivity Analysis -----------
   source("session_sensitivity.R", local=TRUE)
   
+  shinyjs::onclick("sensitivity_show",
+                   shinyjs::toggle(id="sensitivity_control", anim = TRUE)
+  )
+  
   # --- Dashboard features ---
   source("session_dashboard_robustness.R", local=TRUE)
  
   
   # --- User Data Storage ---
   ## --- WORK IN PROGRESS --- 
+  
+  
   
   rb$colnames <- c("input_id","variable", "% change","value","new value",
                    "net impact w/o housing","change: impact w/o housing", 
@@ -92,8 +98,7 @@ shinyServer(function(input, output, session) {
                       rb$milk_feed, rb$milk_feed - rv$milk_feed, 
                       rb$labor_repair, rb$labor_repair - rv$labor_repair, 
                       rb$capital_cost, rb$capital_cost - rv$capital_cost, 
-                      rb$misc, rb$misc - rv$misc 
-      ), nrow=1)  
+                      rb$misc, rb$misc - rv$misc), nrow=1)  
       tmp <- apply(tmp,2,round,0)
       tmp <- matrix(c(tmp[1],rb$var,tmp[2:length(tmp)]),nrow=1)
       colnames(tmp) <- rb$colnames
