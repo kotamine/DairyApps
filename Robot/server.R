@@ -6,9 +6,9 @@ suppressPackageStartupMessages(library(dplyr))
 library(ggplot2)
 library(xlsx)
 library(XLConnect)
-# library(XLConnectJars)
-source("helper.R")
+library(markdown)
 
+source("helper.R")
 
 
 shinyServer(function(input, output, session) {
@@ -36,6 +36,9 @@ shinyServer(function(input, output, session) {
   # --- Dashboard features ---
   source("session_dashboard_robustness.R", local=TRUE)
  
+  
+  # --- User Data Storage ---
+  ## --- WORK IN PROGRESS --- 
   
   rb$colnames <- c("input_id","variable", "% change","value","new value",
                    "net impact w/o housing","change: impact w/o housing", 

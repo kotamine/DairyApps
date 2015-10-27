@@ -17,7 +17,7 @@ shinyUI(fluidPage(theme = shinytheme("united"),
                       numericInput("hours_sleep","How many hours does the person sleep regularly?",
                                    value= 7, step=.5, min=0, max=24), 
                       actionButton("add_1","Add to Table Sleep"), 
-                      hr(), 
+                      tags$hr(),
                       
                       uiOutput("get_name"), 
                       br(), 
