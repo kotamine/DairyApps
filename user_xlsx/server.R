@@ -12,18 +12,18 @@ get_time_human <- function() {
   format(Sys.time(), "%Y-%m-%d-%H:%M:%OS")
 }
 
+#  Global objects: shared across all sessions
+colnames_1 <- c("Name", "Feeling","Hours Sleep","Time Stamp") 
+colnames_2 <- c("Name", "Day Exercise","Hours Exercise","Time Stamp")
+
+
 
 shinyServer(function(input, output, session) {
-  
-  updateTextInput(session, "timestamp", value = get_time_human())
-  
-  # Define session specific variables, read only once in the beginning 
+
+  # Session specific ojbects: allowing for reactive rendering of this table.  
   rv <- reactiveValues()
-  rv$colnames_1 <- c("Name", "Feeling","Hours Sleep","Time Stamp")
-  rv$colnames_2 <- c("Name", "Day Exercise","Hours Exercise","Time Stamp")
-  rv$table_1 <- data.frame(Column1 = numeric(0))
+  rv$table_1 <- data.frame(Column1 = numeric(0))   
   rv$table_2 <- data.frame(Column1 = numeric(0))  
-  shinyjs::toggleState("add_2", FALSE)
   
   
   # Add a row to table 1 
@@ -32,7 +32,7 @@ shinyServer(function(input, output, session) {
     
     new_row <- matrix(c(input$user_name, input$feeling, 
                         input$hours_sleep, input$timestamp),nrow=1)
-    colnames(new_row) <- rv$colnames_1
+    colnames(new_row) <- colnames_1
     rv$table_1 <- rbind(rv$table_1, new_row)
   })
   
@@ -42,7 +42,7 @@ shinyServer(function(input, output, session) {
     
     new_row <- matrix(c(input$user_name, input$exercise_day, 
                         input$hours_exercise, input$timestamp),nrow=1)
-    colnames(new_row) <- rv$colnames_2
+    colnames(new_row) <- colnames_2
     rv$table_2 <- rbind(rv$table_2, new_row)
   })
   
@@ -130,10 +130,10 @@ shinyServer(function(input, output, session) {
     colnames(user_data_2) <- gsub("\\."," ",colnames(user_data_2))
     
     # Check colname names
-    if (!(all(colnames(user_data_1) %in% rv$colnames_1) &
-          all(rv$colnames_1 %in% colnames(user_data_1)) &
-          all(colnames(user_data_2) %in% rv$colnames_2) &
-          all(rv$colnames_2 %in% colnames(user_data_2)))) {
+    if (!(all(colnames(user_data_1) %in% colnames_1) &
+          all(colnames_1 %in% colnames(user_data_1)) &
+          all(colnames(user_data_2) %in% colnames_2) &
+          all(colnames_2 %in% colnames(user_data_2)))) {
       createAlert(session, "upload_alert", "ref_upload_alert", 
                   content = "Wrong column names: 
                   please upload a file from this app.",
@@ -149,7 +149,7 @@ shinyServer(function(input, output, session) {
   
   
   # There is no offical method to remove an uploaded file. 
-  # The following provides a "fix". 
+  # The following provides a "fix" by initializing fileInput(). 
   # http://stackoverflow.com/questions/17352086/how-can-i-update-a-shiny-fileinput-object
   output$resettableInput <- renderUI({
     input$remove

@@ -305,7 +305,13 @@ robot_end_PV <- reactive({
 
 impact_with_robot_salvage <- reactive({ 
   rv$impact_with_robot_salvage <- impact_with_housing() + robot_end_PV()
-  rv$new_input <- TRUE # This is used later for storing inputs in table 
+  
+  # This is used later for alerting base value change in robustness analysis  
+  createAlert(session, "c_input_change", "ref_c_input_change", 
+              content = "New base values. 
+            Press [Calculate] to updated the results.",
+              append = FALSE) 
+  
   rv$impact_with_robot_salvage
 })
 

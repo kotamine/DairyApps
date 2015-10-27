@@ -1,3 +1,5 @@
+
+
 # There are three ways the sensitivity analysis can be triggered. 
 # 1. change of variable to consider the sensitivity 
 # 2. change of value for that variable 
@@ -30,7 +32,7 @@ observeEvent(input$c_choice, {
 observeEvent(input$c_val, { 
   
   n <- c_n()
-
+  
   # update the value for % change: reactive object is used as a storage 
   rb$c_change_val[n] <- input$c_val  
   c_choice <-  input$c_choice
@@ -41,15 +43,15 @@ observeEvent(input$c_val, {
   new_val <- (base_val * (1 + c_val/100))
   label <- c_labels[n]
   
-    source("calculation_sensitivity.R", local=TRUE)  # Calculates new_row
+  source("calculation_sensitivity.R", local=TRUE)  # Calculates new_row
   
-    rb$table_sensitivity[n,] <- new_row
+  rb$table_sensitivity[n,] <- new_row
 })
 
 
 # Recalculate all rows of table_sensitivity 
 observeEvent(input$sensitivity_calculate, {
-
+  
   rb$table_sensitivity <- c_empty_table # Returning to an emptry table
   closeAlert(session, "ref_c_input_change")
   
@@ -57,16 +59,16 @@ observeEvent(input$sensitivity_calculate, {
   lapply(c(1:7), 
          function(x) { 
            
-             c_choice <-  paste0("c",x) 
-             c_val <- rb$c_change_val[x]
-             
-             base_val <- input[[c_varnames[x]]]
-             new_val <- (base_val * (1 + c_val/100))
-             label <- c_labels[x]
-             
-             source("calculation_sensitivity.R", local=TRUE) # Calculates new_row
-             rb$table_sensitivity[x,] <- new_row
-             
+           c_choice <-  paste0("c",x) 
+           c_val <- rb$c_change_val[x]
+           
+           base_val <- input[[c_varnames[x]]]
+           new_val <- (base_val * (1 + c_val/100))
+           label <- c_labels[x]
+           
+           source("calculation_sensitivity.R", local=TRUE) # Calculates new_row
+           rb$table_sensitivity[x,] <- new_row
+           
          }
   )
   
@@ -76,7 +78,7 @@ observeEvent(input$sensitivity_calculate, {
 # input$c_choice (or input$c_val via rb$c_change_val) triggers this
 output$c_text <- renderUI({
   n <- c_n()
- 
+  
   isolate( c_choice <-  input$c_choice )
   c_val <- rb$c_change_val[n]
   
@@ -115,4 +117,6 @@ output$c_text <- renderUI({
   
   paste("from", val0," to ", val1, unit) %>% h5()
 })
+
+
 

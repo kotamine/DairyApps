@@ -1,5 +1,12 @@
 
 ## ------------ Supplemental Features ------------
+
+# Initial time stamp
+updateTextInput(session, "timestamp", value = get_time_human())
+
+# Initially  add_2 is disabled
+shinyjs::toggleState("add_2", FALSE)
+
 observe({
   if (dim(rv$table_1)[1]==0) {
     shinyjs::disable("download")

@@ -1,8 +1,11 @@
 
 ## --- For robustoness analysis we will calculate almost everything  all over again ---
 ## - technically we don't need to store all varibles under "rb" 
-## - but it makes it easier to retrieve them later.
+## - but it makes it easier to retrieve them later. 
 
+
+isolate({ # isolate the robustness calculation  
+  
 # Initialize changed values 
 rb$cost_robot <- input$cost_robot
 rb$cost_housing_cow <- input$cost_housing_cow
@@ -12,14 +15,16 @@ rb$salvage_robot <- input$salvage_robot
 rb$hr_sv_milking <- input$hr_sv_milking
 rb$milk_change <- input$milk_change
 
-# Change the selected value by rb$c_val
-rb$cost_robot <- input$cost_robot*(1+ (rb$c_choice=="c1")*rb$c_val/100)
-rb$cost_housing_cow <- input$cost_housing_cow*(1+ (rb$c_choice=="c2")*rb$c_val/100)
-rb$repair <- input$repair*(1+ (rb$c_choice=="c3")*rb$c_val/100)
-rb$robot_years <- input$robot_years*(1+ (rb$c_choice=="c4")*rb$c_val/100)
-rb$salvage_robot <- input$salvage_robot*(1+ (rb$c_choice=="c5")*rb$c_val/100)
-rb$hr_sv_milking <- input$hr_sv_milking*(1+ (rb$c_choice=="c6")*rb$c_val/100)
-rb$milk_change <- input$milk_change*(1+ (rb$c_choice=="c7")*rb$c_val/100)
+# Change the selected value by c_val
+rb$cost_robot <- input$cost_robot*(1+ (c_choice=="c1")*c_val/100)
+rb$cost_housing_cow <- input$cost_housing_cow*(1+ (c_choice=="c2")*c_val/100)
+rb$repair <- input$repair*(1+ (c_choice=="c3")*c_val/100)
+rb$robot_years <- input$robot_years*(1+ (c_choice=="c4")*c_val/100)
+rb$salvage_robot <- input$salvage_robot*(1+ (c_choice=="c5")*c_val/100)
+rb$hr_sv_milking <- input$hr_sv_milking*(1+ (c_choice=="c6")*c_val/100)
+rb$milk_change <- input$milk_change*(1+ (c_choice=="c7")*c_val/100)
+
+
 
 
 # Data Entry Level Calculations
@@ -112,6 +117,7 @@ rb$inc_exp_utilities <- (input$change_electricity + input$change_water + input$c
 
 rb$inc_exp_record_management <- input$increase_rc_mgt * input$labor_rate_rc_mgt * 365
 
+
 if (is.na(input$n_robot_life) | is.na(input$interest) | 
     is.na(rb$housing_years) | is.na(rb$robot_invest) | is.na(input$inflation_robot) |
     is.na(rb$robot_years)) {
@@ -121,11 +127,12 @@ if (is.na(input$n_robot_life) | is.na(input$interest) |
     tmp <-  - pmt(input$interest/100, rb$housing_years, 
                   rb$robot_invest*(1 + input$inflation_robot/100)^rb$robot_years/
                     (1 + input$interest/100)^(rb$robot_years))   
-  } 
-  else {
+  } else {
     tmp <- 0
   }
 }
+
+
 rb$inc_exp_capital_recovery <-   - pmt(input$interest/100, rb$housing_years, rb$robot_invest) + tmp
 
 rb$inc_exp_total <- rb$inc_exp_herd_increase + rb$inc_exp_repair + rb$inc_exp_feed + rb$inc_exp_pellet +
@@ -149,6 +156,27 @@ rb$impact_with_robot_salvage <- rb$impact_with_housing + rb$robot_end_PV
 rb$impact_with_inflation  <- "Depends on cash flow"
 
 # others for display in the dashboard
+
+# all non-reactive to base input changes and input$NAI 
+if (input$NAI=="w/o housing") {
+  rb$NAI <- rb$impact_without_housing
+} 
+else if (input$NAI=="w/ housing") {
+  rb$NAI <- rb$impact_with_housing
+} else {
+  rb$NAI <- rb$impact_with_robot_salvage
+}
+
+if(input$NAI=="w/o housing") {
+  rb$capital_cost <- -rb$inc_exp_capital_recovery
+} else if (input$NAI=="w/ housing") {
+  rb$capital_cost <- -(rb$inc_exp_capital_recovery + rb$capital_recovery_housing)
+} else  {
+  rb$capital_cost <- -(rb$inc_exp_capital_recovery + rb$capital_recovery_housing) +
+    + rb$robot_end_PV
+} 
+
+
 rb$milk_current <- 
   input$herd_size * 330 * input$milk_cow_day * (input$price_milk/100 + 
                                                   +  input$scc_premium/100 * input$scc_average/1000) 
@@ -169,23 +197,37 @@ rb$feed_robot <- (rb$DMI_projected * input$cost_DM + input$pellets *
                     input$cost_pellets/2000) * 330 * rb$herd_size2
 
 
+rb_milk_current <- reactive({
+  input$herd_size * 330 * input$milk_cow_day * (input$price_milk/100 + 
+                                                  +  input$scc_premium/100 * input$scc_average/1000) 
+})
+
+
+rb$milk_feed <-  -(rb$feed_robot - rb$feed_current) + rb$milk_robot -  rb$milk_current 
+
+rb$labor_repair <- -(rb$labor_robot - rb$labor_current + rb$inc_exp_repair)
+
+rb$misc <- rb$NAI - (rb$milk_feed + rb$labor_repair + rb$capital_cost)
+
+
 # --- add a row of results to the table_sensitivity ---
 
-tmp <- c(rb$c_val, rb$value, rb$new_value,  
-                  rb$impact_without_housing, rb$impact_without_housing - rv$impact_without_housing, 
-                  rb$impact_with_housing, rb$impact_with_housing - rv$impact_with_housing,
-                  rb$impact_with_robot_salvage, rb$impact_with_robot_salvage - rv$impact_with_robot_salvage,
-                  rb$IOFC2 - rb$IOFC,  rb$IOFC2-rb$IOFC - (rv$IOFC2 - rv$IOFC),
+new_row <- c(c_val, base_val, new_val,  
+                  rb$impact_without_housing, rb$impact_without_housing - impact_without_housing(), 
+                  rb$impact_with_housing, rb$impact_with_housing - impact_with_housing(),
+                  rb$impact_with_robot_salvage, rb$impact_with_robot_salvage - impact_with_robot_salvage(),
+                  rb$IOFC2 - rb$IOFC,  rb$IOFC2-rb$IOFC - (IOFC2() - IOFC()),
                   rb$IOFC2_cwt - rb$IOFC_cwt,  
                   rb$IOFC2_cwt - rb$IOFC_cwt - (IOFC2_cwt() - IOFC_cwt()),           
-                  rb$milk_feed, rb$milk_feed - rv$milk_feed, 
-                  rb$labor_repair, rb$labor_repair - rv$labor_repair, 
-                  rb$capital_cost, rb$capital_cost - rv$capital_cost, 
-                  rb$misc, rb$misc - rv$misc)
+                  rb$milk_feed, rb$milk_feed - milk_feed(), 
+                  rb$labor_repair, rb$labor_repair - labor_repair(), 
+                  rb$capital_cost, rb$capital_cost - capital_cost(), 
+                  rb$misc, rb$misc - misc())
 
-tmp <- matrix(c(rb$var,round(tmp)),nrow=1)
-colnames(tmp) <- rb$colnames
+new_row <- matrix(c(label,round(new_row)),nrow=1)
 
-rb$table_sensitivity <- rbind(rb$table_sensitivity,tmp)
+colnames(new_row) <- robustness_colnames
+
+})
 
 

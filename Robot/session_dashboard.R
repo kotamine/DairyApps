@@ -12,6 +12,12 @@ NAI <- reactive({
     NAI <- impact_with_robot_salvage()
   }
   rv$NAI <- NAI
+  
+  # This is used later for alerting base value change in robustness analysis  
+  createAlert(session, "c_input_change", "ref_c_input_change", 
+              content = "New base values. 
+              Press [Calculate] to updated the results.",
+              append = FALSE) 
   rv$NAI
 })
 
@@ -55,6 +61,20 @@ feed_robot <- reactive({
   (DMI_projected() * input$cost_DM + input$pellets * input$cost_pellets/2000) * 330 * herd_size2()
 })
 
+milk_feed <- reactive({
+  -(feed_robot() - feed_current()) + milk_robot() -  milk_current() 
+})
+
+labor_repair <- reactive({
+  -(labor_robot() - labor_current() +inc_exp_repair())
+})
+
+misc <- reactive({
+  NAI() - (milk_feed() + labor_repair() + capital_cost())
+})
+
+## rendering to UI 
+
 output$IOFC <- renderUI({
   if (input$IOFC=="per cow") {
     dash_IOFC(IOFC(), IOFC2(), basis=input$IOFC)
@@ -68,22 +88,20 @@ output$NAI <- renderUI({
 }) 
 
 output$milk_feed <- renderUI({
-  rv$milk_feed <- -(feed_robot() - feed_current()) + milk_robot() -  milk_current() 
   validate(
-    need(!is.na(rv$milk_feed),"NA")
+    need(!is.na(milk_feed()),"NA")
   )
   div(class="well well-sm", style= "background-color: #1569C7; color:white;", 
-      rv$milk_feed %>% formatdollar2() %>% strong() %>% h4(),
+      milk_feed() %>% formatdollar2() %>% strong() %>% h4(),
       h5("Milk Income - Feed Cost"), h5("under robot"))
 })  
 
 output$labor_repair <- renderUI({
-  rv$labor_repair <- -(labor_robot() - labor_current() +inc_exp_repair())
   validate(
-    need(!is.na(rv$labor_repair),"NA")
+    need(!is.na(labor_repair()),"NA")
   )
   div(class="well well-sm", style= "background-color: #FF926F; color:white;", 
-      rv$labor_repair %>% formatdollar2() %>% strong() %>% h4(),
+      labor_repair() %>% formatdollar2() %>% strong() %>% h4(),
       h5("Labor + Repair Cost"), h5("under robot"))
 })  
 
@@ -97,17 +115,11 @@ output$captial_cost <- renderUI({
 })  
 
 output$misc <- renderUI({
-  NAI <- NAI()
-  milk_feed <- -(feed_robot() - feed_current()) + milk_robot() -  milk_current() 
-  labor_repair <- -(labor_robot() - labor_current() +inc_exp_repair())
-  capital_cost <- capital_cost()
-  
-  rv$misc <- NAI - (milk_feed + labor_repair + capital_cost)
   validate(
-    need(!is.na(rv$misc),"NA")
+    need(!is.na(misc()),"NA")
   )
   div(class="well well-sm", style= "background-color: #C2B280; color:white;", 
-      rv$misc %>% formatdollar2() %>% strong %>% h4(), 
+      misc() %>% formatdollar2() %>% strong %>% h4(), 
       h5("The Rest"), h5("under robot"))
 })  
 

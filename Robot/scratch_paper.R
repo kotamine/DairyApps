@@ -216,3 +216,15 @@ runApp(list(
 
 
 
+x <- c(1:10)
+
+paste("x")
+
+
+A <- data.frame(Column1 = numeric(0))
+A
+a <- matrix(c(2,0),nrow=1)
+colnames(a) <- c("v1","v2")
+
+
+

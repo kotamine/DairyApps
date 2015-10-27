@@ -55,8 +55,9 @@ shinyUI(
                               # ---------- Sensitivity Analysis -----------   
                               conditionalPanel('input.robust=="Sensitivity"', 
                                                tags$hr(), 
-                                               h4("Sensitivity Analysis"), 
-                                               actionButton("sensitivity_calculate","Calculate"),
+                                               fluidRow(column(3,h4("Sensitivity Analysis")),
+                                                        column(2,bsButton("sensitivity_calculate","Calculate", style="primary")),
+                                                        column(5,bsAlert("c_input_change"))),
                                                a(id = "sensitivity_show","Show/hide sensitivity control"),
                                                shinyjs::hidden(
                                                  div(id = "sensitivity_control",
@@ -76,12 +77,7 @@ shinyUI(
                                                         ),
                                                         column(3,
                                                                uiOutput("c_text")
-                                                        ) #,  
-#                                                         column(2,
-#                                                                # actionButton("c_store","Add to Table")
-#                                                         )
-                                                   )
-                                                 )
+                                                        ) 
                                               ),
                                                fluidRow(
                                                  column(4,
@@ -104,16 +100,65 @@ shinyUI(
                                                                  uiOutput("c_captial_cost"))
                                                         ),
                                                         uiOutput("c_misc")))
-                                               ),
-                                               tabsetPanel(
-                                                 tabPanel("Sensitivity",DT::dataTableOutput("table_sensitivity")),
-                                                 tabPanel("Variables",DT::dataTableOutput("table_input"))
                                                ) 
+                                              )
+                                             ),
+                                             DT::dataTableOutput("table_sensitivity")
                               )
              ),
              # ---------- Scenarios Analysis -----------         
              conditionalPanel('input.robust=="Scenarios"', 
-                              helpText("Additional Controls and Displays Scenario Analysis")
+                              tags$hr(), 
+                              fluidRow(column(3,h4("Scenario Analysis")),
+                                       column(2,bsButton("scenario_calculate","Calculate", style="primary")),
+                                       column(5,bsAlert("s_input_change"))),
+                              a(id = "scenario_show","Show/hide scenario control"),
+                              shinyjs::hidden(
+                                div(id = "scenario_control",
+                                    fluidRow(column(2,offset=5, h5("% Change"))),
+                                    fluidRow(column(5,
+                                                    selectInput("s_choice",NULL, width="100%",
+                                                                c("Increased investment"="s1",
+                                                                  "Use less pellets"="s2",
+                                                                  "New barn ($120k/stall)"="s3",
+                                                                  "No reduction in labor"="s4",
+                                                                  "Low "="s5",
+                                                                  "Anticipated savings in milking & chore labor"="c6",
+                                                                  "Projected change in milk production"="c7"
+                                                                ))),
+                                             column(2,
+                                                    numericInput("s_val",NULL, value=20, step=10)
+                                             ),
+                                             column(3,
+                                                    uiOutput("s_text")
+                                             ) 
+                                    ),
+                                    fluidRow(
+                                      column(4,
+                                             fluidRow(
+                                               column(6,
+                                                      uiOutput("s_IOFC")),
+                                               column(6,
+                                                      uiOutput("s_NAI")) 
+                                             )),
+                                      column(8,
+                                             div(align="center", fluidRow(
+                                               column(4,
+                                                      plotOutput("s_plot1", height = 200),
+                                                      uiOutput("s_milk_feed")),
+                                               column(4,
+                                                      plotOutput("s_plot2", height = 200),
+                                                      uiOutput("s_labor_repair")),
+                                               column(4,
+                                                      plotOutput("s_plot3", height = 200),
+                                                      uiOutput("s_captial_cost"))
+                                             ),
+                                             uiOutput("s_misc")))
+                                    ) 
+                                )
+                              ),
+                              DT::dataTableOutput("table_scenario")
+             )
                               ),
              # ---------- Cash Flow Analysis -----------         
              conditionalPanel('input.robust=="Cash Flow"', 
@@ -121,13 +166,13 @@ shinyUI(
              ),
              # --------- Data Table ---------
              fluidRow(column(1,offset=9,
-                             actionButton("c_clear","Clear")),
+                             downloadButton("c_download","Download")),
                       column(2, 
-                             downloadButton("c_download","Download"))
-             ), 
-             fileInput('user_data', 'Upload data',
-                          accept=c('.xlsx', "application/vnd.ms-excel",
-                                   '.csv')),
+             # fileInput() is passessed from the server
+             uiOutput('resettableInput'),
+             bsAlert("upload_alert")),   
+             column(1, actionButton("remove", "Remove Data"))),
+             #
              tabsetPanel(
                tabPanel(
              tableOutput('sheet1')),
