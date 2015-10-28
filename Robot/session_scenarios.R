@@ -1,73 +1,101 @@
 
 
-# There are three ways the sensitivity analysis can be triggered. 
-# 1. change of variable to consider the sensitivity 
-# 2. change of value for that variable 
+# There are three ways the scenario analysis can be triggered. 
+# 1. change of scenario to be considered  
+# 2. change of value of a variable 
 # 3. triger of "calculate" button after a change of any input value 
 
 
-shinyjs::onclick("sensitivity_show",
-                 shinyjs::toggle(id="sensitivity_control", anim = TRUE)
+shinyjs::onclick("scenario_show",
+                 shinyjs::toggle(id="scenario_control", anim = TRUE)
 )
 
-# ----------- Sensitivity Analysis -----------
-# This is not used as a reactive object but as a vector updated by a child function  
-rb$c_change_val <- c(20, 20, 50, 50, -50, -50, 50) 
+# ----------- Scenario Analysis -----------
+# This is not used as a reactive object but as a matrix updated by a child function  
+rb$s_change_val <-matrix(c(25, 0, 0,
+                           -95, -99, -25,
+                           0, -50, 60,
+                           0, 0, 200,
+                           0, -50, 0), ncol=3, byrow=TRUE)
+    
 
 # creating an emptry table that reactively renders
-rb$table_sensitivity <- c_empty_table
+rb$table_scenario <- s_empty_table
 
 
-c_n <- reactive({
-  as.integer(gsub("c","", input$c_choice))
+s_n <- reactive({
+  as.integer(gsub("s","", input$s_choice))
 }) 
 
-observeEvent(input$c_choice, {
-  c_val <- rb$c_change_val[c_n()]
-  updateNumericInput(session,"c_val",NULL, value=c_val, step=10)
+observeEvent(input$s_choice, {
+  s_val <- rb$s_change_val[,s_n()]
+  
+    updateNumericInput(session,"s_cost_robot",NULL, value=s_val[1], step=10)
+    updateNumericInput(session,"s_cost_housing_cow",NULL, value=s_val[2], step=10)
+    updateNumericInput(session,"s_milk_change",NULL, value=s_val[3], step=10)
+    updateNumericInput(session,"s_scc_change",NULL, value=s_val[4], step=10)
+    updateNumericInput(session,"s_pellets",NULL, value=s_val[5], step=10)
+  
 })
 
 
-# Update table_sensitivity when input$c_val is changed 
-observeEvent(input$c_val, { 
+# Update table_scenario when applicable input$s_XXX is changed 
+
+lapply(c(1:5), 
+       function(x) {
+  observeEvent(input[[paste0("s_",s_varnames[x])]], { 
+    n <- s_n()
+    
+    # Update the value for value change: reactive object is used as a storage 
+    rb$s_change_val[1,n] <- input[[paste0("s_",s_varnames[x])]]
+  }) 
+}
+) 
+
   
-  n <- c_n()
+observeEvent(rb$s_change_val, {
   
-  # update the value for % change: reactive object is used as a storage 
-  rb$c_change_val[n] <- input$c_val  
-  c_choice <-  input$c_choice
+  n <- s_n()
+  s_choice <-  input$s_choice
+  s_val <- rb$s_change_val[,n]
+  base_val <- lappy(s_varnames, 
+        function(x) {
+             input[[x]]
+        }) %>% unlist() 
+  new_val <- (base_val * (1 + s_val/100))
+  label <- s_labels[n]
   
-  c_val <- rb$c_change_val[n]
+  source("calculation_robustness.R", local=TRUE)  # Calculates new_row
   
-  base_val <- input[[c_varnames[n]]]
-  new_val <- (base_val * (1 + c_val/100))
-  label <- c_labels[n]
-  
-  source("calculation_sensitivity.R", local=TRUE)  # Calculates new_row
-  
-  rb$table_sensitivity[n,] <- new_row
+  rb$table_scenario[n,] <- new_row
 })
 
 
 # Recalculate all rows of table_sensitivity 
 observeEvent(input$sensitivity_calculate, {
   
-  rb$table_sensitivity <- c_empty_table # Returning to an emptry table
-  closeAlert(session, "ref_c_input_change")
+  rb$table_scenario <- c_empty_table # Returning to an emptry table
+  closeAlert(session, "ref_s_input_change")
+  
+  base_val <- lappy(s_varnames, 
+                    function(x) {
+                      input[[x]]
+                    }) %>% unlist() 
   
   # replace "n" in the previous case with "x" that goes from 1 to 7 
-  lapply(c(1:7), 
-         function(x) { 
+  lapply(c(1:3), 
+         function(s) { 
            
-           c_choice <-  paste0("c",x) 
-           c_val <- rb$c_change_val[x]
+           s_choice <-  paste0("s",s) 
+           s_val <- rb$s_change_val[,s]
            
-           base_val <- input[[c_varnames[x]]]
-           new_val <- (base_val * (1 + c_val/100))
-           label <- c_labels[x]
+           s_choice <-  input$s_choice
+           s_val <- rb$s_change_val[,n]
+           new_val <- (base_val * (1 + s_val/100))
+           label <- s_labels[n]
            
-           source("calculation_sensitivity.R", local=TRUE) # Calculates new_row
-           rb$table_sensitivity[x,] <- new_row
+           source("calculation_robustness.R", local=TRUE)  # Calculates new_row
+           rb$table_scenario[x,] <- new_row
            
          }
   )

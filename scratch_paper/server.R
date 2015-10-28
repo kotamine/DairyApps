@@ -4,7 +4,7 @@ library(shiny)
 shinyServer(function(input, output) {
   
   var3 <- 1000
-  rv <- reactiveValues(var4=0)
+  rv <- reactiveValues(var4=0, var5=0)
   
   
   changeVar1 <- reactive({
@@ -25,10 +25,16 @@ shinyServer(function(input, output) {
      )
   })
   
-  observeEvent(input$action,{
-    var3 <- var3 + 100 # var3 is visible but cannot be overwritten here
+  
+  observeEvent(input$action, {
+    var3 <- var3 + 100
+    # var3 cannot be overwritten!
   })
   
+  observeEvent(rv$var4, { 
+    
+     rv$var5 <- rv$var5 + 100 
+  })
   
   
   output$showVar1 <- renderUI({
@@ -54,4 +60,7 @@ shinyServer(function(input, output) {
     h3(rv$var4)
   })
   
+  output$showVar5 <- renderUI({
+    h3(rv$var5)
+  })
 })

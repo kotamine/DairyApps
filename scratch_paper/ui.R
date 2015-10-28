@@ -13,6 +13,7 @@ shinyUI(pageWithSidebar(
     uiOutput("showVar1"), br(),
     uiOutput("showVar2"), br(),
     uiOutput("showVar3"), br(),
-    uiOutput("showVar4")
-  )
+    uiOutput("showVar4"), br(), 
+    uiOutput("showVar5") 
+    )
 ))

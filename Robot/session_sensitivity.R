@@ -41,7 +41,7 @@ observeEvent(input$c_val, {
   new_val <- (base_val * (1 + c_val/100))
   label <- c_labels[n]
   
-    source("calculation_sensitivity.R", local=TRUE)  # Calculates new_row
+  source("calculation_robustness.R", local=TRUE)  # Calculates new_row
   
     rb$table_sensitivity[n,] <- new_row
 })
@@ -64,7 +64,7 @@ observeEvent(input$sensitivity_calculate, {
              new_val <- (base_val * (1 + c_val/100))
              label <- c_labels[x]
              
-             source("calculation_sensitivity.R", local=TRUE) # Calculates new_row
+             source("calculation_robustness.R", local=TRUE)  # Calculates new_row
              rb$table_sensitivity[x,] <- new_row
              
          }

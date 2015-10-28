@@ -115,23 +115,67 @@ shinyUI(
                               a(id = "scenario_show","Show/hide scenario control"),
                               shinyjs::hidden(
                                 div(id = "scenario_control",
-                                    fluidRow(column(2,offset=5, h5("% Change"))),
                                     fluidRow(column(5,
                                                     selectInput("s_choice",NULL, width="100%",
                                                                 c("Increased investment"="s1",
                                                                   "Use less pellets"="s2",
-                                                                  "New barn ($120k/stall)"="s3",
-                                                                  "No reduction in labor"="s4",
-                                                                  "Low "="s5",
-                                                                  "Anticipated savings in milking & chore labor"="c6",
-                                                                  "Projected change in milk production"="c7"
-                                                                ))),
-                                             column(2,
-                                                    numericInput("s_val",NULL, value=20, step=10)
-                                             ),
-                                             column(3,
-                                                    uiOutput("s_text")
-                                             ) 
+                                                                  "New barn ($120k/stall)"="s3"
+                                                                )))), 
+                                    fluidRow(
+                                      column(5,offset=1,
+                                             h5("Variable")),
+                                      column(2,
+                                             h5("% Change")),
+                                      column(3,
+                                             h5("Implication"))),
+                                    conditionalPanel("input.s_choice=='s1'",
+                                    fluidRow(
+                                            column(5,offset=1,
+                                                   helpText("Estimated cost per robot")),
+                                            column(2, 
+                                                   numericInput("s_cost_robot", value=25, step=10)),
+                                            column(3,
+                                                   uiOutput("s_txt_cost_robot"))
+                                            )
+                                      ),
+                                                     fluidRow(
+                                      column(5,offset=1,
+                                             helpText("Related housing changes needed per cow")),
+                                      column(2, 
+                                             numericInput("s_cost_housing_cow", value=-95, step=10)),
+                                      column(3,
+                                             uiOutput("s_txt_cost_housing_cow"))
+                                      )
+                                    ),
+                                    conditionalPanel("input.s_choice=='s2' | input.s_choice=='s3'",
+                                                     fluidRow(
+                                      column(5,offset=1,
+                                             helpText("Projected change in milk production (%)")),
+                                      column(2, 
+                                             numericInput("s_milk_change", value=0, step=10)),
+                                      column(3,
+                                             uiOutput("s_txt_milk_change"))
+                                                     )
+                                    ),
+                                    conditionalPanel("input.s_choice=='s2' ",
+                                    fluidRow(
+                                      column(5,offset=1,
+                                             helpText("Estimated percent change in SCC (%)")),
+                                      column(2, 
+                                             numericInput("s_scc_change", value=0, step=10)),
+                                      column(3,
+                                             uiOutput("s_txt_scc_change"))
+                                    )
+                                    ),
+                                    conditionalPanel("input.s_choice=='s3'",
+                                                     fluidRow(
+                                      column(5,offset=1,
+                                             helpText("Pellets fed in robot booth")),
+                                      column(2, 
+                                             numericInput("s_pellets", value=0, step=10)),
+                                      column(3,
+                                             uiOutput("s_txt_pellets"))
+                                                     )
                                     ),
                                     fluidRow(
                                       column(4,

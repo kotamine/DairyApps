@@ -38,6 +38,11 @@ shinyServer(function(input, output, session) {
   source("session_dashboard_robustness.R", local=TRUE)
  
   
+  # ----------- Scenario Analysis -----------
+  # source("session_scenarios.R", local=TRUE)
+  
+  
+  
   # --- User Data Storage ---
   ## --- WORK IN PROGRESS --- 
   
@@ -59,7 +64,7 @@ shinyServer(function(input, output, session) {
 #   rb$table_sensitivity <- data.frame(Column1 = numeric(0)) # creating an emptry table
 #   
 #   rv$colnames <- c("input_id", "milk_cow_day","milk_change")
-  rv$table_input <- data.frame(Column1 = numeric(0))
+  # rv$table_input <- data.frame(Column1 = numeric(0))
   
   
 #   observe({
@@ -113,7 +118,7 @@ shinyServer(function(input, output, session) {
   output$table_sensitivity <- DT::renderDataTable({
     if (dim(rb$table_sensitivity)[1]>0) {
       # 
-      tbl <- rb$table_sensitivity[, robustness_order1] 
+      tbl <- rb$table_sensitivity[, c_order1] 
       DT::datatable(tbl,
                     rownames = FALSE,
                     extensions = 'ColVis',
@@ -132,6 +137,30 @@ shinyServer(function(input, output, session) {
       return()
     }
   })
+  
+  output$table_scenario <- DT::renderDataTable({
+    if (dim(rb$table_scenario)[1]>0) {
+      # 
+      tbl <- rb$table_scenario[, s_order1] 
+      DT::datatable(tbl,
+                    rownames = FALSE,
+                    extensions = 'ColVis',
+                    # extensions = 'ColReorder',
+                    options = list(
+                      dom = 'C<"clear">lfrtip',
+                      scrollX = TRUE,
+                      scrollCollapse = TRUE,
+                      scrollY = 500,
+                      scrollCollapse = TRUE,
+                      # colVis = list(exclude = c(0, 1,1,0),
+                      showNone=TRUE, 
+                      activate = 'mouseover'))
+    } 
+    else {
+      return()
+    }
+  })
+  
   
   output$table_input <-  DT::renderDataTable({
     if (dim(rv$table_input)[1]>0) {
