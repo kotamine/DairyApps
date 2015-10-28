@@ -78,8 +78,9 @@ output$c_plot2 <- renderPlot({
 })
 
 output$c_plot3 <- renderPlot({ 
-  isolate( NAI_type <- NAI_input$NAI )
-  dash_plot3(rb$inc_exp_capital_recovery,rb$capital_recovery_housing,rb$robot_end_PV, NAI_type)  
+  isolate( NAI_type <- input$NAI )
+  dash_plot3(rb$inc_exp_capital_recovery,rb$capital_recovery_housing,
+             rb$robot_end_PV, NAI_type)  
 })
 
 

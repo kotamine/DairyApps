@@ -3,10 +3,23 @@
 # 2. change of value for that variable 
 # 3. triger of "calculate" button after a change of any input value 
 
-
 shinyjs::onclick("sensitivity_show",
-                 shinyjs::toggle(id="sensitivity_control", anim = TRUE)
+                { 
+                   shinyjs::toggle(id="sensitivity_control", anim = TRUE) 
+                   shinyjs::toggle(id="scenario_control", anim = TRUE)
+                   shinyjs::toggle(id="dashboard_robust", anim = TRUE) 
+                   createAlert(session, "c_toggle", "ref_c_toggle", 
+                               content = "Change sensitivity items to refresh the results.",
+                               append = FALSE) 
+                 }
 )
+
+
+
+# shinyjs::onclick("sensitivity_show",
+#                  shinyjs::toggle(id="sensitivity_control", anim = TRUE)
+# )
+
 
 # ----------- Sensitivity Analysis -----------
 # This is not used as a reactive object but as a vector updated by a child function  
@@ -26,9 +39,13 @@ observeEvent(input$c_choice, {
 })
 
 
-# Update table_sensitivity when input$c_val is changed 
-observeEvent(input$c_val, { 
+# Update table_sensitivity when input$c_val or input$choice is changed as well as initial set up
+observe({
+  input$c_val
+  input$c_choice
+  closeAlert(session, "ref_c_toggle")
   
+  isolate({ 
   n <- c_n()
 
   # update the value for % change: reactive object is used as a storage 
@@ -41,9 +58,11 @@ observeEvent(input$c_val, {
   new_val <- (base_val * (1 + c_val/100))
   label <- c_labels[n]
   
+  robust <- "Sensitivity" 
   source("calculation_robustness.R", local=TRUE)  # Calculates new_row
   
-    rb$table_sensitivity[n,] <- new_row
+  rb$table_sensitivity[n,] <- new_row
+  })
 })
 
 
@@ -52,11 +71,12 @@ observeEvent(input$sensitivity_calculate, {
 
   rb$table_sensitivity <- c_empty_table # Returning to an emptry table
   closeAlert(session, "ref_c_input_change")
+  robust <- "Sensitivity" 
   
   # replace "n" in the previous case with "x" that goes from 1 to 7 
   lapply(c(1:7), 
          function(x) { 
-           
+
              c_choice <-  paste0("c",x) 
              c_val <- rb$c_change_val[x]
              
@@ -69,7 +89,6 @@ observeEvent(input$sensitivity_calculate, {
              
          }
   )
-  
 })
 
 
@@ -115,4 +134,5 @@ output$c_text <- renderUI({
   
   paste("from", val0," to ", val1, unit) %>% h5()
 })
+
 

@@ -147,9 +147,14 @@
                                      column(width=3, uiOutput("impact_with_inflation"))                          
                             ),
                             br(),
-                            div(class="well", style="background-color: steelblue; color:white;", 
-                                h4("Now Data Entry will show interactive dashboard. ")
-                            ), 
+                            #tags$a(href ="#data_entry",  #"#tab-9037-2",
+                            ## I haven't been able to set a link to a tab. It seems compliated in Shiny.
+                            div(id="goData", class="well", style="background-color: gray; color:white;", 
+                                align="center", 
+                                h4("See interactive dashboard under the Data Entry tab. ")
+                            ),
+                            
+                            
                             br(),br()
                      ))
                  )

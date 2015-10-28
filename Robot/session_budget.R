@@ -21,6 +21,8 @@ observe(
   }
 )
 
+
+
 ## Q: Is it better to call IOFC something else?   IOFC and other variable costs?   
 ## Q: What cuttoff values are appropriate to change colors from green to orange to red? 
 IOFC <- reactive({
@@ -308,6 +310,11 @@ impact_with_robot_salvage <- reactive({
   
   # This is used later for alerting base value change in robustness analysis  
   createAlert(session, "c_input_change", "ref_c_input_change", 
+              content = "New base values. 
+            Press [Calculate] to updated the results.",
+              append = FALSE) 
+  
+  createAlert(session, "s_input_change", "ref_s_input_change", 
               content = "New base values. 
             Press [Calculate] to updated the results.",
               append = FALSE) 

@@ -1,8 +1,7 @@
 
 ## --- For robustoness analysis we will calculate almost everything  all over again ---
-## - technically we don't need to store all varibles under "rb" 
+## - Technically we don't need to store all varibles under "rb" 
 ## - but it makes it easier to retrieve them later. 
-
 
 isolate({ # isolate the robustness calculation  
   
@@ -14,10 +13,11 @@ isolate({ # isolate the robustness calculation
   rb$salvage_robot <- input$salvage_robot
   rb$hr_sv_milking <- input$hr_sv_milking
   rb$milk_change <- input$milk_change
-  rb$scc_change < - input$scc_change
+  rb$scc_change <- input$scc_change
   rb$pellets <- input$pellets 
   
-if (input.robust=="Sensitivity") {
+  
+if (robust=="Sensitivity") {
   
 # Change the selected value by c_val (value)
 rb$cost_robot <- input$cost_robot*(1+ (c_choice=="c1")*c_val/100)
@@ -30,7 +30,7 @@ rb$milk_change <- input$milk_change*(1+ (c_choice=="c7")*c_val/100)
 
 }
 
-if (input.robust=="Scenarios") {
+if (robust=="Scenarios") {
   
   # Change the selected value by s_val (array)
   rb$cost_robot <- new_val[1]
@@ -89,7 +89,6 @@ rb$IOFC_cwt <- rb$IOFC /365 /input$milk_cow_day * 330
 rb$IOFC2_cwt <- rb$IOFC2 /365 /(input$milk_cow_day + rb$milk_change) * 330
 
 
-
 # Positive Impacts
 rb$inc_rev_herd_size <- (input$milk_cow_day + rb$milk_change) * 330 *
   (input$price_milk/100) * input$herd_increase
@@ -116,6 +115,7 @@ rb$dec_exp_total <- rb$dec_exp_heat_detection  + rb$dec_exp_labor + rb$dec_exp_l
 
 rb$positive_total <- rb$inc_rev_total +  rb$dec_exp_total
 
+
 # Negative Impacts
 rb$inc_exp_herd_increase <- (input$additional_labor + input$additional_cost)*input$herd_increase
 
@@ -131,7 +131,6 @@ rb$inc_exp_utilities <- (input$change_electricity + input$change_water + input$c
 
 rb$inc_exp_record_management <- input$increase_rc_mgt * input$labor_rate_rc_mgt * 365
 
-
 if (is.na(input$n_robot_life) | is.na(input$interest) | 
     is.na(rb$housing_years) | is.na(rb$robot_invest) | is.na(input$inflation_robot) |
     is.na(rb$robot_years)) {
@@ -145,7 +144,6 @@ if (is.na(input$n_robot_life) | is.na(input$interest) |
     tmp <- 0
   }
 }
-
 
 rb$inc_exp_capital_recovery <-   - pmt(input$interest/100, rb$housing_years, rb$robot_invest) + tmp
 
@@ -174,8 +172,7 @@ rb$impact_with_inflation  <- "Depends on cash flow"
 # all non-reactive to base input changes and input$NAI 
 if (input$NAI=="w/o housing") {
   rb$NAI <- rb$impact_without_housing
-} 
-else if (input$NAI=="w/ housing") {
+} else if (input$NAI=="w/ housing") {
   rb$NAI <- rb$impact_with_housing
 } else {
   rb$NAI <- rb$impact_with_robot_salvage
@@ -185,7 +182,7 @@ if(input$NAI=="w/o housing") {
   rb$capital_cost <- -rb$inc_exp_capital_recovery
 } else if (input$NAI=="w/ housing") {
   rb$capital_cost <- -(rb$inc_exp_capital_recovery + rb$capital_recovery_housing)
-} else  {
+} else {
   rb$capital_cost <- -(rb$inc_exp_capital_recovery + rb$capital_recovery_housing) +
     + rb$robot_end_PV
 } 
@@ -210,13 +207,6 @@ rb$feed_current <-  rb$DMI_day * input$cost_DM * 330 * input$herd_size
 rb$feed_robot <- (rb$DMI_projected * input$cost_DM + input$pellets *
                     input$cost_pellets/2000) * 330 * rb$herd_size2
 
-
-rb_milk_current <- reactive({
-  input$herd_size * 330 * input$milk_cow_day * (input$price_milk/100 + 
-                                                  +  input$scc_premium/100 * input$scc_average/1000) 
-})
-
-
 rb$milk_feed <-  -(rb$feed_robot - rb$feed_current) + rb$milk_robot -  rb$milk_current 
 
 rb$labor_repair <- -(rb$labor_robot - rb$labor_current + rb$inc_exp_repair)
@@ -224,7 +214,7 @@ rb$labor_repair <- -(rb$labor_robot - rb$labor_current + rb$inc_exp_repair)
 rb$misc <- rb$NAI - (rb$milk_feed + rb$labor_repair + rb$capital_cost)
 
 
-if (input.robust=="Sensitivity") {
+if (robust=="Sensitivity") {
   
 # --- add a row of results to the table_sensitivity ---
 new_row <- c(c_val, base_val, new_val,  
@@ -242,9 +232,12 @@ new_row <- c(c_val, base_val, new_val,
 new_row <- matrix(c(label,round(new_row)),nrow=1)
 
 colnames(new_row) <- c_colnames
+
+# rb$new_row <- new_row 
 }
 
-if (input.robust=="Scenarios") {
+
+if (robust=="Scenarios") {
 
   # --- add a row of results to the table_scenario ---
   new_row <- c(s_val, new_val,  
@@ -262,6 +255,8 @@ if (input.robust=="Scenarios") {
   new_row <- matrix(c(label,round(new_row)), nrow=1)
   
   colnames(new_row) <- s_colnames
+  
+  # rb$new_row <- new_row
 }
   
 

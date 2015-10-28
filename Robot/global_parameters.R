@@ -69,7 +69,8 @@ s_empty_table <- data.frame(Column1 = numeric(0))
 s_empty_table <- rbind(s_empty_table, s_dummy)[NULL,] 
 
 s_order1 <- c("scenario", "% change: robot", "% change: housing", "% change: milk",
-              "% change: scc", "% change: pellets", "change: impact w/ salvage")
+              "% change: scc", "% change: pellets", "net impact w/ salvage", 
+              "change: impact w/ salvage")
 
 
 

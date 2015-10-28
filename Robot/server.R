@@ -33,13 +33,13 @@ shinyServer(function(input, output, session) {
   # ----------- Sensitivity Analysis -----------
   source("session_sensitivity.R", local=TRUE)
   
+  # ----------- Scenario Analysis -----------
+  source("session_scenarios.R", local=TRUE)  
   
   # --- Dashboard features ---
   source("session_dashboard_robustness.R", local=TRUE)
  
-  
-  # ----------- Scenario Analysis -----------
-  # source("session_scenarios.R", local=TRUE)
+
   
   
   
@@ -115,33 +115,41 @@ shinyServer(function(input, output, session) {
 #   
   
   
-  output$table_sensitivity <- DT::renderDataTable({
-    if (dim(rb$table_sensitivity)[1]>0) {
-      # 
-      tbl <- rb$table_sensitivity[, c_order1] 
-      DT::datatable(tbl,
-                    rownames = FALSE,
-                    extensions = 'ColVis',
-                    # extensions = 'ColReorder',
-                    options = list(
-                      dom = 'C<"clear">lfrtip',
-                      scrollX = TRUE,
-                      scrollCollapse = TRUE,
-                      scrollY = 500,
-                      scrollCollapse = TRUE,
-                      # colVis = list(exclude = c(0, 1,1,0),
-                      showNone=TRUE, 
-                      activate = 'mouseover'))
-    } 
-    else {
-      return()
-    }
-  })
+#   output$table_sensitivity <- DT::renderDataTable({
+#     if (dim(rb$table_sensitivity)[1]>0) {
+#       # 
+#       tbl <- rb$table_sensitivity[, c_order1] 
+#       DT::datatable(tbl,
+#                     rownames = FALSE,
+#                     extensions = 'ColVis',
+#                     # extensions = 'ColReorder',
+#                     options = list(
+#                       dom = 'C<"clear">lfrtip',
+#                       scrollX = TRUE,
+#                       scrollCollapse = TRUE,
+#                       scrollY = 500,
+#                       scrollCollapse = TRUE,
+#                       # colVis = list(exclude = c(0, 1,1,0),
+#                       showNone=TRUE, 
+#                       activate = 'mouseover'))
+#     } 
+#     else {
+#       return()
+#     }
+#   })
   
-  output$table_scenario <- DT::renderDataTable({
-    if (dim(rb$table_scenario)[1]>0) {
-      # 
+  output$table_robust <- DT::renderDataTable({
+    if (input$robust=="Sensitivity") {
+      if (dim(rb$table_sensitivity)[1]==0) return()
+        tbl <- rb$table_sensitivity[, c_order1] 
+    }
+    else if (input$robust=="Scenarios") {
+      if (dim(rb$table_scenario)[1]==0) return()
       tbl <- rb$table_scenario[, s_order1] 
+    } else {
+      return()
+    }
+    
       DT::datatable(tbl,
                     rownames = FALSE,
                     extensions = 'ColVis',
@@ -155,10 +163,7 @@ shinyServer(function(input, output, session) {
                       # colVis = list(exclude = c(0, 1,1,0),
                       showNone=TRUE, 
                       activate = 'mouseover'))
-    } 
-    else {
-      return()
-    }
+
   })
   
   

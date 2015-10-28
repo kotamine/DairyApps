@@ -20,8 +20,11 @@ shinyUI(
                       ))
     ),
     # ---------- Data Entry -----------
-    tabPanel("Data Entry",
-             source("ui_data_entry_tabs.R", local=TRUE), 
+    tabPanel("Data Entry", id="data_entry",
+             # Need to add "$value" for including source in UI: 
+             # otherwise "TRUE" will show up at the end of file
+             source("ui_data_entry_tabs.R", local=TRUE)$value,    
+             
              # ----- Dashboard -----
              conditionalPanel("input.budget>0",
                               fluidRow(
@@ -61,7 +64,8 @@ shinyUI(
                                                a(id = "sensitivity_show","Show/hide sensitivity control"),
                                                shinyjs::hidden(
                                                  div(id = "sensitivity_control",
-                                              fluidRow(column(2,offset=5, h5("% Change"))),
+                                              fluidRow(column(2,offset=5, h5("% Change")),
+                                                       column(5,bsAlert("c_toggle"))),
                                                fluidRow(column(5,
                                                                selectInput("c_choice",NULL, width="100%",
                                                                            c("Estimated cost per robot"="c1",
@@ -78,33 +82,8 @@ shinyUI(
                                                         column(3,
                                                                uiOutput("c_text")
                                                         ) 
-                                              ),
-                                               fluidRow(
-                                                 column(4,
-                                                        fluidRow(
-                                                          column(6,
-                                                                 uiOutput("c_IOFC")),
-                                                          column(6,
-                                                                 uiOutput("c_NAI")) 
-                                                        )),
-                                                 column(8,
-                                                        div(align="center", fluidRow(
-                                                          column(4,
-                                                                 plotOutput("c_plot1", height = 200),
-                                                                 uiOutput("c_milk_feed")),
-                                                          column(4,
-                                                                 plotOutput("c_plot2", height = 200),
-                                                                 uiOutput("c_labor_repair")),
-                                                          column(4,
-                                                                 plotOutput("c_plot3", height = 200),
-                                                                 uiOutput("c_captial_cost"))
-                                                        ),
-                                                        uiOutput("c_misc")))
-                                               ) 
                                               )
-                                             ),
-                                             DT::dataTableOutput("table_sensitivity")
-                              )
+                              ))
              ),
              # ---------- Scenarios Analysis -----------         
              conditionalPanel('input.robust=="Scenarios"', 
@@ -116,11 +95,12 @@ shinyUI(
                               shinyjs::hidden(
                                 div(id = "scenario_control",
                                     fluidRow(column(5,
-                                                    selectInput("s_choice",NULL, width="100%",
-                                                                c("Increased investment"="s1",
+                                                    selectInput("s_choice","Scenario", width="100%",
+                                                                choices=c("Increased investment"="s1",
                                                                   "Use less pellets"="s2",
                                                                   "New barn ($120k/stall)"="s3"
-                                                                )))), 
+                                                                ))),
+                                             column(5,bsAlert("s_toggle"))), 
                                     fluidRow(
                                       column(5,offset=1,
                                              h5("Variable")),
@@ -133,7 +113,7 @@ shinyUI(
                                             column(5,offset=1,
                                                    helpText("Estimated cost per robot")),
                                             column(2, 
-                                                   numericInput("s_cost_robot", value=25, step=10)),
+                                                   numericInput("s_cost_robot", NULL, value=25, step=10)),
                                             column(3,
                                                    uiOutput("s_txt_cost_robot"))
                                             )
@@ -142,7 +122,7 @@ shinyUI(
                                       column(5,offset=1,
                                              helpText("Related housing changes needed per cow")),
                                       column(2, 
-                                             numericInput("s_cost_housing_cow", value=-95, step=10)),
+                                             numericInput("s_cost_housing_cow", NULL, value=-95, step=10)),
                                       column(3,
                                              uiOutput("s_txt_cost_housing_cow"))
                                       )
@@ -152,7 +132,7 @@ shinyUI(
                                       column(5,offset=1,
                                              helpText("Projected change in milk production (%)")),
                                       column(2, 
-                                             numericInput("s_milk_change", value=0, step=10)),
+                                             numericInput("s_milk_change", NULL, value=0, step=10)),
                                       column(3,
                                              uiOutput("s_txt_milk_change"))
                                                      )
@@ -162,7 +142,7 @@ shinyUI(
                                       column(5,offset=1,
                                              helpText("Estimated percent change in SCC (%)")),
                                       column(2, 
-                                             numericInput("s_scc_change", value=0, step=10)),
+                                             numericInput("s_scc_change", NULL, value=0, step=10)),
                                       column(3,
                                              uiOutput("s_txt_scc_change"))
                                     )
@@ -172,46 +152,47 @@ shinyUI(
                                       column(5,offset=1,
                                              helpText("Pellets fed in robot booth")),
                                       column(2, 
-                                             numericInput("s_pellets", value=0, step=10)),
+                                             numericInput("s_pellets", NULL, value=0, step=10)),
                                       column(3,
                                              uiOutput("s_txt_pellets"))
                                                      )
-                                    ),
-                                    fluidRow(
-                                      column(4,
-                                             fluidRow(
-                                               column(6,
-                                                      uiOutput("s_IOFC")),
-                                               column(6,
-                                                      uiOutput("s_NAI")) 
-                                             )),
-                                      column(8,
-                                             div(align="center", fluidRow(
-                                               column(4,
-                                                      plotOutput("s_plot1", height = 200),
-                                                      uiOutput("s_milk_feed")),
-                                               column(4,
-                                                      plotOutput("s_plot2", height = 200),
-                                                      uiOutput("s_labor_repair")),
-                                               column(4,
-                                                      plotOutput("s_plot3", height = 200),
-                                                      uiOutput("s_captial_cost"))
-                                             ),
-                                             uiOutput("s_misc")))
-                                    ) 
+                                    )
                                 )
                               ),
-                              DT::dataTableOutput("table_scenario")
-             )
-                              ),
+             shinyjs::hidden(
+               div(id = "dashboard_robust",
+                 fluidRow(
+               column(4,
+                      fluidRow(
+                        column(6,
+                               uiOutput("c_IOFC")),
+                        column(6,
+                               uiOutput("c_NAI")) 
+                      )),
+               column(8,
+                      div(align="center", fluidRow(
+                        column(4,
+                               plotOutput("c_plot1", height = 200),
+                               uiOutput("c_milk_feed")),
+                        column(4,
+                               plotOutput("c_plot2", height = 200),
+                               uiOutput("c_labor_repair")),
+                        column(4,
+                               plotOutput("c_plot3", height = 200),
+                               uiOutput("c_captial_cost"))
+                      ),
+                      uiOutput("c_misc")))
+             ))),
+             DT::dataTableOutput("table_robust"),
              # ---------- Cash Flow Analysis -----------         
              conditionalPanel('input.robust=="Cash Flow"', 
                               helpText("Additional Controls and Displays for Cash Flow Analysis")
-             ),
+             )
+            ),
              # --------- Data Table ---------
-             fluidRow(column(1,offset=9,
+             fluidRow(column(2,offset=3,
                              downloadButton("c_download","Download")),
-                      column(2, 
+                      column(3, 
              # fileInput() is passessed from the server
              uiOutput('resettableInput'),
              bsAlert("upload_alert")),   
@@ -232,7 +213,7 @@ shinyUI(
                                   helpText("Please review all tabs in Data Entry."),align="center")
              ),
              conditionalPanel("input.budget>0",
-                source("ui_partial_budget.R", local=TRUE)
+                source("ui_partial_budget.R", local=TRUE)$value
              )
              ),
     # ---------- Additional Analyses -----------
@@ -264,6 +245,23 @@ shinyUI(
 #                              p("...")
                       ))
     ),
+# HTML("<script>$('#goData').click(function() {
+# 						tabs = $('.tabbable .nav.nav-tabs li')
+# 						tabs.each(function() {
+# 							$(this).removeClass('active')
+# 						})
+# 						$(tabs[1]).addClass('active')
+# 						
+# 						tabsContents = $('.tabbable .tab-content .tab-pane')
+# 						tabsContents.each(function() {
+# 							$(this).removeClass('active')
+# 						})
+# 						$(tabsContents[1]).addClass('active')
+# 
+# 						$('#about').trigger('change').trigger('shown');
+# 						 
+# 					})</script>
+# 			"),
     useShinyjs()
   ))
 

@@ -5,10 +5,18 @@
 # 2. change of value of a variable 
 # 3. triger of "calculate" button after a change of any input value 
 
-
+  
 shinyjs::onclick("scenario_show",
-                 shinyjs::toggle(id="scenario_control", anim = TRUE)
-)
+                 {
+                   shinyjs::toggle(id="sensitivity_control", anim = TRUE) 
+                   shinyjs::toggle(id="scenario_control", anim = TRUE)
+                   shinyjs::toggle(id="dashboard_robust", anim = TRUE) 
+                   createAlert(session, "s_toggle", "ref_s_toggle", 
+                               content = "Change scenario items to refresh the results.",
+                               append = FALSE) 
+                 }
+                 )
+
 
 # ----------- Scenario Analysis -----------
 # This is not used as a reactive object but as a matrix updated by a child function  
@@ -46,41 +54,50 @@ lapply(c(1:5),
   observeEvent(input[[paste0("s_",s_varnames[x])]], { 
     n <- s_n()
     
-    # Update the value for value change: reactive object is used as a storage 
-    rb$s_change_val[1,n] <- input[[paste0("s_",s_varnames[x])]]
+    # update the value for % change: reactive object is used as a storage 
+    rb$s_change_val[x,n] <- input[[paste0("s_",s_varnames[x])]]
   }) 
 }
 ) 
 
   
-observeEvent(rb$s_change_val, {
+observe({
+  rb$s_change_val
+  input$s_choice
+  closeAlert(session, "ref_s_toggle")
+  
+  isolate({
   
   n <- s_n()
   s_choice <-  input$s_choice
   s_val <- rb$s_change_val[,n]
-  base_val <- lappy(s_varnames, 
+  base_val <- lapply(s_varnames, 
         function(x) {
              input[[x]]
         }) %>% unlist() 
   new_val <- (base_val * (1 + s_val/100))
   label <- s_labels[n]
+  robust <- "Scenarios"
   
   source("calculation_robustness.R", local=TRUE)  # Calculates new_row
   
   rb$table_scenario[n,] <- new_row
+  
+  })
 })
 
 
 # Recalculate all rows of table_sensitivity 
-observeEvent(input$sensitivity_calculate, {
-  
-  rb$table_scenario <- c_empty_table # Returning to an emptry table
+observeEvent(input$scenario_calculate, {
+
+  rb$table_scenario <- s_empty_table # Returning to an emptry table
   closeAlert(session, "ref_s_input_change")
   
-  base_val <- lappy(s_varnames, 
+  base_val <- lapply(s_varnames, 
                     function(x) {
                       input[[x]]
                     }) %>% unlist() 
+  robust <- "Scenarios"
   
   # replace "n" in the previous case with "x" that goes from 1 to 7 
   lapply(c(1:3), 
@@ -89,18 +106,16 @@ observeEvent(input$sensitivity_calculate, {
            s_choice <-  paste0("s",s) 
            s_val <- rb$s_change_val[,s]
            
-           s_choice <-  input$s_choice
-           s_val <- rb$s_change_val[,n]
            new_val <- (base_val * (1 + s_val/100))
-           label <- s_labels[n]
+           label <- s_labels[s]
            
            source("calculation_robustness.R", local=TRUE)  # Calculates new_row
-           rb$table_scenario[x,] <- new_row
+           rb$table_scenario[s,] <- new_row
            
          }
   )
-  
-})
+
+  })
 
 
 # input$c_choice (or input$c_val via rb$c_change_val) triggers this
@@ -145,6 +160,5 @@ output$c_text <- renderUI({
   
   paste("from", val0," to ", val1, unit) %>% h5()
 })
-
 
 
