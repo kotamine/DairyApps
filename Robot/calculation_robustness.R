@@ -58,13 +58,15 @@ rb$increased_insurance <- rb$total_investment
 
 rb$anticipated_hours_milking <- input$hours_milking - rb$hr_sv_milking
 
-rb$milk_lb_robot_day <- (input$milk_cow_day + rb$milk_change) * rb$herd_size2/input$n_robot 
+rb$milk_day_cow_robot <- input$milk_cow_day + rb$milk_change
+
+rb$milk_lb_robot_day <- rb$milk_day_cow_robot * rb$herd_size2/input$n_robot 
 
 rb$adj_milk_cow_day <- input$milk_cow_day * input$milk_cow_coeff +  
   + input$milk_cow_day * input$milk_fat/100 * input$milk_fat_coeff
 
-rb$adj_milk_cow_day2 <- (input$milk_cow_day + rb$milk_change) * input$milk_cow_coeff + 
-  + (input$milk_cow_day + rb$milk_change)  * input$milk_fat/100 * input$milk_fat_coeff 
+rb$adj_milk_cow_day2 <- rb$milk_day_cow_robot * input$milk_cow_coeff + 
+  + rb$milk_day_cow_robot * input$milk_fat/100 * input$milk_fat_coeff 
 
 rb$stage_lactation <- 1 - exp( input$lactation_coeff1 * (input$lcatation_week + input$lactation_coeff2)) 
 
@@ -76,26 +78,26 @@ rb$DMI_projected <-  rb$stage_lactation * (rb$adj_milk_cow_day2/conv_factor * in
 
 rb$DMI_change <- rb$DMI_projected - rb$DMI_day
 
-rb$adj_milk_cow_day2 <- (input$milk_cow_day +  rb$milk_change) * input$milk_cow_coeff + 
-  + (input$milk_cow_day + rb$milk_change)  * input$milk_fat/100 * input$milk_fat_coeff 
+rb$adj_milk_cow_day2 <- rb$milk_day_cow_robot * input$milk_cow_coeff + 
+  + rb$milk_day_cow_robot  * input$milk_fat/100 * input$milk_fat_coeff 
 
 rb$IOFC <- (input$milk_cow_day * input$price_milk/100 - rb$DMI_day * input$cost_DM )*330
 
-rb$IOFC2 <- ((input$milk_cow_day +  rb$milk_change) * input$price_milk/100 + 
+rb$IOFC2 <- (rb$milk_day_cow_robot * input$price_milk/100 + 
                - rb$DMI_projected * input$cost_DM - rb$pellets * input$cost_pellets/2000)*330 
 
 rb$IOFC_cwt <- rb$IOFC /365 /input$milk_cow_day * 330
 
-rb$IOFC2_cwt <- rb$IOFC2 /365 /(input$milk_cow_day + rb$milk_change) * 330
+rb$IOFC2_cwt <- rb$IOFC2 /365 /rb$milk_day_cow_robot * 330
 
 
 # Positive Impacts
-rb$inc_rev_herd_size <- (input$milk_cow_day + rb$milk_change) * 330 *
+rb$inc_rev_herd_size <- rb$milk_day_cow_robot * 330 *
   (input$price_milk/100) * input$herd_increase
 
 rb$inc_rev_per_cow <- rb$milk_change * 330 * (input$price_milk/100) * input$herd_size
 
-rb$inc_rev_milk_premium  <- (input$milk_cow_day + rb$milk_change )*330 * input$scc_premium/100*
+rb$inc_rev_milk_premium  <- rb$milk_day_cow_robot *330 * input$scc_premium/100*
   (input$scc_average*(-rb$scc_change)/100)/1000 * rb$herd_size2
 
 rb$inc_rev_cull_sale   <- rb$herd_size2 * input$change_turnover/100 * input$cull_price
@@ -192,7 +194,7 @@ rb$milk_current <-
   input$herd_size * 330 * input$milk_cow_day * (input$price_milk/100 + 
                                                   +  input$scc_premium/100 * input$scc_average/1000) 
 
-rb$milk_robot <-  rb$herd_size2 * 330 * (input$milk_cow_day + rb$milk_change) *
+rb$milk_robot <-  rb$herd_size2 * 330 * rb$milk_day_cow_robot *
   (input$price_milk/100  +  input$scc_premium/100 * input$scc_average*(1-input$scc_change/100)/1000) 
 
 rb$labor_current <-  (input$hr_heat_detection + input$hours_milking) * input$labor_rate*365
