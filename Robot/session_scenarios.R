@@ -77,7 +77,7 @@ observe({
     label <- s_labels[n]
     robust <- "Scenarios"
     
-    source("calculation_robustness.R", local=TRUE)  # Calculates new_row
+    source("session_calculation_robustness.R", local=TRUE)  # Calculates new_row
     
     rb$table_scenario[n,] <- new_row
     
@@ -107,7 +107,7 @@ observeEvent(input$scenario_calculate, {
            new_val <- (base_val * (1 + s_val/100))
            label <- s_labels[s]
            
-           source("calculation_robustness.R", local=TRUE)  # Calculates new_row
+           source("session_calculation_robustness.R", local=TRUE)  # Calculates new_row
            rb$table_scenario[s,] <- new_row
            
          }
@@ -137,11 +137,11 @@ observe({
     d_round <- c(0,0,1,1,1)
     for (x in 1:5) {
         rb$s_txt[[x]] <- list()
-        rb$s_txt[[x]][[1]] <- base_val[x] %>% round(d_round[x])
+        rb$s_txt[[x]][[1]] <- base_val[x] %>% round(d_round[x]) %>% helpText()
         if (base_val[x]!=new_val[x]) {
-        rb$s_txt[[x]][[2]] <- new_val[x] %>% round(d_round[x])
+        rb$s_txt[[x]][[2]] <- new_val[x] %>% round(d_round[x])  %>% helpText()
         }
-        rb$s_txt[[x]][[3]] <- unit[x] 
+        rb$s_txt[[x]][[3]] <- unit[x]  %>% helpText()
         }
   })
 })

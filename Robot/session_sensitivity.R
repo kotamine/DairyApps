@@ -54,7 +54,7 @@ observe({
   label <- c_labels[n]
   
   robust <- "Sensitivity" 
-  source("calculation_robustness.R", local=TRUE)  # Calculates new_row
+  source("session_calculation_robustness.R", local=TRUE)  # Calculates new_row
   
   rb$table_sensitivity[n,] <- new_row
   })
@@ -79,7 +79,7 @@ observeEvent(input$sensitivity_calculate, {
              new_val <- (base_val * (1 + c_val/100))
              label <- c_labels[x]
              
-             source("calculation_robustness.R", local=TRUE)  # Calculates new_row
+             source("session_calculation_robustness.R", local=TRUE)  # Calculates new_row
              rb$table_sensitivity[x,] <- new_row
              
          }
@@ -127,7 +127,7 @@ output$c_text <- renderUI({
     unit <- "lb/cow/day"
   }
   
-  paste("from", val0," to ", val1, unit) %>% h5()
+  paste("from", val0," to ", val1, unit) %>% helpText()
 })
 
 

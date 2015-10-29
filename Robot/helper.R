@@ -86,6 +86,54 @@ impt <- function(rate, per, nper, pv, fv=0, type=0) {
   fv(rate, per-1, pmt, pv, type) * rate
 }
 
+# http://www.excel-easy.com/examples/depreciation.html
+vdb <- function(cost, salvage, nper, start_per=1, end_per=1, factor=2, switch=TRUE, sequence=FALSE) {
+  v <- c(); vsum <- c(); 
+  s0 <- (cost-salvage)/nper;  s <- s0
+  tmp <- cost * factor/nper
+  v[1] <- (tmp>s) * tmp + (tmp<=s) * s 
+  vsum <- v[1]; 
+  for (t in 2:nper) {
+    s <-  (cost - vsum[t-1] - salvage)/(nper - t + 1)
+    tmp <-  (cost - vsum[t-1]) * factor/nper
+    v[t] <- switch * ((tmp>s) * tmp + (tmp<=s) * s ) + (!switch) * tmp
+    vsum[t] <- vsum[t-1] + v[t]
+  }
+  if (!sequence)  { 
+    return(sum(v[start_per:end_per])) 
+  } else {
+    return(v)
+  }
+}
+
+
+
+
+debt_table <- function(loan, interest_rate, loan_period,
+                       n_period, starting_year=1) {
+  
+  loan_period <- round(loan_period)
+  n_period <- round(n_period)
+  starting_year <- round(starting_year)
+  
+  pmt <- -pmt(interest_rate, loan_period, loan)
+  interest <- impt(interest_rate, 1, loan_period, loan)
+  principal <- pmt - interest
+  
+  df <- data.frame(year=c(1:n_period), yr_pmt =rep(0,n_period))
+  
+  ending_year <- loan_period + starting_year - 1
+  df$yr_pmt[starting_year:ending_year] <- c(1:loan_period)
+  
+  df$interest <-  (df$yr_pmt >0) *
+    (-1) * impt(interest_rate, df$yr_pmt, loan_period, loan) 
+  
+  df$principal <- (df$yr_pmt >0) * (pmt - df$interest) 
+  
+  return(df)
+}
+
+
 #---
 
 
@@ -290,6 +338,9 @@ dash_plot3 <- function(inc_exp_capital_recovery,capital_recovery_housing,
       plot.title=element_text(face="bold",hjust=c(0,0))  #changes font face and location for graph title
     )
 }
+
+
+
 
 
 

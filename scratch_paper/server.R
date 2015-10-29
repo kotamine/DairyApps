@@ -4,7 +4,7 @@ library(shiny)
 shinyServer(function(input, output) {
   
   var3 <- 1000
-  rv <- reactiveValues(var4=0, var5=0, var6=0)
+  rv <- reactiveValues(var4=0, var5=0, var6=0, var7=0, var8=0)
   
   
   changeVar1 <- reactive({
@@ -32,7 +32,6 @@ shinyServer(function(input, output) {
   })
   
   observeEvent(rv$var4, { 
-    
      rv$var5 <- rv$var5 + 100 
   })
   
@@ -40,6 +39,15 @@ shinyServer(function(input, output) {
     input$action
      rv$var6 <-  input$var1 + var2() + 1
      rv$var6
+  })
+  
+  tmp_var7 <- reactive({ 
+    rv$var7 <- rv$var6 + input$var1  # it doesn't react 
+    1
+  })
+  
+  observe({ 
+    rv$var8 <- rv$var6 + input$var1
   })
   
   output$showVar1 <- renderUI({
@@ -72,4 +80,13 @@ shinyServer(function(input, output) {
   output$showVar6 <- renderUI({
     h3(var6())
   })
+  
+  output$showVar7 <- renderUI({
+      h3(rv$var7)  
+  })
+  
+  output$showVar8 <- renderUI({
+    h3(rv$var8)  
+  })
+    
 })

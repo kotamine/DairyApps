@@ -5,7 +5,7 @@
 ## Render: Isolated from base input changes 
 
 output$c_NAI <- renderUI({
-    isolate(base_NAI <- rv$NAI )
+    isolate(base_NAI <- NAI())
     dash_NAI(rb$NAI,cutoff=0, compare=base_NAI)
 }) 
 
@@ -13,15 +13,15 @@ output$c_IOFC <- renderUI({
   isolate(IOFC_unit <- input$IOFC)
   if (IOFC_unit=="per cow") {
     isolate({
-      base_IOFC <- rv$IOFC
-      base_IOFC2 <- rv$IOFC2
+      base_IOFC <- IOFC()
+      base_IOFC2 <- IOFC2()
     })
     dash_IOFC(rb$IOFC, rb$IOFC2, basis=IOFC_unit, 
               compare=base_IOFC, compare2=base_IOFC2)
   } else {
     isolate({
-      base_IOFC_cwt <- rv$IOFC_cwt
-      base_IOFC2_cwt <- rv$IOFC2_cwt
+      base_IOFC_cwt <- IOFC_cwt()
+      base_IOFC2_cwt <- IOFC2_cwt()
     })
     dash_IOFC(rb$IOFC_cwt, rb$IOFC2_cwt, basis=IOFC_unit, 
               compare=base_IOFC_cwt, compare2=base_IOFC2_cwt)
@@ -30,7 +30,7 @@ output$c_IOFC <- renderUI({
 
 
 output$c_milk_feed <- renderUI({ 
-  isolate(diff <- rb$milk_feed - rv$milk_feed ) 
+  isolate(diff <- rb$milk_feed - milk_feed()) 
   validate( 
     need(!is.na(diff), "NA")
   ) 
@@ -40,7 +40,7 @@ output$c_milk_feed <- renderUI({
 })   
 
 output$c_labor_repair <- renderUI({
-  isolate(diff <- rb$labor_repair - rv$labor_repair)
+  isolate(diff <- rb$labor_repair - labor_repair())
   validate( 
     need(!is.na(diff), "NA")
   ) 
@@ -50,7 +50,7 @@ output$c_labor_repair <- renderUI({
 })  
 
 output$c_captial_cost <- renderUI({
-  isolate( diff <- rb$capital_cost - rv$capital_cost ) 
+  isolate( diff <- rb$capital_cost - capital_cost() ) 
   validate( 
     need(!is.na(diff), "NA")
   ) 
@@ -60,7 +60,7 @@ output$c_captial_cost <- renderUI({
 })  
 
 output$c_misc <- renderUI({
-  isolate( diff <- rb$misc - rv$misc ) 
+  isolate( diff <- rb$misc - misc() ) 
   validate( 
     need(!is.na(diff), "NA")
   ) 

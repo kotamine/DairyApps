@@ -20,15 +20,18 @@ shinyServer(function(input, output, session) {
   # Create a list of reactive values for robustness checks
   rb <- reactiveValues(c_val=20)
 
-  # ---------- Fill out the calclated values in Data Entry ----------
-  source("session_variables.R", local=TRUE)
-  
-  # ---------- Partial Budget Analysis ----------
-  source("session_budget.R", local=TRUE)
-  
-  # ------ Dashboard features ------
-  source("session_dashboard.R", local=TRUE)
+#   # ---------- Fill out the calclated values in Data Entry ----------
+#   source("session_variables.R", local=TRUE)
+#   
+#   # ---------- Partial Budget Analysis ----------
+#   source("session_budget.R", local=TRUE)
+#   
+#   # ------ Dashboard features ------
+#   source("session_dashboard.R", local=TRUE)
 
+  source("session_calculations_base.R", local=TRUE)
+  source("session_render_base.R", local=TRUE)
+  
   
   # ----------- Sensitivity Analysis -----------
   source("session_sensitivity.R", local=TRUE)

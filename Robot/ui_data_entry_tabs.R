@@ -383,7 +383,7 @@ navlistPanel("Data and Assumptions",
                                    column(width=3, helpText("percent", align="center"))
                           ),
                           fluidRow(column(width=6, helpText("Milking & chore labor rate per hour")),
-                                   column(width=3, numericInput("inflation_robot",NULL,value=1.5,step=0.25)),
+                                   column(width=3, numericInput("inflation_labor",NULL,value=1.5,step=0.25)),
                                    column(width=3, helpText("percent", align="center"))
                           ))),
                       icon=icon("money"))         
