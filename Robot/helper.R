@@ -79,6 +79,13 @@ pmt <- function(rate, nper, pv, fv=0, type=0) {
   return(res/(1+rate*type))
 }
 
+# http://www.experts-exchange.com/articles/1948/A-Guide-to-the-PMT-FV-IPMT-and-PPMT-Functions.html
+impt <- function(rate, per, nper, pv, fv=0, type=0) {
+  
+  pmt <- pmt(rate, nper, pv, fv, type)
+  fv(rate, per-1, pmt, pv, type) * rate
+}
+
 #---
 
 

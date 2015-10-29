@@ -4,7 +4,7 @@ library(shiny)
 shinyServer(function(input, output) {
   
   var3 <- 1000
-  rv <- reactiveValues(var4=0, var5=0)
+  rv <- reactiveValues(var4=0, var5=0, var6=0)
   
   
   changeVar1 <- reactive({
@@ -36,6 +36,11 @@ shinyServer(function(input, output) {
      rv$var5 <- rv$var5 + 100 
   })
   
+  var6 <- reactive({
+    input$action
+     rv$var6 <-  input$var1 + var2() + 1
+     rv$var6
+  })
   
   output$showVar1 <- renderUI({
     if (is.na(changeVar1())) {
@@ -62,5 +67,9 @@ shinyServer(function(input, output) {
   
   output$showVar5 <- renderUI({
     h3(rv$var5)
+  })
+  
+  output$showVar6 <- renderUI({
+    h3(var6())
   })
 })

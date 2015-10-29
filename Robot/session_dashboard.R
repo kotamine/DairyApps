@@ -2,7 +2,7 @@
 
 # ------ Dashboard features ------
 
-NAI <- reactive({
+NAI <- reactive({  browser()
   if (input$NAI=="w/o housing") {
     NAI <- impact_without_housing()
   } 
@@ -21,7 +21,7 @@ NAI <- reactive({
   rv$NAI
 })
 
-capital_cost <- reactive({
+capital_cost <- reactive({  browser()
   if(input$NAI=="w/o housing") {
     rv$capital_cost <- -inc_exp_capital_recovery()
   } else if (input$NAI=="w/ housing") {
@@ -33,43 +33,43 @@ capital_cost <- reactive({
   rv$capital_cost
 }) 
 
-milk_current <- reactive({
+milk_current <- reactive({  browser()
   input$herd_size * 330 * input$milk_cow_day * (input$price_milk/100 + 
                                                   +  input$scc_premium/100 * input$scc_average/1000) 
 })
 
-milk_robot <- reactive({
+milk_robot <- reactive({  browser()
   herd_size2() * 330 * (input$milk_cow_day + input$milk_change) *
     (input$price_milk/100 + input$scc_premium/100 * input$scc_average*(1-input$scc_change/100)/1000) 
 })
 
-labor_current <- reactive({
+labor_current <- reactive({  browser()
   (input$hr_heat_detection + input$hours_milking) * input$labor_rate*365
 })
 
-labor_robot <- reactive({
+labor_robot <- reactive({  browser()
   (input$anticipated_hours_heat + anticipated_hours_milking()) * input$labor_rate *365 + 
     + (input$increase_rc_mgt - input$decrease_lab_mgt) * input$labor_rate_rc_mgt * 365 +
     + input$additional_labor * input$herd_increase 
 }) 
 
-feed_current <- reactive({
+feed_current <- reactive({  browser()
   DMI_day() * input$cost_DM * 330 * input$herd_size
 })
 
-feed_robot <- reactive({
+feed_robot <- reactive({  browser()
   (DMI_projected() * input$cost_DM + input$pellets * input$cost_pellets/2000) * 330 * herd_size2()
 })
 
-milk_feed <- reactive({
+milk_feed <- reactive({  browser()
   -(feed_robot() - feed_current()) + milk_robot() -  milk_current() 
 })
 
-labor_repair <- reactive({
+labor_repair <- reactive({  browser()
   -(labor_robot() - labor_current() +inc_exp_repair())
 })
 
-misc <- reactive({
+misc <- reactive({  browser()
   NAI() - (milk_feed() + labor_repair() + capital_cost())
 })
 

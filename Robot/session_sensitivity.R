@@ -1,3 +1,4 @@
+
 # There are three ways the sensitivity analysis can be triggered. 
 # 1. change of variable to consider the sensitivity 
 # 2. change of value for that variable 
@@ -13,12 +14,6 @@ shinyjs::onclick("sensitivity_show",
                                append = FALSE) 
                  }
 )
-
-
-
-# shinyjs::onclick("sensitivity_show",
-#                  shinyjs::toggle(id="sensitivity_control", anim = TRUE)
-# )
 
 
 # ----------- Sensitivity Analysis -----------

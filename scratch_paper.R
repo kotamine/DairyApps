@@ -228,3 +228,64 @@ colnames(a) <- c("v1","v2")
 
 
 
+
+
+debt_table <- function(loan, interest_rate, loan_period,
+                       asset_year, asset_cycle, n_period,
+                       loan2=loan,interest_rate2=interest_rate,
+                       loan_period2=loan_period) {
+  
+  # only 1 or 2 asset cycle is currently supported 
+  if (!(asset_cycle==1 | asset_cycle==2)) return()
+  
+  pmt_1 <- -pmt(interest_rate, loan_period, loan)
+  interest_1 <- impt(interest_rate, 1, loan_period, loan)
+  principal_1 <- pmt_1 - interest_1
+  
+  pmt_2 <- -pmt(interest_rate2, loan_period2, loan2)
+  interest_2 <- impt(interest_rate2, 1, loan_period2, loan2)
+  principal_2 <- pmt_2 - interest_2
+  
+  df <- data.frame(yr=c(1:n_period))
+  
+  tmp_yr_asset <- rep(c(1:asset_year),asset_cycle)[1:n_period]
+  tmp_yr_asset[is.na(tmp_yr_asset)] <- 0 
+  df$yr_asset <- tmp_yr_asset 
+  
+  df$interest_asset <- 
+    (df$yr <= loan_period ) * (df$yr_asset <= loan_period) *
+    (-1) * impt(interest_rate, df$yr, loan_period, loan) +
+    +  (asset_cycle==2) * (df$yr > asset_year ) *  (df$yr <= asset_year + loan_period2) *
+    (df$yr_asset-loan_period <=loan_period2) *
+    (-1) * impt(interest_rate2, df$yr-asset_year, loan_period2, loan2) 
+  
+  df$principal_asset <-
+    (df$yr <= loan_period ) * (df$yr_asset <= loan_period) * (pmt_1 - df$interest_asset) +
+    +   (asset_cycle==2) * (df$yr > asset_year ) *  (df$yr <= asset_year + loan_period2) *
+    (df$yr_asset-loan_period <=loan_period2) * (pmt_2 - df$interest_asset) 
+  
+  return(df)
+}
+
+
+loan <- 360000
+interest_rate <- 5/100
+loan_period <- 12
+robot_year <- 15
+robot_cycle <- 2
+
+loan2 <- 350000
+
+
+debt_tbl1 <- debt_table(loan, interest_rate, loan_period,
+                                   robot_year, robot_cycle, 50,
+                                   loan2=loan2)
+
+loan_housing <- 1040000
+loan_period_housing <- 24
+housing_year <- 30
+
+debt_tbl2 <- debt_table(loan_housing, interest_rate, loan_period_housing,
+                       housing_year, 1, 50)
+
+

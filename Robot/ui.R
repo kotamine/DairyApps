@@ -1,10 +1,12 @@
 library(shiny)
 library(shinyBS)
 library(shinyjs)
-library(DT)
-suppressPackageStartupMessages(library(dplyr))
-library(ggplot2)
 library(markdown)
+library(ggplot2)
+suppressPackageStartupMessages(library(DT))
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(xlsx))
+suppressPackageStartupMessages(library(XLConnect))
 
 shinyUI(
   navbarPage(
@@ -107,7 +109,9 @@ shinyUI(
                                       column(2,
                                              h5("% Change")),
                                       column(3,
-                                             h5("Implication"))),
+                                             fluidRow(column(4,h5("Base")),
+                                                      column(4,h5("New")),
+                                                      column(4,h5("Unit"))))),
                                     conditionalPanel("input.s_choice=='s1'",
                                     fluidRow(
                                             column(5,offset=1,
@@ -126,7 +130,7 @@ shinyUI(
                                       column(3,
                                              uiOutput("s_txt_cost_housing_cow"))
                                       )
-                                    ),
+                                    ,
                                     conditionalPanel("input.s_choice=='s2' | input.s_choice=='s3'",
                                                      fluidRow(
                                       column(5,offset=1,
@@ -140,7 +144,7 @@ shinyUI(
                                     conditionalPanel("input.s_choice=='s2' ",
                                     fluidRow(
                                       column(5,offset=1,
-                                             helpText("Estimated percent change in SCC (%)")),
+                                             helpText("Estimated percent change in SCC")),
                                       column(2, 
                                              numericInput("s_scc_change", NULL, value=0, step=10)),
                                       column(3,
@@ -157,7 +161,7 @@ shinyUI(
                                              uiOutput("s_txt_pellets"))
                                                      )
                                     )
-                                )
+                                ))
                               ),
              shinyjs::hidden(
                div(id = "dashboard_robust",

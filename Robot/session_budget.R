@@ -25,7 +25,7 @@ observe(
 
 ## Q: Is it better to call IOFC something else?   IOFC and other variable costs?   
 ## Q: What cuttoff values are appropriate to change colors from green to orange to red? 
-IOFC <- reactive({
+IOFC <- reactive({  browser() 
   # initial definiiton: Current IOFC and other variable costs
   #     rv$IOFC <- (input$milk_cow_day * input$price_milk/100 - DMI_day() * input$cost_DM )*330 +
   #          - input$additional_labor - input$additional_cost +
@@ -36,18 +36,19 @@ IOFC <- reactive({
   rv$IOFC
 })
 
-IOFC2 <- reactive({ # under_robot
+IOFC2 <- reactive({  browser()  # under_robot
   rv$IOFC2 <- ((input$milk_cow_day + input$milk_change) * input$price_milk/100 + 
                  - DMI_projected() * input$cost_DM - input$pellets*input$cost_pellets/2000)*330 
   rv$IOFC2
 })
 
-IOFC_cwt <- reactive({
+IOFC_cwt <- reactive({  browser() 
+  browser()
   rv$IOFC_cwt <- IOFC() /365 /input$milk_cow_day * 330
   rv$IOFC_cwt
 })
 
-IOFC2_cwt <- reactive({
+IOFC2_cwt <- reactive({  browser() 
   rv$IOFC2_cwt <- IOFC2() /365 /(input$milk_cow_day + input$milk_change) * 330
   rv$IOFC2_cwt
 })
@@ -55,7 +56,7 @@ IOFC2_cwt <- reactive({
 
 # --- Positive Impacts---
 # -- calculations --
-inc_rev_herd_size  <- reactive({
+inc_rev_herd_size  <- reactive({  browser() 
   # rv$inc_rev_herd_size <- input$herd_increase * IOFC()
   ## Modified as follows 
   rv$inc_rev_herd_size <- (input$milk_cow_day + input$milk_change) * 330 *
@@ -63,58 +64,58 @@ inc_rev_herd_size  <- reactive({
   rv$inc_rev_herd_size
 })
 
-inc_rev_per_cow  <- reactive({
+inc_rev_per_cow  <- reactive({  browser() 
   # rv$inc_rev_per_cow <- input$milk_change * 330 * (input$price_milk/100) * herd_size2()
   ## Modified as follows 
   rv$inc_rev_per_cow <- input$milk_change * 330 * (input$price_milk/100) * input$herd_size
   rv$inc_rev_per_cow 
 })
 
-inc_rev_milk_premium  <- reactive({
+inc_rev_milk_premium  <- reactive({  browser() 
   rv$inc_rev_milk_premium  <- (input$milk_cow_day + input$milk_change )*330 * input$scc_premium/100*
     (input$scc_average*(-input$scc_change)/100)/1000 * herd_size2()
   rv$inc_rev_milk_premium  
 })
 
-inc_rev_cull_sale  <- reactive({
+inc_rev_cull_sale  <- reactive({  browser() 
   rv$inc_rev_cull_sale   <- herd_size2() * input$change_turnover/100 * input$cull_price
   rv$inc_rev_cull_sale  
 })
 
-inc_rev_software  <- reactive({
+inc_rev_software  <- reactive({  browser() 
   rv$inc_rev_software  <- input$software * herd_size2()
   rv$inc_rev_software 
 })
 
-inc_rev_total  <- reactive({
+inc_rev_total  <- reactive({  browser() 
   rv$inc_rev_total <- inc_rev_herd_size() + inc_rev_per_cow() + inc_rev_milk_premium() +
     + inc_rev_cull_sale() + inc_rev_software()
   rv$inc_rev_total
 })
 
-dec_exp_heat_detection  <- reactive({
+dec_exp_heat_detection  <- reactive({  browser() 
   rv$dec_exp_heat_detection <- (input$hr_heat_detection - input$anticipated_hours_heat)*input$labor_rate *365
   rv$dec_exp_heat_detection 
 })
 
-dec_exp_labor  <- reactive({
+dec_exp_labor  <- reactive({  browser() 
   #rv$dec_exp_labor <- (input$hr_sv_milking + input$hr_heat_detection - input$anticipated_hours_heat )*input$labor_rate *365
   # Modified as follows
   rv$dec_exp_labor <- input$hr_sv_milking * input$labor_rate *365 
   rv$dec_exp_labor 
 })
 
-dec_exp_labor_management  <- reactive({
+dec_exp_labor_management  <- reactive({  browser() 
   rv$dec_exp_labor_management <- input$decrease_lab_mgt * input$labor_rate_rc_mgt * 365
   rv$dec_exp_labor_management 
 })
 
-dec_exp_total  <- reactive({
+dec_exp_total  <- reactive({  browser() 
   rv$dec_exp_total <- dec_exp_heat_detection()  + dec_exp_labor() + dec_exp_labor_management() 
   rv$dec_exp_total
 })
 
-positive_total  <- reactive({
+positive_total  <- reactive({  browser() 
   rv$positive_total <- inc_rev_total() +  dec_exp_total()
   rv$positive_total
 })
@@ -167,42 +168,42 @@ output$positive_total  <- renderUI({
 
 # --- Negative Impacts ---
 # -- calculations --
-inc_exp_herd_increase  <- reactive({
+inc_exp_herd_increase  <- reactive({  browser() 
   rv$inc_exp_herd_increase <- (input$additional_labor + input$additional_cost)*input$herd_increase
   rv$inc_exp_herd_increase
 })
 
-inc_exp_repair  <- reactive({
+inc_exp_repair  <- reactive({  browser() 
   rv$inc_exp_repair <-input$repair * input$n_robot + input$insurance_rate/100 * increased_insurance()
   rv$inc_exp_repair 
 })
 
-inc_exp_feed  <- reactive({
+inc_exp_feed  <- reactive({  browser() 
   rv$inc_exp_feed <-  DMI_change() * input$cost_DM * 330 * herd_size2()
   rv$inc_exp_feed 
 })
 
-inc_exp_pellet  <- reactive({
+inc_exp_pellet  <- reactive({  browser() 
   rv$inc_exp_pellet <- input$cost_pellets * 330 * herd_size2() * input$pellets/2000
   rv$inc_exp_pellet
 })
 
-inc_exp_replacement  <- reactive({
+inc_exp_replacement  <- reactive({  browser() 
   rv$inc_exp_replacement <- input$cost_heifer * input$change_turnover/100 * herd_size2()
   rv$inc_exp_replacement 
 })
 
-inc_exp_utilities  <- reactive({
+inc_exp_utilities  <- reactive({  browser() 
   rv$inc_exp_utilities <- (input$change_electricity + input$change_water + input$change_chemical) * herd_size2()
   rv$inc_exp_utilities 
 })
 
-inc_exp_record_management  <- reactive({
+inc_exp_record_management  <- reactive({  browser() 
   rv$inc_exp_record_management <- input$increase_rc_mgt * input$labor_rate_rc_mgt * 365
   rv$inc_exp_record_management
 })
 
-inc_exp_capital_recovery  <- reactive({
+inc_exp_capital_recovery  <- reactive({  browser() 
   if (is.na(input$n_robot_life) | is.na(input$interest) | 
       is.na(housing_years()) | is.na(robot_invest()) | is.na(input$inflation_robot) |
       is.na(input$robot_years)) {
@@ -219,13 +220,13 @@ inc_exp_capital_recovery  <- reactive({
   rv$inc_exp_capital_recovery 
 })
 
-inc_exp_total  <- reactive({
+inc_exp_total  <- reactive({  browser() 
   rv$inc_exp_total <- inc_exp_herd_increase() + inc_exp_repair() + inc_exp_feed() + inc_exp_pellet() + inc_exp_replacement() + 
     + inc_exp_utilities() + inc_exp_record_management() + inc_exp_capital_recovery() 
   rv$inc_exp_total
 })
 
-negative_total  <- reactive({
+negative_total  <- reactive({  browser() 
   rv$negative_total <- inc_exp_total()
   rv$negative_total  
 })
@@ -274,12 +275,12 @@ output$negative_total  <- renderUI({
 
 # --- Net Impacts ---
 # -- calculations --
-impact_without_housing  <- reactive({
+impact_without_housing  <- reactive({  browser() 
   rv$impact_without_housing <- positive_total() - negative_total()
   rv$impact_without_housing 
 })
 
-capital_recovery_housing  <- reactive({
+capital_recovery_housing  <- reactive({  browser() 
   if (is.na(input$interest) | is.na(housing_years()) | is.na(cost_housing())) {
     return(NA)
   }
@@ -287,25 +288,25 @@ capital_recovery_housing  <- reactive({
   rv$capital_recovery_housing
 })
 
-capital_recovery_total  <- reactive({
+capital_recovery_total  <- reactive({  browser() 
   rv$capital_recovery_total <- inc_exp_capital_recovery() + capital_recovery_housing()
   rv$capital_recovery_total 
 })
 
-impact_with_housing <- reactive({
+impact_with_housing <- reactive({  browser() 
   rv$impact_with_housing <- impact_without_housing() - capital_recovery_housing()
   rv$impact_with_housing
 })
 
-robot_end_PV <- reactive({
-  if (is.na(input$interest) | is.null(input$salvage_robot) | is.na(housing_years()) | is.na(cost_housing())) {
+robot_end_PV <- reactive({  browser() 
+  if (is.na(input$interest) | is.na(input$salvage_robot) | is.na(housing_years()) | is.na(cost_housing())) {
     return(NA)
   }
   rv$robot_end_PV <- -pmt(input$interest/100, housing_years(), input$salvage_robot/(1 + input$interest/100)^housing_years())
   rv$robot_end_PV 
 })
 
-impact_with_robot_salvage <- reactive({ 
+impact_with_robot_salvage <- reactive({  browser()    
   rv$impact_with_robot_salvage <- impact_with_housing() + robot_end_PV()
   
   # This is used later for alerting base value change in robustness analysis  
@@ -322,7 +323,7 @@ impact_with_robot_salvage <- reactive({
   rv$impact_with_robot_salvage
 })
 
-impact_with_inflation  <- reactive({
+impact_with_inflation  <- reactive({  browser() 
   rv$impact_with_inflation <- "Depends on cash flow"
   rv$impact_with_inflation
 })
