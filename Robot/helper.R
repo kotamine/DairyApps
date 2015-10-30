@@ -79,6 +79,14 @@ pmt <- function(rate, nper, pv, fv=0, type=0) {
   return(res/(1+rate*type))
 }
 
+# additional functions
+mirr <- function(values, finance_rate, reinvest_rate) {
+  n <- length(values)
+  (-npv(reinvest_rate,values)*(1+reinvest_rate)^n/
+    npv(finance_rate,values)*(1+finance_rate))^(1/(n-1))-1
+}
+
+
 # http://www.experts-exchange.com/articles/1948/A-Guide-to-the-PMT-FV-IPMT-and-PPMT-Functions.html
 impt <- function(rate, per, nper, pv, fv=0, type=0) {
   

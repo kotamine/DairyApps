@@ -357,36 +357,48 @@ navlistPanel("Data and Assumptions",
                           )
                         )), 
                       icon=icon("lightbulb-o")),
-             tabPanel("Inflations", 
-                      fluidRow(
-                        column(
-                          width=1),
-                        column(
-                          width=10, div(style="background-color: #616D7E; color:white;",
-                                        fluidRow(column(width=6, 
-                                                        h5(strong("Item"),align="center")),
-                                                 column(width=3, h5(strong("User Data"), 
-                                                                    align="center")),
-                                                 column(width=3,  h5(strong("Unit"), 
-                                                                     align="center"))
-                                        )), br(),
-                          fluidRow(column(width=6, helpText("Robot, parlor & housing purchase prices")),
-                                   column(width=3, numericInput("inflation_robot",NULL,value=1.5,step=0.25)),
-                                   column(width=3, helpText("percent", align="center"))
-                          ),
-                          fluidRow(column(width=6, helpText("Expected robot salvage value at 15 years old")),
-                                   column(width=3, numericInput("inflation_salvage",NULL,value=1.5,step=0.25)),
-                                   column(width=3, helpText("percent", align="center"))
-                          ),
-                          fluidRow(column(width=6, helpText("Margin milk over feed & operation per cow with robots")),
-                                   column(width=3, numericInput("inflation_margin",NULL,value=1.5,step=0.25)),
-                                   column(width=3, helpText("percent", align="center"))
-                          ),
-                          fluidRow(column(width=6, helpText("Milking & chore labor rate per hour")),
-                                   column(width=3, numericInput("inflation_labor",NULL,value=1.5,step=0.25)),
-                                   column(width=3, helpText("percent", align="center"))
-                          ))),
-                      icon=icon("money"))         
+                      conditionalPanel("input.cash_flow_on",
+                                      "Cash Flow Details",  ## Move the inflation? 
+                                        tabPanel("Finance Terms", 
+                                                fluidRow(
+                                                  column(
+                                                    width=1),
+                                                  column(
+                                                    width=10, 
+                                                    )
+                                                  )),
+                                      tabPanel("Inflations", 
+                                               fluidRow(
+                                                 column(
+                                                   width=1),
+                                                 column(
+                                                   width=10, div(style="background-color: #616D7E; color:white;",
+                                                                 fluidRow(column(width=6, 
+                                                                                 h5(strong("Item"),align="center")),
+                                                                          column(width=3, h5(strong("User Data"), 
+                                                                                             align="center")),
+                                                                          column(width=3,  h5(strong("Unit"), 
+                                                                                              align="center"))
+                                                                 )), br(),
+                                                   fluidRow(column(width=6, helpText("Robot, parlor & housing purchase prices")),
+                                                            column(width=3, numericInput("inflation_robot",NULL,value=1.5,step=0.25)),
+                                                            column(width=3, helpText("percent", align="center"))
+                                                   ),
+                                                   fluidRow(column(width=6, helpText("Expected robot salvage value at 15 years old")),
+                                                            column(width=3, numericInput("inflation_salvage",NULL,value=1.5,step=0.25)),
+                                                            column(width=3, helpText("percent", align="center"))
+                                                   ),
+                                                   fluidRow(column(width=6, helpText("Margin milk over feed & operation per cow with robots")),
+                                                            column(width=3, numericInput("inflation_margin",NULL,value=1.5,step=0.25)),
+                                                            column(width=3, helpText("percent", align="center"))
+                                                   ),
+                                                   fluidRow(column(width=6, helpText("Milking & chore labor rate per hour")),
+                                                            column(width=3, numericInput("inflation_labor",NULL,value=1.5,step=0.25)),
+                                                            column(width=3, helpText("percent", align="center"))
+                                                   ))),
+                                               icon=icon("money"))
+                                       ),
+             width=c(3,9)
 )
 
 

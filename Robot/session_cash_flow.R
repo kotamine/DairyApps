@@ -117,11 +117,13 @@ rv$table_cash_flow <- table_cash_flow
 rv$table_debt <- table_debt
 rv$table_depreciation <- table_depreciation
 
-rv$NPV <- 
-  rv$ANPV <- 
-  rv$IRR <-
-  rv$MIRR <-
-  rv$weighted_cost_capital <-   
+  rv$weighted_cost_capital <-   ((input$down_housing + input$down_robot1 + input$down_robot2) * input$hurdle_rate +
+                                   + rv$loan_housing * input$r_housing + rv$loan_robot1 * input$r_robot1 + rv$loan_robot2 * input$r_robot2)/
+                                (cost_housing + cost_robot_1 + cost_robot_2)
+  rv$NPV <- npv(rv$weighted_cost_capital/100,table_cash_flow$after_tax_cash_flow[-1]) + table_cash_flow$after_tax_cash_flow[1]
+  rv$ANPV <- -pmt(rv$weighted_cost_capital/100, rv$housing_years+1,rv$NPV)
+  rv$IRR <- irr(table_cash_flow$after_tax_cash_flow)
+  rv$MIRR <- mirr(table_cash_flow$after_tax_cash_flow, input$interest/100, input$interest/100)
 })
 
 

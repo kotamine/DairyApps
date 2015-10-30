@@ -4,6 +4,9 @@ fluidRow(
   column(8,offset=2, h4("Partial Budget Analysis (before-tax)",align="center")),
   fluidRow(
     column(6,
+           conditionalPanel("input.cash_flow_on",
+                            wellPanel(h4("Results represented as future values accounting for inflations")),
+                            sliderInput("budget_year", "Select year",value=1, min=1,max=30)), # change the max to planning horizon input
            wellPanel(
              h5(strong("Positive Impacts:")),
              h5("Increased Incomes:"),

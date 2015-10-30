@@ -141,7 +141,7 @@ shinyUI(
                                              uiOutput("s_txt_milk_change"))
                                                      )
                                     ),
-                                    conditionalPanel("input.s_choice=='s2' ",
+                                    conditionalPanel("input.s_choice=='s3' ",
                                     fluidRow(
                                       column(5,offset=1,
                                              helpText("Estimated percent change in SCC")),
@@ -151,7 +151,7 @@ shinyUI(
                                              uiOutput("s_txt_scc_change"))
                                     )
                                     ),
-                                    conditionalPanel("input.s_choice=='s3'",
+                                    conditionalPanel("input.s_choice=='s2'",
                                                      fluidRow(
                                       column(5,offset=1,
                                              helpText("Pellets fed in robot booth")),
@@ -220,14 +220,6 @@ shinyUI(
                 source("ui_partial_budget.R", local=TRUE)$value
              )
              ),
-    tabPanel("Cash Flow Analysis",
-             conditionalPanel("input.budget==0",
-                              div(helpText("Please review all tabs in Data Entry."),align="center")
-             ),
-             conditionalPanel("input.budget>0",
-                              source("ui_cash_flow.R", local=TRUE)$value
-             )
-    ),
     # ---------- Additional Analyses -----------
     navbarMenu("More",
                tabPanel("Robustness Check Tools",
@@ -242,7 +234,16 @@ shinyUI(
 #                                         conditionalPanel('input.robust=="Cash Flow"', 
 #                                                          helpText("Explanation about Cash Flow Analysis"))
                         )),
-               tabPanel("Investment with New Parlor")
+tabPanel("Cash Flow Analysis",
+         conditionalPanel("input.budget==0",
+                          div(helpText("Please review all tabs in Data Entry."),align="center")
+         ),
+         conditionalPanel("input.budget>0",
+                          radioButtons("cash_flow_on","Cash Flow Based Representation", choices=c("OFF","ON")),
+                          source("ui_cash_flow.R", local=TRUE)$value
+         )
+),
+               tabPanel("More Investment Options")
     ),
     # ---------- About -----------
     tabPanel("About",
@@ -274,7 +275,8 @@ shinyUI(
 # 						 
 # 					})</script>
 # 			"),
-    useShinyjs()
+    useShinyjs(),
+collapsible = TRUE
   ))
 
 
