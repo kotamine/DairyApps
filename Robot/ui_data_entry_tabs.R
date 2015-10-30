@@ -93,7 +93,7 @@ navlistPanel("Data and Assumptions",
                                    column(width=3, helpText("years", align="center"))
                           ),
                           fluidRow(column(width=6, helpText("Related housing: useful life, multiple of robot life")),
-                                   column(width=3, numericInput("n_robot_life",NULL, value=2,min=0,step=1)),
+                                   column(width=3, numericInput("n_robot_life",NULL, value=2,min=0,step=1, max=3)),
                                    column(width=3, helpText("times robot life", align="center"))
                           ),
                           fluidRow(column(width=6, helpText("Related housing: years of useful life")),

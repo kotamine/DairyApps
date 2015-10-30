@@ -220,6 +220,14 @@ shinyUI(
                 source("ui_partial_budget.R", local=TRUE)$value
              )
              ),
+    tabPanel("Cash Flow Analysis",
+             conditionalPanel("input.budget==0",
+                              div(helpText("Please review all tabs in Data Entry."),align="center")
+             ),
+             conditionalPanel("input.budget>0",
+                              source("ui_cash_flow.R", local=TRUE)$value
+             )
+    ),
     # ---------- Additional Analyses -----------
     navbarMenu("More",
                tabPanel("Robustness Check Tools",
@@ -230,10 +238,10 @@ shinyUI(
                                         conditionalPanel('input.robust=="Sensitivity"', 
                                                          helpText("Explanation about Sensitivity Analysis")),
                                         conditionalPanel('input.robust=="Scenarios"', 
-                                                         helpText("Explanation about Scenario Analysis")),
-                                        conditionalPanel('input.robust=="Cash Flow"', 
-                                                         helpText("Explanation about Cash Flow Analysis"))
-                        ))),
+                                                         helpText("Explanation about Scenario Analysis")))
+#                                         conditionalPanel('input.robust=="Cash Flow"', 
+#                                                          helpText("Explanation about Cash Flow Analysis"))
+                        )),
                tabPanel("Investment with New Parlor")
     ),
     # ---------- About -----------
