@@ -2,6 +2,6 @@
 A Shiny project for dairy something.
 
 ## Collaborator
-*Kota Minegishi* (kota@umn.edu)
+*Kota Minegishi* (kotamine@gmail.com)
 *Taejoon Byun* (taejoon@umn.edu)
 
