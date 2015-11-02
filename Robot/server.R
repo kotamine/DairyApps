@@ -29,22 +29,25 @@ shinyServer(function(input, output, session) {
 #   # ------ Dashboard features ------
 #   source("session_dashboard.R", local=TRUE)
 
+
   source("session_calculations_base.R", local=TRUE)
+
   source("session_render_base.R", local=TRUE)
   
+  # ----------- Cash Flow Analysis -----------
+  source("session_cash_flow.R", local=TRUE)
   
-  # ----------- Sensitivity Analysis -----------
-  source("session_sensitivity.R", local=TRUE)
   
-  # ----------- Scenario Analysis -----------
-  source("session_scenarios.R", local=TRUE)  
-  
-  # --- Dashboard features ---
-  source("session_dashboard_robustness.R", local=TRUE)
+#   # ----------- Sensitivity Analysis -----------
+#   source("session_sensitivity.R", local=TRUE)
+#   
+#   # ----------- Scenario Analysis -----------
+#   source("session_scenarios.R", local=TRUE)  
+#   
+#   # --- Dashboard features ---
+#   source("session_dashboard_robustness.R", local=TRUE)
  
 
-  
-  
   
   # --- User Data Storage ---
   ## --- WORK IN PROGRESS --- 

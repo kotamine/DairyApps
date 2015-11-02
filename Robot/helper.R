@@ -18,8 +18,9 @@ formatcomma <- function(x) {
 } 
 
 formatdollar <- function(x,digit=0) {
-  if (is.na(x)) { return(NA) }
-  if (is.null(x)) { return(NA) }
+  #if (is.na(x)) { return(NA) }
+  if (length(x)==0) { return(NA) }
+  #if (is.null(x)) { return(NA) }
     if (x>=0) {
       paste0("$",x %>% round(digit) %>% formatcomma()) 
     } else {
@@ -82,9 +83,18 @@ pmt <- function(rate, nper, pv, fv=0, type=0) {
 # additional functions
 mirr <- function(values, finance_rate, reinvest_rate) {
   n <- length(values)
-  (-npv(reinvest_rate,values)*(1+reinvest_rate)^n/
-    npv(finance_rate,values)*(1+finance_rate))^(1/(n-1))-1
+  tmp <- npv(reinvest_rate,values)*(1+reinvest_rate)^n/
+    npv(finance_rate,values)*(1+finance_rate)
+  return(tmp^(1/(n-1))-1)
 }
+
+# annualized net present value
+# need: library(dplyr) for %>% operation
+anpv <- function(x, r, i, nper) {
+  x_seq <- lapply(c(1:nper), function(t) { x*(1+i)^(t) }) %>% unlist()
+  -pmt(r, nper, npv(r, x_seq))
+}
+
 
 
 # http://www.experts-exchange.com/articles/1948/A-Guide-to-the-PMT-FV-IPMT-and-PPMT-Functions.html
@@ -120,9 +130,9 @@ vdb <- function(cost, salvage, nper, start_per=1, end_per=1, factor=2, switch=TR
 debt_table <- function(loan, interest_rate, loan_period,
                        n_period, starting_year=1) {
   
-  loan_period <- round(loan_period)
-  n_period <- round(n_period)
-  starting_year <- round(starting_year)
+  loan_period <- round(loan_period,0)
+  n_period <- round(n_period,0)
+  starting_year <- round(starting_year,0)
   
   pmt <- -pmt(interest_rate, loan_period, loan)
   interest <- impt(interest_rate, 1, loan_period, loan)
@@ -140,6 +150,7 @@ debt_table <- function(loan, interest_rate, loan_period,
   
   return(df)
 }
+
 
 
 #---
@@ -346,7 +357,6 @@ dash_plot3 <- function(inc_exp_capital_recovery,capital_recovery_housing,
       plot.title=element_text(face="bold",hjust=c(0,0))  #changes font face and location for graph title
     )
 }
-
 
 
 

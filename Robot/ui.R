@@ -9,7 +9,7 @@ suppressPackageStartupMessages(library(xlsx))
 suppressPackageStartupMessages(library(XLConnect))
 
 shinyUI(
-  navbarPage(
+   navbarPage(
     "Robotic Milking System",
     # ---------- Introduction  -----------
     tabPanel("Introduction",
@@ -29,6 +29,8 @@ shinyUI(
              
              # ----- Dashboard -----
              conditionalPanel("input.budget>0",
+                              ## Basic Annual Impact Representation 
+                              conditionalPanel("input.cash_flow_on!='ON'",
                               fluidRow(
                                 column(4,
                                        fluidRow(
@@ -38,9 +40,9 @@ shinyUI(
                                          column(6,
                                                 uiOutput("NAI"),
                                                 radioButtons("NAI",NULL,
-                                                             choices=c("w/o housing","w/ housing",
-                                                                       "w/ housing + robot salvage"),
-                                                             selected="w/ housing + robot salvage")) 
+                                                             choices=c("w/o salvage",
+                                                                       "w/ salvage"),
+                                                             selected="w/ salvage")) 
                                        )),
                                 column(8,
                                        div(align="center", fluidRow(
@@ -56,7 +58,37 @@ shinyUI(
                                        ),
                                        uiOutput("misc")))
                                 
-                              ), 
+                              )), 
+                              ## Cash Flow Based Representation 
+                              conditionalPanel("input.cash_flow_on=='ON'",
+                                               fluidRow(
+                                                 column(4,
+                                                        fluidRow(
+                                                          column(6,
+                                                                 uiOutput("cash_IOFC"),
+                                                                 radioButtons("cash_IOFC",NULL,choices=c("per cow","per cwt"))),
+                                                          column(6,
+                                                                 uiOutput("cash_NAI"),
+                                                                 radioButtons("cash_NAI",NULL,
+                                                                              choices=c("w/o salvage",
+                                                                                        "w/ salvage"),
+                                                                              selected="w/ salvage")) 
+                                                        )),
+                                                 column(8,
+                                                        div(align="center", fluidRow(
+                                                          column(4,
+                                                                 plotOutput("cash_plot1", height = 200),
+                                                                 uiOutput("cash_milk_feed")),
+                                                          column(4,
+                                                                 plotOutput("cash_plot2", height = 200),
+                                                                 uiOutput("cash_labor_repair")),
+                                                          column(4,
+                                                                 plotOutput("cash_plot3", height = 200),
+                                                                 uiOutput("cash_captial_cost"))
+                                                        ),
+                                                        uiOutput("cash_misc")))
+                                                 
+                                               )), 
                               # ---------- Sensitivity Analysis -----------   
                               conditionalPanel('input.robust=="Sensitivity"', 
                                                tags$hr(), 
@@ -163,6 +195,7 @@ shinyUI(
                                     )
                                 ))
                               ),
+             # ---------- Dashboard for Sensitivity and Scenarios ---------- 
              shinyjs::hidden(
                div(id = "dashboard_robust",
                  fluidRow(
@@ -239,8 +272,22 @@ tabPanel("Cash Flow Analysis",
                           div(helpText("Please review all tabs in Data Entry."),align="center")
          ),
          conditionalPanel("input.budget>0",
-                          radioButtons("cash_flow_on","Cash Flow Based Representation", choices=c("OFF","ON")),
-                          source("ui_cash_flow.R", local=TRUE)$value
+                          radioButtons("cash_flow_on","Cash Flow Based Representation", choices=c("OFF","ON")), 
+                          source("ui_cash_flow.R", local=TRUE)$value,
+                          fluidRow(
+                            column(width=9,offset=1, 
+                                   tabsetPanel(
+                                     tabPanel("Cash Flow",
+                                              DT::dataTableOutput("table_cash_flow")
+                                     ), 
+                                     tabPanel("Debt Calculation",
+                                              DT::dataTableOutput("table_debt")
+                                     ), 
+                                     tabPanel("Depreciation",
+                                              DT::dataTableOutput("table_depreciation")
+                                     )
+                                   ) 
+                            ))
          )
 ),
                tabPanel("More Investment Options")

@@ -6,11 +6,40 @@
 updateNumericInput(session, "additional_labor",NULL,value=450,step=50,min=0)
 updateNumericInput(session, "additional_cost",NULL,value=200,step=50,min=0)
 
+# Cash flow related variables; initially hidden from the user 
+updateNumericInput(session, "inflation_robot",NULL,value=1.5,step=.25,min=0)
+updateNumericInput(session, "inflation_margin",NULL,value=1.5,step=.25,min=0)
+updateNumericInput(session, "inflation_labor",NULL,value=1.5,step=.25,min=0)
+updateNumericInput(session, "inflation_general",NULL,value=1.5,step=.25,min=0)
+updateNumericInput(session, "inflation_general",NULL,value=1.5,step=.25,min=0)
+updateNumericInput(session, "down_housing",NULL,value=0, min=0,step=5000)
+updateNumericInput(session, "down_robot1",NULL,value=100000, min=0,step=5000)
+updateNumericInput(session, "down_robot2",NULL,value=100000, min=0,step=5000)
+updateNumericInput(session, "r_housing",NULL,value=4, min=0, step=.25)
+updateNumericInput(session, "r_robot1",NULL,value=4, min=0, step=.25)
+updateNumericInput(session, "r_robot2",NULL,value=4, min=0, step=.25)
+updateNumericInput(session, "n_yr_housing",NULL,value=24, min=0, step=1)
+updateNumericInput(session, "n_yr_robot1",NULL,value=12, min=0, step=1)
+updateNumericInput(session, "n_yr_robot2",NULL,value=12, min=0, step=1)
+updateNumericInput(session, "salvage_housing",NULL,value=0, min=0, step=5000)
+updateNumericInput(session,"horizon",NULL,value=30, min=1, step=5)
+updateNumericInput(session, "hurdle_rate",NULL,value=3, min=0, step=.25)
+updateNumericInput(session, "tax_rate",NULL,value=40, min=0, step=2)
+
 
 # Show/hide DMI calculations 
 shinyjs::onclick("customDMI",
                  shinyjs::toggle(id="DMI_inputs", anim = TRUE)
 )
+
+# observe({
+#   browser() 
+#   if (input$cash_flow_on=="ON") {
+#   shinyjs::show(id="cash_flow_details")
+#   } else {
+#     shinyjs::hide(id="cash_flow_details")
+#   }
+# })
 
 #   observe({
 #     toggle(id="DMI_inputs", condition = input$customDMI, anim = TRUE)
@@ -29,9 +58,9 @@ observeEvent(input$coeff_reset,{
 
 
 # Enable calculation button in Economic Analysis when Data Entry tabs are viewed by the user 
-observe(
+observe({
   if (input$budget==0) {
-    if(!is.null(rv$DMI_change) & !is.null(rv$DMI_day) & 
+    if (!is.null(rv$DMI_change) & !is.null(rv$DMI_day) & 
        !is.null(rv$herd_size2) & !is.null(rv$increased_insurance) &
        !is.null(rv$anticipated_hours_milking) & !is.null(rv$milk_lb_robot_day)
     ) {
@@ -43,7 +72,7 @@ observe(
   } else {
     return()
   }
-)
+})
 
 
 
@@ -90,15 +119,6 @@ rv$DMI_change <- rv$DMI_projected - rv$DMI_day
 rv$adj_milk_cow_day2 <- rv$milk_day_cow_robot * input$milk_cow_coeff + 
   + rv$milk_day_cow_robot  * input$milk_fat/100 * input$milk_fat_coeff 
 
-rv$IOFC <- (input$milk_cow_day * input$price_milk/100 - rv$DMI_day * input$cost_DM )*330
-
-rv$IOFC2 <- (rv$milk_day_cow_robot * input$price_milk/100 + 
-               - rv$DMI_projected * input$cost_DM - input$pellets * input$cost_pellets/2000)*330 
-
-rv$IOFC_cwt <- rv$IOFC /365 /input$milk_cow_day * 330
-
-rv$IOFC2_cwt <- rv$IOFC2 /365 /rv$milk_day_cow_robot * 330
-
 
 # Positive Impacts
 rv$inc_rev_herd_size <- rv$milk_day_cow_robot * 330 *
@@ -142,63 +162,75 @@ rv$inc_exp_utilities <- (input$change_electricity + input$change_water + input$c
 
 rv$inc_exp_record_management <- input$increase_rc_mgt * input$labor_rate_rc_mgt * 365
 
-if (is.na(input$n_robot_life) | is.na(input$interest) | 
-    is.na(rv$housing_years) | is.na(rv$robot_invest) | is.na(input$inflation_robot) |
-    is.na(input$robot_years)) {
-  tmp <- NA
-} else { 
-  if (input$n_robot_life > 1) {
-    tmp <-  - pmt(input$interest/100, rv$housing_years, 
-                  rv$robot_invest*(1 + input$inflation_robot/100)^input$robot_years/
-                    (1 + input$interest/100)^(input$robot_years))   
-  } else {
-    tmp <- 0
-  }
-}
-
-rv$inc_exp_capital_recovery <-   - pmt(input$interest/100, rv$housing_years, rv$robot_invest) + tmp
-
 rv$inc_exp_total <- rv$inc_exp_herd_increase + rv$inc_exp_repair + rv$inc_exp_feed + rv$inc_exp_pellet +
-  + rv$inc_exp_replacement +  rv$inc_exp_utilities + rv$inc_exp_record_management + rv$inc_exp_capital_recovery
+  + rv$inc_exp_replacement +  rv$inc_exp_utilities + rv$inc_exp_record_management 
 
-rv$negative_total  <-  rv$inc_exp_total
+# if (is.na(input$n_robot_life) | is.na(input$interest) | 
+#     is.na(rv$housing_years) | is.na(rv$robot_invest) | is.na(input$inflation_robot) |
+#     is.na(input$robot_years)) {
+#   tmp <- NA
+# } else { 
+#   if (input$n_robot_life > 1) {
+#     tmp <-  - pmt(input$interest/100, rv$housing_years, 
+#                   rv$robot_invest*(1 + input$inflation_robot/100)^input$robot_years/
+#                     (1 + input$interest/100)^(input$robot_years))   
+#   } else {
+#     tmp <- 0
+#   }
+# }
+
+rv$deflator <- rv$housing_years/sum((1 + input$inflation_general/100)^seq_along(c(1:rv$housing_years))) 
+
+rv$capital_recovery_robot <-  ( - pmt(input$interest/100, rv$housing_years, rv$robot_invest) + 
+  - (input$n_robot_life > 1)* pmt(input$interest/100, rv$housing_years, 
+                                   rv$robot_invest*(1 + input$inflation_robot/100)^input$robot_years/
+                                     (1 + input$interest/100)^(input$robot_years))) * rv$deflator 
+
+rv$capital_recovery_housing  <- - pmt(input$interest/100, rv$housing_years, rv$cost_housing) * rv$deflator 
+
+rv$capital_recovery_total <- rv$capital_recovery_robot + rv$capital_recovery_housing
+
+rv$negative_total  <-  rv$inc_exp_total + rv$capital_recovery_total
+
 
 ## Net Impact
-rv$impact_without_housing <-  rv$positive_total - rv$negative_total
 
-rv$capital_recovery_housing  <- - pmt(input$interest/100, rv$housing_years, rv$cost_housing)
-
-rv$capital_recovery_total <- rv$inc_exp_capital_recovery + rv$capital_recovery_housing
-
-rv$impact_with_housing <- rv$impact_without_housing - rv$capital_recovery_housing
+rv$impact_without_salvage <- rv$positive_total - rv$negative_total
 
 rv$robot_end_PV <- -pmt(input$interest/100, rv$housing_years, 
-                        input$salvage_robot/(1 + input$interest/100)^rv$housing_years)
+                        input$salvage_robot/(1 + input$inflation_robot/100)^rv$housing_years) * rv$deflator 
 
-rv$impact_with_robot_salvage <- rv$impact_with_housing + rv$robot_end_PV
+rv$impact_with_salvage <- rv$impact_without_salvage + rv$robot_end_PV
 
 rv$impact_with_inflation  <- "Depends on cash flow"
 
-
+rv$cash_positive_total <- rv$positive_total
+rv$cash_negative_total <- rv$negative_total
+rv$cash_impact_without_salvage <-  rv$impact_without_salvage 
+rv$cash_impact_with_salvage <-  rv$impact_with_salvage 
 
 #  Dashboard
-if (input$NAI=="w/o housing") {
-  rv$NAI <- rv$impact_without_housing
-} else if (input$NAI=="w/ housing") {
-  rv$NAI <- rv$impact_with_housing
+
+rv$IOFC <- (input$milk_cow_day * input$price_milk/100 - rv$DMI_day * input$cost_DM )*330
+
+rv$IOFC2 <- (rv$milk_day_cow_robot * input$price_milk/100 + 
+               - rv$DMI_projected * input$cost_DM - input$pellets * input$cost_pellets/2000)*330 
+
+rv$IOFC_cwt <- rv$IOFC /365 /input$milk_cow_day * 330
+
+rv$IOFC2_cwt <- rv$IOFC2 /365 /rv$milk_day_cow_robot * 330
+
+if (input$NAI=="w/o salvage") {
+  rv$NAI <- rv$impact_without_salvage
 } else {
-  rv$NAI <- rv$impact_with_robot_salvage
+  rv$NAI <- rv$impact_with_salvage
 }
 
-if(input$NAI=="w/o housing") {
-  rv$capital_cost <- -rv$inc_exp_capital_recovery
-} else if (input$NAI=="w/ housing") {
-  rv$capital_cost <- -(rv$inc_exp_capital_recovery + rv$capital_recovery_housing)
+if (input$NAI=="w/o salvage") {
+  rv$capital_cost <- - rv$capital_recovery_total 
 } else {
-  rv$capital_cost <- -(rv$inc_exp_capital_recovery + rv$capital_recovery_housing) +
-    + rv$robot_end_PV
+  rv$capital_cost <- - rv$capital_recovery_total + rv$robot_end_PV
 } 
-
 
 rv$milk_current <- 
   input$herd_size * 330 * input$milk_cow_day * (input$price_milk/100 + 
@@ -225,6 +257,8 @@ rv$labor_repair <- -(rv$labor_robot - rv$labor_current + rv$inc_exp_repair)
 
 rv$misc <- rv$NAI - (rv$milk_feed + rv$labor_repair + rv$capital_cost)
 
+
+
 # This is used later for alerting base value change in robustness analysis  
 createAlert(session, "c_input_change", "ref_c_input_change", 
             content = "New base values. 
@@ -236,7 +270,85 @@ createAlert(session, "s_input_change", "ref_s_input_change",
             Press [Calculate] to updated the results.",
             append = FALSE) 
 
+if (input$cash_flow_on=="ON" ) { # & !is.null(rv$robot_invest2)) {
+  
+  browser()
+  t <- input$budget_year-1
+  
+  rv$cash_positive_total <- rv$inc_rev_total * (1+input$inflation_margin/100)^t +
+    + rv$dec_exp_total *  (1+input$inflation_labor/100)^t
+  
+  rv$cash_negative_total <- rv$inc_exp_total * (1+input$inflation_margin/100)^t +
+    + rv$capital_recovery_total * (1+input$inflation_general/100)^t
+  
+  rv$cash_impact_without_salvage <-  rv$cash_positive_total  -  rv$cash_negative_total
+  
+  rv$cash_impact_with_salvage <-  rv$cash_impact_without_salvage +
+    + rv$robot_end_PV * (1 + input$inflation_robot/100)^t
+  
+  #  Dashboard -- Cash Flow Based Representation 
+#   rv$weighted_cost_capital <-   ((input$down_housing + input$down_robot1 + input$down_robot2) * input$hurdle_rate +
+#                                    + (rv$loan_housing * input$r_housing + rv$loan_robot1 * input$r_robot1 +
+#                                    + rv$loan_robot2 * input$r_robot2)*(1-input$tax_rate/100))/
+#                                   (rv$cost_housing + rv$robot_invest+ rv$robot_invest2)
+#   
+  rate <- WACC()
+  
+  rv$cash_IOFC <-  anpv(rv$IOFC, rate, input$inflation_margin/100, input$horizon) * rv$deflator 
+  
+  rv$cash_IOFC2 <- anpv(rv$IOFC2, rate, input$inflation_margin/100, input$horizon) * rv$deflator 
+  
+  rv$cash_IOFC_cwt <-  anpv(rv$IOFC_cwt, rate, input$inflation_margin/100, input$horizon) * rv$deflator 
+  
+  rv$cash_IOFC2_cwt <- anpv(rv$IOFC2_cwt, rate, input$inflation_margin/100, input$horizon) * rv$deflator 
+  
+  rv$cash_milk_current <- anpv(rv$milk_current, rate, input$inflation_margin/100, input$horizon) * rv$deflator 
+  
+  rv$cash_milk_robot <-  anpv(rv$milk_robot, rate, input$inflation_margin/100, input$horizon) * rv$deflator 
+  
+  rv$cash_labor_current <-  anpv(rv$labor_current, rate, input$inflation_labor/100, input$horizon) * rv$deflator 
+  
+  rv$cash_labor_robot <- anpv(rv$labor_robot, rate, input$inflation_labor/100, input$horizon) * rv$deflator 
+  
+  rv$cash_feed_current <-  anpv(rv$feed_current, rate, input$inflation_margin/100, input$horizon) * rv$deflator 
+  
+  rv$cash_feed_robot <- anpv(rv$feed_robot, rate, input$inflation_margin/100, input$horizon) * rv$deflator 
+  
+  rv$cash_milk_feed <-  -(rv$cash_feed_robot - rv$cash_feed_current) + rv$cash_milk_robot -  rv$cash_milk_current 
+  
+  # which inflation? 
+  rv$cash_inc_exp_repair <-  anpv(rv$inc_exp_repair, rate, input$inflation_margin/100, input$horizon) * rv$deflator 
+  rv$cash_capital_recovery_robot <-  anpv(rv$capital_recovery_robot, rate, input$inflation_general/100, input$horizon) *  rv$deflator 
+  rv$cash_capital_recovery_housing <-  anpv(rv$capital_recovery_housing, rate, input$inflation_general/100, input$horizon) * rv$deflator 
+  rv$cash_robot_end_PV <-  anpv(rv$robot_end_PV, rate, input$inflation_robot/100, input$horizon) * rv$deflator 
+  
+
+  rv$cash_labor_repair <- -(rv$cash_labor_robot - rv$cash_labor_current + 
+            + anpv(rv$inc_exp_repair, rate, input$inflation_robot/100, input$horizon)) * rv$deflator 
+  
+  rv$cash_capital_cost <- anpv(rv$capital_cost, rate,
+                               input$inflation_general/100, input$horizon) * rv$deflator 
+  
+  rv$cash_misc <- anpv(rv$misc, rate, input$inflation_general/100, input$horizon) * rv$deflator 
+  
+  rv$cash_NAI <-  rv$cash_milk_feed + rv$cash_labor_repair + rv$cash_capital_cost + rv$cash_misc
+  
+
+   
+  # This is used later for alerting base value change in robustness analysis  
+  createAlert(session, "cash_c_input_change", "cash_ref_c_input_change", 
+              content = "New base values. 
+              Press [Calculate] to updated the results.",
+              append = FALSE)  
+  
+  createAlert(session, "cash_s_input_change", "cash_ref_s_input_change", 
+              content = "New base values. 
+              Press [Calculate] to updated the results.",
+              append = FALSE) 
+}
+
 })
+
 
 
 

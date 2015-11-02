@@ -1,7 +1,7 @@
 
 # ----- Date Entry Tabs ------
 
-navlistPanel("Data and Assumptions",
+navlistPanel("Data and Assumptions", 
              tabPanel("Farm Finance", 
                       fluidRow(
                         column(
@@ -357,48 +357,158 @@ navlistPanel("Data and Assumptions",
                           )
                         )), 
                       icon=icon("lightbulb-o")),
-                      conditionalPanel("input.cash_flow_on",
-                                      "Cash Flow Details",  ## Move the inflation? 
-                                        tabPanel("Finance Terms", 
+                        # conditionalPanel("input.cash_flow_on=='ON'",
+             # shinyjs::hidden(
+               # div(id = "cash_flow_details",
+                                       "Cash Flow Details" ,
+                                       # source("ui_data_cash_flow.R", local=TRUE)$value 
+                                       tabPanel("Investment", 
                                                 fluidRow(
                                                   column(
                                                     width=1),
                                                   column(
                                                     width=10, 
+                                                    div(style="background-color: #616D7E; color:white;",
+                                                        fluidRow(column(width=4,  h5(strong("Variable"), align="center")),
+                                                                 column(width=2,  h5(strong("Housing"), align="center")),
+                                                                 column(width=2,  h5(strong("Robot"), align="center")),
+                                                                 conditionalPanel("input.n_robot_life>=2",
+                                                                                  column(width=2,  helpText("Robot 2"))),
+                                                                 conditionalPanel("input.n_robot_life>=3", 
+                                                                                  column(width=2,  helpText("Robot 3")))
+                                                        )), br(), 
+                                                    fluidRow(column(width=4,  helpText("Year of investment")),
+                                                             column(width=2,  helpText("1")),
+                                                             column(width=2,  helpText("1")),
+                                                             conditionalPanel("input.n_robot_life>=2",
+                                                                              column(width=2,  uiOutput("yr_robot2"))),
+                                                             conditionalPanel("input.n_robot_life>=3",
+                                                                              column(width=2,  uiOutput("yr_robot3")))
+                                                    ), 
+                                                    fluidRow(column(width=4,  helpText("Investment amount ($)")),
+                                                             column(width=2,  uiOutput("invest_housing")),
+                                                             column(width=2,  uiOutput("invest_robot1")),
+                                                             conditionalPanel("input.n_robot_life>=2", 
+                                                                              column(width=2,  uiOutput("invest_robot2"))),
+                                                             conditionalPanel("input.n_robot_life>=3", 
+                                                                              column(width=2,  uiOutput("invest_robot3")))
+                                                    ), 
+                                                    fluidRow(column(width=4,  helpText("Down payment ($)")),
+                                                             column(width=2,  
+                                                                    numericInput("down_housing",NULL,value=0, min=0,step=5000)),
+                                                             column(width=2,  
+                                                                    numericInput("down_robot1",NULL,value=100000, min=0,step=5000)),
+                                                             conditionalPanel("input.n_robot_life>=2", 
+                                                                              column(width=2,  
+                                                                                     numericInput("down_robot2",NULL,value=100000, min=0, step=5000))),
+                                                             conditionalPanel("input.n_robot_life>=3", 
+                                                                              column(width=2,  
+                                                                                     numericInput("down_robot3",NULL,value=100000, min=0, step=5000)))
+                                                    ), 
+                                                    fluidRow(column(width=4,  helpText("Loan amount ($)")),
+                                                             column(width=2,  uiOutput("loan_housing")),
+                                                             column(width=2,  uiOutput("loan_robot1")),
+                                                             conditionalPanel("input.n_robot_life>=2", 
+                                                                              column(width=2,  uiOutput("loan_robot2"))),
+                                                             conditionalPanel("input.n_robot_life>=3", 
+                                                                              column(width=2,  uiOutput("loan_robot3")))
+                                                    ),
+                                                    fluidRow(column(width=4,  helpText("Interest rate (%)")),
+                                                             column(width=2,  numericInput("r_housing",NULL,value=5, min=0, step=.25)),
+                                                             column(width=2,  numericInput("r_robot1",NULL,value=5, min=0, step=.25)),
+                                                             conditionalPanel("input.n_robot_life>=2", 
+                                                                              column(width=2,  numericInput("r_robot2",NULL,value=5, min=0, step=.25))),
+                                                             conditionalPanel("input.n_robot_life>=3", 
+                                                                              column(width=2,  numericInput("r_robot3",NULL,value=5, min=0, step=.25)))
+                                                    ) , 
+                                                    fluidRow(column(width=4,  helpText("Loan period (years)")),
+                                                             column(width=2,  numericInput("n_yr_housing",NULL,value=24, min=0, step=1)),
+                                                             column(width=2,  numericInput("n_yr_robot1",NULL,value=12, min=0, step=1)),
+                                                             conditionalPanel("input.n_robot_life>=2", 
+                                                                              column(width=2,  numericInput("n_yr_robot2",NULL,value=12, min=0, step=1))),
+                                                             conditionalPanel("input.n_robot_life>=3", 
+                                                                              column(width=2,  numericInput("n_yr_robot3",NULL,value=12, min=0, step=1)))
+                                                    ),
+                                                    fluidRow(column(width=4,  helpText("Salvage value ($)")),
+                                                             column(width=2,  numericInput("salvage_housing",NULL,value=0, min=0, step=5000)),
+                                                             column(width=2,  uiOutput("copy_robot_salvage1")),
+                                                             conditionalPanel("input.n_robot_life>=2", 
+                                                                              uiOutput("copy_robot_salvage2")),
+                                                             conditionalPanel("input.n_robot_life>=3", 
+                                                                              column(width=2,  uiOutput("copy_robot_salvage3")))
+                                                   
+                                                   )
+                                                    )
+                                                ), icon=icon("money")),
+                                       tabPanel("Planning", 
+                                                fluidRow(
+                                                  column(
+                                                    width=1),
+                                                  column(
+                                                    width=10,            
+                                                    div(style="background-color: #616D7E; color:white;",
+                                                        fluidRow(column(width=6, 
+                                                                        h5(strong("Item"), align="center")),
+                                                                 column(width=3, h5(strong("User Data"), 
+                                                                                    align="center")),
+                                                                 column(width=3,  h5(strong("Unit"), 
+                                                                                     align="center"))
+                                                        )), br(),
+                                                    fluidRow(column(width=6, helpText("Planning horizon")),   
+                                                             column(width=3, numericInput("horizon",NULL,value=30, min=1, step=5)),
+                                                             column(width=3, helpText("years", align="center"))
+                                                    ),
+                                                    fluidRow(column(6, helpText("Hurdle rate")),   
+                                                             column(3, numericInput("hurdle_rate",NULL,value=3, min=0, step=.25)),
+                                                             column(width=3, helpText("percent", align="center"))
+                                                    ),
+                                                    fluidRow(column(5, helpText("Marginal (federal + state) income tax rate")),   
+                                                             column(3, numericInput("tax_rate",NULL,value=40, min=0, step=2)),
+                                                             column(width=3, helpText("percent", align="center"))
+                                                    ), 
+                                                    radioButtons("dep_method","Depreciation method",
+                                                                 choices=c("Accelerated GDS"="d1","Straight-line ADS"="d2"))
+                                                  )
+                                                ), icon=icon("money")),
+                                       tabPanel("Inflations", 
+                                                fluidRow(
+                                                  column(
+                                                    width=1),
+                                                  column(
+                                                    width=10, div(style="background-color: #616D7E; color:white;",
+                                                                  fluidRow(column(width=6, 
+                                                                                  h5(strong("Item"),align="center")),
+                                                                           column(width=3, h5(strong("User Data"), 
+                                                                                              align="center")),
+                                                                           column(width=3,  h5(strong("Unit"), 
+                                                                                               align="center"))
+                                                                  )), br(),
+                                                    fluidRow(column(width=6, helpText("Robot, parlor & related-housing prices")),
+                                                             column(width=3, numericInput("inflation_robot",NULL,value=1.5,step=0.25)),
+                                                             column(width=3, helpText("percent", align="center"))
+                                                    ),
+                                                    fluidRow(column(width=6, helpText("Expected robot salvage value at 15 years old")),
+                                                             column(width=3, numericInput("inflation_salvage",NULL,value=1.5,step=0.25)),
+                                                             column(width=3, helpText("percent", align="center"))
+                                                    ),
+                                                    fluidRow(column(width=6, helpText("Margin milk over feed & operation per cow with robots")),
+                                                             column(width=3, numericInput("inflation_margin",NULL,value=1.5,step=0.25)),
+                                                             column(width=3, helpText("percent", align="center"))
+                                                    ),
+                                                    fluidRow(column(width=6, helpText("Milking & chore labor rate per hour")),
+                                                             column(width=3, numericInput("inflation_labor",NULL,value=1.5,step=0.25)),
+                                                             column(width=3, helpText("percent", align="center"))
+                                                    ),
+                                                    fluidRow(column(width=6, helpText("General inflation in economy")),
+                                                             column(width=3, numericInput("inflation_general",NULL,value=1.5,step=0.25)),
+                                                             column(width=3, helpText("percent", align="center"))
                                                     )
                                                   )),
-                                      tabPanel("Inflations", 
-                                               fluidRow(
-                                                 column(
-                                                   width=1),
-                                                 column(
-                                                   width=10, div(style="background-color: #616D7E; color:white;",
-                                                                 fluidRow(column(width=6, 
-                                                                                 h5(strong("Item"),align="center")),
-                                                                          column(width=3, h5(strong("User Data"), 
-                                                                                             align="center")),
-                                                                          column(width=3,  h5(strong("Unit"), 
-                                                                                              align="center"))
-                                                                 )), br(),
-                                                   fluidRow(column(width=6, helpText("Robot, parlor & housing purchase prices")),
-                                                            column(width=3, numericInput("inflation_robot",NULL,value=1.5,step=0.25)),
-                                                            column(width=3, helpText("percent", align="center"))
-                                                   ),
-                                                   fluidRow(column(width=6, helpText("Expected robot salvage value at 15 years old")),
-                                                            column(width=3, numericInput("inflation_salvage",NULL,value=1.5,step=0.25)),
-                                                            column(width=3, helpText("percent", align="center"))
-                                                   ),
-                                                   fluidRow(column(width=6, helpText("Margin milk over feed & operation per cow with robots")),
-                                                            column(width=3, numericInput("inflation_margin",NULL,value=1.5,step=0.25)),
-                                                            column(width=3, helpText("percent", align="center"))
-                                                   ),
-                                                   fluidRow(column(width=6, helpText("Milking & chore labor rate per hour")),
-                                                            column(width=3, numericInput("inflation_labor",NULL,value=1.5,step=0.25)),
-                                                            column(width=3, helpText("percent", align="center"))
-                                                   ))),
-                                               icon=icon("money"))
-                                       ),
-             width=c(3,9)
+                                                icon=icon("money")
+                                                 # )
+               # )
+             ), 
+            widths=c(3,9)
 )
 
 
