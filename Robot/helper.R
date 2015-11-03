@@ -97,7 +97,7 @@ anpv <- function(x, r, i, nper) {
 
 # Used to bring anpv() back to the real term basis 
 deflator <- function(nper, i) {
- nper/sum((1 + i)^seq_along(c(1:nper))) 
+ nper/sum((1 + i)^(seq_along(c(1:nper)-1))) 
 }
 
 # http://www.experts-exchange.com/articles/1948/A-Guide-to-the-PMT-FV-IPMT-and-PPMT-Functions.html
