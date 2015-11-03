@@ -272,22 +272,11 @@ tabPanel("Cash Flow Analysis",
                           div(helpText("Please review all tabs in Data Entry."),align="center")
          ),
          conditionalPanel("input.budget>0",
-                          radioButtons("cash_flow_on","Cash Flow Based Representation", choices=c("OFF","ON")), 
-                          source("ui_cash_flow.R", local=TRUE)$value,
-                          fluidRow(
-                            column(width=9,offset=1, 
-                                   tabsetPanel(
-                                     tabPanel("Cash Flow",
-                                              DT::dataTableOutput("table_cash_flow")
-                                     ), 
-                                     tabPanel("Debt Calculation",
-                                              DT::dataTableOutput("table_debt")
-                                     ), 
-                                     tabPanel("Depreciation",
-                                              DT::dataTableOutput("table_depreciation")
-                                     )
-                                   ) 
-                            ))
+                          div(
+                            radioButtons("cash_flow_on","Cash Flow Based Representation", choices=c("OFF","ON")), 
+                            align="center"), 
+                          source("ui_cash_flow.R", local=TRUE)$value
+                          
          )
 ),
                tabPanel("More Investment Options")

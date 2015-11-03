@@ -66,7 +66,7 @@ navlistPanel("Data and Assumptions",
                                    column(width=3, helpText("dollars", align="center"))
                           ),
                           fluidRow(column(width=6, helpText("Interest rate required on the overall investment")),
-                                   column(width=3,  numericInput("interest",NULL,value=3.0,min=0.0,step=0.1)),
+                                   column(width=3,  numericInput("interest",NULL,value=4.0,min=0.0,step=0.1)),
                                    column(width=3, helpText("percent", align="center"))
                           ), br(), br() 
                         )),
@@ -414,12 +414,12 @@ navlistPanel("Data and Assumptions",
                                                                               column(width=2,  uiOutput("loan_robot3")))
                                                     ),
                                                     fluidRow(column(width=4,  helpText("Interest rate (%)")),
-                                                             column(width=2,  numericInput("r_housing",NULL,value=5, min=0, step=.25)),
-                                                             column(width=2,  numericInput("r_robot1",NULL,value=5, min=0, step=.25)),
+                                                             column(width=2,  numericInput("r_housing",NULL,value=4, min=0, step=.25)),
+                                                             column(width=2,  numericInput("r_robot1",NULL,value=4, min=0, step=.25)),
                                                              conditionalPanel("input.n_robot_life>=2", 
-                                                                              column(width=2,  numericInput("r_robot2",NULL,value=5, min=0, step=.25))),
+                                                                              column(width=2,  numericInput("r_robot2",NULL,value=4, min=0, step=.25))),
                                                              conditionalPanel("input.n_robot_life>=3", 
-                                                                              column(width=2,  numericInput("r_robot3",NULL,value=5, min=0, step=.25)))
+                                                                              column(width=2,  numericInput("r_robot3",NULL,value=4, min=0, step=.25)))
                                                     ) , 
                                                     fluidRow(column(width=4,  helpText("Loan period (years)")),
                                                              column(width=2,  numericInput("n_yr_housing",NULL,value=24, min=0, step=1)),
@@ -459,7 +459,7 @@ navlistPanel("Data and Assumptions",
                                                              column(width=3, helpText("years", align="center"))
                                                     ),
                                                     fluidRow(column(6, helpText("Hurdle rate")),   
-                                                             column(3, numericInput("hurdle_rate",NULL,value=3, min=0, step=.25)),
+                                                             column(3, numericInput("hurdle_rate",NULL,value=4, min=0, step=.25)),
                                                              column(width=3, helpText("percent", align="center"))
                                                     ),
                                                     fluidRow(column(5, helpText("Marginal (federal + state) income tax rate")),   

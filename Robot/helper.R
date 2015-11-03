@@ -91,11 +91,13 @@ mirr <- function(values, finance_rate, reinvest_rate) {
 # annualized net present value
 # need: library(dplyr) for %>% operation
 anpv <- function(x, r, i, nper) {
-  x_seq <- lapply(c(1:nper), function(t) { x*(1+i)^(t) }) %>% unlist()
+  x_seq <- lapply(c(1:nper), function(t) { x*(1+i)^(t-1) }) %>% unlist()
   -pmt(r, nper, npv(r, x_seq))
 }
 
-
+delflator <- function(nper, i) {
+ nper/sum((1 + i)^seq_along(c(1:nper))) 
+}
 
 # http://www.experts-exchange.com/articles/1948/A-Guide-to-the-PMT-FV-IPMT-and-PPMT-Functions.html
 impt <- function(rate, per, nper, pv, fv=0, type=0) {

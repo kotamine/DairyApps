@@ -18,31 +18,33 @@ rv$cash_impact_with_salvage <-  rv$cash_impact_without_salvage +
 WACC <- reactive({  
   rv$loan_housing <- rv$cost_housing - input$down_housing
   rv$loan_robot1 <- rv$robot_invest - input$down_robot1
-  rv$loan_robot2 <- rv$robot_invest - input$down_robot2
+  rv$loan_robot2 <- rv$robot_invest2 - input$down_robot2
   
   rv$WACC<- ((input$down_housing + input$down_robot1 + input$down_robot2) * input$hurdle_rate +
                                  + (rv$loan_housing * input$r_housing + rv$loan_robot1 * input$r_robot1 +
                                       + rv$loan_robot2 * input$r_robot2)*(1-input$tax_rate/100))/
-  (rv$cost_housing + rv$robot_invest+ rv$robot_invest)
+  (rv$cost_housing + rv$robot_invest+ rv$robot_invest2)
   rv$WACC
 })
   
+
+
+
 observeEvent(input$calculate_cash_flow, {
 
 n_years <- input$horizon;
 
 cost_robot_1 <- rv$robot_invest
-salvage_robot1 <- input$salvage_robot
-cost_robot_2 <- rv$robot_invest*(1+input$inflation_robot/100)^input$robot_years
+rv$robot_invest2 <-  rv$robot_invest*(1+input$inflation_robot/100)^input$robot_years
+cost_robot_2 <- rv$robot_invest2
+
 salvage_robot1 <- input$salvage_robot*(1+input$inflation_robot/100)^input$robot_years
-
-
-rv$robot_invest2 <- cost_robot_2 
-
+salvage_robot2 <- input$salvage_robot*(1+input$inflation_robot/100)^(input$robot_years*2)
 
 cost_housing <- rv$cost_housing
-salvage_housing <- rv$salvage_housing
+salvage_housing <- input$salvage_housing*(1+input$inflation_robot/100)^rv$housing_years
 
+# These are going to be rendered 
 rv$yr_robot2 <- input$robot_years 
 rv$yr_robot3 <- input$robot_years * 2
 rv$loan_housing <- cost_housing - input$down_housing
@@ -55,7 +57,7 @@ rv$copy_salvage_robot2 <- salvage_robot1
 rv$copy_salvage_robot3 <- 0 #input$robot_salvage * ()
 
 
-## ---- Depreciation Table ----
+## ------------ Depreciation Table ------------
 
 yr_AGDS_robot <- 7
 yr_SLD_robot <- 10
@@ -87,26 +89,25 @@ dep_robot[(1+input$robot_years):(input$robot_years + yr_SLD_robot)] <- (cost_rob
 dep_housing[1:yr_SLD_housing] <- (cost_housing - 0)/yr_SLD_housing
 }
 
+# add back salvage at the end
+dep_robot[input$robot_years] <-  -salvage_robot1
+dep_robot[(2*input$robot_years)] <-  -salvage_robot2
+dep_housing[rv$housing_years] <-  -salvage_housing
+
 table_depreciation <- cbind(c(1:n_years),dep_robot,dep_housing) %>% data.frame() 
 colnames(table_depreciation) <- c("year","depreciation_robot","depreciation_housing")
 table_depreciation$total <- table_depreciation$depreciation_robot + table_depreciation$depreciation_housing 
 
 
 
-## ---- Debt Table ---
-loan_robot_1 <- rv$robot_invest
-loan_robot_2 <- rv$robot_invest*(1+input$inflation_robot/100)^input$robot_years
-loan_period_robot <- round(input$robot_years*.8)
+## ------------ Debt Table ------------
 
-loan_housing <- rv$cost_housing
-loan_period_housing <- round(rv$housing_years*.8)
-
-
-tbl_robot <- debt_table(loan_robot_1, input$r_robot1/100, loan_period_robot, n_years, 1) +
-  + debt_table(loan_robot_2, input$r_robot2/100, loan_period_robot, n_years, input$robot_years+1)
+tbl_robot <- debt_table(rv$loan_robot1, input$r_robot1/100, input$n_yr_robot1, n_years, 1) +
+  + debt_table(rv$loan_robot2, input$r_robot2/100, input$n_yr_robot2, n_years, input$robot_years+1)
+tbl_robot[,1] <- tbl_robot[,1]/2
 colnames(tbl_robot) <- lapply(colnames(tbl_robot), function(x) { paste0("robot_",x)}) %>% unlist()
 
-tbl_barn <- debt_table(loan_housing, input$r_housing/100, loan_period_housing, n_years, 1)
+tbl_barn <- debt_table(rv$loan_housing, input$r_housing/100, input$n_yr_housing, n_years, 1)
 colnames(tbl_barn) <- lapply(colnames(tbl_barn), function(x) { paste0("barn_",x)}) %>% unlist()
 
 table_debt <- cbind(tbl_robot, tbl_barn[,c(-1)])
@@ -114,7 +115,7 @@ colnames(table_debt) <- c("year",colnames(table_debt)[c(-1)])
 table_debt$interest_total <- table_debt$robot_interest + table_debt$barn_interest 
 table_debt$principal_total <- table_debt$robot_principal + table_debt$barn_principal
 
-## ---- Cash Flow Table ---- 
+## ------------ Cash Flow Table ------------
 # downpayment info + salvage value
 
 table_cash_flow <- matrix(c(c(1:n_years), rep(rep(0,n_years),9)),ncol=10,byrow=FALSE)  %>% data.frame()
@@ -134,8 +135,8 @@ table_cash_flow$add_back_depr <-  -table_cash_flow$depreciation
 # }) %>% unlist()
 
 table_cash_flow$revenue_over_expense <- lapply(c(1:n_years), function(t) {
-    (rv$inc_rev_total - rv$inc_exp_total)*(1+input$inflation_margin/100)^(t) +
-      + rv$dec_exp_total * (1+input$inflation_labor/100)^(t)
+    (rv$inc_rev_total - rv$inc_exp_total)*(1+input$inflation_margin/100)^(t-1) +
+      + rv$dec_exp_total * (1+input$inflation_labor/100)^(t-1)
   }) %>% unlist()
 
 table_cash_flow$operating_income <- table_cash_flow$revenue_over_expense + table_cash_flow$interest_total +
@@ -161,12 +162,13 @@ rv$table_cash_flow <- table_cash_flow
 rv$table_debt <- table_debt
 rv$table_depreciation <- table_depreciation
 
-rate <- WACC()
+rate <- WACC()/100
+
 browser()
 
-  rv$NPV <- npv(rate/100, table_cash_flow$after_tax_cash_flow[-1]) +
+  rv$NPV <- npv(rate, table_cash_flow$after_tax_cash_flow[-1]) +
     + table_cash_flow$after_tax_cash_flow[1]
-  rv$ANPV <- -pmt(rate/100, rv$housing_years+1,rv$NPV)
+  rv$ANPV <- -pmt(rate, rv$housing_years+1,rv$NPV)
   rv$ANPVr <- rv$ANPV * rv$deflator
   rv$IRR <- irr(table_cash_flow$after_tax_cash_flow) * 100
   rv$MIRR <- mirr(table_cash_flow$after_tax_cash_flow, input$interest/100, input$interest/100) * 100
@@ -197,7 +199,9 @@ lapply(cash_render_0_right, function(x) {
 
 lapply(cash_render_2_right, function(x) {
   output[[x]] <- renderUI({
-    # browser()
+    validate(
+      need(!is.na(rv[[x]]), "NA")
+    )
     rv[[x]] %>% round(2) %>% helpText(align="right")
   })
 })
@@ -214,9 +218,9 @@ lapply(c("table_cash_flow","table_debt","table_depreciation"),
                         options = list(
                           dom = 'C<"clear">lfrtip',
                           scrollX = TRUE,
-                          scrollCollapse = TRUE,
-                          scrollY = 500,
-                          scrollCollapse = TRUE,
+#                           scrollCollapse = TRUE,
+#                           scrollY = 500,
+                          # scrollCollapse = TRUE,
                           # colVis = list(exclude = c(0, 1,1,0),
                           showNone=TRUE, 
                           activate = 'mouseover'))

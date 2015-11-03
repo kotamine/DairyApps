@@ -12,8 +12,8 @@ updateNumericInput(session, "inflation_margin",NULL,value=1.5,step=.25,min=0)
 updateNumericInput(session, "inflation_labor",NULL,value=1.5,step=.25,min=0)
 updateNumericInput(session, "inflation_general",NULL,value=1.5,step=.25,min=0)
 updateNumericInput(session, "inflation_general",NULL,value=1.5,step=.25,min=0)
-updateNumericInput(session, "down_housing",NULL,value=0, min=0,step=5000)
-updateNumericInput(session, "down_robot1",NULL,value=100000, min=0,step=5000)
+updateNumericInput(session, "down_housing",NULL,value=100000, min=0,step=5000)
+updateNumericInput(session, "down_robot1",NULL,value=0, min=0,step=5000)
 updateNumericInput(session, "down_robot2",NULL,value=100000, min=0,step=5000)
 updateNumericInput(session, "r_housing",NULL,value=4, min=0, step=.25)
 updateNumericInput(session, "r_robot1",NULL,value=4, min=0, step=.25)
@@ -23,7 +23,7 @@ updateNumericInput(session, "n_yr_robot1",NULL,value=12, min=0, step=1)
 updateNumericInput(session, "n_yr_robot2",NULL,value=12, min=0, step=1)
 updateNumericInput(session, "salvage_housing",NULL,value=0, min=0, step=5000)
 updateNumericInput(session,"horizon",NULL,value=30, min=1, step=5)
-updateNumericInput(session, "hurdle_rate",NULL,value=3, min=0, step=.25)
+updateNumericInput(session, "hurdle_rate",NULL,value=4, min=0, step=.25)
 updateNumericInput(session, "tax_rate",NULL,value=40, min=0, step=2)
 
 
@@ -197,8 +197,16 @@ rv$negative_total  <-  rv$inc_exp_total + rv$capital_recovery_total
 
 rv$impact_without_salvage <- rv$positive_total - rv$negative_total
 
-rv$robot_end_PV <- -pmt(input$interest/100, rv$housing_years, 
-                        input$salvage_robot/(1 + input$inflation_robot/100)^rv$housing_years) * rv$deflator 
+# rv$robot_end_PV <- -pmt(input$interest/100, rv$housing_years, 
+#                         input$salvage_robot*(1 + input$inflation_robot/100)^input$robot_years/
+#                           (1 + input$interest/100)^rv$housing_years) * rv$deflator 
+
+rv$robot_end_PV <- (-pmt(input$interest/100, rv$housing_years, 
+                        input$salvage_robot*(1 + input$inflation_robot/100)^input$robot_years/
+                          (1 + input$interest/100)^input$robot_years) +
+       - pmt(input$interest/100, rv$housing_years, 
+       input$salvage_robot*(1 + input$inflation_robot/100)^rv$housing_years/
+         (1 + input$interest/100)^rv$housing_years))* rv$deflator  
 
 rv$impact_with_salvage <- rv$impact_without_salvage + rv$robot_end_PV
 
@@ -272,7 +280,6 @@ createAlert(session, "s_input_change", "ref_s_input_change",
 
 if (input$cash_flow_on=="ON" ) { # & !is.null(rv$robot_invest2)) {
   
-  browser()
   t <- input$budget_year-1
   
   rv$cash_positive_total <- rv$inc_rev_total * (1+input$inflation_margin/100)^t +
@@ -292,8 +299,9 @@ if (input$cash_flow_on=="ON" ) { # & !is.null(rv$robot_invest2)) {
 #                                    + rv$loan_robot2 * input$r_robot2)*(1-input$tax_rate/100))/
 #                                   (rv$cost_housing + rv$robot_invest+ rv$robot_invest2)
 #   
-  rate <- WACC()
+  rate <- WACC()/100
   
+
   rv$cash_IOFC <-  anpv(rv$IOFC, rate, input$inflation_margin/100, input$horizon) * rv$deflator 
   
   rv$cash_IOFC2 <- anpv(rv$IOFC2, rate, input$inflation_margin/100, input$horizon) * rv$deflator 
@@ -316,6 +324,8 @@ if (input$cash_flow_on=="ON" ) { # & !is.null(rv$robot_invest2)) {
   
   rv$cash_milk_feed <-  -(rv$cash_feed_robot - rv$cash_feed_current) + rv$cash_milk_robot -  rv$cash_milk_current 
   
+  browser()
+  
   # which inflation? 
   rv$cash_inc_exp_repair <-  anpv(rv$inc_exp_repair, rate, input$inflation_margin/100, input$horizon) * rv$deflator 
   rv$cash_capital_recovery_robot <-  anpv(rv$capital_recovery_robot, rate, input$inflation_general/100, input$horizon) *  rv$deflator 
@@ -323,15 +333,17 @@ if (input$cash_flow_on=="ON" ) { # & !is.null(rv$robot_invest2)) {
   rv$cash_robot_end_PV <-  anpv(rv$robot_end_PV, rate, input$inflation_robot/100, input$horizon) * rv$deflator 
   
 
-  rv$cash_labor_repair <- -(rv$cash_labor_robot - rv$cash_labor_current + 
-            + anpv(rv$inc_exp_repair, rate, input$inflation_robot/100, input$horizon)) * rv$deflator 
+  rv$cash_labor_repair <- -(rv$cash_labor_robot - rv$cash_labor_current +  
+            + anpv(rv$inc_exp_repair, rate, input$inflation_robot/100, input$horizon) * rv$deflator)
   
   rv$cash_capital_cost <- anpv(rv$capital_cost, rate,
-                               input$inflation_general/100, input$horizon) * rv$deflator 
+                              input$inflation_general/100, input$horizon) * rv$deflator  
   
-  rv$cash_misc <- anpv(rv$misc, rate, input$inflation_general/100, input$horizon) * rv$deflator 
+  #rv$cash_capital_cost <- rv$capital_cost
   
-  rv$cash_NAI <-  rv$cash_milk_feed + rv$cash_labor_repair + rv$cash_capital_cost + rv$cash_misc
+  rv$cash_misc <- anpv(rv$misc, rate, input$inflation_general/100, input$horizon) * rv$deflator  
+  
+  rv$cash_NAI <-  rv$cash_milk_feed + rv$cash_labor_repair + rv$cash_capital_cost + rv$cash_misc 
   
 
    
