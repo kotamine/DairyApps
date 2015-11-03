@@ -373,9 +373,11 @@ navlistPanel("Data and Assumptions",
                                                                  column(width=2,  h5(strong("Housing"), align="center")),
                                                                  column(width=2,  h5(strong("Robot"), align="center")),
                                                                  conditionalPanel("input.n_robot_life>=2",
-                                                                                  column(width=2,  helpText("Robot 2"))),
+                                                                                  column(width=2, 
+                                                                                         h5(strong("Robot 2"), align="center"))),
                                                                  conditionalPanel("input.n_robot_life>=3", 
-                                                                                  column(width=2,  helpText("Robot 3")))
+                                                                                  column(width=2,
+                                                                                         h5(strong("Robot 3"), align="center")))
                                                         )), br(), 
                                                     fluidRow(column(width=4,  helpText("Year of investment")),
                                                              column(width=2,  helpText("1")),

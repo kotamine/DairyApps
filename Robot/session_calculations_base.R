@@ -190,8 +190,16 @@ rv$capital_recovery_housing  <- - pmt(input$interest/100, rv$housing_years, rv$c
 
 rv$capital_recovery_total <- rv$capital_recovery_robot + rv$capital_recovery_housing
 
-rv$negative_total  <-  rv$inc_exp_total + rv$capital_recovery_total
+rv$robot_end_PV <- (-pmt(input$interest/100, rv$housing_years, 
+                         input$salvage_robot*(1 + input$inflation_robot/100)^input$robot_years/
+                           (1 + input$interest/100)^input$robot_years) +
+                      - pmt(input$interest/100, rv$housing_years, 
+                            input$salvage_robot*(1 + input$inflation_robot/100)^rv$housing_years/
+                              (1 + input$interest/100)^rv$housing_years))* rv$deflator  
 
+
+
+rv$negative_total  <-  rv$inc_exp_total + rv$capital_recovery_total
 
 ## Net Impact
 
@@ -201,12 +209,6 @@ rv$impact_without_salvage <- rv$positive_total - rv$negative_total
 #                         input$salvage_robot*(1 + input$inflation_robot/100)^input$robot_years/
 #                           (1 + input$interest/100)^rv$housing_years) * rv$deflator 
 
-rv$robot_end_PV <- (-pmt(input$interest/100, rv$housing_years, 
-                        input$salvage_robot*(1 + input$inflation_robot/100)^input$robot_years/
-                          (1 + input$interest/100)^input$robot_years) +
-       - pmt(input$interest/100, rv$housing_years, 
-       input$salvage_robot*(1 + input$inflation_robot/100)^rv$housing_years/
-         (1 + input$interest/100)^rv$housing_years))* rv$deflator  
 
 rv$impact_with_salvage <- rv$impact_without_salvage + rv$robot_end_PV
 
@@ -324,7 +326,6 @@ if (input$cash_flow_on=="ON" ) { # & !is.null(rv$robot_invest2)) {
   
   rv$cash_milk_feed <-  -(rv$cash_feed_robot - rv$cash_feed_current) + rv$cash_milk_robot -  rv$cash_milk_current 
   
-  browser()
   
   # which inflation? 
   rv$cash_inc_exp_repair <-  anpv(rv$inc_exp_repair, rate, input$inflation_margin/100, input$horizon) * rv$deflator 
@@ -333,6 +334,13 @@ if (input$cash_flow_on=="ON" ) { # & !is.null(rv$robot_invest2)) {
   rv$cash_robot_end_PV <-  anpv(rv$robot_end_PV, rate, input$inflation_robot/100, input$horizon) * rv$deflator 
   
 
+#   rv$cash_capital_recovery_robot <-  rv$capital_recovery_robot
+#   rv$cash_capital_recovery_housing <-  rv$capital_recovery_housing
+#   rv$cash_robot_end_PV <-  rv$robot_end_PV 
+#   
+  
+  
+                                          
   rv$cash_labor_repair <- -(rv$cash_labor_robot - rv$cash_labor_current +  
             + anpv(rv$inc_exp_repair, rate, input$inflation_robot/100, input$horizon) * rv$deflator)
   
