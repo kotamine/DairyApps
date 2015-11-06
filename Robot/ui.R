@@ -253,20 +253,6 @@ shinyUI(
                 source("ui_partial_budget.R", local=TRUE)$value
              )
              ),
-    # ---------- Additional Analyses -----------
-    navbarMenu("More",
-               tabPanel("Robustness Check Tools",
-                        fluidRow(column(10, offset=1, 
-                                        fluidRow(column(6, offset=3,
-                                                        radioButtons("robust", "Robustness analysis options", 
-                                                                     choices=c("Off","Sensitivity","Scenarios", "Cash Flow")))),
-                                        conditionalPanel('input.robust=="Sensitivity"', 
-                                                         helpText("Explanation about Sensitivity Analysis")),
-                                        conditionalPanel('input.robust=="Scenarios"', 
-                                                         helpText("Explanation about Scenario Analysis")))
-#                                         conditionalPanel('input.robust=="Cash Flow"', 
-#                                                          helpText("Explanation about Cash Flow Analysis"))
-                        )),
 tabPanel("Cash Flow Analysis",
          conditionalPanel("input.budget==0",
                           div(helpText("Please review all tabs in Data Entry."),align="center")
@@ -279,7 +265,20 @@ tabPanel("Cash Flow Analysis",
                           
          )
 ),
-               tabPanel("More Investment Options")
+    # ---------- Additional Analyses -----------
+    navbarMenu("More",
+               tabPanel("Robustness Check Tools",
+                        fluidRow(column(10, offset=1, 
+                                        fluidRow(column(6, offset=3,
+                                                        radioButtons("robust", "Robustness analysis options", 
+                                                                     choices=c("Off","Sensitivity","Scenarios")))),
+                                        conditionalPanel('input.robust=="Sensitivity"', 
+                                                         helpText("Explanation about Sensitivity Analysis")),
+                                        conditionalPanel('input.robust=="Scenarios"', 
+                                                         helpText("Explanation about Scenario Analysis")))
+                        )),
+
+               tabPanel("Robots vs Parlors")
     ),
     # ---------- About -----------
     tabPanel("About",
