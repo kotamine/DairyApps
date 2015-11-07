@@ -2,7 +2,7 @@
 
 fluidRow(
   column(width=8,offset=2, 
-         h4("Partial Budget Analysis (before-tax)",align="center"),
+         h4("Partial Budget Analysis",align="center"),
   conditionalPanel("input.cash_flow_on=='ON'",
                    div(wellPanel(h4("Results represented as future values accounting for inflations"),
                    sliderInput("budget_year", "Select year",value=1, min=1,max=30)), align="center")
@@ -106,46 +106,100 @@ fluidRow(
                              helpText("Capital recovery cost of housing (dep. & int.)")),
                       column(width=3, uiOutput("capital_recovery_housing"))                      
              ),
+             fluidRow(column(width=8, offset=1, 
+                             helpText("Capital cost of downpayment")),
+                      column(width=3, uiOutput("cost_downpayment2"))                      
+             ),             
+             fluidRow(column(width=8, offset=1, 
+                             helpText("Salvage value of robots (minus = increase)")),
+                      column(width=3, uiOutput("robot_end_PV"))                       
+             ),
              hr(),
              fluidRow(column(width=8, offset=1, 
-                             helpText("Total capital recovery cost of robots & housing")),
-                      column(width=3, uiOutput("capital_recovery_total"))                         
+                             helpText("Total cost of capital")),
+                      column(width=3, uiOutput("total_cost_capital"))                         
              ), br(),
              fluidRow(column(width=8, offset=1, 
                              h5("Total negative impacts")),
                       column(width=3, uiOutput("cash_negative_total"))                        
+             ),
+             fluidRow(column(width=8, offset=1, 
+                             h5("Total change in operating income (excl. cost of capital)")),
+                      column(width=3, uiOutput("cash_operating_income_total"))                        
              )
            ), br(), br()
-    )),
-  fluidRow(
-    column(width=8,offset=2,
-           fluidRow(
-             column(width=3,offset=9, span(helpText("Break-even wage"),
-                                           align="right"))
-           ), 
-           fluidRow(column(width=7, offset=0, 
-                           h5("Net annual financial impact without salvage")),
-                    column(width=3, uiOutput("cash_impact_without_salvage")),
-                    column(width=2,uiOutput("be_wage_without_salvage"))
-           ), 
-           br(),
-#            h5("Robot's salvage value at the end of its useful life:"),
-#            fluidRow(column(width=6, offset=1, 
-#                            helpText("Estimated value at end $90,000")),
-#                     column(width=3, span(helpText("Annualized PV"), align="right"))               
-#            ),
-           fluidRow(column(width=6, offset=1, 
-                           helpText("Estimated salvage value")),
-                    column(width=3, uiOutput("robot_end_PV"))                       
-           ),
-           fluidRow(column(width=7, offset=0, 
-                           h5("Net annual impact with robot's salvage value")),
-                    column(width=3, uiOutput("cash_impact_with_salvage")),                                                                          column(width=2,uiOutput("be_wage_with_salvage"))
-           ), #br(), 
+    )), 
+  fluidRow(column(width=7, offset=0, 
+                  h5("Expected inflation adjustments")),
+           column(width=3, uiOutput("inflation_adjustment"))
+  ),
+  fluidRow(column(width=7, offset=0, 
+                  h5("Net annual impact (before-tax)")),
+           column(width=3, uiOutput("net_annual_impact_before_tax"))
+  ),
+  fluidRow(column(width=7, offset=1, 
+                  h5("Break-even wage rate (before-tax)")),
+           column(width=3, uiOutput("bw_wage_before_tax"))
+  ), 
+  fluidRow(column(width=7, offset=1, 
+                  h5("(or) Break-even wage inflation rate (before-tax)")),
+           column(width=3, uiOutput("bw_wage_inflation_before_tax"))
+  ), 
+  br(),
+  fluidRow(column(width=7, offset=1, 
+                  h5("Tax on change in operating income")),
+           column(width=3, uiOutput("tax_operating_income"))
+  ), 
+  fluidRow(column(width=7, offset=1, 
+                  h5("Tax on interests (minus=deduction)")),
+           column(width=3, uiOutput("tax_interest"))
+  ), 
+  fluidRow(column(width=7, offset=1, 
+                  h5("Tax on depreciation (minus=deduction)")),
+           column(width=3, uiOutput("tax_depreciation"))
+  ), 
+  fluidRow(column(width=7, offset=0, 
+                  h5("Net annual impact (after-tax)")),
+           column(width=3, uiOutput("net_annual_impact_after_tax"))
+  ),
+  fluidRow(column(width=7, offset=1, 
+                  h5("Break-even wage rate (after-tax)")),
+           column(width=3, uiOutput("bw_wage_after_tax"))
+  ), 
+  fluidRow(column(width=7, offset=1, 
+                  h5("(or) Break-even wage inflation rate (after-tax)")),
+           column(width=3, uiOutput("bw_wage_inflation_after_tax"))
+  ),  
+#   fluidRow(
+#     column(width=8,offset=2,
+#            fluidRow(
+#              column(width=3,offset=9, span(helpText("Break-even wage"),
+#                                            align="right"))
+#            ), 
 #            fluidRow(column(width=7, offset=0, 
-#                            h5("Net annual impact with inflation, as annualized net present value (NPV)")),
-#                     column(width=3, uiOutput("impact_with_inflation"))                          
+#                            h5("Net annual financial impact without salvage")),
+#                     column(width=3, uiOutput("cash_impact_without_salvage")),
+#                     column(width=2,uiOutput("be_wage_without_salvage"))
+#            ), 
+#            br(),
+# #            h5("Robot's salvage value at the end of its useful life:"),
+# #            fluidRow(column(width=6, offset=1, 
+# #                            helpText("Estimated value at end $90,000")),
+# #                     column(width=3, span(helpText("Annualized PV"), align="right"))               
+# #            ),
+#            fluidRow(column(width=6, offset=1, 
+#                            helpText("Estimated salvage value")),
+#                     column(width=3, uiOutput("robot_end_PV"))                       
 #            ),
+#            fluidRow(column(width=7, offset=0, 
+#                            h5("Net annual impact with robot's salvage value")),
+#                     column(width=3, uiOutput("cash_impact_with_salvage")),                                                                          column(width=2,uiOutput("be_wage_with_salvage"))
+#            ), #br(), 
+# #            fluidRow(column(width=7, offset=0, 
+# #                            h5("Net annual impact with inflation, as annualized net present value (NPV)")),
+# #                     column(width=3, uiOutput("impact_with_inflation"))                          
+# #            ),
+
            br(),
            #tags$a(href ="#data_entry",  #"#tab-9037-2",
            ## I haven't been able to set a link to a tab. It seems compliated in Shiny.
@@ -153,10 +207,8 @@ fluidRow(
                align="center", 
                h4("See interactive dashboard under the Data Entry tab. ")
            ),
-           
-           
            br(),br()
-    ))
-)
+    # ))
+) 
 
 
