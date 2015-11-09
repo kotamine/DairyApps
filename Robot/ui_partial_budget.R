@@ -2,11 +2,11 @@
 
 fluidRow(
   column(width=8,offset=2, 
-         h4("Partial Budget Analysis",align="center"),
-  conditionalPanel("input.cash_flow_on=='ON'",
-                   div(wellPanel(h4("Results represented as future values accounting for inflations"),
-                   sliderInput("budget_year", "Select year",value=1, min=1,max=30)), align="center")
-                   )), 
+          h4("Partial Budget Analysis",align="center"),
+                   div(wellPanel(
+                     # h4("Results represented as future values accounting for inflations"),
+                   sliderInput("budget_year", "Select budget year",value=1, min=1,max=30)), align="center")
+                   ), 
   fluidRow(column(width=6,
            wellPanel(
              h5(strong("Positive Impacts:")),
@@ -56,9 +56,9 @@ fluidRow(
                       column(width=3, uiOutput("dec_exp_total"))               
              ), 
              br(),
-             fluidRow(column(width=8, offset=1, 
+             fluidRow(column(width=8, offset=0, 
                              h5("Total positve impacts")),
-                      column(width=3, uiOutput("cash_positive_total"))              
+                      column(width=3, offset=1, uiOutput("positive_total"))              
              )
            )),
     column(width=6,
@@ -97,7 +97,9 @@ fluidRow(
              fluidRow(column(width=8, offset=1, 
                              h5("Total increased expenses")),
                       column(width=3, uiOutput("inc_exp_total"))                          
-             ), br(),
+             ), 
+             br(),
+             h5("Amortized Cost of Capital (constant payment-equivalent per year)"),
              fluidRow(column(width=8, offset=1, 
                              helpText("Capital recovery cost of robots (dep. & int.)")),
                       column(width=3, uiOutput("capital_recovery_robot"))                          
@@ -111,65 +113,71 @@ fluidRow(
                       column(width=3, uiOutput("cost_downpayment2"))                      
              ),             
              fluidRow(column(width=8, offset=1, 
-                             helpText("Salvage value of robots (minus = increase)")),
+                             helpText("Salvage value of robots (minus = income)")),
                       column(width=3, uiOutput("robot_end_PV"))                       
              ),
              hr(),
              fluidRow(column(width=8, offset=1, 
-                             helpText("Total cost of capital")),
-                      column(width=3, uiOutput("total_cost_capital"))                         
-             ), br(),
-             fluidRow(column(width=8, offset=1, 
+                             h5("Total cost of capital")),
+                      column(width=3, uiOutput("capital_cost_total"))                         
+             ), br(), 
+             fluidRow(column(width=8, offset=0, 
                              h5("Total negative impacts")),
-                      column(width=3, uiOutput("cash_negative_total"))                        
-             ),
-             fluidRow(column(width=8, offset=1, 
-                             h5("Total change in operating income (excl. cost of capital)")),
-                      column(width=3, uiOutput("cash_operating_income_total"))                        
+                      column(width=3,  offset=1, uiOutput("negative_total"))                        
              )
            ), br(), br()
     )), 
-  fluidRow(column(width=7, offset=0, 
-                  h5("Expected inflation adjustments")),
-           column(width=3, uiOutput("inflation_adjustment"))
+  fluidRow(column(width=8, offset=2, 
+  fluidRow(column(width=9, offset=0, 
+                  h5("Total positive impacts minus total negative impacts")),
+           column(width=2, uiOutput("positive_minus_negative"))
   ),
-  fluidRow(column(width=7, offset=0, 
+  fluidRow(column(width=9, offset=0, 
+                  h5("Inflation adjustments")),
+           column(width=2, uiOutput("inflation_adjustment"))
+  ),
+  fluidRow(column(width=9, offset=0, 
                   h5("Net annual impact (before-tax)")),
-           column(width=3, uiOutput("net_annual_impact_before_tax"))
+           column(width=2, uiOutput("net_annual_impact_before_tax"))
   ),
-  fluidRow(column(width=7, offset=1, 
+  fluidRow(column(width=8, offset=1, 
                   h5("Break-even wage rate (before-tax)")),
-           column(width=3, uiOutput("bw_wage_before_tax"))
+           column(width=2, uiOutput("bw_wage_before_tax"))
   ), 
-  fluidRow(column(width=7, offset=1, 
-                  h5("(or) Break-even wage inflation rate (before-tax)")),
-           column(width=3, uiOutput("bw_wage_inflation_before_tax"))
+  fluidRow(column(width=8, offset=1, 
+                  h5("Break-even wage inflation rate (before-tax)")),
+           column(width=2, uiOutput("bw_wage_inflation_before_tax"))
   ), 
   br(),
-  fluidRow(column(width=7, offset=1, 
-                  h5("Tax on change in operating income")),
-           column(width=3, uiOutput("tax_operating_income"))
-  ), 
-  fluidRow(column(width=7, offset=1, 
-                  h5("Tax on interests (minus=deduction)")),
-           column(width=3, uiOutput("tax_interest"))
-  ), 
-  fluidRow(column(width=7, offset=1, 
-                  h5("Tax on depreciation (minus=deduction)")),
-           column(width=3, uiOutput("tax_depreciation"))
-  ), 
-  fluidRow(column(width=7, offset=0, 
-                  h5("Net annual impact (after-tax)")),
-           column(width=3, uiOutput("net_annual_impact_after_tax"))
+  fluidRow(column(width=9, offset=0, 
+                  h5("Change in revenue minus expense (= before-tax impact plus cost of capital)")),
+           column(width=2, uiOutput("revenue_minus_expense"))                        
   ),
-  fluidRow(column(width=7, offset=1, 
-                  h5("Break-even wage rate (after-tax)")),
-           column(width=3, uiOutput("bw_wage_after_tax"))
+  fluidRow(column(width=9, offset=0, 
+                  h5("Tax on change in revenue minus expense")),
+           column(width=2, uiOutput("tax_revenue_minus_expense"))
   ), 
-  fluidRow(column(width=7, offset=1, 
-                  h5("(or) Break-even wage inflation rate (after-tax)")),
-           column(width=3, uiOutput("bw_wage_inflation_after_tax"))
-  ),  
+  fluidRow(column(width=9, offset=0, 
+                  h5("Tax deduction on interests")),
+           column(width=2, uiOutput("tax_interest"))
+  ), 
+  fluidRow(column(width=9, offset=0, 
+                  h5("Tax deduction on depreciation")),
+           column(width=2, uiOutput("tax_depreciation"))
+  ), 
+  fluidRow(column(width=9, offset=0, 
+                  h5("Net annual impact (after-tax)")),
+           column(width=2, uiOutput("net_annual_impact_after_tax"))
+  ),
+  fluidRow(column(width=8, offset=1, 
+                  h5("Break-even wage rate (after-tax)")),
+           column(width=2, uiOutput("bw_wage_after_tax"))
+  ), 
+  fluidRow(column(width=8, offset=1, 
+                  h5("Break-even wage inflation rate (after-tax)")),
+           column(width=2, uiOutput("bw_wage_inflation_after_tax"))
+  )
+  )),  
 #   fluidRow(
 #     column(width=8,offset=2,
 #            fluidRow(

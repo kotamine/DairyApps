@@ -1,8 +1,8 @@
 library(shiny)
 library(shinyBS)
-library(shinyjs)
 library(markdown)
 library(ggplot2)
+suppressPackageStartupMessages(library(shinyjs))
 suppressPackageStartupMessages(library(DT))
 suppressPackageStartupMessages(library(dplyr))
 suppressPackageStartupMessages(library(xlsx))
@@ -34,9 +34,9 @@ shinyServer(function(input, output, session) {
 
   source("session_render_base.R", local=TRUE)
   
-  # ----------- Cash Flow Analysis -----------
-  source("session_cash_flow.R", local=TRUE)
-  
+#   # ----------- Cash Flow Analysis -----------
+#   source("session_cash_flow.R", local=TRUE)
+#   
   
 #   # ----------- Sensitivity Analysis -----------
 #   source("session_sensitivity.R", local=TRUE)
@@ -144,87 +144,87 @@ shinyServer(function(input, output, session) {
 #     }
 #   })
   
-  output$table_robust <- DT::renderDataTable({
-    if (input$robust=="Sensitivity") {
-      if (dim(rb$table_sensitivity)[1]==0) return()
-        tbl <- rb$table_sensitivity[, c_order1] 
-    }
-    else if (input$robust=="Scenarios") {
-      if (dim(rb$table_scenario)[1]==0) return()
-      tbl <- rb$table_scenario[, s_order1] 
-    } else {
-      return()
-    }
-    
-      DT::datatable(tbl,
-                    rownames = FALSE,
-                    extensions = 'ColVis',
-                    # extensions = 'ColReorder',
-                    options = list(
-                      dom = 'C<"clear">lfrtip',
-                      scrollX = TRUE,
-                      scrollCollapse = TRUE,
-                      scrollY = 500,
-                      scrollCollapse = TRUE,
-                      # colVis = list(exclude = c(0, 1,1,0),
-                      showNone=TRUE, 
-                      activate = 'mouseover'))
-
-  })
-  
-  
-  output$table_input <-  DT::renderDataTable({
-    if (dim(rv$table_input)[1]>0) {
-      DT::datatable(rv$table_input,
-                    rownames = FALSE,
-                    extensions = 'ColReorder', options = list(dom = 'Rlfrtip'))
-    } 
-    else {
-      return()
-    }
-  })
-  
-  rv$test_data <- matrix(c(1:6),nrow=2)
-  
-  output$c_download <- downloadHandler(
-    # browser() 
-    filename = "test.xlsx", 
-    
-    content = function(file) { 
-      wb <- XLConnect::loadWorkbook(file, create = TRUE)
-      XLConnect::createSheet(wb, name = "Sheet1")
-      XLConnect::createSheet(wb, name = "Sheet2")
-      XLConnect::writeWorksheet(wb, c(1:3), sheet = "Sheet1") # writes numbers 1:3 in file
-      XLConnect::writeWorksheet(wb, rv$test_data, sheet = "Sheet2") # writes numbers 1:3 in file
-      XLConnect::saveWorkbook(wb)
-    } 
-    
-  ) 
-  
-  
-  
-  output$sheet1 <- renderTable({
-    
-    inFile <- input$user_data
-    if (is.null(inFile))
-    { return(NULL)}
-    
-    browser()
-    wb <- loadWorkbook(inFile$datapath)
-    sheets <- getSheets(wb)
-
-    read.xlsx(inFile$datapath, sheetIndex = 2)
-  })
-  
-  # There is no offical method to remove an uploaded file. 
-  # The following provides a "fix" by initializing fileInput(). 
-  # http://stackoverflow.com/questions/17352086/how-can-i-update-a-shiny-fileinput-object
-  output$resettableInput <- renderUI({
-    input$remove
-    
-    fileInput("file1", "Upload File",
-              accept=c(".xlsx", "application/vnd.ms-excel"))
-  })
+#   output$table_robust <- DT::renderDataTable({
+#     if (input$robust=="Sensitivity") {
+#       if (dim(rb$table_sensitivity)[1]==0) return()
+#         tbl <- rb$table_sensitivity[, c_order1] 
+#     }
+#     else if (input$robust=="Scenarios") {
+#       if (dim(rb$table_scenario)[1]==0) return()
+#       tbl <- rb$table_scenario[, s_order1] 
+#     } else {
+#       return()
+#     }
+#     
+#       DT::datatable(tbl,
+#                     rownames = FALSE,
+#                     extensions = 'ColVis',
+#                     # extensions = 'ColReorder',
+#                     options = list(
+#                       dom = 'C<"clear">lfrtip',
+#                       scrollX = TRUE,
+#                       scrollCollapse = TRUE,
+#                       scrollY = 500,
+#                       scrollCollapse = TRUE,
+#                       # colVis = list(exclude = c(0, 1,1,0),
+#                       showNone=TRUE, 
+#                       activate = 'mouseover'))
+# 
+#   })
+#   
+#   
+#   output$table_input <-  DT::renderDataTable({
+#     if (dim(rv$table_input)[1]>0) {
+#       DT::datatable(rv$table_input,
+#                     rownames = FALSE,
+#                     extensions = 'ColReorder', options = list(dom = 'Rlfrtip'))
+#     } 
+#     else {
+#       return()
+#     }
+#   })
+#   
+#   rv$test_data <- matrix(c(1:6),nrow=2)
+#   
+#   output$c_download <- downloadHandler(
+#     # browser() 
+#     filename = "test.xlsx", 
+#     
+#     content = function(file) { 
+#       wb <- XLConnect::loadWorkbook(file, create = TRUE)
+#       XLConnect::createSheet(wb, name = "Sheet1")
+#       XLConnect::createSheet(wb, name = "Sheet2")
+#       XLConnect::writeWorksheet(wb, c(1:3), sheet = "Sheet1") # writes numbers 1:3 in file
+#       XLConnect::writeWorksheet(wb, rv$test_data, sheet = "Sheet2") # writes numbers 1:3 in file
+#       XLConnect::saveWorkbook(wb)
+#     } 
+#     
+#   ) 
+#   
+#   
+#   
+#   output$sheet1 <- renderTable({
+#     
+#     inFile <- input$user_data
+#     if (is.null(inFile))
+#     { return(NULL)}
+#     
+#     browser()
+#     wb <- loadWorkbook(inFile$datapath)
+#     sheets <- getSheets(wb)
+# 
+#     read.xlsx(inFile$datapath, sheetIndex = 2)
+#   })
+#   
+#   # There is no offical method to remove an uploaded file. 
+#   # The following provides a "fix" by initializing fileInput(). 
+#   # http://stackoverflow.com/questions/17352086/how-can-i-update-a-shiny-fileinput-object
+#   output$resettableInput <- renderUI({
+#     input$remove
+#     
+#     fileInput("file1", "Upload File",
+#               accept=c(".xlsx", "application/vnd.ms-excel"))
+#   })
   
 })
 

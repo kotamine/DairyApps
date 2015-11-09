@@ -1,8 +1,8 @@
 library(shiny)
 library(shinyBS)
-library(shinyjs)
 library(markdown)
 library(ggplot2)
+suppressPackageStartupMessages(library(shinyjs))
 suppressPackageStartupMessages(library(DT))
 suppressPackageStartupMessages(library(dplyr))
 suppressPackageStartupMessages(library(xlsx))
@@ -30,7 +30,6 @@ shinyUI(
              # ----- Dashboard -----
              conditionalPanel("input.budget>0",
                               ## Basic Annual Impact Representation 
-                              conditionalPanel("input.cash_flow_on!='ON'",
                               fluidRow(
                                 column(4,
                                        fluidRow(
@@ -40,9 +39,9 @@ shinyUI(
                                          column(6,
                                                 uiOutput("NAI"),
                                                 radioButtons("NAI",NULL,
-                                                             choices=c("w/o salvage",
-                                                                       "w/ salvage"),
-                                                             selected="w/ salvage")) 
+                                                             choices=c("before tax",
+                                                                       "after tax"),
+                                                             selected="after tax")) 
                                        )),
                                 column(8,
                                        div(align="center", fluidRow(
@@ -57,38 +56,37 @@ shinyUI(
                                                 uiOutput("captial_cost"))
                                        ),
                                        uiOutput("misc")))
-                                
-                              )), 
-                              ## Cash Flow Based Representation 
-                              conditionalPanel("input.cash_flow_on=='ON'",
-                                               fluidRow(
-                                                 column(4,
-                                                        fluidRow(
-                                                          column(6,
-                                                                 uiOutput("cash_IOFC"),
-                                                                 radioButtons("cash_IOFC",NULL,choices=c("per cow","per cwt"))),
-                                                          column(6,
-                                                                 uiOutput("cash_NAI"),
-                                                                 radioButtons("cash_NAI",NULL,
-                                                                              choices=c("w/o salvage",
-                                                                                        "w/ salvage"),
-                                                                              selected="w/ salvage")) 
-                                                        )),
-                                                 column(8,
-                                                        div(align="center", fluidRow(
-                                                          column(4,
-                                                                 plotOutput("cash_plot1", height = 200),
-                                                                 uiOutput("cash_milk_feed")),
-                                                          column(4,
-                                                                 plotOutput("cash_plot2", height = 200),
-                                                                 uiOutput("cash_labor_repair")),
-                                                          column(4,
-                                                                 plotOutput("cash_plot3", height = 200),
-                                                                 uiOutput("cash_captial_cost"))
-                                                        ),
-                                                        uiOutput("cash_misc")))
-                                                 
-                                               )), 
+                              ), 
+#                               ## Cash Flow Based Representation 
+#                               conditionalPanel("input.cash_flow_on=='ON'",
+#                                                fluidRow(
+#                                                  column(4,
+#                                                         fluidRow(
+#                                                           column(6,
+#                                                                  uiOutput("cash_IOFC"),
+#                                                                  radioButtons("cash_IOFC",NULL,choices=c("per cow","per cwt"))),
+#                                                           column(6,
+#                                                                  uiOutput("cash_NAI"),
+#                                                                  radioButtons("cash_NAI",NULL,
+#                                                                               choices=c("w/o salvage",
+#                                                                                         "w/ salvage"),
+#                                                                               selected="w/ salvage")) 
+#                                                         )),
+#                                                  column(8,
+#                                                         div(align="center", fluidRow(
+#                                                           column(4,
+#                                                                  plotOutput("cash_plot1", height = 200),
+#                                                                  uiOutput("cash_milk_feed")),
+#                                                           column(4,
+#                                                                  plotOutput("cash_plot2", height = 200),
+#                                                                  uiOutput("cash_labor_repair")),
+#                                                           column(4,
+#                                                                  plotOutput("cash_plot3", height = 200),
+#                                                                  uiOutput("cash_captial_cost"))
+#                                                         ),
+#                                                         uiOutput("cash_misc")))
+#                                                  
+#                                                )), 
                               # ---------- Sensitivity Analysis -----------   
                               conditionalPanel('input.robust=="Sensitivity"', 
                                                tags$hr(), 
@@ -220,11 +218,11 @@ shinyUI(
                       ),
                       uiOutput("c_misc")))
              ))),
-             DT::dataTableOutput("table_robust"),
-             # ---------- Cash Flow Analysis -----------         
-             conditionalPanel('input.robust=="Cash Flow"', 
-                              helpText("Additional Controls and Displays for Cash Flow Analysis")
-             )
+             DT::dataTableOutput("table_robust")
+#              # ---------- Cash Flow Analysis -----------         
+#              conditionalPanel('input.robust=="Cash Flow"', 
+#                               helpText("Additional Controls and Displays for Cash Flow Analysis")
+#              )
             ),
              # --------- Data Table ---------
              fluidRow(column(2,offset=3,
@@ -244,7 +242,7 @@ shinyUI(
              br(), br()
     ),
     # ---------- Partial Budget Analysis -----------
-    tabPanel("Economic Analysis",
+    tabPanel("Partial Budget Analysis",
              conditionalPanel("input.budget==0",
                               div(bsButton("budget","Calculate",disabled = TRUE, icon = icon("ban")),
                                   helpText("Please review all tabs in Data Entry."),align="center")
@@ -258,17 +256,19 @@ tabPanel("Cash Flow Analysis",
                           div(helpText("Please review all tabs in Data Entry."),align="center")
          ),
          conditionalPanel("input.budget>0",
-                          div(
-                            radioButtons("cash_flow_on","Cash Flow Based Representation", choices=c("OFF","ON")), 
-                            align="center"), 
+#                           div(
+#                             radioButtons("cash_flow_on","Cash Flow Based Representation", choices=c("OFF","ON")), 
+#                             align="center"), 
+                          conditionalPanel("input.budget>0",
                           source("ui_cash_flow.R", local=TRUE)$value
-                          
+                          )
          )
 ),
     # ---------- Additional Analyses -----------
     navbarMenu("More",
                tabPanel("Robustness Check Tools",
-                        fluidRow(column(10, offset=1, 
+                        fluidRow(
+                          column(10,offset=1, 
                                         fluidRow(column(6, offset=3,
                                                         radioButtons("robust", "Robustness analysis options", 
                                                                      choices=c("Off","Sensitivity","Scenarios")))),

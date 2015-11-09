@@ -1,13 +1,13 @@
 
 # ---------- Cash Flow Analysis -----------
-conditionalPanel("input.cash_flow_on=='ON'",
+div(
 fluidRow(
   column(8,offset=2,
          h4("Cash Flow Analysis (after-tax)",align="center"),
 br(), 
-div(bsButton("calculate_cash_flow","Calculate",disabled = FALSE),align="center"),
-tags$hr(), 
-br(),   
+# div(bsButton("calculate_cash_flow","Calculate",disabled = FALSE),align="center"),
+# tags$hr(), 
+# br(),   
 fluidRow(column(5, helpText("Net present value (NPV)")),   
          column(2, uiOutput("NPV")),
          column(2, helpText("dollars"))
@@ -34,7 +34,7 @@ fluidRow(column(5, helpText("Weighted average cost of capital (WACC)")),
 )
   )),
 fluidRow(
-  column(width=9,offset=1, 
+  column(width=10,offset=1, 
          tabsetPanel(
            tabPanel("Cash Flow",
                     DT::dataTableOutput("table_cash_flow")
