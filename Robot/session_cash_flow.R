@@ -6,7 +6,6 @@
 isolate({
 n_years <- input$horizon
 
-browser()
 
 
 ## ------------ Depreciation Table ------------
@@ -125,6 +124,10 @@ if (rv$IRR>200) {
 } 
 # change the rates for MIRR ?
 rv$MIRR <- mirr(table_cash_flow$after_tax_cash_flow, input$interest/100, input$interest/100) * 100
+
+
+
+
 
 # })
 

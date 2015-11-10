@@ -88,6 +88,15 @@ mirr <- function(values, finance_rate, reinvest_rate) {
   return(tmp^(1/(n-1))-1)
 }
 
+annuity <- function(rate, nper, values) {
+  -pmt(rate, nper, npv(rate, values))
+}
+
+rate <- function(nper, pmt, pv) {
+  irr(c(pv, rep(pmt,nper)))
+}
+
+
 # annualized net present value
 # need: library(dplyr) for %>% operation
 anpv <- function(x, r, i, nper) {

@@ -73,11 +73,17 @@ lapply(var_to_render_0,
                            "tax_revenue_minus_expense",
                            "tax_interest",
                            "tax_depreciation",
-                           "net_annual_impact_after_tax")
+                           "net_annual_impact_after_tax",
+                           "cost_downpayment",
+                           "adj_WACC_interest",
+                           "adj_WACC_hurdle")
   
-  cash_render_2_right <- c("IRR","MIRR","WACC")
+  rate_render_2_right <- c("IRR","MIRR","WACC")
   
+  cash_render_2_right <- c("be_wage_positive_minus_negative", "bw_wage_before_tax", "bw_wage_after_tax")
   
+  percent_render_3_right <- c("bw_wage_inflation_before_tax", "bw_wage_inflation_after_tax")
+    
 #   lapply(cash_render_0, function(x) {
 #     output[[x]] <- renderUI({
 #       rv[[x]] %>% round() %>% helpText()
@@ -95,10 +101,28 @@ lapply(var_to_render_0,
       validate(
         need(!is.na(rv[[paste0(x)]]), "NA")
       )
+      rv[[paste0(x)]] %>% formatdollar(2) %>% helpText(align="right")
+    })
+  })
+  
+  lapply(rate_render_2_right, function(x) {
+    output[[paste0(x)]] <- renderUI({
+      validate(
+        need(!is.na(rv[[paste0(x)]]), "NA")
+      )
       rv[[paste0(x)]] %>% round(2) %>% helpText(align="right")
     })
   })
   
+  lapply(percent_render_3_right, function(x) {
+    output[[paste0(x)]] <- renderUI({
+      validate(
+        need(!is.na(rv[[paste0(x)]]), "NA")
+      )
+      a <- (rv[[paste0(x)]]*100) %>% round(3)
+      paste0(a,"%") %>% helpText(align="right")
+    })
+  })
   
 # This doesn't work  
 # for (r in 2:4) {
@@ -195,23 +219,6 @@ output$DMI_change_copy <- renderUI({
   rv$DMI_change  %>% round(3) %>% helpText() 
 })     
 
-# --- Break-even wage rates ---
-
-# output$be_wage_without_salvage  <- renderUI({
-#   rv$be_wage_without_salvage <- (rv$negative_total + 
-#                                - rv$inc_rev_total - rv$dec_exp_labor_management)/
-#     ((rv$dec_exp_heat_detection + rv$dec_exp_labor)/input$labor_rate)
-#   rv$be_wage_without_salvage %>% formatdollar(2) %>% strong() %>% helpText(align="right")
-# }) 
-# 
-# output$be_wage_with_salvage  <- renderUI({
-#   rv$be_wage_with_salvage <- (rv$negative_total - rv$robot_end_PV -
-#                                 rv$inc_rev_total- rv$dec_exp_labor_management )/
-#     ((rv$dec_exp_heat_detection + rv$dec_exp_labor )/input$labor_rate)
-#   rv$be_wage_with_salvage %>% formatdollar(2) %>% strong() %>% helpText(align="right")
-# }) 
-
-
 
 
 ## Dashboard 
@@ -227,7 +234,7 @@ output$IOFC <- renderUI({
 # CREATE DASHBOARD FOR CASH FLOW STATS and Inflation Adjustment 
 
 
-output$NAI <- renderUI({ # CHANGE THIS TO INCLUDE NPV
+output$NAI <- renderUI({ 
   dash_NAI(rv$NAI,cutoff=0)
 }) 
 
@@ -251,10 +258,10 @@ output$labor_repair <- renderUI({
 
 output$captial_cost <- renderUI({
   validate(
-    need(!is.na(rv$capital_cost_total ),"NA")
-  )
+    need(!is.na(rv$capital),"NA")
+  ) 
   div(class="well well-sm", style= "background-color: #64E986; color:white;", 
-      (-rv$capital_cost_total) %>% formatdollar2() %>% strong() %>% h4(),
+      (-rv$capital) %>% formatdollar2() %>% strong() %>% h4(),
       h5("Cost of Capital"),  h5("under robot"))
 })  
 
@@ -264,7 +271,16 @@ output$misc <- renderUI({
   )
   div(class="well well-sm", style= "background-color: #C2B280; color:white;", 
       rv$misc %>% formatdollar2() %>% strong %>% h4(), 
-      h5("The Rest"), h5("under robot"))
+      h5("Others"), h5("under robot"))
+}) 
+
+output$inflation <- renderUI({
+  validate(
+    need(!is.na(rv$inflation ),"NA")
+  )
+  div(class="well well-sm", style= "background-color: #C2B280; color:white;", 
+      rv$inflation %>% formatdollar2() %>% strong %>% h4(), 
+      h5("Inflation Adj."), h5("under robot"))
 })  
 
 output$plot1 <- renderPlot({ 

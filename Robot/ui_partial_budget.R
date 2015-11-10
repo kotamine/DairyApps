@@ -125,30 +125,36 @@ fluidRow(
                              h5("Total negative impacts*")),
                       column(width=3,  offset=1, uiOutput("negative_total"))                        
              )
-           ), br(), br()
+           ), br() 
     )), 
+
   fluidRow(
     column(width=8, offset=2, 
+           helpText("Asterisk (*) symbol indicates that the value is annualized
+                    into a constant income or payment during the planning horizon."),
+           br(),
                   fluidRow(
-                    column(width=3,offset=9, span(helpText("Breakeven wage"),
+                    column(width=2,offset=10, span(helpText("Breakeven-Wage"),
                                                   align="right"))
                   ), 
            fluidRow(
-             column(width=1,offset=9, span(helpText("Wage"),
+             column(width=1,offset=10, span(helpText("Rate"),
                                            align="center")),
              column(width=1,offset=0, span(helpText("Inflation"),
                                            align="center"))
            ), 
+           hr(),
                   fluidRow(column(width=7, offset=0, 
                                   h5("Total positive impacts minus total negative impacts*")),
                            column(width=3,  uiOutput("positive_minus_negative")),
                            column(width=1,  uiOutput("be_wage_positive_minus_negative")),
-                           column(width=1,  helpText("-"))
+                           column(width=1,  helpText("-",align="right"))
                   ), 
            fluidRow(column(width=6, offset=1, 
                            helpText("Inflation adjustments*")),
                     column(width=3, uiOutput("inflation_adjustment"))
            ), 
+           hr(),
            fluidRow(column(width=7, offset=0, 
                            h5("Net annual impact (before-tax)*")),
                     column(width=3,  uiOutput("net_annual_impact_before_tax")),
@@ -173,15 +179,16 @@ fluidRow(
                   helpText("Tax deduction on depreciation*")),
            column(width=3, uiOutput("tax_depreciation"))
   ), 
-fluidRow(column(width=7, helpText("Adjustments to Annualized Cash Flow Values at Farm's WACC:"))),
+fluidRow(column(width=7, helpText("WACC Adjustments to Annualized Cash Flow Values:"))),
 fluidRow(column(width=6, offset=1, 
-                helpText("Adjustments of interest rate*")),
+                helpText("Adjustments with respect to interest rate*")),
          column(width=3,uiOutput("adj_WACC_interest"))
 ), 
 fluidRow(column(width=6, offset=1, 
-                helpText("Adjustments of hurdle rate*")),
+                helpText("Adjustments with respect to hurdle rate*")),
          column(width=3, uiOutput("adj_WACC_hurdle"))
 ),
+hr(),
   fluidRow(column(width=7, offset=0, 
                   h5("Net annual impact (after-tax)*")),
            column(width=3, uiOutput("net_annual_impact_after_tax")),

@@ -464,11 +464,11 @@ navlistPanel("Data and Assumptions",
                                                              column(3, numericInput("hurdle_rate",NULL,value=4, min=0, step=.25)),
                                                              column(width=3, helpText("percent", align="center"))
                                                     ),
-                                                    fluidRow(column(5, helpText("Marginal (federal + state) income tax rate")),   
+                                                    fluidRow(column(6, helpText("Marginal (federal + state) income tax rate")),   
                                                              column(3, numericInput("tax_rate",NULL,value=40, min=0, step=2)),
                                                              column(width=3, helpText("percent", align="center"))
-                                                    ), 
-                                                    radioButtons("dep_method","Depreciation method",
+                                                    ), br(),
+                                                    radioButtons("dep_method","Depreciation accounting method:",
                                                                  choices=c("Accelerated GDS"="d1","Straight-line ADS"="d2"))
                                                   )
                                                 ), icon=icon("money")),
@@ -494,7 +494,7 @@ navlistPanel("Data and Assumptions",
                                                              column(width=3, helpText("percent", align="center"))
                                                     ),
                                                     fluidRow(column(width=6, helpText("Margin milk over feed & operation per cow with robots")),
-                                                             column(width=3, numericInput("inflation_margin",NULL,value=1.5,step=0.25)),
+                                                             column(width=3, numericInput("inflation_margin",NULL,value=0.2,step=0.25)),
                                                              column(width=3, helpText("percent", align="center"))
                                                     ),
                                                     fluidRow(column(width=6, helpText("Milking & chore labor rate per hour")),

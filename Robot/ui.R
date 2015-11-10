@@ -55,7 +55,9 @@ shinyUI(
                                                 plotOutput("plot3", height = 200),
                                                 uiOutput("captial_cost"))
                                        ),
-                                       uiOutput("misc")))
+                                       fluidRow(column(6,uiOutput("misc")),
+                                                column(6,uiOutput("inflation")))
+                                       ))
                               ), 
 #                               ## Cash Flow Based Representation 
 #                               conditionalPanel("input.cash_flow_on=='ON'",
@@ -242,7 +244,7 @@ shinyUI(
              br(), br()
     ),
     # ---------- Partial Budget Analysis -----------
-    tabPanel("Partial Budget Analysis",
+    tabPanel("Partial Budget",
              conditionalPanel("input.budget==0",
                               div(bsButton("budget","Calculate",disabled = TRUE, icon = icon("ban")),
                                   helpText("Please review all tabs in Data Entry."),align="center")
@@ -251,7 +253,7 @@ shinyUI(
                 source("ui_partial_budget.R", local=TRUE)$value
              )
              ),
-tabPanel("Cash Flow Analysis",
+tabPanel("Cash Flow",
          conditionalPanel("input.budget==0",
                           div(helpText("Please review all tabs in Data Entry."),align="center")
          ),

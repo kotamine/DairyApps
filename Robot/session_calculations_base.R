@@ -8,7 +8,7 @@ updateNumericInput(session, "additional_cost",NULL,value=200,step=50,min=0)
 
 # Cash flow related variables; initially hidden from the user 
 updateNumericInput(session, "inflation_robot",NULL,value=1.5,step=.25,min=0)
-updateNumericInput(session, "inflation_margin",NULL,value=1.5,step=.25,min=0)
+updateNumericInput(session, "inflation_margin",NULL,value=0.2,step=.25,min=0)
 updateNumericInput(session, "inflation_labor",NULL,value=1.5,step=.25,min=0)
 updateNumericInput(session, "inflation_general",NULL,value=1.5,step=.25,min=0)
 updateNumericInput(session, "inflation_general",NULL,value=1.5,step=.25,min=0)
@@ -91,6 +91,7 @@ WACC <- reactive({
 
 ## ----------- Main Calculations: all restuls are stored under reactive value "rv" -----------
 observe({ 
+
 
 # Data Entry Level Calculations
 rv$herd_size2 <- input$herd_size + input$herd_increase
@@ -265,18 +266,113 @@ rv$capital_recovery_housing  <- -pmt(input$interest/100, rv$housing_years,
                                      npv(input$interest/100, 
                                          rv$table_debt$barn_interest+rv$table_debt$barn_principal))
 
-rv$robot_end_PV <-  -pmt(input$interest/100, rv$housing_years, 
+rv$robot_end_PV <-   pmt(input$interest/100, rv$housing_years,  # This will be shown as negative cost
                          npv(input$interest/100, 
-                             rv$table_cash_flow$salvage))
+                             rv$table_cash_flow$salvage[-1]))
 
 rv$cost_downpayment <-  -pmt(input$hurdle_rate/100, rv$housing_years, 
                              npv(input$hurdle_rate/100, 
                                  rv$table_cash_flow$downpayment))
 
 rv$capital_cost_total <- rv$capital_recovery_robot + rv$capital_recovery_housing +
-      +rv$cost_downpayment2 + rv$robot_end_PV
+      + rv$cost_downpayment + rv$robot_end_PV
   
 
+## ------------ Breakeven Calculations ------------
+isolate({
+  
+n_years <- input$horizon
+
+table_breakeven <- matrix(c(c(1:n_years), rep(rep(0,n_years),9)),ncol=10,byrow=FALSE)  %>% data.frame()
+
+colnames(table_breakeven) <- c("year","increased_expense","capital_cost_minus_downpayment", "cost_downpayment",
+                               "increased_revenue","reduced_labor_management","reduced_heat_detection",
+                               "reduced_labor","cost_capital_WACC","tax_deduction")
+
+table_breakeven$increased_expense <- lapply(c(1:n_years), function(t) {
+  rv$inc_exp_total*(1+input$inflation_margin/100)^(t-1)
+}) %>% unlist()
+
+table_breakeven$increased_revenue <- lapply(c(1:n_years), function(t) {
+  rv$inc_rev_total*(1+input$inflation_margin/100)^(t-1)
+}) %>% unlist()
+
+table_breakeven$capital_cost_minus_downpayment <- rep((rv$capital_cost_total - rv$cost_downpayment),n_years)
+
+table_breakeven$cost_downpayment <- rep((rv$cost_downpayment),n_years)
+
+table_breakeven$reduced_labor_management <- lapply(c(1:n_years), function(t) {
+  rv$dec_exp_labor_management *(1+input$inflation_labor/100)^(t-1)
+}) %>% unlist()
+
+table_breakeven$reduced_heat_detection <- lapply(c(1:n_years), function(t) {
+  rv$dec_exp_heat_detection *(1+input$inflation_labor/100)^(t-1)
+}) %>% unlist()
+
+table_breakeven$reduced_labor <- lapply(c(1:n_years), function(t) {
+  rv$dec_exp_labor *(1+input$inflation_labor/100)^(t-1)
+}) %>% unlist()
+
+table_breakeven <- rbind(0, table_breakeven)
+
+table_breakeven$cost_capital_WACC <- -(rv$table_cash_flow$downpayment + rv$table_cash_flow$salvage +
+   + rv$table_cash_flow$interest + rv$table_cash_flow$principal)
+  
+table_breakeven$tax_deduction <- -input$tax_rate/100 * (rv$table_cash_flow$depreciation + rv$table_cash_flow$interest) 
+
+
+rv$npv_interest <- list()
+rv$annuity_interest <- list()
+rv$npv_WACC <- list()
+rv$annuity_WACC <- list()
+rv$npv_hurdle <- list()
+rv$annuity_hurdle <- list()
+
+cnames1 <- colnames(table_breakeven)
+lapply(cnames1, function(x) {
+  
+  rv$npv_interest[[paste0(x)]] <- npv(input$interest/100, table_breakeven[[paste0(x)]][-1]) +
+    + table_breakeven[[paste0(x)]][1]
+  
+  rv$npv_WACC[[paste0(x)]] <- npv(WACC()/100, table_breakeven[[paste0(x)]][-1]) +
+    + table_breakeven[[paste0(x)]][1]
+  
+  rv$annuity_interest[[paste0(x)]] <- -pmt(input$interest/100, n_years,rv$npv_interest[[paste0(x)]])
+  rv$annuity_WACC[[paste0(x)]] <- -pmt(WACC()/100, n_years,rv$npv_WACC[[paste0(x)]])
+})
+
+rv$npv_hurdle[["cost_downpayment"]] <- npv(input$hurdle_rate/100, table_breakeven[["cost_downpayment"]][-1]) +
+  + table_breakeven[["cost_downpayment"]][1]
+rv$annuity_hurdle[["cost_downpayment"]] <- -pmt(WACC()/100, n_years,rv$npv_hurdle[["cost_downpayment"]])
+
+
+rv$be_wage_positive_minus_negative <- (negative_total() - rv$inc_rev_total - rv$dec_exp_labor_management)/ 
+                                       ((rv$dec_exp_heat_detection + rv$dec_exp_labor )/input$labor_rate)
+
+  rv$bw_wage_before_tax <- (rv$annuity_interest$increased_expense + rv$annuity_interest$capital_cost_minus_downpayment +
+      + rv$annuity_hurdle$cost_downpayment - rv$annuity_interest$increased_revenue + 
+        - rv$annuity_interest$reduced_labor_management)/
+      ((rv$annuity_interest$reduced_heat_detection + rv$annuity_interest$reduced_labor)/input$labor_rate)
+  
+  rv$bw_wage_after_tax <-  ((rv$annuity_WACC$increased_expense - rv$annuity_WACC$increased_revenue + 
+                              - rv$annuity_WACC$reduced_labor_management)*(1-input$tax_rate/100)  + 
+                              rv$annuity_WACC$cost_capital_WACC - rv$annuity_WACC$tax_deduction)/
+    ((rv$annuity_WACC$reduced_heat_detection + rv$annuity_WACC$reduced_labor)*(1-input$tax_rate/100)/input$labor_rate)
+  
+  payment1 <- -rv$dec_exp_total/(1 + input$interest/100)
+  payment2 <- -rv$dec_exp_total/(1 + WACC()/100)*(1-input$tax_rate/100)
+  
+  npv1 <- rv$npv_interest$increased_expense + rv$npv_interest$capital_cost_minus_downpayment +
+    + rv$npv_hurdle$cost_downpayment - rv$npv_interest$increased_revenue + payment1
+  
+  npv2 <- (rv$npv_WACC$increased_expense  - rv$npv_WACC$increased_revenue) *(1-input$tax_rate/100) + 
+    + rv$npv_WACC$cost_capital_WACC - rv$npv_WACC$tax_deduction + payment2 
+  
+  rv$bw_wage_inflation_before_tax <- (1 + input$interest/100)/(1 + rate(n_years-1, payment1, npv1)) - 1
+  
+  rv$bw_wage_inflation_after_tax <-  (1 + WACC()/100)/(1 + rate(n_years-1, payment2, npv2)) - 1
+  
+})
 
   # This is used later for alerting base value change in robustness analysis  
   createAlert(session, "c_input_change", "ref_c_input_change", 
@@ -301,8 +397,8 @@ negative_total <- reactive({
 }) 
 
 inflation_adjustment <- reactive({ 
-  - pmt(WACC()/100, rv$housing_years, npv(WACC()/100, rv$table_cash_flow$revenue_minus_expense)) +
-  - (positive_total() - (negative_total()-rv$capital_cost_total))
+  - pmt(input$interest/100, rv$housing_years, npv(input$interest/100, rv$table_cash_flow$revenue_minus_expense[-1])) +
+  - (positive_total() - negative_total() + rv$capital_cost_total)
 }) 
 
 positive_minus_negative <-  reactive({ 
@@ -323,44 +419,44 @@ tax_revenue_minus_expense <- reactive({
 
 tax_interest <- reactive({
   input$tax_rate/100 * pmt(input$interest/100, rv$housing_years, 
-                            npv(input$interest/100, rv$table_cash_flow$interest))
+                            npv(input$interest/100, rv$table_cash_flow$interest[-1]))
 })
 
 tax_depreciation <- reactive({
   input$tax_rate/100 * pmt(input$interest/100, rv$housing_years, 
-                            npv(input$interest/100, rv$table_cash_flow$depreciation)) 
+                            npv(input$interest/100, rv$table_cash_flow$depreciation[-1])) 
 })
 
 
 adj_WACC_interest <- reactive({
   
   depr <- -pmt(WACC()/100, rv$housing_years, 
-      npv(WACC()/100, rv$table_cash_flow$depreciation)) +
+      npv(WACC()/100, rv$table_cash_flow$depreciation[-1])) +
   + pmt(input$interest/100, rv$housing_years, 
-      npv(input$interest/100, rv$table_cash_flow$depreciation)) 
+      npv(input$interest/100, rv$table_cash_flow$depreciation[-1])) 
   
   salvage <- -pmt(WACC()/100, rv$housing_years, 
-               npv(WACC()/100, rv$table_cash_flow$salvage)) +
+               npv(WACC()/100, rv$table_cash_flow$salvage[-1])) +
     + pmt(input$interest/100, rv$housing_years, 
-          npv(input$interest/100, rv$table_cash_flow$salvage)) 
+          npv(input$interest/100, rv$table_cash_flow$salvage[-1])) 
   
   interest <- -pmt(WACC()/100, rv$housing_years, 
-                  npv(WACC()/100, rv$table_cash_flow$interest)) +
+                  npv(WACC()/100, rv$table_cash_flow$interest[-1])) +
     + pmt(input$interest/100, rv$housing_years, 
-          npv(input$interest/100, rv$table_cash_flow$interest))
+          npv(input$interest/100, rv$table_cash_flow$interest[-1]))
   
   principal <- -pmt(WACC()/100, rv$housing_years, 
-                  npv(WACC()/100, rv$table_cash_flow$principal)) +
+                  npv(WACC()/100, rv$table_cash_flow$principal[-1])) +
     + pmt(input$interest/100, rv$housing_years, 
-          npv(input$interest/100, rv$table_cash_flow$pricipal)) 
+          npv(input$interest/100, rv$table_cash_flow$principal[-1])) 
   
   revenue_minus_expense <- -pmt(WACC()/100, rv$housing_years, 
-                    npv(WACC()/100, rv$table_cash_flow$revenue_minus_expense)) +
+                    npv(WACC()/100, rv$table_cash_flow$revenue_minus_expense[-1])) +
     + pmt(input$interest/100, rv$housing_years, 
-          npv(input$interest/100, rv$table_cash_flow$revenue_minus_expense)) 
+          npv(input$interest/100, rv$table_cash_flow$revenue_minus_expense[-1])) 
   
   return( (revenue_minus_expense + interest)*(1-input$tax_rate/100) + 
-            + depr*input$tax_rate/100 + principal + salvage )
+            - depr*input$tax_rate/100 + principal + salvage )
 })
 
 
@@ -369,10 +465,12 @@ adj_WACC_interest <- reactive({
 adj_WACC_hurdle <- reactive({
   
    -pmt(WACC()/100, rv$housing_years, 
-               npv(WACC()/100, rv$table_cash_flow$downpayment)) +
+               npv(WACC()/100, rv$table_cash_flow$downpayment[-1])+rv$table_cash_flow$downpayment[1]) 
     + pmt(input$hurdle_rate/100, rv$housing_years, 
-          npv(input$hurdle_rate/100, rv$table_cash_flow$downpayment)) 
+          npv(input$hurdle_rate/100, rv$table_cash_flow$downpayment[-1])+rv$table_cash_flow$downpayment[1])
 })
+
+
 
 net_annual_impact_after_tax <- reactive({
   net_annual_impact_before_tax() + tax_revenue_minus_expense() + tax_interest() +
@@ -394,6 +492,9 @@ observe({
   rv$tax_interest <- tax_interest()
   rv$tax_depreciation <- tax_depreciation()
   rv$net_annual_impact_after_tax <- net_annual_impact_after_tax()
+  rv$adj_WACC_interest <- adj_WACC_interest()
+  rv$adj_WACC_hurdle <- adj_WACC_hurdle()
+  
   } else {
     return()
   }
@@ -408,7 +509,8 @@ observe({
 #   # The change in two items below can trigger what follows 
 #   input$NAI
 #   net_annual_impact_after_tax()
-  
+    input$NAI
+    
   isolate({
   
   rv$tax_factor <- (1-(input$NAI=="after tax")*input$tax_rate/100)
@@ -454,9 +556,13 @@ observe({
   
   rv$labor_repair <- -(rv$labor_robot - rv$labor_current + rv$inc_exp_repair) * rv$tax_factor
   
-  rv$inflation_adjustment <- inflation_adjustment()
+  rv$inflation <- - pmt(input$interest/100, rv$housing_years, npv(input$interest/100, rv$table_cash_flow$revenue_minus_expense[-1])) +
+    - (rv$inc_rev_total + rv$dec_exp_total - rv$inc_exp_total)
   
-  rv$misc <- rv$NAI - (rv$milk_feed + rv$labor_repair + rv$cost_capital_total + rv$inflation_adjustment) 
+  rv$capital <- rv$capital_cost_total + 
+    + (input$NAI=="after tax")*( tax_interest() + tax_depreciation())*input$tax_rate/100 
+  
+  rv$misc <- rv$NAI - (rv$milk_feed + rv$labor_repair + rv$capital + rv$inflation) 
   
   })
   } else {
