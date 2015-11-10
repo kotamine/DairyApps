@@ -92,8 +92,6 @@ WACC <- reactive({
 ## ----------- Main Calculations: all restuls are stored under reactive value "rv" -----------
 observe({ 
 
-  browser()
-  
 # Data Entry Level Calculations
 rv$herd_size2 <- input$herd_size + input$herd_increase
 
@@ -219,20 +217,20 @@ rv$inc_exp_total <- rv$inc_exp_herd_increase + rv$inc_exp_repair + rv$inc_exp_fe
 rv$deflator <- 1
 
 
-rv$capital_recovery_robot <-  ( - pmt(input$interest/100, rv$housing_years, rv$robot_invest) + 
-  - (input$n_robot_life > 1)* pmt(input$interest/100, rv$housing_years, 
-                                   rv$robot_invest*(1 + input$inflation_robot/100)^input$robot_years/
-                                     (1 + input$interest/100)^(input$robot_years))) * rv$deflator 
-
-rv$capital_recovery_housing  <- - pmt(input$interest/100, rv$housing_years, rv$cost_housing) * rv$deflator 
-
-# FIX THIS 
-rv$robot_end_PV <- (pmt(input$interest/100, rv$housing_years, 
-                         input$salvage_robot*(1 + input$inflation_robot/100)^input$robot_years/
-                           (1 + input$interest/100)^input$robot_years) +
-                      + pmt(input$interest/100, rv$housing_years, 
-                            input$salvage_robot*(1 + input$inflation_robot/100)^rv$housing_years/
-                              (1 + input$interest/100)^rv$housing_years))* rv$deflator  
+# rv$capital_recovery_robot <-  ( - pmt(input$interest/100, rv$housing_years, rv$robot_invest) + 
+#   - (input$n_robot_life > 1)* pmt(input$interest/100, rv$housing_years, 
+#                                    rv$robot_invest*(1 + input$inflation_robot/100)^input$robot_years/
+#                                      (1 + input$interest/100)^(input$robot_years))) * rv$deflator 
+# 
+# rv$capital_recovery_housing  <- - pmt(input$interest/100, rv$housing_years, rv$cost_housing) * rv$deflator 
+# 
+# # FIX THIS 
+# rv$robot_end_PV <- (pmt(input$interest/100, rv$housing_years, 
+#                          input$salvage_robot*(1 + input$inflation_robot/100)^input$robot_years/
+#                            (1 + input$interest/100)^input$robot_years) +
+#                       + pmt(input$interest/100, rv$housing_years, 
+#                             input$salvage_robot*(1 + input$inflation_robot/100)^rv$housing_years/
+#                               (1 + input$interest/100)^rv$housing_years))* rv$deflator  
 
 
 
@@ -258,14 +256,22 @@ rv$robot_end_PV <- (pmt(input$interest/100, rv$housing_years,
 
 source("session_cash_flow.R", local=TRUE)  # Calculates cash flow tables
 
-browser() 
 
+rv$capital_recovery_robot <-  -pmt(input$interest/100, rv$housing_years, 
+                                   npv(input$interest/100, 
+                                       rv$table_debt$robot_interest+rv$table_debt$robot_principal)) 
 
-rv$cost_downpayment <- -pmt(input$interest,rv$housing_years, 
-                            input$down_housing + input$down_robot1) + 
-  - pmt(input$interest,rv$housing_years, input$down_robot2/(1+input$interest)^(input$robot_years))
+rv$capital_recovery_housing  <- -pmt(input$interest/100, rv$housing_years, 
+                                     npv(input$interest/100, 
+                                         rv$table_debt$barn_interest+rv$table_debt$barn_principal))
 
-rv$cost_downpayment2 <- rv$cost_downpayment ## THIS NEEDS ADDITIONAL COMPONENT 
+rv$robot_end_PV <-  -pmt(input$interest/100, rv$housing_years, 
+                         npv(input$interest/100, 
+                             rv$table_cash_flow$salvage))
+
+rv$cost_downpayment <-  -pmt(input$hurdle_rate/100, rv$housing_years, 
+                             npv(input$hurdle_rate/100, 
+                                 rv$table_cash_flow$downpayment))
 
 rv$capital_cost_total <- rv$capital_recovery_robot + rv$capital_recovery_housing +
       +rv$cost_downpayment2 + rv$robot_end_PV
@@ -308,7 +314,7 @@ revenue_minus_expense <-  reactive({
 })
  
 net_annual_impact_before_tax <- reactive({
-  positive_total() - negative_total() + inflation_adjustment()
+  positive_minus_negative() + inflation_adjustment()
 })
  
 tax_revenue_minus_expense <- reactive({
@@ -316,23 +322,66 @@ tax_revenue_minus_expense <- reactive({
 }) 
 
 tax_interest <- reactive({
-  input$tax_rate/100 * pmt(WACC()/100, rv$housing_years, 
-                            npv(WACC()/100, rv$table_cash_flow$interest))
+  input$tax_rate/100 * pmt(input$interest/100, rv$housing_years, 
+                            npv(input$interest/100, rv$table_cash_flow$interest))
 })
 
 tax_depreciation <- reactive({
-  input$tax_rate/100 * pmt(WACC()/100, rv$housing_years, 
-                            npv(WACC()/100, rv$table_cash_flow$depreciation)) 
+  input$tax_rate/100 * pmt(input$interest/100, rv$housing_years, 
+                            npv(input$interest/100, rv$table_cash_flow$depreciation)) 
+})
+
+
+adj_WACC_interest <- reactive({
+  
+  depr <- -pmt(WACC()/100, rv$housing_years, 
+      npv(WACC()/100, rv$table_cash_flow$depreciation)) +
+  + pmt(input$interest/100, rv$housing_years, 
+      npv(input$interest/100, rv$table_cash_flow$depreciation)) 
+  
+  salvage <- -pmt(WACC()/100, rv$housing_years, 
+               npv(WACC()/100, rv$table_cash_flow$salvage)) +
+    + pmt(input$interest/100, rv$housing_years, 
+          npv(input$interest/100, rv$table_cash_flow$salvage)) 
+  
+  interest <- -pmt(WACC()/100, rv$housing_years, 
+                  npv(WACC()/100, rv$table_cash_flow$interest)) +
+    + pmt(input$interest/100, rv$housing_years, 
+          npv(input$interest/100, rv$table_cash_flow$interest))
+  
+  principal <- -pmt(WACC()/100, rv$housing_years, 
+                  npv(WACC()/100, rv$table_cash_flow$principal)) +
+    + pmt(input$interest/100, rv$housing_years, 
+          npv(input$interest/100, rv$table_cash_flow$pricipal)) 
+  
+  revenue_minus_expense <- -pmt(WACC()/100, rv$housing_years, 
+                    npv(WACC()/100, rv$table_cash_flow$revenue_minus_expense)) +
+    + pmt(input$interest/100, rv$housing_years, 
+          npv(input$interest/100, rv$table_cash_flow$revenue_minus_expense)) 
+  
+  return( (revenue_minus_expense + interest)*(1-input$tax_rate/100) + 
+            + depr*input$tax_rate/100 + principal + salvage )
+})
+
+
+
+
+adj_WACC_hurdle <- reactive({
+  
+   -pmt(WACC()/100, rv$housing_years, 
+               npv(WACC()/100, rv$table_cash_flow$downpayment)) +
+    + pmt(input$hurdle_rate/100, rv$housing_years, 
+          npv(input$hurdle_rate/100, rv$table_cash_flow$downpayment)) 
 })
 
 net_annual_impact_after_tax <- reactive({
-  net_annual_impact_before_tax() + tax_revenue_minus_expense() + tax_interest() + tax_depreciation()
+  net_annual_impact_before_tax() + tax_revenue_minus_expense() + tax_interest() +
+    + tax_depreciation() + adj_WACC_interest() + adj_WACC_hurdle()
 })
 
 
 
 observe({
-  browser()
   if (!is.null(net_annual_impact_after_tax()))
   {
   rv$positive_total <- positive_total()
@@ -353,8 +402,6 @@ observe({
 
 #  Dashboard   
 observe({
-  
-  browser()
   
   if (!is.na(net_annual_impact_after_tax()))
   {
