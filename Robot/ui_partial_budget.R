@@ -134,11 +134,11 @@ fluidRow(
                     into a constant income or payment during the planning horizon."),
            br(),
                   fluidRow(
-                    column(width=2,offset=10, span(helpText("Breakeven-Wage"),
+                    column(width=3,offset=9, span(helpText("Breakeven Labor"),
                                                   align="right"))
                   ), 
            fluidRow(
-             column(width=1,offset=10, span(helpText("Rate"),
+             column(width=1,offset=10, span(helpText("Wage"),
                                            align="center")),
              column(width=1,offset=0, span(helpText("Inflation"),
                                            align="center"))
@@ -166,7 +166,7 @@ fluidRow(
 #                   helpText("Change in revenue minus expense (= before-tax impact plus cost of capital)")),
 #            column(width=3, uiOutput("revenue_minus_expense"))
 #   ), 
-  fluidRow(column(width=7, helpText("Taxes:"))),
+  fluidRow(column(width=7, helpText("Taxes and Tax Deductions:"))),
   fluidRow(column(width=6, offset=1, 
                   helpText("Tax on change in revenue minus expense*")),
            column(width=3, uiOutput("tax_revenue_minus_expense"))

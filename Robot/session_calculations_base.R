@@ -346,9 +346,6 @@ rv$npv_hurdle[["cost_downpayment"]] <- npv(input$hurdle_rate/100, table_breakeve
 rv$annuity_hurdle[["cost_downpayment"]] <- -pmt(WACC()/100, n_years,rv$npv_hurdle[["cost_downpayment"]])
 
 
-rv$be_wage_positive_minus_negative <- (negative_total() - rv$inc_rev_total - rv$dec_exp_labor_management)/ 
-                                       ((rv$dec_exp_heat_detection + rv$dec_exp_labor )/input$labor_rate)
-
   rv$bw_wage_before_tax <- (rv$annuity_interest$increased_expense + rv$annuity_interest$capital_cost_minus_downpayment +
       + rv$annuity_hurdle$cost_downpayment - rv$annuity_interest$increased_revenue + 
         - rv$annuity_interest$reduced_labor_management)/
@@ -428,6 +425,20 @@ tax_depreciation <- reactive({
 })
 
 
+tax_deduction_robot <- reactive({  
+  -input$tax_rate/100 *(pmt(input$interest/100, rv$housing_years, 
+                           npv(input$interest/100, rv$table_depreciation$depreciation_robot))
+                    +  pmt(input$interest/100, rv$housing_years, 
+                               npv(input$interest/100, rv$table_debt$robot_interest)))
+})  
+
+tax_deduction_housing <- reactive({  
+  -input$tax_rate/100 *(pmt(input$interest/100, rv$housing_years, 
+                           npv(input$interest/100, rv$table_depreciation$depreciation_housing))
+                       +  pmt(input$interest/100, rv$housing_years, 
+                              npv(input$interest/100, rv$table_debt$barn_interest)))
+})  
+
 adj_WACC_interest <- reactive({
   
   depr <- -pmt(WACC()/100, rv$housing_years, 
@@ -477,7 +488,10 @@ net_annual_impact_after_tax <- reactive({
     + tax_depreciation() + adj_WACC_interest() + adj_WACC_hurdle()
 })
 
-
+be_wage_positive_minus_negative <- reactive({ 
+  (negative_total() - rv$inc_rev_total - rv$dec_exp_labor_management)/ 
+  ((rv$dec_exp_heat_detection + rv$dec_exp_labor )/input$labor_rate)
+})
 
 observe({
   if (!is.null(net_annual_impact_after_tax()))
@@ -494,7 +508,7 @@ observe({
   rv$net_annual_impact_after_tax <- net_annual_impact_after_tax()
   rv$adj_WACC_interest <- adj_WACC_interest()
   rv$adj_WACC_hurdle <- adj_WACC_hurdle()
-  
+  rv$be_wage_positive_minus_negative <- be_wage_positive_minus_negative()
   } else {
     return()
   }
@@ -536,33 +550,41 @@ observe({
                                                     +  input$scc_premium/100 * input$scc_average/1000) *
     rv$tax_factor
   
-  rv$milk_robot <-  rv$herd_size2 * 330 * rv$milk_day_cow_robot *
-    (input$price_milk/100  +  input$scc_premium/100 * input$scc_average*(1-input$scc_change/100)/1000) *
-    rv$tax_factor
+  rv$milk_robot <- (rv$herd_size2 * 330 * rv$milk_day_cow_robot *
+    (input$price_milk/100  +  input$scc_premium/100 * input$scc_average*(1-input$scc_change/100)/1000)) *
+    rv$tax_factor 
   
   rv$labor_current <-  (input$hr_heat_detection + input$hours_milking) * input$labor_rate*365 *
-    rv$tax_factor
+    rv$tax_factor 
   
-  rv$labor_robot <- (input$anticipated_hours_heat + rv$anticipated_hours_milking) * input$labor_rate *365 + 
+  rv$labor_robot <- ((input$anticipated_hours_heat + rv$anticipated_hours_milking) * input$labor_rate *365 + 
     + (input$increase_rc_mgt - input$decrease_lab_mgt) * input$labor_rate_rc_mgt * 365 +
-    + input$additional_labor * input$herd_increase  * rv$tax_factor
+    + input$additional_labor * input$herd_increase) * rv$tax_factor 
   
-  rv$feed_current <-  rv$DMI_day * input$cost_DM * 330 * input$herd_size  * rv$tax_factor
+  rv$feed_current <-  rv$DMI_day * input$cost_DM * 330 * input$herd_size * rv$tax_factor
   
   rv$feed_robot <- (rv$DMI_projected * input$cost_DM + input$pellets *
-                      input$cost_pellets/2000) * 330 * rv$herd_size2 * rv$tax_factor
+                      input$cost_pellets/2000) * 330 * rv$herd_size2 * rv$tax_factor 
    
-  rv$milk_feed <-  (-(rv$feed_robot - rv$feed_current) + rv$milk_robot -  rv$milk_current ) * rv$tax_factor
+  rv$milk_feed <-  (-(rv$feed_robot - rv$feed_current) + rv$milk_robot -  rv$milk_current )
   
-  rv$labor_repair <- -(rv$labor_robot - rv$labor_current + rv$inc_exp_repair) * rv$tax_factor
+  rv$labor_repair <- -(rv$labor_robot - rv$labor_current + rv$inc_exp_repair) 
   
-  rv$inflation <- - pmt(input$interest/100, rv$housing_years, npv(input$interest/100, rv$table_cash_flow$revenue_minus_expense[-1])) +
-    - (rv$inc_rev_total + rv$dec_exp_total - rv$inc_exp_total)
+  rv$inflation <- - pmt(input$interest/100, rv$housing_years, 
+                        npv(input$interest/100, rv$table_cash_flow$revenue_minus_expense[-1])) +
+    - (rv$inc_rev_total + rv$dec_exp_total - rv$inc_exp_total) 
   
-  rv$capital <- rv$capital_cost_total + 
-    + (input$NAI=="after tax")*( tax_interest() + tax_depreciation())*input$tax_rate/100 
+  rv$capital <- -rv$capital_cost_total + 
+     +(input$NAI=="after tax")*(tax_interest() + tax_depreciation())
+  
   
   rv$misc <- rv$NAI - (rv$milk_feed + rv$labor_repair + rv$capital + rv$inflation) 
+  
+ 
+  rv$capital_recovery_robot2 <- rv$capital_recovery_robot +
+                  - (input$NAI=="after tax")*tax_deduction_robot()
+  rv$capital_recovery_housing2 <- rv$capital_recovery_housing +
+                  - (input$NAI=="after tax")*tax_deduction_housing()
   
   })
   } else {

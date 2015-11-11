@@ -48,7 +48,6 @@ colnames(table_depreciation) <- c("year","depreciation_robot","depreciation_hous
 table_depreciation$total <- table_depreciation$depreciation_robot + table_depreciation$depreciation_housing 
 
 
-browser()
 ## ------------ Debt Table ------------
 
 tbl_robot <- debt_table(rv$loan_robot1, input$r_robot1/100, input$n_yr_robot1, n_years, 1) +

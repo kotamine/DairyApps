@@ -41,10 +41,20 @@ shinyUI(
                                                 radioButtons("NAI",NULL,
                                                              choices=c("before tax",
                                                                        "after tax"),
-                                                             selected="after tax")) 
+                                                             selected="before tax")) 
+                                       ),
+                                       fluidRow(
+                                         column(6,
+                                                div(uiOutput("cashflow")),align="center"),
+                                         column(6,
+                                                div(uiOutput("breakeven"),align="center"),
+                                                radioButtons("breakeven_option",NULL,
+                                                             choices=c("wage",
+                                                                       "wage inflation"),
+                                                             selected="wage"))
                                        )),
                                 column(8,
-                                       div(align="center", fluidRow(
+                                       div(fluidRow(
                                          column(4,
                                                 plotOutput("plot1", height = 200),
                                                 uiOutput("milk_feed")),
@@ -57,7 +67,7 @@ shinyUI(
                                        ),
                                        fluidRow(column(6,uiOutput("misc")),
                                                 column(6,uiOutput("inflation")))
-                                       ))
+                                       ), align="center")
                               ), 
 #                               ## Cash Flow Based Representation 
 #                               conditionalPanel("input.cash_flow_on=='ON'",
@@ -205,7 +215,7 @@ shinyUI(
                                uiOutput("c_IOFC")),
                         column(6,
                                uiOutput("c_NAI")) 
-                      )),
+                      ),
                column(8,
                       div(align="center", fluidRow(
                         column(4,
@@ -242,7 +252,7 @@ shinyUI(
              tableOutput('sheet2'))
              ),
              br(), br()
-    ),
+    )),
     # ---------- Partial Budget Analysis -----------
     tabPanel("Partial Budget",
              conditionalPanel("input.budget==0",

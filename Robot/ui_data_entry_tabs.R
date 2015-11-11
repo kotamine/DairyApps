@@ -93,7 +93,7 @@ navlistPanel("Data and Assumptions",
                                    column(width=3, helpText("years", align="center"))
                           ),
                           fluidRow(column(width=6, helpText("Related housing: useful life, multiple of robot life")),
-                                   column(width=3, numericInput("n_robot_life",NULL, value=2,min=0,step=1, max=3)),
+                                   column(width=3, numericInput("n_robot_life",NULL, value=2,min=0,step=1, max=2)),
                                    column(width=3, helpText("times robot life", align="center"))
                           ),
                           fluidRow(column(width=6, helpText("Related housing: years of useful life")),
@@ -489,10 +489,10 @@ navlistPanel("Data and Assumptions",
                                                              column(width=3, numericInput("inflation_robot",NULL,value=1.5,step=0.25)),
                                                              column(width=3, helpText("percent", align="center"))
                                                     ),
-                                                    fluidRow(column(width=6, helpText("Expected robot salvage value at 15 years old")),
-                                                             column(width=3, numericInput("inflation_salvage",NULL,value=1.5,step=0.25)),
-                                                             column(width=3, helpText("percent", align="center"))
-                                                    ),
+#                                                     fluidRow(column(width=6, helpText("Expected robot salvage value at 15 years old")),
+#                                                              column(width=3, numericInput("inflation_salvage",NULL,value=1.5,step=0.25)),
+#                                                              column(width=3, helpText("percent", align="center"))
+#                                                     ),
                                                     fluidRow(column(width=6, helpText("Margin milk over feed & operation per cow with robots")),
                                                              column(width=3, numericInput("inflation_margin",NULL,value=0.2,step=0.25)),
                                                              column(width=3, helpText("percent", align="center"))
@@ -500,11 +500,11 @@ navlistPanel("Data and Assumptions",
                                                     fluidRow(column(width=6, helpText("Milking & chore labor rate per hour")),
                                                              column(width=3, numericInput("inflation_labor",NULL,value=1.5,step=0.25)),
                                                              column(width=3, helpText("percent", align="center"))
-                                                    ),
-                                                    fluidRow(column(width=6, helpText("General inflation in economy")),
-                                                             column(width=3, numericInput("inflation_general",NULL,value=1.5,step=0.25)),
-                                                             column(width=3, helpText("percent", align="center"))
                                                     )
+#                                                     fluidRow(column(width=6, helpText("General inflation in economy")),
+#                                                              column(width=3, numericInput("inflation_general",NULL,value=1.5,step=0.25)),
+#                                                              column(width=3, helpText("percent", align="center"))
+#                                                     )
                                                   )),
                                                 icon=icon("money")
                                                  # )

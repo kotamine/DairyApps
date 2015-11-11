@@ -261,7 +261,7 @@ output$captial_cost <- renderUI({
     need(!is.na(rv$capital),"NA")
   ) 
   div(class="well well-sm", style= "background-color: #64E986; color:white;", 
-      (-rv$capital) %>% formatdollar2() %>% strong() %>% h4(),
+      (rv$capital) %>% formatdollar2() %>% strong() %>% h4(),
       h5("Cost of Capital"),  h5("under robot"))
 })  
 
@@ -280,7 +280,7 @@ output$inflation <- renderUI({
   )
   div(class="well well-sm", style= "background-color: #C2B280; color:white;", 
       rv$inflation %>% formatdollar2() %>% strong %>% h4(), 
-      h5("Inflation Adj."), h5("under robot"))
+      h5("Inflation Adjustments"), h5("under robot"))
 })  
 
 output$plot1 <- renderPlot({ 
@@ -291,9 +291,76 @@ output$plot2 <- renderPlot({
   dash_plot2(rv$inc_exp_repair,rv$labor_current,rv$labor_robot) 
 })
 
-output$plot3 <- renderPlot({  # CHANGE THIS TO INCLUDE COST OF DOWNPAYMENT
-  dash_plot3(rv$capital_recovery_robot,rv$capital_recovery_housing,rv$robot_end_PV,input$NAI)  
+output$plot3 <- renderPlot({  
+  dash_plot3(rv$capital_recovery_robot2,rv$capital_recovery_housing2,
+             rv$cost_downpayment, rv$robot_end_PV)  
 })
+
+
+output$cashflow <- renderUI({
+  validate(
+    need(!is.na(rv$table_cash_flow ),"NA")
+  )
+  min <- min(rv$table_cash_flow$after_tax_cash_flow) %>% formatdollar2() 
+  avg <- mean(rv$table_cash_flow$after_tax_cash_flow) %>% formatdollar2() 
+  max <- max(rv$table_cash_flow$after_tax_cash_flow) %>% formatdollar2() 
+  sd <- sd(rv$table_cash_flow$after_tax_cash_flow) %>% formatdollar()
+  pos <- paste0(round(sum(rv$table_cash_flow$after_tax_cash_flow>0)/input$horizon*100),"%")
+
+  div(class="well well-sm", style= "background-color: 	#778899; color:white;", 
+      h4("Cash Flow", align="center"),
+      h5("Min:", min), 
+      h5("Avg:", avg),
+      h5("Max:", max),
+      h5("S.D.:", sd),
+      h5(pos, "stays positive"),
+      h5("under robot")
+      )
+}) 
+
+
+output$breakeven <- renderUI({ 
+  validate(
+    need(!is.na(rv$bw_wage_before_tax),"NA")
+  )
+  if (input$breakeven_option=="wage") {
+    option <- "Wage:"
+    if (input$NAI=="before tax") { 
+      labor_rate <- rv$bw_wage_before_tax
+    } else {
+      labor_rate <- rv$bw_wage_after_tax
+    }
+    be_val <- paste0("$", round(labor_rate, 2))
+    inflation <-  input$inflation_labor/100
+  } else {
+    option <- "Inflation:"
+    if (input$NAI=="before tax") { 
+      inflation <- rv$bw_wage_inflation_before_tax
+    } else {
+      inflation <- rv$bw_wage_inflation_after_tax
+    }
+    be_val <- paste0(round(inflation*100,3),"%") 
+    labor_rate <- input$labor_rate
+  }
+  
+  yr_one <- paste("Year", round(input$horizon/3), ": ")
+  yr_two <- paste("Year", round(input$horizon*(2/3)),": ")
+  yr_three <- paste("Year", round(input$horizon),": ")
+  wage_zero <- labor_rate  %>% formatdollar(2)
+  wage_one <- (labor_rate * (1 + inflation/100)^(round(input$horizon/3)-1))  %>% formatdollar(2)
+  wage_two <- (labor_rate * (1 + inflation/100)^(round(input$horizon*2/3)-1))  %>% formatdollar(2)
+  wage_three <- (labor_rate * (1 + inflation/100)^(round(input$horizon)-1))  %>% formatdollar(2)
+  
+  div(class="well well-sm", style= "background-color:	#778899; color:white;", 
+      h4("Breakeven", option, be_val, align="center"),
+      h5("Year 1: ", wage_zero),
+      h5(yr_one, wage_one),
+      h5(yr_two, wage_two),
+      h5(yr_three, wage_three),
+      h5("under robot")
+  )
+}) 
+
 
 # 
 # ## Dashboard -- Cash Flow Based Representation

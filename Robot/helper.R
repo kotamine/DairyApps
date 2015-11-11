@@ -88,14 +88,11 @@ mirr <- function(values, finance_rate, reinvest_rate) {
   return(tmp^(1/(n-1))-1)
 }
 
-annuity <- function(rate, nper, values) {
-  -pmt(rate, nper, npv(rate, values))
-}
 
 rate <- function(nper, pmt, pv) {
-  irr(c(pv, rep(pmt,nper)))
+  irr(c(pv,rep(pmt, nper)))
 }
-
+  
 
 # annualized net present value
 # need: library(dplyr) for %>% operation
@@ -243,6 +240,7 @@ dash_NAI <- function(NAI,cutoff=0, compare=NULL) {
 }
 
 
+
 dash_plot1 <- function(feed_current,feed_robot,milk_current,milk_robot) { 
 
   validate( 
@@ -321,44 +319,36 @@ dash_plot2 <- function(inc_exp_repair,labor_current,labor_robot) {
 }
 
 dash_plot3 <- function(inc_exp_capital_recovery,capital_recovery_housing,
-                       robot_end_PV, input_NAI) { 
-  
+                       cost_downpayment, robot_end_PV) { 
+
   validate( 
     need(!(is.na(inc_exp_capital_recovery) | is.na(capital_recovery_housing) | 
-             is.na(robot_end_PV)), 
+             is.na(cost_downpayment) | is.na(robot_end_PV)), 
          "NA")
   )
   
-  if (input_NAI=="w/o housing") {
-    capital_recovery_housing_show <- 0
-    robot_end_PV_show <- 0
-  } else if (input_NAI=="w/ housing") {
-    capital_recovery_housing_show <- capital_recovery_housing
-    robot_end_PV_show <- 0
-  } else {
-    capital_recovery_housing_show <- capital_recovery_housing
-    robot_end_PV_show <- robot_end_PV
-  }
-  a <- data.frame("vars"=c("capital_robot","capital_housing","robot_end_PV"), 
-                  "values"=c(inc_exp_capital_recovery,capital_recovery_housing_show,robot_end_PV_show)/1000,
-                  "values_shadow"=c(inc_exp_capital_recovery,capital_recovery_housing,robot_end_PV)/1000,
-                  "type"= c(1,1,1))  
+  a <- data.frame("vars"=c("capital_robot","capital_housing","cost_downpayment", "robot_end_PV"), 
+                  "values"=c(inc_exp_capital_recovery,capital_recovery_housing,
+                             cost_downpayment, robot_end_PV)/1000,
+                  "values_shadow"=c(inc_exp_capital_recovery,capital_recovery_housing,
+                                    cost_downpayment, robot_end_PV)/1000,
+                  "type"= c(1,1,1,1))  
   
   a$label <- apply(cbind(a$values),2,round,0)
   a$label <- apply(a$label, 2,formatcomma) 
   a$label <- apply(a$label, 2, function(x) { paste0("$", x,"k") })
   
   ggplot(data=a, aes(x=vars, y=values, fill=factor(type))) + 
-    geom_bar(stat="identity", position=position_dodge(),width=0.7, fill="seagreen3") +
+    geom_bar(stat="identity", position=position_dodge(),width=0.5, fill="seagreen3") +
     coord_flip() +
     # ggtitle("Cost of Capital") + 
     geom_text(aes(label=label,ymax=max(values_shadow)*1.0), 
               vjust=0.5, hjust=1.2, color="white", position = position_dodge(0.9), size=5) +
     theme_minimal() + 
     scale_x_discrete(
-      limits=c("robot_end_PV", "capital_housing","capital_robot"),   
-      labels=c("Robot \n Salvage \n PV", 
-               "Housing \n Capital \n Recovery \n Cost","Robot \n Capital\n Recovery \n Cost")    
+      limits=c("robot_end_PV","cost_downpayment", "capital_housing","capital_robot"),   
+      labels=c("Robot \n Salvage Value", "Downpayment \n Capital Cost", 
+               "Housing \n Capital Cost","Robot \n Capital Cost")    
     ) + 
     theme(
       axis.title.x=element_blank(), 
@@ -370,6 +360,57 @@ dash_plot3 <- function(inc_exp_capital_recovery,capital_recovery_housing,
     )
 }
 
+
+# dash_plot3 <- function(inc_exp_capital_recovery,capital_recovery_housing,
+#                        robot_end_PV, input_NAI) { 
+#   
+#   validate( 
+#     need(!(is.na(inc_exp_capital_recovery) | is.na(capital_recovery_housing) | 
+#              is.na(robot_end_PV)), 
+#          "NA")
+#   )
+#   
+#   if (input_NAI=="w/o housing") {
+#     capital_recovery_housing_show <- 0
+#     robot_end_PV_show <- 0
+#   } else if (input_NAI=="w/ housing") {
+#     capital_recovery_housing_show <- capital_recovery_housing
+#     robot_end_PV_show <- 0
+#   } else {
+#     capital_recovery_housing_show <- capital_recovery_housing
+#     robot_end_PV_show <- robot_end_PV
+#   }
+#   a <- data.frame("vars"=c("capital_robot","capital_housing","robot_end_PV"), 
+#                   "values"=c(inc_exp_capital_recovery,capital_recovery_housing_show,robot_end_PV_show)/1000,
+#                   "values_shadow"=c(inc_exp_capital_recovery,capital_recovery_housing,robot_end_PV)/1000,
+#                   "type"= c(1,1,1))  
+#   
+#   a$label <- apply(cbind(a$values),2,round,0)
+#   a$label <- apply(a$label, 2,formatcomma) 
+#   a$label <- apply(a$label, 2, function(x) { paste0("$", x,"k") })
+#   
+#   ggplot(data=a, aes(x=vars, y=values, fill=factor(type))) + 
+#     geom_bar(stat="identity", position=position_dodge(),width=0.7, fill="seagreen3") +
+#     coord_flip() +
+#     # ggtitle("Cost of Capital") + 
+#     geom_text(aes(label=label,ymax=max(values_shadow)*1.0), 
+#               vjust=0.5, hjust=1.2, color="white", position = position_dodge(0.9), size=5) +
+#     theme_minimal() + 
+#     scale_x_discrete(
+#       limits=c("robot_end_PV", "capital_housing","capital_robot"),   
+#       labels=c("Robot \n Salvage \n PV", 
+#                "Housing \n Capital \n Recovery \n Cost","Robot \n Capital\n Recovery \n Cost")    
+#     ) + 
+#     theme(
+#       axis.title.x=element_blank(), 
+#       axis.title.y=element_blank(),  #removes y-axis label
+#       axis.text.x = element_blank(),
+#       axis.ticks = element_blank(),
+#       text=element_text(family="sans", size=14),                       #changes font on entire graph
+#       plot.title=element_text(face="bold",hjust=c(0,0))  #changes font face and location for graph title
+#     )
+# }
+# 
 
 
 
