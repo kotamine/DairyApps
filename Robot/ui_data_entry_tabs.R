@@ -97,10 +97,10 @@ navlistPanel("Data and Assumptions",
                                    column(width=3, uiOutput("housing_years")),
                                    column(width=3, helpText("years", align="center"))
                           ),
-                          fluidRow(column(width=6, helpText("Planning horizon")),   
+                          shinyjs::hidden( fluidRow(column(width=6, helpText("Planning horizon")),   
                                    column(width=3, numericInput("horizon",NULL,value=30, min=1, step=5)),
                                    column(width=3, helpText("years", align="center"))
-                          ),
+                          )),
                           fluidRow(column(width=6, helpText("Value of the robots after useful life")),
                                    column(width=3, numericInput("salvage_robot",NULL,value=45000,min=0,step=1000)),
                                    column(width=3, helpText("dollars", align="center"))
@@ -470,13 +470,20 @@ navlistPanel("Data and Assumptions",
                                                                               column(width=2,  uiOutput("loan_robot3")))
                                                     ),
                                                     fluidRow(column(width=4,  helpText("Interest rate (%)")),
+                                                             column(width=2,  uiOutput('copy_r_housing')),
+                                                             column(width=2,  uiOutput('copy_r_robot1')),
+                                                             conditionalPanel("input.n_robot_life>=2", 
+                                                                              column(width=2, uiOutput('copy_r_robot2')))
+                                                    ),
+                                                    shinyjs::hidden( 
+                                                    fluidRow(column(width=4,  helpText("Interest rate (%)")),
                                                              column(width=2,  numericInput("r_housing",NULL,value=4, min=0, step=.25)),
                                                              column(width=2,  numericInput("r_robot1",NULL,value=4, min=0, step=.25)),
                                                              conditionalPanel("input.n_robot_life>=2", 
                                                                               column(width=2,  numericInput("r_robot2",NULL,value=4, min=0, step=.25))),
                                                              conditionalPanel("input.n_robot_life>=3", 
                                                                               column(width=2,  numericInput("r_robot3",NULL,value=4, min=0, step=.25)))
-                                                    ) , 
+                                                    )) , 
                                                     fluidRow(column(width=4,  helpText("Loan period (years)")),
                                                              column(width=2,  numericInput("n_yr_housing",NULL,value=24, min=0, step=1)),
                                                              column(width=2,  numericInput("n_yr_robot1",NULL,value=12, min=0, step=1)),

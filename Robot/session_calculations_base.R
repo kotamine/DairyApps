@@ -5,27 +5,41 @@
 # This sets the default value for additional_labor and additional_cost when hidden from the user
 updateNumericInput(session, "additional_labor",NULL,value=450,step=50,min=0)
 updateNumericInput(session, "additional_cost",NULL,value=200,step=50,min=0)
+# 
+# # Cash flow related variables; initially hidden from the user 
+# updateNumericInput(session, "inflation_robot",NULL,value=1.5,step=.25,min=0)
+# updateNumericInput(session, "inflation_margin",NULL,value=0.2,step=.25,min=0)
+# updateNumericInput(session, "inflation_labor",NULL,value=1.5,step=.25,min=0)
+# updateNumericInput(session, "inflation_general",NULL,value=1.5,step=.25,min=0)
+# updateNumericInput(session, "inflation_general",NULL,value=1.5,step=.25,min=0)
+# updateNumericInput(session, "down_housing",NULL,value=100000, min=0,step=20000)
+# updateNumericInput(session, "down_robot1",NULL,value=0, min=0,step=20000)
+# updateNumericInput(session, "down_robot2",NULL,value=40000, min=0,step=20000)
+# updateNumericInput(session, "r_housing",NULL,value=4, min=0, step=.25)
+# updateNumericInput(session, "r_robot1",NULL,value=4, min=0, step=.25)
+# updateNumericInput(session, "r_robot2",NULL,value=4, min=0, step=.25)
+# updateNumericInput(session, "n_yr_housing",NULL,value=24, min=0, step=1)
+# updateNumericInput(session, "n_yr_robot1",NULL,value=12, min=0, step=1)
+# updateNumericInput(session, "n_yr_robot2",NULL,value=12, min=0, step=1)
+# updateNumericInput(session, "salvage_housing",NULL,value=0, min=0, step=5000)
+# updateNumericInput(session, "horizon",NULL,value=30, min=1, step=5)
+# updateNumericInput(session, "hurdle_rate",NULL,value=4, min=0, step=.25)
+# updateNumericInput(session, "tax_rate",NULL,value=40, min=0, step=2)
 
-# Cash flow related variables; initially hidden from the user 
-updateNumericInput(session, "inflation_robot",NULL,value=1.5,step=.25,min=0)
-updateNumericInput(session, "inflation_margin",NULL,value=0.2,step=.25,min=0)
-updateNumericInput(session, "inflation_labor",NULL,value=1.5,step=.25,min=0)
-updateNumericInput(session, "inflation_general",NULL,value=1.5,step=.25,min=0)
-updateNumericInput(session, "inflation_general",NULL,value=1.5,step=.25,min=0)
-updateNumericInput(session, "down_housing",NULL,value=100000, min=0,step=20000)
-updateNumericInput(session, "down_robot1",NULL,value=0, min=0,step=20000)
-updateNumericInput(session, "down_robot2",NULL,value=40000, min=0,step=20000)
-updateNumericInput(session, "r_housing",NULL,value=4, min=0, step=.25)
-updateNumericInput(session, "r_robot1",NULL,value=4, min=0, step=.25)
-updateNumericInput(session, "r_robot2",NULL,value=4, min=0, step=.25)
-updateNumericInput(session, "n_yr_housing",NULL,value=24, min=0, step=1)
-updateNumericInput(session, "n_yr_robot1",NULL,value=12, min=0, step=1)
-updateNumericInput(session, "n_yr_robot2",NULL,value=12, min=0, step=1)
-updateNumericInput(session, "salvage_housing",NULL,value=0, min=0, step=5000)
-updateNumericInput(session, "horizon",NULL,value=30, min=1, step=5)
-updateNumericInput(session, "hurdle_rate",NULL,value=4, min=0, step=.25)
-updateNumericInput(session, "tax_rate",NULL,value=40, min=0, step=2)
 
+observeEvent(rv$housing_years,{
+  updateNumericInput(session, "horizon",NULL,value=rv$housing_years, min=1, step=1)
+  updateSliderInput(session, "budget_year", "Select budget year",value=1, min=1,max=rv$housing_years)
+})
+
+observeEvent(input$interest,{
+  rv$copy_r_housing <- input$interest
+  rv$copy_r_robot1 <- input$interest
+  rv$copy_r_robot2 <- input$interest
+  updateNumericInput(session, "r_housing",NULL,value=input$interest, min=0, step=.25)
+  updateNumericInput(session, "r_robot1",NULL,value=input$interest, min=0, step=.25)
+  updateNumericInput(session, "r_robot2",NULL,value=input$interest, min=0, step=.25)
+  })
 
 # Show/hide DMI calculations 
 shinyjs::onclick("customDMI",

@@ -17,7 +17,7 @@ var_to_render_0 <- c("herd_size2", "robot_invest","cost_housing","total_investme
                      "copy_cost_housing", "copy_robot_invest1", "copy_robot_invest2", 
                      "copy_robot_invest3", 
                      "copy_salvage_robot1","copy_salvage_robot2","copy_salvage_robot3")
-var_to_render_1 <- c()
+var_to_render_1 <- c("copy_r_housing", "copy_r_robot1","copy_r_robot2")
 var_to_render_2 <- c("adj_milk_cow_day")
 var_to_render_3 <- c("DMI_change","DMI_day","DMI_projected") 
 var_to_render_4 <- c("stage_lactation")
@@ -33,6 +33,13 @@ lapply(var_to_render_0,
        function(x) { 
          output[[paste0(x)]] <- renderUI({ 
            rv[[paste0(x)]] %>% formatcomma(0) %>% helpText()  })
+       }
+)
+
+lapply(var_to_render_1, 
+       function(x) { 
+         output[[paste0(x)]] <- renderUI({ 
+           rv[[paste0(x)]] %>% round(1) %>% helpText() })
        }
 )
 
