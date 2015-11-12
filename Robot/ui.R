@@ -2,6 +2,7 @@ library(shiny)
 library(shinyBS)
 library(markdown)
 library(ggplot2)
+suppressPackageStartupMessages(library(googleVis))
 suppressPackageStartupMessages(library(shinyjs))
 suppressPackageStartupMessages(library(DT))
 suppressPackageStartupMessages(library(dplyr))
@@ -44,14 +45,29 @@ shinyUI(
                                                              selected="before tax")) 
                                        ),
                                        fluidRow(
-                                         column(6,
-                                                div(uiOutput("cashflow")),align="center"),
+                                         conditionalPanel("input.dash_option!='chart'",
                                          column(6,
                                                 div(uiOutput("breakeven"),align="center"),
                                                 radioButtons("breakeven_option",NULL,
                                                              choices=c("wage",
                                                                        "wage inflation"),
-                                                             selected="wage"))
+                                                             selected="wage")),
+                                         column(6,
+                                                div( uiOutput("cashflow"), align="center")
+                                                )
+                                                 ),
+                                       conditionalPanel("input.dash_option=='chart'",
+                                                        tabsetPanel(
+                                                          tabPanel("Breakeven Wage",
+                                                            htmlOutput("breakeven2")),
+                                                          tabPanel("Cash Flow",
+                                                            htmlOutput("cashflow2"))
+                                                        ) 
+                                       ),
+                                        div( radioButtons("dash_option",NULL, inline=TRUE,
+                                                      choices=c("chart",
+                                                                "numbers"),
+                                                      selected="chart"), align="center")
                                        )),
                                 column(8,
                                        div(fluidRow(

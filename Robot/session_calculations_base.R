@@ -12,9 +12,9 @@ updateNumericInput(session, "inflation_margin",NULL,value=0.2,step=.25,min=0)
 updateNumericInput(session, "inflation_labor",NULL,value=1.5,step=.25,min=0)
 updateNumericInput(session, "inflation_general",NULL,value=1.5,step=.25,min=0)
 updateNumericInput(session, "inflation_general",NULL,value=1.5,step=.25,min=0)
-updateNumericInput(session, "down_housing",NULL,value=0, min=0,step=5000)
-updateNumericInput(session, "down_robot1",NULL,value=0, min=0,step=5000)
-updateNumericInput(session, "down_robot2",NULL,value=0, min=0,step=5000)
+updateNumericInput(session, "down_housing",NULL,value=100000, min=0,step=20000)
+updateNumericInput(session, "down_robot1",NULL,value=0, min=0,step=20000)
+updateNumericInput(session, "down_robot2",NULL,value=40000, min=0,step=20000)
 updateNumericInput(session, "r_housing",NULL,value=4, min=0, step=.25)
 updateNumericInput(session, "r_robot1",NULL,value=4, min=0, step=.25)
 updateNumericInput(session, "r_robot2",NULL,value=4, min=0, step=.25)
@@ -78,10 +78,9 @@ observe({
 
 
 WACC <- reactive({  
-  rv$WACC<- ((input$down_housing + input$down_robot1 + input$down_robot2) * input$hurdle_rate +
-               + (rv$loan_housing * input$r_housing + rv$loan_robot1 * input$r_robot1 +
-                    + rv$loan_robot2 * input$r_robot2)*(1-input$tax_rate/100))/
-    (rv$cost_housing + rv$robot_invest+ rv$robot_invest2)
+  rv$WACC<- ((input$down_housing + input$down_robot1) * input$hurdle_rate +
+               + (rv$loan_housing * input$r_housing + rv$loan_robot1 * input$r_robot1)*
+               (1-input$tax_rate/100))/(rv$cost_housing + rv$robot_invest)
   rv$WACC
 })
 
@@ -136,6 +135,7 @@ rv$adj_milk_cow_day2 <- rv$milk_day_cow_robot * input$milk_cow_coeff +
 
 # Cash Flow items to render in Data Entry
 rv$robot_invest2 <-  rv$robot_invest*(1+input$inflation_robot/100)^input$robot_years
+rv$robot_invest3 <- 0
 
 rv$yr_robot2 <- input$robot_years 
 rv$yr_robot3 <- input$robot_years * 2
@@ -150,6 +150,13 @@ rv$salvage_robot1 <- input$salvage_robot*(1+input$inflation_robot/100)^input$rob
 rv$salvage_robot2 <- input$salvage_robot*(1+input$inflation_robot/100)^(input$robot_years*2)
 rv$salvage_robot3 <- 0 #input$robot_salvage * ()
 rv$salvage_housing <- input$salvage_housing*(1+input$inflation_robot/100)^rv$housing_years
+rv$copy_salvage_robot1 <- input$salvage_robot
+rv$copy_salvage_robot2 <- rv$salvage_robot1
+rv$copy_salvage_robot3 <- 0
+rv$copy_cost_housing <- rv$cost_housing
+rv$copy_robot_invest1 <- rv$robot_invest
+rv$copy_robot_invest2 <- rv$robot_invest2
+rv$copy_robot_invest3 <- rv$robot_invest3
 
 
 # Positive Impacts (year 1)
@@ -270,15 +277,22 @@ rv$robot_end_PV <-   pmt(input$interest/100, rv$housing_years,  # This will be s
                          npv(input$interest/100, 
                              rv$table_cash_flow$salvage[-1]))
 
-rv$cost_downpayment <-  -pmt(input$hurdle_rate/100, rv$housing_years, 
+rv$cost_downpayment <-  pmt(input$hurdle_rate/100, rv$housing_years, 
                              npv(input$hurdle_rate/100, 
-                                 rv$table_cash_flow$downpayment))
+                                 rv$table_cash_flow$downpayment[-1])+rv$table_cash_flow$downpayment[1])
 
 rv$capital_cost_total <- rv$capital_recovery_robot + rv$capital_recovery_housing +
       + rv$cost_downpayment + rv$robot_end_PV
   
 
 ## ------------ Breakeven Calculations ------------
+input$inflation_labor # making it reactive to this variable
+input$inflation_margin
+input$dep_method
+input$n_yr_robot1
+input$n_yr_robot2
+input$n_yr_housing
+
 isolate({
   
 n_years <- input$horizon
@@ -440,7 +454,6 @@ tax_deduction_housing <- reactive({
 })  
 
 adj_WACC_interest <- reactive({
-  
   depr <- -pmt(WACC()/100, rv$housing_years, 
       npv(WACC()/100, rv$table_cash_flow$depreciation[-1])) +
   + pmt(input$interest/100, rv$housing_years, 
@@ -474,9 +487,8 @@ adj_WACC_interest <- reactive({
 
 
 adj_WACC_hurdle <- reactive({
-  
    -pmt(WACC()/100, rv$housing_years, 
-               npv(WACC()/100, rv$table_cash_flow$downpayment[-1])+rv$table_cash_flow$downpayment[1]) 
+               npv(WACC()/100,  rv$table_cash_flow$downpayment[-1])+rv$table_cash_flow$downpayment[1]) +
     + pmt(input$hurdle_rate/100, rv$housing_years, 
           npv(input$hurdle_rate/100, rv$table_cash_flow$downpayment[-1])+rv$table_cash_flow$downpayment[1])
 })

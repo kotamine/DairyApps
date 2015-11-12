@@ -8,7 +8,7 @@ br(),
 # div(bsButton("calculate_cash_flow","Calculate",disabled = FALSE),align="center"),
 # tags$hr(), 
 # br(),  
-fluidRow(column(6,  offset=1, helpText("Weighted average cost of capital (WACC)")),   
+fluidRow(column(6, offset=1, helpText("Weighted average cost of capital (WACC)")),   
          column(2, uiOutput("WACC")),
          column(2, helpText("percent"))
 ), 
@@ -16,7 +16,7 @@ fluidRow(column(6, offset=1, helpText("Net present value (NPV)")),
          column(2, uiOutput("NPV")),
          column(2, helpText("dollars"))
 ), 
-fluidRow(column(6,  offset=1,helpText("Annualized NPV in nominal terms (ANPV)")),   
+fluidRow(column(6,  offset=1,helpText("Net annual impact (after-tax)")),   
          column(2, uiOutput("ANPV")),
          column(2, helpText("dollars"))
 ), 
@@ -25,7 +25,7 @@ fluidRow(column(6,  offset=1,helpText("Annualized NPV in nominal terms (ANPV)"))
 #          column(2, helpText("dollars"))
 # ), 
 fluidRow(column(6,  offset=1, helpText("Internal rate of return (IRR)")),   
-         column(2, uiOutput("IRR")),
+         column(2, div(uiOutput("IRR"), align="right")),
          column(2, helpText("percent"))
 ), 
 fluidRow(column(6,  offset=1,helpText("Modified internal rate of return (MIRR)")),   
@@ -36,7 +36,7 @@ fluidRow(column(6,  offset=1,helpText("Modified internal rate of return (MIRR)")
 br(), 
 fluidRow(
   column(width=10,offset=1, 
-         helpText("CASH FLOW GRAPH HERE"),
+         div(htmlOutput("cashflow_chart"),align="center"),
          tabsetPanel(
            tabPanel("Cash Flow",
                     DT::dataTableOutput("table_cash_flow")

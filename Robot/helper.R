@@ -13,8 +13,13 @@ my_add_row <- function(A,a) {
 }
 
 
-formatcomma <- function(x) {
-  format(x, big.mark=",", scientific=FALSE) 
+formatcomma <- function(x, digits=NULL) {
+  if (length(x)==0) { return(NA) }
+  if (is.null(digits)) {
+    format(x, big.mark=",", scientific=FALSE) 
+  } else {
+    format(round(x,digits), big.mark=",", scientific=FALSE) 
+  }
 } 
 
 formatdollar <- function(x,digit=0) {

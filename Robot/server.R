@@ -2,6 +2,7 @@ library(shiny)
 library(shinyBS)
 library(markdown)
 library(ggplot2)
+suppressPackageStartupMessages(library(googleVis))
 suppressPackageStartupMessages(library(shinyjs))
 suppressPackageStartupMessages(library(DT))
 suppressPackageStartupMessages(library(dplyr))
@@ -216,15 +217,15 @@ shinyServer(function(input, output, session) {
 #     read.xlsx(inFile$datapath, sheetIndex = 2)
 #   })
 #   
-#   # There is no offical method to remove an uploaded file. 
-#   # The following provides a "fix" by initializing fileInput(). 
-#   # http://stackoverflow.com/questions/17352086/how-can-i-update-a-shiny-fileinput-object
-#   output$resettableInput <- renderUI({
-#     input$remove
-#     
-#     fileInput("file1", "Upload File",
-#               accept=c(".xlsx", "application/vnd.ms-excel"))
-#   })
+  # There is no offical method to remove an uploaded file. 
+  # The following provides a "fix" by initializing fileInput(). 
+  # http://stackoverflow.com/questions/17352086/how-can-i-update-a-shiny-fileinput-object
+  output$resettableInput <- renderUI({
+    input$remove
+    
+    fileInput("file1", "Upload File",
+              accept=c(".xlsx", "application/vnd.ms-excel"))
+  })
   
 })
 

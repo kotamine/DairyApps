@@ -14,7 +14,9 @@ var_to_render_0 <- c("herd_size2", "robot_invest","cost_housing","total_investme
                      "increased_insurance", "anticipated_hours_milking","milk_lb_robot_day",
                      "yr_robot2", "yr_robot3", "loan_housing",
                      "loan_robot1","loan_robot2","loan_robot3",
-                     "copy_robot_salvage1","copy_robot_salvage2","copy_robot_salvage3")
+                     "copy_cost_housing", "copy_robot_invest1", "copy_robot_invest2", 
+                     "copy_robot_invest3", 
+                     "copy_salvage_robot1","copy_salvage_robot2","copy_salvage_robot3")
 var_to_render_1 <- c()
 var_to_render_2 <- c("adj_milk_cow_day")
 var_to_render_3 <- c("DMI_change","DMI_day","DMI_projected") 
@@ -30,7 +32,7 @@ var_to_render[[4]] <- var_to_render_4
 lapply(var_to_render_0, 
        function(x) { 
          output[[paste0(x)]] <- renderUI({ 
-           rv[[paste0(x)]] %>% formatcomma() %>% helpText()  })
+           rv[[paste0(x)]] %>% formatcomma(0) %>% helpText()  })
        }
 )
 
@@ -231,8 +233,6 @@ output$IOFC <- renderUI({
   }
 })  
 
-# CREATE DASHBOARD FOR CASH FLOW STATS and Inflation Adjustment 
-
 
 output$NAI <- renderUI({ 
   dash_NAI(rv$NAI,cutoff=0)
@@ -269,7 +269,7 @@ output$misc <- renderUI({
   validate(
     need(!is.na(rv$misc ),"NA")
   )
-  div(class="well well-sm", style= "background-color: #C2B280; color:white;", 
+  div(class="well well-sm", style= "background-color: #EDDA74; color:white;", 
       rv$misc %>% formatdollar2() %>% strong %>% h4(), 
       h5("Others"), h5("under robot"))
 }) 
@@ -278,7 +278,7 @@ output$inflation <- renderUI({
   validate(
     need(!is.na(rv$inflation ),"NA")
   )
-  div(class="well well-sm", style= "background-color: #C2B280; color:white;", 
+  div(class="well well-sm", style= "background-color: #7A5DC7; color:white;", 
       rv$inflation %>% formatdollar2() %>% strong %>% h4(), 
       h5("Inflation Adjustments"), h5("under robot"))
 })  
@@ -319,6 +319,83 @@ output$cashflow <- renderUI({
 }) 
 
 
+
+output$cashflow2 <- renderGvis({
+  if (length(rv[["table_cash_flow"]])==0) return()
+  tbl <- round(rv[["table_cash_flow"]])
+  tbl$Year <- tbl$year
+  tbl$Cashflow <- tbl$after_tax_cash_flow 
+  gvisAreaChart(tbl, xvar="Year", 
+                yvar=c("Cashflow"),
+                options=list(
+                             title="After-tax Cash Flow", 
+                             vAxis="{title:'Impact under Robot ($)'}",
+                             hAxis="{title:'Year'}",
+                             legend="none"
+                ))
+})
+
+# output$cashflow2 <- renderGvis({
+#   if (length(rv[["table_cash_flow"]])==0) return()
+#   cashflow <- rv$table_cash_flow$after_tax_cash_flow 
+#   cut1 <- round(input$horizon/3)
+#   cut2 <- round(input$horizon*2/3)
+#   list_per <- list(c(1:cut1),c((cut1+1):cut2), c((cut2+1):input$horizon)) 
+# 
+#   df <- data.frame(period=c(paste0("1-",cut1),paste0(cut1+1,"-",cut2),
+#                             paste0(cut2+1,"-",input$horizon)))
+#   for (n in 1:3) {
+#     df$low[n] <- quantile(cashflow[list_per[[n]]],.01) %>% round() 
+#     df$close[n] <- quantile(cashflow[list_per[[n]]],.25) %>% round() 
+#     df$open[n] <- quantile(cashflow[list_per[[n]]],.75) %>% round() 
+#     df$high[n] <- quantile(cashflow[list_per[[n]]],.99) %>% round() 
+#   }
+#   gvisCandlestickChart(df,
+#                        xvar="period",
+#                        low="low", 
+#                        close="close",
+#                        open="open",
+#                        high="high",
+#                 options=list(legend="none"                
+#                              ))
+# })
+
+
+output$breakeven2 <- renderGvis({
+  validate(
+    need(!is.na(rv$bw_wage_before_tax),"NA")
+  )
+  if (input$NAI=="before tax") { 
+    labor_rate <- rv$bw_wage_before_tax
+    inflation <- rv$bw_wage_inflation_before_tax
+    tax <- "(Before Tax)"
+  } else {
+    labor_rate <- rv$bw_wage_after_tax 
+    inflation <- rv$bw_wage_inflation_after_tax
+    tax <- "(After Tax)"
+  }
+  
+  df <- data.frame(Year=c(1:input$horizon))
+  df$Base <- lapply(c(1:input$horizon), function(t) { 
+    input$labor_rate * (1 + input$inflation_labor/100)^(t-1)
+  }) %>% unlist() 
+  df$Wage <- lapply(c(1:input$horizon), function(t) { 
+    labor_rate * (1 + input$inflation_labor/100)^(t-1)
+    }) %>% unlist()  
+  df$Wage_Inflation <- lapply(c(1:input$horizon), function(t) { 
+     input$labor_rate * (1 + inflation)^(t-1)
+  }) %>% unlist()    
+  
+  gvisLineChart(df, xvar="Year", 
+                yvar=c("Base", "Wage","Wage_Inflation"),
+                options=list(
+                  title=paste("Breakeven Wage for Robots",tax), 
+                  vAxis="{title:'Wage Trajectory ($)'}",
+                  hAxis="{title:'Year'}",
+                  legend="bottom"
+                ))
+})
+
 output$breakeven <- renderUI({ 
   validate(
     need(!is.na(rv$bw_wage_before_tax),"NA")
@@ -342,14 +419,14 @@ output$breakeven <- renderUI({
     be_val <- paste0(round(inflation*100,3),"%") 
     labor_rate <- input$labor_rate
   }
-  
+
   yr_one <- paste("Year", round(input$horizon/3), ": ")
   yr_two <- paste("Year", round(input$horizon*(2/3)),": ")
   yr_three <- paste("Year", round(input$horizon),": ")
   wage_zero <- labor_rate  %>% formatdollar(2)
-  wage_one <- (labor_rate * (1 + inflation/100)^(round(input$horizon/3)-1))  %>% formatdollar(2)
-  wage_two <- (labor_rate * (1 + inflation/100)^(round(input$horizon*2/3)-1))  %>% formatdollar(2)
-  wage_three <- (labor_rate * (1 + inflation/100)^(round(input$horizon)-1))  %>% formatdollar(2)
+  wage_one <- (labor_rate * (1 + inflation)^(round(input$horizon/3)-1))  %>% formatdollar(2)
+  wage_two <- (labor_rate * (1 + inflation)^(round(input$horizon*2/3)-1))  %>% formatdollar(2)
+  wage_three <- (labor_rate * (1 + inflation)^(round(input$horizon)-1))  %>% formatdollar(2)
   
   div(class="well well-sm", style= "background-color:	#778899; color:white;", 
       h4("Breakeven", option, be_val, align="center"),
@@ -360,6 +437,10 @@ output$breakeven <- renderUI({
       h5("under robot")
   )
 }) 
+
+
+
+
 
 
 # 
@@ -430,29 +511,126 @@ output$breakeven <- renderUI({
 ## -----------------------------------------------------------------------
 
 
-lapply(c("table_cash_flow","table_debt","table_depreciation"), 
-       function(x) {
-         output[[x]] <- DT::renderDataTable({
-           if (length(rv[[x]])==0) return()
-           tbl <- round(rv[[x]])
-           DT::datatable(tbl,
-                         rownames = FALSE,
-                         extensions = 'ColVis',
-                         # extensions = 'ColReorder',
-                         options = list(
-                           dom = 'C<"clear">lfrtip',
-                           scrollX = TRUE,
-                           #                           scrollCollapse = TRUE,
-                           #                           scrollY = 500,
-                           # scrollCollapse = TRUE,
-                           # colVis = list(exclude = c(0, 1,1,0),
-                           showNone=TRUE, 
-                           activate = 'mouseover'))
-           
-         })
-       })
+# lapply(c("table_cash_flow","table_debt"), 
+#        function(x) {
+#          output[[x]] <- DT::renderDataTable({
+#            if (length(rv[[x]])==0) return()
+#            tbl <- round(rv[[x]])
+#            DT::datatable(tbl, 
+#                          # colnames = c('Here', 'Are', 'Some', 'New', 'Names')
+#                          rownames = FALSE,
+#                          extensions = 'ColVis',
+#                          # extensions = 'ColReorder',
+#                          options = list(
+#                            dom = 'C<"clear">lfrtip',
+#                            scrollX = TRUE,
+#                            pageLength = 30,
+#                            lengthMenu = c(10, 20, 30, 40),
+#                            searching = FALSE,
+#                            #                           scrollCollapse = TRUE,
+#                            #                           scrollY = 500,
+#                            # scrollCollapse = TRUE,
+#                            # colVis = list(exclude = c(0, 1,1,0),
+#                            showNone=TRUE, 
+#                            activate = 'mouseover'))
+#            
+#          })
+#        })
 
 
+output$table_cash_flow <- DT::renderDataTable({
+  if (length(rv[["table_cash_flow"]])==0) return()
+  tbl <- round(rv[["table_cash_flow"]])
+  colnames(tbl) <- c('Year', 'Revenue minus Expense', 'Interests on Debt', 'Depreciation',
+                     'Operating Income', 'Income Tax','Principal Payments','Adding Back Depreciation',
+                     'Down-payments','Salvage Values','After-tax Cashflow')
+  DT::datatable(tbl, 
+                # colnames = c('Year', 'Robot', 'Housing', 'Total'), 
+                rownames = FALSE,
+                extensions = 'ColVis',
+                options = list(
+                  dom = 'C<"clear">lfrtip',
+                  scrollX = TRUE,
+                  pageLength = rv$housing_years+1,
+                  lengthMenu = c(10, 20, 30, 40),
+                  searching = FALSE,
+                  showNone=TRUE, 
+                  activate = 'mouseover')) %>% 
+    formatCurrency(c( 'Revenue minus Expense', 'Interests on Debt', 'Depreciation',
+                      'Operating Income', 'Income Tax','Principal Payments','Adding Back Depreciation',
+                      'Down-payments','Salvage Values','After-tax Cashflow')) %>%
+    formatStyle( 
+      'After-tax Cashflow',
+      fontWeight = c('bold'),
+      color =  styleInterval(0, c('gray', 'white')),
+      backgroundColor = styleInterval(0, c('yellow', 'lightblue'))) %>%
+    
+     formatStyle( 
+          'Operating Income',
+          fontWeight = c('bold'),
+          color =  styleInterval(0.001, c('gray', 'white')),
+          backgroundColor = styleInterval(0.001, c('yellow', 'lightblue')))
+})  
+
+output$table_debt <- DT::renderDataTable({
+  if (length(rv[["table_debt"]])==0) return()
+  tbl <- round(rv[["table_debt"]])
+  colnames(tbl) <- c('Year', 'Robot Payment Year','Robot Interest', 'Robot Principal', 
+                     'Housing Payment Year','Housing Interest', 'Housing Principal',
+                     'Interest Total', 'Principal Total')
+  DT::datatable(tbl, 
+                # colnames = c('Year', 'Robot', 'Housing', 'Total'), 
+                rownames = FALSE,
+                extensions = 'ColVis',
+                options = list(
+                  dom = 'C<"clear">lfrtip',
+                  scrollX = TRUE,
+                  pageLength = rv$housing_years,
+                  lengthMenu = c(10, 20, 30, 40),
+                  searching = FALSE,
+                  showNone=TRUE, 
+                  activate = 'mouseover')) %>% 
+    formatCurrency(c('Robot Interest', 'Robot Principal', 
+                     'Housing Interest', 'Housing Principal',
+                     'Interest Total', 'Principal Total'))
+})
+
+output$table_depreciation <- DT::renderDataTable({
+  if (length(rv[["table_depreciation"]])==0) return()
+  tbl <- round(rv[["table_depreciation"]])
+  colnames(tbl) <- c('Year', 'Robot', 'Housing', 'Total')
+  DT::datatable(tbl, 
+                # colnames = c('Year', 'Robot', 'Housing', 'Total'), 
+                rownames = FALSE,
+                extensions = 'ColVis',
+                options = list(
+                  dom = 'C<"clear">lfrtip',
+                  scrollX = TRUE,
+                  pageLength = rv$housing_years,
+                  lengthMenu = c(10, 20, 30, 40),
+                  searching = FALSE,
+                  showNone=TRUE, 
+                  activate = 'mouseover')) %>% 
+    formatCurrency(c('Robot', 'Housing', 'Total'))
+})
+
+
+output$cashflow_chart <- renderGvis({
+  if (length(rv[["table_cash_flow"]])==0) return()
+  tbl <- round(rv[["table_cash_flow"]])
+  tbl$Year <- tbl$year
+  tbl$Operating_Income <- tbl$operating_income
+  tbl$Cashflow <- tbl$after_tax_cash_flow 
+      gvisAreaChart(tbl, xvar="Year", 
+                       yvar=c("Cashflow","Operating_Income"),
+                       options=list(isStacked=TRUE,
+                                    title="Before-tax Operating Income & After-tax Cash Flow", 
+                                    vAxis="{title:'Net Annual Impact under Robot ($)'}",
+                                    hAxis="{title:'Year'}",
+                                    legend="bottom",
+                                    width=800, height=400
+                                      ))
+})
 
 
 
