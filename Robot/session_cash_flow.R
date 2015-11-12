@@ -1,11 +1,8 @@
 ## ------ Prepares cash flow, debt, and depreciation tables -------
 
 
-# observeEvent(input$calculate_cash_flow, {
-
 isolate({
 n_years <- input$horizon
-
 
 
 ## ------------ Depreciation Table ------------
@@ -112,23 +109,17 @@ rv$table_depreciation <- table_depreciation
 
 rate <- WACC()/100
 
-
 rv$NPV <- npv(rate, table_cash_flow$after_tax_cash_flow[-1]) +
   + table_cash_flow$after_tax_cash_flow[1]
 rv$ANPV <- -pmt(rate, rv$housing_years,rv$NPV)
 rv$ANPVr <- rv$ANPV * rv$deflator
 rv$IRR <- irr(table_cash_flow$after_tax_cash_flow) * 100
-if (rv$IRR>200) {
+if (rv$IRR>1000) {
   rv$IRR <- NA
 } 
 # change the rates for MIRR ?
 rv$MIRR <- mirr(table_cash_flow$after_tax_cash_flow, input$interest/100, input$interest/100) * 100
 
-
-
-
-
-# })
 
 })
 

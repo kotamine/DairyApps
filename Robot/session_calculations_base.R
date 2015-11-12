@@ -27,11 +27,13 @@ updateNumericInput(session, "additional_cost",NULL,value=200,step=50,min=0)
 # updateNumericInput(session, "tax_rate",NULL,value=40, min=0, step=2)
 
 
+# Temporary fix between horizon year and housing year 
 observeEvent(rv$housing_years,{
   updateNumericInput(session, "horizon",NULL,value=rv$housing_years, min=1, step=1)
   updateSliderInput(session, "budget_year", "Select budget year",value=1, min=1,max=rv$housing_years)
 })
 
+# Temporary fix for a single interest rate
 observeEvent(input$interest,{
   rv$copy_r_housing <- input$interest
   rv$copy_r_robot1 <- input$interest
@@ -90,7 +92,7 @@ observe({
 
 
 
-
+# Weighted Average Cost of Capital 
 WACC <- reactive({  
   rv$WACC<- ((input$down_housing + input$down_robot1) * input$hurdle_rate +
                + (rv$loan_housing * input$r_housing + rv$loan_robot1 * input$r_robot1)*
@@ -104,8 +106,7 @@ WACC <- reactive({
 
 ## ----------- Main Calculations: all restuls are stored under reactive value "rv" -----------
 observe({ 
-
-
+  
 # Data Entry Level Calculations
 rv$herd_size2 <- input$herd_size + input$herd_increase
 
@@ -275,7 +276,6 @@ rv$deflator <- 1
 # rv$cash_impact_without_salvage <-  rv$impact_without_salvage 
 # rv$cash_impact_with_salvage <-  rv$impact_with_salvage 
 
-
 source("session_cash_flow.R", local=TRUE)  # Calculates cash flow tables
 
 
@@ -300,7 +300,8 @@ rv$capital_cost_total <- rv$capital_recovery_robot + rv$capital_recovery_housing
   
 
 ## ------------ Breakeven Calculations ------------
-input$inflation_labor # making it reactive to this variable
+# making it reactive to the following variables; 
+input$inflation_labor
 input$inflation_margin
 input$dep_method
 input$n_yr_robot1
@@ -399,7 +400,7 @@ rv$annuity_hurdle[["cost_downpayment"]] <- -pmt(WACC()/100, n_years,rv$npv_hurdl
   
 })
 
-  # This is used later for alerting base value change in robustness analysis  
+  # This is used for alerting the base-value change in sensitivity and scenario analysis  
   createAlert(session, "c_input_change", "ref_c_input_change", 
               content = "New base values. 
             Press ``Calculate'' to updated the results.",
@@ -412,6 +413,7 @@ rv$annuity_hurdle[["cost_downpayment"]] <- -pmt(WACC()/100, n_years,rv$npv_hurdl
 }) 
 
 
+# --- Partial Budget Analysis-Specific items:  They need to respond to input$budget_year ---
 positive_total <- reactive({
    rv$inc_rev_total * (1+input$inflation_margin/100)^(input$budget_year-1) +
     + rv$dec_exp_total *  (1+input$inflation_labor/100)^(input$budget_year-1)
@@ -497,17 +499,12 @@ adj_WACC_interest <- reactive({
             - depr*input$tax_rate/100 + principal + salvage )
 })
 
-
-
-
 adj_WACC_hurdle <- reactive({
    -pmt(WACC()/100, rv$housing_years, 
                npv(WACC()/100,  rv$table_cash_flow$downpayment[-1])+rv$table_cash_flow$downpayment[1]) +
     + pmt(input$hurdle_rate/100, rv$housing_years, 
           npv(input$hurdle_rate/100, rv$table_cash_flow$downpayment[-1])+rv$table_cash_flow$downpayment[1])
 })
-
-
 
 net_annual_impact_after_tax <- reactive({
   net_annual_impact_before_tax() + tax_revenue_minus_expense() + tax_interest() +
@@ -519,9 +516,11 @@ be_wage_positive_minus_negative <- reactive({
   ((rv$dec_exp_heat_detection + rv$dec_exp_labor )/input$labor_rate)
 })
 
-observe({
-  if (!is.null(net_annual_impact_after_tax()))
-  {
+
+# This needs to respond to change in any data input or change in input$budget_year
+observe({ 
+  
+  if (is.null(net_annual_impact_after_tax())) {  return() } 
   rv$positive_total <- positive_total()
   rv$negative_total <- negative_total()
   rv$positive_minus_negative <- positive_minus_negative()
@@ -534,22 +533,25 @@ observe({
   rv$net_annual_impact_after_tax <- net_annual_impact_after_tax()
   rv$adj_WACC_interest <- adj_WACC_interest()
   rv$adj_WACC_hurdle <- adj_WACC_hurdle()
-  rv$be_wage_positive_minus_negative <- be_wage_positive_minus_negative()
-  } else {
-    return()
-  }
-})
+  rv$be_wage_positive_minus_negative <- be_wage_positive_minus_negative() 
+}) 
 
 
-#  Dashboard   
-observe({
-  
-  if (!is.na(net_annual_impact_after_tax()))
-  {
-#   # The change in two items below can trigger what follows 
+#  ------ Dashboard  triggered by any change in; -----------
 #   input$NAI
-#   net_annual_impact_after_tax()
-    input$NAI
+# rv$inc_rev_total
+# rv$dec_exp_total
+# rv$inc_exp_total
+# rv$capital_cost_total
+observe({
+  if (is.na(rv$inc_rev_total)) { return() }
+
+  input$NAI
+  rv$inc_rev_total
+  rv$dec_exp_total
+  rv$inc_exp_total
+  rv$capital_cost_total
+  
     
   isolate({
   
@@ -603,9 +605,7 @@ observe({
   rv$capital <- -rv$capital_cost_total + 
      +(input$NAI=="after tax")*(tax_interest() + tax_depreciation())
   
-  
   rv$misc <- rv$NAI - (rv$milk_feed + rv$labor_repair + rv$capital + rv$inflation) 
-  
  
   rv$capital_recovery_robot2 <- rv$capital_recovery_robot +
                   - (input$NAI=="after tax")*tax_deduction_robot()
@@ -613,9 +613,6 @@ observe({
                   - (input$NAI=="after tax")*tax_deduction_housing()
   
   })
-  } else {
-    return()
-  }
 })
 
 

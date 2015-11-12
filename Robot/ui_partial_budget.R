@@ -56,7 +56,7 @@ fluidRow(
                       column(width=3, uiOutput("dec_exp_total"))               
              ), 
              br(),
-             fluidRow(column(width=8, offset=0, 
+             fluidRow(column(width=8, 
                              h5("Total positve impacts")),
                       column(width=3, offset=1, uiOutput("positive_total"))              
              )
@@ -121,7 +121,7 @@ fluidRow(
                              h5("Total cost of capital*")),
                       column(width=3, uiOutput("capital_cost_total"))                         
              ), br(), 
-             fluidRow(column(width=8, offset=0, 
+             fluidRow(column(width=8, 
                              h5("Total negative impacts*")),
                       column(width=3,  offset=1, uiOutput("negative_total"))                        
              )
@@ -131,16 +131,16 @@ fluidRow(
   fluidRow(
     column(width=8, offset=2, 
            helpText("Asterisk (*) symbol indicates that the value is annualized
-                    into a constant income or payment during the planning horizon."),
+                    into a constant income or payment (called annuity) during the planning horizon."),
            br(),
                   fluidRow(
-                    column(width=3,offset=9, span(helpText("Breakeven Labor"),
+                    column(width=3,offset=9, div(helpText("Breakeven Labor"),
                                                   align="right"))
                   ), 
            fluidRow(
-             column(width=1,offset=10, span(helpText("Wage"),
+             column(width=1,offset=10, div(helpText("Wage"),
                                            align="center")),
-             column(width=1,offset=0, span(helpText("Inflation"),
+             column(width=1,offset=0, div(helpText("Inflation"),
                                            align="center"))
            ), 
            hr(),
@@ -148,7 +148,7 @@ fluidRow(
                                   h5("Total positive impacts minus total negative impacts*")),
                            column(width=3,  uiOutput("positive_minus_negative")),
                            column(width=1,  uiOutput("be_wage_positive_minus_negative")),
-                           column(width=1,  helpText("-",align="right"))
+                           column(width=1,  div(helpText("-"),align="right"))
                   ), 
            fluidRow(column(width=6, offset=1, 
                            helpText("Inflation adjustments*")),

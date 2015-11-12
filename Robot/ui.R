@@ -64,7 +64,7 @@ shinyUI(
                                                             htmlOutput("cashflow2"))
                                                         ) 
                                        ),
-                                        div( radioButtons("dash_option",NULL, inline=TRUE,
+                                       br(), div( radioButtons("dash_option",NULL, inline=TRUE,
                                                       choices=c("chart",
                                                                 "numbers"),
                                                       selected="chart"), align="center")

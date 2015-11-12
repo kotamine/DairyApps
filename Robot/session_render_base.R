@@ -101,7 +101,7 @@ lapply(var_to_render_1,
   
   lapply(cash_render_0_right, function(x) {
     output[[paste0(x)]] <- renderUI({
-      rv[[paste0(x)]] %>% formatdollar() %>% helpText(align="right")
+      rv[[paste0(x)]] %>% formatdollar() %>% helpText() %>% div(align="right")
     })
   })
   
@@ -110,7 +110,7 @@ lapply(var_to_render_1,
       validate(
         need(!is.na(rv[[paste0(x)]]), "NA")
       )
-      rv[[paste0(x)]] %>% formatdollar(2) %>% helpText(align="right")
+      rv[[paste0(x)]] %>% formatdollar(2) %>% helpText() %>% div(align="right")
     })
   })
   
@@ -119,7 +119,7 @@ lapply(var_to_render_1,
       validate(
         need(!is.na(rv[[paste0(x)]]), "NA")
       )
-      rv[[paste0(x)]] %>% round(2) %>% helpText(align="right")
+      rv[[paste0(x)]] %>% round(2) %>% helpText() %>% div(align="right")
     })
   })
   
@@ -129,7 +129,7 @@ lapply(var_to_render_1,
         need(!is.na(rv[[paste0(x)]]), "NA")
       )
       a <- (rv[[paste0(x)]]*100) %>% round(3)
-      paste0(a,"%") %>% helpText(align="right")
+      paste0(a,"%") %>% helpText() %>% div(align="right")
     })
   })
   
@@ -201,7 +201,7 @@ lapply(var_to_render_0_right,
              i_factor <- 1
            } 
              (rv[[paste0(x)]] * i_factor) %>% 
-               formatdollar() %>% helpText(align="right") 
+               formatdollar() %>% helpText() %>% div(align="right")
            })
        }
 )
