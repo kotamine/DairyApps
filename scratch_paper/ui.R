@@ -6,7 +6,8 @@ shinyUI(pageWithSidebar(
   
   sidebarPanel(
    numericInput("var1", "Var 1", value=1, step=2),
-   actionButton("action","Action")
+   actionButton("action","Action"),
+   numericInput("var1_copy","Var 1 Copy", value=1, step=5)
   ),
   
   mainPanel(

@@ -247,10 +247,6 @@ shinyUI(
                       uiOutput("c_misc")))
              ))),
              DT::dataTableOutput("table_robust")
-#              # ---------- Cash Flow Analysis -----------         
-#              conditionalPanel('input.robust=="Cash Flow"', 
-#                               helpText("Additional Controls and Displays for Cash Flow Analysis")
-#              )
             ),
              # --------- Data Table ---------
              fluidRow(column(2,offset=3,
@@ -283,14 +279,9 @@ tabPanel("Cash Flow",
          conditionalPanel("input.budget==0",
                           div(helpText("Please review all tabs in Data Entry."),align="center")
          ),
-         conditionalPanel("input.budget>0",
-#                           div(
-#                             radioButtons("cash_flow_on","Cash Flow Based Representation", choices=c("OFF","ON")), 
-#                             align="center"), 
-                          conditionalPanel("input.budget>0",
-                          source("ui_cash_flow.R", local=TRUE)$value
-                          )
-         )
+        conditionalPanel("input.budget>0",
+        source("ui_cash_flow.R", local=TRUE)$value
+        )
 ),
     # ---------- Additional Analyses -----------
     navbarMenu("More",
@@ -306,7 +297,10 @@ tabPanel("Cash Flow",
                                                          helpText("Explanation about Scenario Analysis")))
                         )),
 
-               tabPanel("Robots vs Parlors")
+               tabPanel("Robots vs Parlors",
+                        conditionalPanel("input.budget>0",
+                                        source("ui_robot_parlor.R", local=TRUE)$value
+                        ))
     ),
     # ---------- About -----------
     tabPanel("About",

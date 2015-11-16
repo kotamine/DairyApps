@@ -1,7 +1,7 @@
 library(shiny)
 
 
-shinyServer(function(input, output) {
+shinyServer(function(input, output,session) {
   
   var3 <- 1000
   rv <- reactiveValues(var4=0, var5=0, var6=0, var7=0, var8=0)
@@ -89,4 +89,12 @@ shinyServer(function(input, output) {
     h3(rv$var8)  
   })
     
+  observe({
+  updateNumericInput(session,"var1", "Var 1", value=input$var1_copy, step=2)
+  })
+  
+  observe({
+  updateNumericInput(session,"var1_copy","Var 1 Copy", value=input$var1, step=5)
+  })
+  
 })

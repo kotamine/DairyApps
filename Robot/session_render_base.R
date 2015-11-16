@@ -16,7 +16,14 @@ var_to_render_0 <- c("herd_size2", "robot_invest","cost_housing","total_investme
                      "loan_robot1","loan_robot2","loan_robot3",
                      "copy_cost_housing", "copy_robot_invest1", "copy_robot_invest2", 
                      "copy_robot_invest3", 
-                     "copy_salvage_robot1","copy_salvage_robot2","copy_salvage_robot3")
+                     "copy_salvage_robot1","copy_salvage_robot2","copy_salvage_robot3",
+                     "cost_housing_pr1","cost_housing_pr2","cost_housing_pr3","cost_housing_pr4",
+                     "salvage_milking2_pr4", 
+                     "loan_housing_pr1",
+                     "loan_housing_pr2", "loan_milking1_pr2", 
+                     "loan_housing_pr3", "loan_milking1_pr3", 
+                     "loan_housing_pr4", "loan_milking1_pr4", "loan_milking2_pr4"
+                     )
 var_to_render_1 <- c("copy_r_housing", "copy_r_robot1","copy_r_robot2")
 var_to_render_2 <- c("adj_milk_cow_day")
 var_to_render_3 <- c("DMI_change","DMI_day","DMI_projected") 

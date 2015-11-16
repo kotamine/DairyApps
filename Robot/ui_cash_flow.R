@@ -48,7 +48,8 @@ fluidRow(
                     DT::dataTableOutput("table_depreciation")
            )
          ) 
-  ))
+  )),
+br(),br()
 )
 
 
