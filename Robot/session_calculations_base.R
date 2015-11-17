@@ -108,19 +108,21 @@ WACC <- reactive({
 observe({ 
   
   browser()
-  
-if (input$robot_parlor=="OFF" | input$profile_choice=="Robots") {
+  isolate(robot_parlor <- input$robot_parlor)
+if (robot_parlor=="OFF" | input$profile_choice=="Robots") {
   rv$cost_milking <- input$n_robot * input$cost_robot
   rv$cost_milking2 <-  rv$cost_milking*(1+input$inflation_robot/100)^input$robot_years
   rv$housing_years <- input$n_robot_life * input$robot_years
   rv$salvage_milking_fv1 <- input$salvage_milking1*(1+input$inflation_robot/100)^input$robot_years
   rv$salvage_milking_fv2 <- input$salvage_milking1*(1+input$inflation_robot/100)^(input$robot_years*2)*(input$n_robot_life>=2)
+  rv$repair_total <- input$repair * input$n_robot
 } else {
   rv$cost_milking <- input$cost_parlors
   rv$cost_milking2 <- 0
   rv$housing_years <- input$milking_years
   rv$salvage_milking_fv1 <- input$salvage_milking1*(1+input$inflation_robot/100)^input$milking_years
   rv$salvage_milking_fv2 <- 0
+  rv$repair_total <- input$repair 
 }
   
   
@@ -129,7 +131,7 @@ rv$herd_size2 <- input$herd_size + input$herd_increase
 
 rv$cost_housing <- input$cost_housing_cow * rv$herd_size2
 
-rv$total_investment_cow <-  input$cost_housing_cow + rv$cost_milking1/rv$herd_size2
+rv$total_investment_cow <-  input$cost_housing_cow + rv$cost_milking/rv$herd_size2
 
 rv$total_investment <- rv$total_investment_cow  * rv$herd_size2
 
@@ -208,7 +210,9 @@ rv$positive_total <- rv$inc_rev_total +  rv$dec_exp_total
 # Negative Impacts (year 1)
 rv$inc_exp_herd_increase <- (input$additional_labor + input$additional_cost)*input$herd_increase
 
-rv$inc_exp_repair <-input$repair * input$n_robot + input$insurance_rate/100 * rv$increased_insurance
+
+rv$inc_exp_repair <-rv$repair_total + input$insurance_rate/100 * rv$increased_insurance
+
 
 rv$inc_exp_feed <-  rv$DMI_change * input$cost_DM * 330 * rv$herd_size2
 

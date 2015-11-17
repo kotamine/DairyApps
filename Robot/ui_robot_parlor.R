@@ -1,21 +1,23 @@
-div(  
+div(     
+  fluidRow(column(width=6, offset=3,
+                         radioButtons("robot_parlor","Robots vs Parlors Comparison",choices=c("OFF","ON"), inline=TRUE), 
+                  helpText("some explanation....")
+            )),
          fluidRow(
            column(
              width=1),
            column(
              width=10, 
-             radioButtons("robot_parlor","Robots vs Parlors Comparison",choices=c("OFF","ON")), 
-             helpText("some explanation...."),
              conditionalPanel('input.robot_parlor=="ON"',
              div(h4("Robots vs Parlors"),
-            actionButton("robot_parlor_calculate", "Calculate"),
+            bsButton("robot_parlor_calculate", "Calculate",style="primary"),  align="center"),
+            conditionalPanel('input.robot_parlor_calculate>=1', 
             helpText("Summary Results tables and graphs here"), br(), br(),     
-             align="center"),
              h4("A. Anticipated Changes in Production"),
-             div(style="background-color: #2B65EC; color:white;",
+             div(style="background-color: #4863A0; color:white;",
                            fluidRow(
                              column(width=8,offset=4, 
-                                           h5(strong("Investment Profiles"), align="center")
+                                           h4(strong("Investment Profiles"), align="center")
                                            )),
                            fluidRow(column(width=4,  h5(strong("Item"),align="center")),
                                     column(width=2,  h5(strong("Barn Only"),  align="center")),
@@ -126,14 +128,14 @@ div(
                       column(width=2, numericInput("change_chemical_pr3",NULL,value=1.50,step=0.25)),
                       column(width=2, numericInput("change_chemical_pr4",NULL,value=1.50,step=0.25))
              ),
-            helpText("Other production variables are shared across investment profiles."), 
+            helpText("*Note: Other production variables are shared across investment profiles."), 
          # ----- Financing ------
              hr(),
              h4("B. Financing Schedule by Profile") , 
              tabsetPanel(
                tabPanel("Barn Only",
-             div(style="background-color: #616D7E; color:white;",
-                 fluidRow(column(width=6, offset=4, h5(strong("Investment Assets"),align="center"))),
+             div(style="background-color:  #4863A0; color:white;",
+                 fluidRow(column(width=6, offset=4, h4(strong("Investment Assets"),align="center"))),
                  fluidRow(column(width=4,  h5(strong("Item"), align="center")),
                           column(width=2,  h5(strong("Housing"), align="center"))
                  )), br(),
@@ -346,5 +348,5 @@ div(
              selected="Robots"
            )
          )
-         )), br(), br() 
+         ))), br(), br() 
 ) 

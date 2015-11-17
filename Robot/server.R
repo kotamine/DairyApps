@@ -30,13 +30,10 @@ shinyServer(function(input, output, session) {
 #   # ------ Dashboard features ------
 #   source("session_dashboard.R", local=TRUE)
 
-  browser()
   source("session_calculations_base.R", local=TRUE)
-  browser()
-  
+
   source("session_render_base.R", local=TRUE)
-  browser()
-  
+
   source("session_robot_parlor.R", local=TRUE)
   
   

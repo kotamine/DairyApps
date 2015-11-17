@@ -27,8 +27,8 @@ shinyUI(
              # Need to add "$value" for including source in UI: 
              # otherwise "TRUE" will show up at the end of file
              conditionalPanel('input.robot_parlor=="ON"',
-             selectInput("profile_choice","Current Investment Profile",selected="Robots",
-                         choices=c("Barn Only","Retrofit Parlors","New Parlors","Robots"))
+             div(selectInput("profile_choice","Current Investment Profile",selected="Robots",
+                         choices=c("Barn Only","Retrofit Parlors","New Parlors","Robots")),align="center")
               ), 
               source("ui_data_entry_tabs.R", local=TRUE)$value,    
              

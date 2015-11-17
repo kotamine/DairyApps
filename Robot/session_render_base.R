@@ -9,20 +9,29 @@
 
 
 var_to_render <- list()               
-var_to_render_0 <- c("herd_size2", "robot_invest","cost_housing","total_investment_cow",
+var_to_render_0 <- c("herd_size2", "cost_milking","cost_housing","total_investment_cow",
                      "total_investment", "housing_years",
-                     "increased_insurance", "anticipated_hours_milking","milk_lb_robot_day",
-                     "yr_robot2", "yr_robot3", "loan_housing",
-                     "loan_robot1","loan_robot2","loan_robot3",
+                     "increased_insurance", "anticipated_hours_milking","milk_lb_alt_day",
+                     "yr_robot2",  "loan_housing",
+                     "loan_robot1","loan_robot2",
                      "copy_cost_housing", "copy_robot_invest1", "copy_robot_invest2", 
-                     "copy_robot_invest3", 
-                     "copy_salvage_robot1","copy_salvage_robot2","copy_salvage_robot3",
-                     "cost_housing_pr1","cost_housing_pr2","cost_housing_pr3","cost_housing_pr4",
-                     "salvage_milking2_pr4", 
+                     "copy_salvage_robot1","copy_salvage_robot2",
+                     "yr_invest_milking2_pr4", 
+                     "copy_robot_years_pr4", "copy_n_robot_pr4", "copy_cost_robot_pr4",
+                     "housing_years_pr2", "housing_years_pr3","housing_years_pr4",
+                     "copy_cost_housing_pr1","copy_cost_housing_pr2","copy_cost_housing_pr3","copy_cost_housing_pr4",
+                     "copy_cost_milking1_pr2",
+                     "copy_cost_milking1_pr3",
+                     "copy_cost_milking1_pr4", "copy_cost_milking2_pr4",
                      "loan_housing_pr1",
                      "loan_housing_pr2", "loan_milking1_pr2", 
                      "loan_housing_pr3", "loan_milking1_pr3", 
-                     "loan_housing_pr4", "loan_milking1_pr4", "loan_milking2_pr4"
+                     "loan_housing_pr4", "loan_milking1_pr4", "loan_milking2_pr4",
+                     'copy_r_housing_pr1', 
+                     'copy_r_housing_pr2', 'copy_r_milking1_pr2', 
+                     'copy_r_housing_pr3', 'copy_r_milking1_pr3', 
+                     'copy_r_housing_pr4', 'copy_r_milking1_pr4', 'copy_r_milking2_pr4',
+                     "salvage_milking2_pr4"
                      )
 var_to_render_1 <- c("copy_r_housing", "copy_r_robot1","copy_r_robot2")
 var_to_render_2 <- c("adj_milk_cow_day")

@@ -49,7 +49,7 @@ navlistPanel("Data and Assumptions",
                                    column(width=3, helpText("dollars", align="center"))
                           ),
                           fluidRow(column(width=6, helpText("Total investment for the robots alone")),
-                                   column(width=3, uiOutput("robot_invest")),
+                                   column(width=3, uiOutput("cost_milking")),
                                    column(width=3, helpText("dollars", align="center"))
                           )),
                           conditionalPanel('input.robot_parlor=="ON" & input.profile_choice!="Robots"',
@@ -228,12 +228,12 @@ navlistPanel("Data and Assumptions",
                           ),
                           conditionalPanel('input.robot_parlor=="OFF" | input.profile_choice=="Robots"',
                                            fluidRow(column(width=6, helpText("Milk lbs/robot/day")),
-                                                    column(width=3, uiOutput("milk_lb_robot_day")),
+                                                    column(width=3, uiOutput("milk_lb_alt_day")),
                                                     column(width=3, helpText("lbs/robot/day", align="center"))
                                            )),
                           conditionalPanel('input.robot_parlor=="ON" & input.profile_choice!="Robots"',
                           fluidRow(column(width=6, helpText("Projected milk lbs/day")),
-                                   column(width=3, uiOutput("milk_lb_day")),
+                                   column(width=3, uiOutput("milk_alt_day")),
                                    column(width=3, helpText("lbs/day", align="center"))
                           ))
                           )),
@@ -449,8 +449,8 @@ navlistPanel("Data and Assumptions",
                                                column(width=2,  
                                                        conditionalPanel('input.robot_parlor=="OFF" | input.profile_choice=="Robots"',
                                                                         h5(strong("Robot 1"), align="center"),
-                                                      conditionalPanel("input.n_robot_life>=2",
-                                                                       column(width=2, 
+                                                        column(width=2, 
+                                                               conditionalPanel("input.n_robot_life>=2",
                                                                               h5(strong("Robot 2"), align="center")))),
                                       conditionalPanel('input.robot_parlor=="ON" & input.profile_choice=="Retrofit Parlors"',
                                                        h5(strong("Retrofit"), align="center")),
@@ -460,54 +460,53 @@ navlistPanel("Data and Assumptions",
                                   fluidRow(column(width=4,  helpText("Year of investment")),
                                            column(width=2,  helpText("0")),
                                            column(width=2,  helpText("0")),
-                                           conditionalPanel(" input.profile_choice='Robots' & input.n_robot_life>=2",
-                                                            column(width=2,  uiOutput("yr_robot2"))) 
+                                           column(width=2, conditionalPanel(" input.profile_choice='Robots' & input.n_robot_life>=2",
+                                                             uiOutput("yr_robot2"))) 
                                   ), 
                                   fluidRow(column(width=4,  helpText("Investment amount ($)")),
                                            column(width=2,  uiOutput("copy_cost_housing")),
                                            column(width=2,  uiOutput("copy_cost_miking1")),
-                                           conditionalPanel("input.profile_choice='Robots' & input.n_robot_life>=2", 
-                                                            column(width=2,  uiOutput("copy_cost_milking2")))
+                                           column(width=2, conditionalPanel("input.profile_choice='Robots' & input.n_robot_life>=2", 
+                                                             uiOutput("copy_cost_milking2")))
                                   ), 
                                   fluidRow(column(width=4,  helpText("Down payment ($)")),
                                            column(width=2,  
                                                   numericInput("down_housing",NULL,value=100000, min=0,step=20000)),
                                            column(width=2,  
                                                   numericInput("down_milking1",NULL,value=0, min=0,step=20000)),
-                                           conditionalPanel("input.profile_choice='Robots' & input.n_robot_life>=2", 
-                                                            column(width=2,  
+                                           column(width=2,  conditionalPanel("input.profile_choice='Robots' & input.n_robot_life>=2", 
                                                                    numericInput("down_milking2",NULL,value=50000, min=0, step=20000)))
                                   ), 
                                   fluidRow(column(width=4,  helpText("Loan amount ($)")),
                                            column(width=2,  uiOutput("loan_housing")),
                                            column(width=2,  uiOutput("loan_milking1")),
-                                           conditionalPanel("input.profile_choice='Robots' & input.n_robot_life>=2", 
-                                                            column(width=2,  uiOutput("loan_milking2")))
+                                           column(width=2,  conditionalPanel("input.profile_choice='Robots' & input.n_robot_life>=2", 
+                                                           uiOutput("loan_milking2")))
                                   ),
                                   fluidRow(column(width=4,  helpText("Interest rate (%)")),
                                            column(width=2,  uiOutput('copy_r_housing')),
                                            column(width=2,  uiOutput('copy_r_milking1')),
-                                           conditionalPanel("input.profile_choice='Robots' & input.n_robot_life>=2", 
-                                                            column(width=2, uiOutput('copy_r_milking2')))
+                                           column(width=2, conditionalPanel("input.profile_choice='Robots' & input.n_robot_life>=2", 
+                                                            uiOutput('copy_r_milking2')))
                                   ),
                                   shinyjs::hidden( 
                                   fluidRow(column(width=4,  helpText("Interest rate (%)")),
                                            column(width=2,  numericInput("r_housing",NULL,value=4, min=0, step=.25)),
                                            column(width=2,  numericInput("r_milking1",NULL,value=4, min=0, step=.25)),
-                                           conditionalPanel("input.profile_choice='Robots' & input.n_robot_life>=2", 
-                                                            column(width=2,  numericInput("r_milking2",NULL,value=4, min=0, step=.25)))
+                                           column(width=2, conditionalPanel("input.profile_choice='Robots' & input.n_robot_life>=2", 
+                                                             numericInput("r_milking2",NULL,value=4, min=0, step=.25)))
                                   )) , 
                                   fluidRow(column(width=4,  helpText("Loan period (years)")),
                                            column(width=2,  numericInput("n_yr_housing",NULL,value=24, min=0, step=1)),
                                            column(width=2,  numericInput("n_yr_milking1",NULL,value=12, min=0, step=1)),
-                                           conditionalPanel("input.profile_choice='Robots' & input.n_robot_life>=2", 
-                                                            column(width=2,  numericInput("n_yr_milking2",NULL,value=12, min=0, step=1)))
+                                           column(width=2,  conditionalPanel("input.profile_choice='Robots' & input.n_robot_life>=2", 
+                                                            numericInput("n_yr_milking2",NULL,value=12, min=0, step=1)))
                                   ),
                                   fluidRow(column(width=4,  helpText("Salvage value ($)")),
                                            column(width=2,  helpText("0")),
                                            column(width=2,  uiOutput("copy_salvage_milking1")),
-                                           conditionalPanel("input.profile_choice='Robots' & input.n_robot_life>=2", 
-                                                            uiOutput("copy_salvage_milking2"))
+                                           column(width=2, conditionalPanel("input.profile_choice='Robots' & input.n_robot_life>=2", 
+                                                            uiOutput("copy_salvage_milking2")))
                                  
                                  )
                                   )
