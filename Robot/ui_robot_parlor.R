@@ -1,7 +1,8 @@
 div(     
   fluidRow(column(width=6, offset=3,
                          radioButtons("robot_parlor","Robots vs Parlors Comparison",choices=c("OFF","ON"), inline=TRUE), 
-                  helpText("some explanation....")
+                  helpText("some explanation....The default investment profile is 'Robots'. 
+                           Data entered in this tab are linked with the investment profile selected in Data Entry tab.")
             )),
          fluidRow(
            column(
@@ -9,11 +10,20 @@ div(
            column(
              width=10, 
              conditionalPanel('input.robot_parlor=="ON"',
-             div(h4("Robots vs Parlors"),
+             div(h4("Robots vs Parlors (Alternative Investment Profiles)"),
             bsButton("robot_parlor_calculate", "Calculate",style="primary"),  align="center"),
             conditionalPanel('input.robot_parlor_calculate>=1', 
-            helpText("Summary Results tables and graphs here"), br(), br(),     
-             h4("A. Anticipated Changes in Production"),
+            helpText("Summary Results tables and graphs here"), 
+            div(htmlOutput("profile_cashflow_chart"),align="center"),
+            tabsetPanel(
+              tabPanel("Before Tax",
+                       DT::dataTableOutput("table_before_tax")
+              ), 
+              tabPanel("After Tax",
+                       DT::dataTableOutput("table_after_tax")
+              )), 
+            br(), br(),     
+             h4("Section A. Anticipated Changes in Production"),
              div(style="background-color: #4863A0; color:white;",
                            fluidRow(
                              column(width=8,offset=4, 
@@ -26,7 +36,7 @@ div(
                                     column(width=2,  h5(strong("Robots"), align="center"))
                            )), br(),
             fluidRow(column(width=4, h5("Herd"))),
-            fluidRow(column(width=4, helpText("Anticipated increase in milking herd with robots (Animals)")),
+            fluidRow(column(width=4, helpText("Anticipated increase in milking herd (Animals)")),
                      column(width=2, numericInput("herd_increase_pr1",NULL,value=0,min=0,step=10)),
                      column(width=2, numericInput("herd_increase_pr2",NULL,value=0,min=0,step=10)),
                      column(width=2, numericInput("herd_increase_pr3",NULL,value=0,min=0,step=10)),
@@ -84,22 +94,22 @@ div(
                       column(width=2, numericInput("scc_change_pr4",NULL,value=-5,step=0.25))
              ),
              fluidRow(column(width=4, helpText("Reproduction and herd health value of software ($/cow/year)")),
-                      column(width=2, numericInput("software_pr1",NULL,value=0,step=1)),
-                      column(width=2, numericInput("software_pr2",NULL,value=0,step=1)),
-                      column(width=2, numericInput("software_pr3",NULL,value=0,step=1)),
-                      column(width=2, numericInput("software_pr4",NULL,value=35,step=1))
+                      column(width=2, numericInput("software_pr1",NULL,value=0,step=5)),
+                      column(width=2, numericInput("software_pr2",NULL,value=0,step=5)),
+                      column(width=2, numericInput("software_pr3",NULL,value=0,step=5)),
+                      column(width=2, numericInput("software_pr4",NULL,value=35,step=5))
              ),
              fluidRow(column(width=4, h5("Feed"))),
              fluidRow(column(width=4, helpText("Pellets fed in robot booth (lb/cow/day)")),
-                      column(width=2, numericInput("pellets_pr1",NULL,value=0,step=1)),
-                      column(width=2, numericInput("pellets_pr2",NULL,value=0,step=1)),
-                      column(width=2, numericInput("pellets_pr3",NULL,value=0,step=1)),
-                      column(width=2, numericInput("pellets_pr4",NULL,value=11,step=1))
+                      column(width=2, numericInput("pellets_pr1",NULL,value=0,step=2)),
+                      column(width=2, numericInput("pellets_pr2",NULL,value=0,step=2)),
+                      column(width=2, numericInput("pellets_pr3",NULL,value=0,step=2)),
+                      column(width=2, numericInput("pellets_pr4",NULL,value=11,step=2))
              ),
              fluidRow(column(width=4, helpText("Extra cost for pellets fed in robot booth ($/ton)")),
-                      column(width=2, numericInput("cost_pellets_pr1",NULL,value=0,step=1)),
-                      column(width=2, numericInput("cost_pellets_pr2",NULL,value=0,step=1)),
-                      column(width=2, numericInput("cost_pellets_pr3",NULL,value=0,step=1)),
+                      column(width=2, numericInput("cost_pellets_pr1",NULL,value=0,step=2)),
+                      column(width=2, numericInput("cost_pellets_pr2",NULL,value=0,step=2)),
+                      column(width=2, numericInput("cost_pellets_pr3",NULL,value=0,step=2)),
                       column(width=2, numericInput("cost_pellets_pr4",NULL,value=20,step=2))
              ),
              fluidRow(column(width=4, h5("Replacement"))),
@@ -131,10 +141,10 @@ div(
             helpText("*Note: Other production variables are shared across investment profiles."), 
          # ----- Financing ------
              hr(),
-             h4("B. Financing Schedule by Profile") , 
+             h4("Section B. Financing Schedule by Profile") , 
              tabsetPanel(
                tabPanel("Barn Only",
-             div(style="background-color:  #4863A0; color:white;",
+             div(style="background-color:#4863A0; color:white;",
                  fluidRow(column(width=6, offset=4, h4(strong("Investment Assets"),align="center"))),
                  fluidRow(column(width=4,  h5(strong("Item"), align="center")),
                           column(width=2,  h5(strong("Housing"), align="center"))
@@ -170,7 +180,7 @@ div(
                       )
                ),
              tabPanel("Retro Parlor",
-               div(style="background-color: #616D7E; color:white;",
+               div(style="background-color:#4863A0; color:white;",
                    fluidRow(column(width=6, offset=4, h5(strong("Investment Assets"),align="center"))),
                    fluidRow(column(width=4,  h5(strong("Item"), align="center")),
                             column(width=2,  h5(strong("Housing"), align="center")),
@@ -216,7 +226,7 @@ div(
                )
              ),
              tabPanel("New Parlor",
-               div(style="background-color: #616D7E; color:white;",
+               div(style="background-color:#4863A0; color:white;",
                    fluidRow(column(width=6, offset=4, h5(strong("Investment Assets"),align="center"))),
                    fluidRow(column(width=4,  h5(strong("Item"), align="center")),
                             column(width=2,  h5(strong("Housing"), align="center")),
@@ -262,7 +272,7 @@ div(
                )
              ),
              tabPanel("Robots",
-               div(style="background-color: #616D7E; color:white;",
+               div(style="background-color: #4863A0 color:white;",
                    fluidRow(column(width=6, offset=4, h5(strong("Investment Assets"),align="center"))),
                    fluidRow(column(width=4,  h5(strong("Item"), align="center")),
                             column(width=2,  h5(strong("Housing"), align="center")),

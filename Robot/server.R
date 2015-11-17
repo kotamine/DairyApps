@@ -21,6 +21,9 @@ shinyServer(function(input, output, session) {
   # Create a list of reactive values for robustness checks
   rb <- reactiveValues(c_val=20)
 
+  # Create a list of reactive values for robots vs parlors
+  rp <- reactiveValues()
+  
 #   # ---------- Fill out the calclated values in Data Entry ----------
 #   source("session_variables.R", local=TRUE)
 #   

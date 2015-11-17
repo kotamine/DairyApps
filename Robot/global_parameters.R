@@ -73,4 +73,9 @@ s_order1 <- c("scenario", "% change: robot", "% change: housing", "% change: mil
               "change: impact w/ salvage")
 
 
+p_colnames <- c("Barn Only","Retrofit Parlors","New Parlors","Robots")
+p_dummy <- matrix(rep(NA,length(p_colnames)),nrow=1)
+colnames(p_dummy) <- p_colnames 
+p_empty_table <- data.frame(Column1 = numeric(0)) 
+p_empty_table <- rbind(p_empty_table, p_dummy)[NULL,] 
 
