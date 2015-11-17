@@ -36,8 +36,8 @@ observeEvent(rv$housing_years,{
 # Temporary fix for a single interest rate
 observeEvent(input$interest,{
   rv$copy_r_housing <- input$interest
-  rv$copy_r_robot1 <- input$interest
-  rv$copy_r_robot2 <- input$interest
+  rv$copy_r_milking1 <- input$interest
+  rv$copy_r_milking2 <- input$interest
   updateNumericInput(session, "r_housing",NULL,value=input$interest, min=0, step=.25)
   updateNumericInput(session, "r_robot1",NULL,value=input$interest, min=0, step=.25)
   updateNumericInput(session, "r_robot2",NULL,value=input$interest, min=0, step=.25)
@@ -78,7 +78,7 @@ observe({
   if (input$budget==0) {
     if (!is.null(rv$DMI_change) & !is.null(rv$DMI_day) & 
        !is.null(rv$herd_size2) & !is.null(rv$increased_insurance) &
-       !is.null(rv$anticipated_hours_milking) & !is.null(rv$milk_lb_robot_day)
+       !is.null(rv$anticipated_hours_milking) & !is.null(rv$milk_lb_alt_day)
     ) {
       updateButton(session, "budget", disabled = FALSE, style = "primary", icon = "")
     } 
@@ -94,9 +94,9 @@ observe({
 
 # Weighted Average Cost of Capital 
 WACC <- reactive({  
-  rv$WACC<- ((input$down_housing + input$down_robot1) * input$hurdle_rate +
-               + (rv$loan_housing * input$r_housing + rv$loan_robot1 * input$r_robot1)*
-               (1-input$tax_rate/100))/(rv$cost_housing + rv$robot_invest)
+  rv$WACC<- ((input$down_housing + input$down_milking1) * input$hurdle_rate +
+               + (rv$loan_housing * input$r_housing + rv$loan_milking1 * input$r_milking1)*
+               (1-input$tax_rate/100))/(rv$cost_housing + rv$cost_milking)
   rv$WACC
 })
 
@@ -107,32 +107,45 @@ WACC <- reactive({
 ## ----------- Main Calculations: all restuls are stored under reactive value "rv" -----------
 observe({ 
   
+  browser()
+  
+if (input$robot_parlor=="OFF" | input$profile_choice=="Robots") {
+  rv$cost_milking <- input$n_robot * input$cost_robot
+  rv$cost_milking2 <-  rv$cost_milking*(1+input$inflation_robot/100)^input$robot_years
+  rv$housing_years <- input$n_robot_life * input$robot_years
+  rv$salvage_milking_fv1 <- input$salvage_milking1*(1+input$inflation_robot/100)^input$robot_years
+  rv$salvage_milking_fv2 <- input$salvage_milking1*(1+input$inflation_robot/100)^(input$robot_years*2)*(input$n_robot_life>=2)
+} else {
+  rv$cost_milking <- input$cost_parlors
+  rv$cost_milking2 <- 0
+  rv$housing_years <- input$milking_years
+  rv$salvage_milking_fv1 <- input$salvage_milking1*(1+input$inflation_robot/100)^input$milking_years
+  rv$salvage_milking_fv2 <- 0
+}
+  
+  
 # Data Entry Level Calculations
 rv$herd_size2 <- input$herd_size + input$herd_increase
 
-rv$robot_invest <- input$n_robot * input$cost_robot
-
 rv$cost_housing <- input$cost_housing_cow * rv$herd_size2
 
-rv$total_investment_cow <-  input$cost_housing_cow + rv$robot_invest/rv$herd_size2
+rv$total_investment_cow <-  input$cost_housing_cow + rv$cost_milking1/rv$herd_size2
 
 rv$total_investment <- rv$total_investment_cow  * rv$herd_size2
-
-rv$housing_years <- input$n_robot_life * input$robot_years
 
 rv$increased_insurance <- rv$total_investment
 
 rv$anticipated_hours_milking <- input$hours_milking - input$hr_sv_milking
 
-rv$milk_day_cow_robot <- input$milk_cow_day + input$milk_change
-
-rv$milk_lb_robot_day <- rv$milk_day_cow_robot * rv$herd_size2/input$n_robot 
-
 rv$adj_milk_cow_day <- input$milk_cow_day * input$milk_cow_coeff +  
   + input$milk_cow_day * input$milk_fat/100 * input$milk_fat_coeff
 
-rv$adj_milk_cow_day2 <- rv$milk_day_cow_robot * input$milk_cow_coeff + 
-  + rv$milk_day_cow_robot * input$milk_fat/100 * input$milk_fat_coeff 
+rv$milk_day_cow_alt <- input$milk_cow_day + input$milk_change
+
+rv$milk_lb_alt_day <- rv$milk_day_cow_alt * rv$herd_size2/input$n_robot 
+
+rv$adj_milk_cow_day2 <- rv$milk_day_cow_alt * input$milk_cow_coeff + 
+  + rv$milk_day_cow_alt * input$milk_fat/100 * input$milk_fat_coeff 
 
 rv$stage_lactation <- 1 - exp( input$lactation_coeff1 * (input$lcatation_week + input$lactation_coeff2)) 
 
@@ -144,43 +157,34 @@ rv$DMI_projected <-  rv$stage_lactation * (rv$adj_milk_cow_day2/conv_factor * in
 
 rv$DMI_change <- rv$DMI_projected - rv$DMI_day
 
-rv$adj_milk_cow_day2 <- rv$milk_day_cow_robot * input$milk_cow_coeff + 
-  + rv$milk_day_cow_robot  * input$milk_fat/100 * input$milk_fat_coeff 
+rv$adj_milk_cow_day2 <- rv$milk_day_cow_alt * input$milk_cow_coeff + 
+  + rv$milk_day_cow_alt  * input$milk_fat/100 * input$milk_fat_coeff 
 
 
 # Cash Flow items to render in Data Entry
-rv$robot_invest2 <-  rv$robot_invest*(1+input$inflation_robot/100)^input$robot_years
-rv$robot_invest3 <- 0
+rv$salvage_housing_fv <- 0  # Currently salvage value of housing is set at zero
+
+rv$loan_housing <- rv$cost_housing - input$down_housing
+rv$loan_milking1 <- rv$cost_milking - input$down_milking1
+rv$loan_milking2 <- rv$cost_milking2 - input$down_milking2
 
 rv$yr_robot2 <- input$robot_years 
-rv$yr_robot3 <- input$robot_years * 2
-rv$loan_housing <- rv$cost_housing - input$down_housing
-rv$loan_robot1 <- rv$robot_invest - input$down_robot1
-rv$loan_robot2 <- rv$robot_invest2 - input$down_robot2
-rv$loan_robot3 <- 0 #rv$robot_invest * ()  - input$down_robot3
-rv$loan_housing <- rv$cost_housing - input$down_housing
+rv$copy_salvage_milking1 <- input$salvage_milking1
+rv$copy_salvage_milking2 <- rv$salvage_milking_fv1
 
-
-rv$salvage_robot1 <- input$salvage_robot*(1+input$inflation_robot/100)^input$robot_years
-rv$salvage_robot2 <- input$salvage_robot*(1+input$inflation_robot/100)^(input$robot_years*2)
-rv$salvage_robot3 <- 0 #input$robot_salvage * ()
-rv$salvage_housing <- input$salvage_housing*(1+input$inflation_robot/100)^rv$housing_years
-rv$copy_salvage_robot1 <- input$salvage_robot
-rv$copy_salvage_robot2 <- rv$salvage_robot1
-rv$copy_salvage_robot3 <- 0
 rv$copy_cost_housing <- rv$cost_housing
-rv$copy_robot_invest1 <- rv$robot_invest
-rv$copy_robot_invest2 <- rv$robot_invest2
-rv$copy_robot_invest3 <- rv$robot_invest3
+
+rv$copy_cost_milking1 <- rv$cost_milking
+rv$copy_cost_milking2 <- rv$cost_milking2
 
 
 # Positive Impacts (year 1)
-rv$inc_rev_herd_size <- rv$milk_day_cow_robot * 330 *
+rv$inc_rev_herd_size <- rv$milk_day_cow_alt * 330 *
   (input$price_milk/100) * input$herd_increase
 
 rv$inc_rev_per_cow <- input$milk_change * 330 * (input$price_milk/100) * input$herd_size
 
-rv$inc_rev_milk_premium  <- rv$milk_day_cow_robot *330 * input$scc_premium/100*
+rv$inc_rev_milk_premium  <- rv$milk_day_cow_alt *330 * input$scc_premium/100*
   (input$scc_average*(-input$scc_change)/100)/1000 * rv$herd_size2
 
 rv$inc_rev_cull_sale   <- rv$herd_size2 * input$change_turnover/100 * input$cull_price
@@ -304,8 +308,8 @@ rv$capital_cost_total <- rv$capital_recovery_robot + rv$capital_recovery_housing
 input$inflation_labor
 input$inflation_margin
 input$dep_method
-input$n_yr_robot1
-input$n_yr_robot2
+input$n_yr_milking1
+input$n_yr_milking2
 input$n_yr_housing
 
 isolate({
@@ -565,20 +569,20 @@ observe({
   
   rv$IOFC <- (input$milk_cow_day * input$price_milk/100 - rv$DMI_day * input$cost_DM )*330 * rv$tax_factor
   
-  rv$IOFC2 <- (rv$milk_day_cow_robot * input$price_milk/100 + 
+  rv$IOFC2 <- (rv$milk_day_cow_alt * input$price_milk/100 + 
                  - rv$DMI_projected * input$cost_DM - input$pellets * input$cost_pellets/2000)*330 *
     rv$tax_factor  
   
   rv$IOFC_cwt <- rv$IOFC /365 /input$milk_cow_day * 330 * rv$tax_factor
   
-  rv$IOFC2_cwt <- rv$IOFC2 /365 /rv$milk_day_cow_robot * 330 * rv$tax_factor
+  rv$IOFC2_cwt <- rv$IOFC2 /365 /rv$milk_day_cow_alt * 330 * rv$tax_factor
   
   rv$milk_current <- 
     input$herd_size * 330 * input$milk_cow_day * (input$price_milk/100 + 
                                                     +  input$scc_premium/100 * input$scc_average/1000) *
     rv$tax_factor
   
-  rv$milk_robot <- (rv$herd_size2 * 330 * rv$milk_day_cow_robot *
+  rv$milk_robot <- (rv$herd_size2 * 330 * rv$milk_day_cow_alt *
     (input$price_milk/100  +  input$scc_premium/100 * input$scc_average*(1-input$scc_change/100)/1000)) *
     rv$tax_factor 
   

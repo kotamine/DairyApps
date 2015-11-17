@@ -26,7 +26,11 @@ shinyUI(
     tabPanel("Data Entry", id="data_entry",
              # Need to add "$value" for including source in UI: 
              # otherwise "TRUE" will show up at the end of file
-             source("ui_data_entry_tabs.R", local=TRUE)$value,    
+             conditionalPanel('input.robot_parlor=="ON"',
+             selectInput("profile_choice","Current Investment Profile",selected="Robots",
+                         choices=c("Barn Only","Retrofit Parlors","New Parlors","Robots"))
+              ), 
+              source("ui_data_entry_tabs.R", local=TRUE)$value,    
              
              # ----- Dashboard -----
              conditionalPanel("input.budget>0",
@@ -85,36 +89,6 @@ shinyUI(
                                                 column(6,uiOutput("inflation")))
                                        ), align="center")
                               ), 
-#                               ## Cash Flow Based Representation 
-#                               conditionalPanel("input.cash_flow_on=='ON'",
-#                                                fluidRow(
-#                                                  column(4,
-#                                                         fluidRow(
-#                                                           column(6,
-#                                                                  uiOutput("cash_IOFC"),
-#                                                                  radioButtons("cash_IOFC",NULL,choices=c("per cow","per cwt"))),
-#                                                           column(6,
-#                                                                  uiOutput("cash_NAI"),
-#                                                                  radioButtons("cash_NAI",NULL,
-#                                                                               choices=c("w/o salvage",
-#                                                                                         "w/ salvage"),
-#                                                                               selected="w/ salvage")) 
-#                                                         )),
-#                                                  column(8,
-#                                                         div(align="center", fluidRow(
-#                                                           column(4,
-#                                                                  plotOutput("cash_plot1", height = 200),
-#                                                                  uiOutput("cash_milk_feed")),
-#                                                           column(4,
-#                                                                  plotOutput("cash_plot2", height = 200),
-#                                                                  uiOutput("cash_labor_repair")),
-#                                                           column(4,
-#                                                                  plotOutput("cash_plot3", height = 200),
-#                                                                  uiOutput("cash_captial_cost"))
-#                                                         ),
-#                                                         uiOutput("cash_misc")))
-#                                                  
-#                                                )), 
                               # ---------- Sensitivity Analysis -----------   
                               conditionalPanel('input.robust=="Sensitivity"', 
                                                tags$hr(), 
@@ -299,7 +273,7 @@ tabPanel("Cash Flow",
 
                tabPanel("Robots vs Parlors",
                         conditionalPanel("input.budget>0",
-                                        source("ui_robot_parlor.R", local=TRUE)$value
+                                         source("ui_robot_parlor.R", local=TRUE)$value
                         ))
     ),
     # ---------- About -----------
@@ -307,31 +281,8 @@ tabPanel("Cash Flow",
              fluidRow(column(width=1),
                       column(width=10,
                              includeMarkdown(file.path("text","about.md"))
-#                              h4("Credits"),
-#                              p("..."),
-#                              h4("Contacts"),
-#                              p("..."),
-#                              h4("More resources"),
-#                              p("...")
                       ))
     ),
-# HTML("<script>$('#goData').click(function() {
-# 						tabs = $('.tabbable .nav.nav-tabs li')
-# 						tabs.each(function() {
-# 							$(this).removeClass('active')
-# 						})
-# 						$(tabs[1]).addClass('active')
-# 						
-# 						tabsContents = $('.tabbable .tab-content .tab-pane')
-# 						tabsContents.each(function() {
-# 							$(this).removeClass('active')
-# 						})
-# 						$(tabsContents[1]).addClass('active')
-# 
-# 						$('#about').trigger('change').trigger('shown');
-# 						 
-# 					})</script>
-# 			"),
     useShinyjs(),
 collapsible = TRUE
   ))

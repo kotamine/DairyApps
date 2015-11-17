@@ -4,14 +4,13 @@ div(
              width=1),
            column(
              width=10, 
-             radioBUttons("robot_parlor","Robots vs Parlors Comparison",choices=c("OFF","ON")), 
+             radioButtons("robot_parlor","Robots vs Parlors Comparison",choices=c("OFF","ON")), 
              helpText("some explanation...."),
              conditionalPanel('input.robot_parlor=="ON"',
              div(h4("Robots vs Parlors"),
             actionButton("robot_parlor_calculate", "Calculate"),
             helpText("Summary Results tables and graphs here"), br(), br(),     
-             selectInput("profile_choice","Current Investment Profile",selected="Robots",
-                         choices=c("Barn Only","Retrofit Parlors","New Parlors","Robots")), align="center"),
+             align="center"),
              h4("A. Anticipated Changes in Production"),
              div(style="background-color: #2B65EC; color:white;",
                            fluidRow(
@@ -130,7 +129,7 @@ div(
             helpText("Other production variables are shared across investment profiles."), 
          # ----- Financing ------
              hr(),
-             h4("B. Financing Schedule by Profile"), 
+             h4("B. Financing Schedule by Profile") , 
              tabsetPanel(
                tabPanel("Barn Only",
              div(style="background-color: #616D7E; color:white;",
@@ -145,10 +144,10 @@ div(
                       column(width=2, numericInput("cost_housing_cow_pr1",NULL,value=3000,min=0,step=500))
              ), 
              fluidRow(column(width=4,  helpText("Investment amount ($)")), 
-                      column(width=2, uiOutput("cost_housing_pr1"))
+                      column(width=2, uiOutput("copy_cost_housing_pr1"))
                              ), 
              fluidRow(column(width=4, helpText("Years of Useful Life")),
-                      column(width=2, numericInput("housing_years_pr1",NULL,value=30,min=0,step=1)) 
+                      column(width=2, numericInput("milking_years_pr1",NULL,value=30,min=0,step=1)) 
                       # This becomes the planning horizon
              ), 
              fluidRow(column(width=4, helpText("Down payment ($)")),
@@ -156,8 +155,7 @@ div(
                              numericInput("down_housing_pr1",NULL,value=100000, min=0,step=20000))
              ), 
              fluidRow(column(width=4,  helpText("Loan amount ($)")),
-                      column(width=2,  uiOutput("loan_housing_pr1")),
-                      column(width=2,  uiOutput("loan_milking1_pr1"))
+                      column(width=2,  uiOutput("loan_housing_pr1"))
              ),
                fluidRow(column(width=4,  helpText("Interest rate (%)")),
                         column(width=2,  numericInput("r_housing_pr1",NULL,value=4, min=0, step=.25))
@@ -166,7 +164,7 @@ div(
                       column(width=2,  numericInput("n_yr_housing_pr1",NULL,value=24, min=0, step=1))
                       ),
              fluidRow(column(width=4,  helpText("Salvage value ($)")),
-                      column(width=2,  numericInput("salvage_housing_pr1",NULL,value=0, min=0, step=5000))
+                      column(width=2,  helpText("0"))
                       )
                ),
              tabPanel("Retro Parlor",
@@ -178,18 +176,19 @@ div(
                    )), br(),
                fluidRow(column(width=4, helpText("Year of investment")),
                         column(width=2, helpText("0")),
-                        column(width=2, numericInput("yr_invest_milking1_pr2",NULL,value=0,min=0,step=1))
+                        column(width=2, helpText("0"))
+                      #  column(width=2, numericInput("yr_invest_milking1_pr2",NULL,value=0,min=0,step=1))
                ),
                fluidRow(column(width=4, helpText("Years of Useful Life")),
                         column(width=2, uiOutput("housing_years_pr2")), # This becomes the planning horizon
-                        column(width=2, numericInput("milking_years1_pr2",NULL,value=30,min=0,step=1))
+                        column(width=2, numericInput("milking_years_pr2",NULL,value=30,min=0,step=1))
                ), 
                fluidRow(column(width=4,  helpText("Housing Investment per cow ($)")), 
                         column(width=2, numericInput("cost_housing_cow_pr2",NULL,value=3000,min=0,step=500))
                ), 
                fluidRow(column(width=4,  helpText("Investment amount ($)")), 
-                        column(width=2, uiOutput("cost_housing_pr2")),
-                               column(width=2, numericInput("cost_milking1_pr2",NULL,value=75000,min=0,step=20000))
+                        column(width=2, uiOutput("copy_cost_housing_pr2")),
+                               column(width=2, numericInput("cost_parlors_pr2",NULL,value=75000,min=0,step=20000))
                         ), 
                fluidRow(column(width=4, helpText("Down payment ($)")),
                         column(width=2,  
@@ -210,7 +209,7 @@ div(
                         column(width=2,  numericInput("n_yr_milking1_pr2",NULL,value=12, min=0, step=1))
                ),
                fluidRow(column(width=4,  helpText("Salvage value ($)")),
-                        column(width=2,  numericInput("salvage_housing_pr2",NULL,value=0, min=0, step=5000)),
+                        column(width=2,  helpText("0")),
                         column(width=2,  numericInput("salvage_milking1_pr2",NULL,value=25000, min=0, step=5000))
                )
              ),
@@ -223,18 +222,19 @@ div(
                    )), br(),
                fluidRow(column(width=4, helpText("Year of investment")),
                         column(width=2, helpText("0")),
-                        column(width=2, numericInput("yr_invest_milking1_pr3",NULL,value=0,min=0,step=1))
+                        column(width=2, helpText("0"))
+                        #column(width=2, numericInput("yr_invest_milking1_pr3",NULL,value=0,min=0,step=1))
                ), 
                fluidRow(column(width=4,  helpText("Housing Investment per cow ($)")), 
                         column(width=2, numericInput("cost_housing_cow_pr3",NULL,value=3000,min=0,step=500))
                ), 
                fluidRow(column(width=4,  helpText("Investment amount ($)")), 
-                        column(width=2, uiOutput("cost_housing_pr3")),
-                        column(width=2, numericInput("cost_milking1_pr3",NULL,value=400000,min=0,step=20000))
+                        column(width=2, uiOutput("copy_cost_housing_pr3")),
+                        column(width=2, numericInput("cost_parlors_pr3",NULL,value=400000,min=0,step=20000))
                 ), 
                fluidRow(column(width=4, helpText("Years of Useful Life")),
                         column(width=2, uiOutput("housing_years_pr3")), # This becomes the planning horizon
-                        column(width=2, numericInput("milking_years1_pr3",NULL,value=30,min=0,step=1))
+                        column(width=2, numericInput("milking_years_pr3",NULL,value=30,min=0,step=1))
                         ), 
                fluidRow(column(width=4, helpText("Down payment ($)")),
                         column(width=2,  
@@ -255,7 +255,7 @@ div(
                         column(width=2,  numericInput("n_yr_milking1_pr3",NULL,value=12, min=0, step=1))
                ),
                fluidRow(column(width=4,  helpText("Salvage value ($)")),
-                        column(width=2,  numericInput("salvage_housing_pr3",NULL,value=0, min=0, step=5000)),
+                        column(width=2, helpText("0")),
                         column(width=2, numericInput("salvage_milking1_pr3",NULL,value=25000, min=0, step=5000))
                )
              ),
@@ -265,57 +265,86 @@ div(
                    fluidRow(column(width=4,  h5(strong("Item"), align="center")),
                             column(width=2,  h5(strong("Housing"), align="center")),
                             column(width=2,  h5(strong("Robot 1"), align="center")),
-                            column(width=2,  h5(strong("Robot 2"), align="center"))
+                            conditionalPanel("input.n_robot_life>=2", 
+                                             column(width=2,  h5(strong("Robot 2"), align="center")))
                    )), br(),
-               fluidRow(column(width=4, helpText("Year of investment")),
-                        column(width=2, helpText("0")),
-                        column(width=2, numericInput("yr_invest_milking1_pr4",NULL,value=0,min=0,step=1)),
-                        column(width=2, uiOutput("yr_invest_milking2_pr4"))
-               ), 
+#                fluidRow(column(width=4, helpText("Year of investment")),
+#                         column(width=2, helpText("0")),
+#                         column(width=2, numericInput("yr_invest_milking1_pr4",NULL,value=0,min=0,step=1)),
+#                         column(width=2, uiOutput("yr_invest_milking2_pr4"))
+#                ), 
+                fluidRow(column(width=4, helpText("Year of investment")),
+                         column(width=2, helpText("0")),
+                         column(width=2, helpText("0")),
+                         conditionalPanel("input.n_robot_life>=2", 
+                                          column(width=2, uiOutput("yr_invest_milking2_pr4")))
+                ), 
                fluidRow(column(width=4, helpText("Years of Useful Life")),
                         column(width=2, uiOutput("housing_years_pr4")), # This becomes the planning horizon
-                        column(width=2, numericInput("milking_years1_pr4",NULL,value=15,min=0,step=1)),
-                        column(width=2, uiOutput("milking_years2_pr4"))
+                        column(width=2, numericInput("robot_years_pr4",NULL,value=15,min=0,step=1)),
+                        conditionalPanel("input.n_robot_life>=2", 
+                                         column(width=2, uiOutput("copy_robot_years_pr4")))
                ), 
                fluidRow(column(width=4,  helpText("Housing Investment per cow ($)")), 
                         column(width=2, numericInput("cost_housing_cow_pr4",NULL,value=9500,min=0,step=500))
                ), 
+              fluidRow(column(width=4, helpText("Number of robots")),
+                       column(width=2, offset=2, numericInput("n_robot_pr4",NULL,value=2,min=0,step=1)),
+                       column(width=2, uiOutput("copy_n_robot_pr4"))
+              ),
+              fluidRow(column(width=4, helpText("Estimated cost per robot ($)")),
+                       column(width=2, offset=2, numericInput("cost_robot_pr4",NULL,value=180000,min=50000,step=10000)),
+                       column(width=2, uiOutput("copy_cost_robot_pr4"))
+              ),
                fluidRow(column(width=4,  helpText("Investment amount ($)")), 
-                        column(width=2, uiOutput("cost_housing_pr4")),
-                        column(width=2, numericInput("cost_milking1_pr4",NULL,value=360000,min=0,step=20000)),
-                        column(width=2, numericInput("cost_milking2_pr4",NULL,value=450084,min=0,step=20000))
+                        column(width=2, uiOutput("copy_cost_housing_pr4")),
+                        column(width=2, uiOutput("copy_cost_miking1_pr4")),
+                        conditionalPanel("input.n_robot_life>=2", 
+                                         column(width=2, uiOutput("cppy_cost_miking2_pr4")))
                ), 
                fluidRow(column(width=4, helpText("Down payment ($)")),
                         column(width=2,  
                                numericInput("down_housing_pr4",NULL,value=100000, min=0,step=20000)),
                         column(width=2,  
                                numericInput("down_milking1_pr4",NULL,value=0, min=0,step=20000)),
-                        column(width=2,  
-                               numericInput("down_milking2_pr4",NULL,value=0, min=0,step=20000))
-               ), 
+                        conditionalPanel("input.n_robot_life>=2",  
+                              column(width=2,  
+                               numericInput("down_milking2_pr4",NULL,value=0, min=0,step=20000)))
+               ),
                fluidRow(column(width=4,  helpText("Loan amount ($)")),
                         column(width=2,  uiOutput("loan_housing_pr4")),
                         column(width=2,  uiOutput("loan_milking1_pr4")),
-                        column(width=2,  uiOutput("loan_milking2_pr4"))
+                        conditionalPanel("input.n_robot_life>=2", 
+                                         column(width=2,  uiOutput("loan_milking2_pr4")))
                ),
+                fluidRow(column(width=4,  helpText("Interest rate (%)")),
+                         column(width=2,  uiOutput('copy_r_housing_pr4')),
+                         column(width=2,  uiOutput('copy_r_milking1_pr4')),
+                         conditionalPanel("input.n_robot_life>=2", 
+                                          column(width=2, uiOutput('copy_r_milking2_pr4')))
+                ),
+                shinyjs::hidden( 
                fluidRow(column(width=4,  helpText("Interest rate (%)")),
                         column(width=2,  numericInput("r_housing_pr4",NULL,value=4, min=0, step=.25)),
                         column(width=2,  numericInput("r_milking1_pr4",NULL,value=4, min=0, step=.25)),
-                        column(width=2,  numericInput("r_milking2_pr4",NULL,value=4, min=0, step=.25))
-               ), 
+                        conditionalPanel("input.n_robot_life>=2", 
+                                         column(width=2,  numericInput("r_milking2_pr4",NULL,value=4, min=0, step=.25)))
+               )), 
                fluidRow(column(width=4,  helpText("Loan period (years)")),
                         column(width=2,  numericInput("n_yr_housing_pr4",NULL,value=24, min=0, step=1)),
                         column(width=2,  numericInput("n_yr_milking1_pr4",NULL,value=12, min=0, step=1)),
-                        column(width=2,  numericInput("n_yr_milking2_pr4",NULL,value=12, min=0, step=1))
+                        conditionalPanel("input.n_robot_life>=2", 
+                                         column(width=2,  numericInput("n_yr_milking2_pr4",NULL,value=12, min=0, step=1)))
                ),
                fluidRow(column(width=4,  helpText("Salvage value ($)")),
-                        column(width=2,  numericInput("salvage_housing_pr4",NULL,value=0, min=0, step=5000)),
+                        column(width=2,  helpText("0")),
                         column(width=2,  numericInput("salvage_milking1_pr4",NULL,value=45000, min=0, step=5000)),
-                        column(width=2,  uiOutput("salvage_milking2_pr4"))
+                        conditionalPanel("input.n_robot_life>=2", 
+                                         column(width=2,  uiOutput("salvage_milking2_pr4")))
                )
              ),
              selected="Robots"
            )
          )
-         )), br(),br() 
+         )), br(), br() 
 ) 

@@ -30,14 +30,15 @@ shinyServer(function(input, output, session) {
 #   # ------ Dashboard features ------
 #   source("session_dashboard.R", local=TRUE)
 
-
+  browser()
   source("session_calculations_base.R", local=TRUE)
-
-  source("session_render_base.R", local=TRUE)
+  browser()
   
-#   # ----------- Cash Flow Analysis -----------
-#   source("session_cash_flow.R", local=TRUE)
-#   
+  source("session_render_base.R", local=TRUE)
+  browser()
+  
+  source("session_robot_parlor.R", local=TRUE)
+  
   
 #   # ----------- Sensitivity Analysis -----------
 #   source("session_sensitivity.R", local=TRUE)

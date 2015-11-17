@@ -589,9 +589,11 @@ output$table_cash_flow <- DT::renderDataTable({
 output$table_debt <- DT::renderDataTable({
   if (length(rv[["table_debt"]])==0) return()
   tbl <- round(rv[["table_debt"]])
-  colnames(tbl) <- c('Year', 'Robot Payment Year','Robot Interest', 'Robot Principal', 
+  if (robot_parlor=="OFF" | input.profile_choice=="Robots") { milk_sys <- 'Robot' }
+  else { milk_sys <- 'Parlor'}
+  colnames(tbl) <- c('Year', paste(milk_sys,'Payment Year'),paste(milk_sys, 'Interest'), paste(milk_sys,'Principal'), 
                      'Housing Payment Year','Housing Interest', 'Housing Principal',
-                     'Interest Total', 'Principal Total')
+                     'Interest Total', 'Principal Total') 
   DT::datatable(tbl, 
                 # colnames = c('Year', 'Robot', 'Housing', 'Total'), 
                 rownames = FALSE,
@@ -604,7 +606,7 @@ output$table_debt <- DT::renderDataTable({
                   searching = FALSE,
                   showNone=TRUE, 
                   activate = 'mouseover')) %>% 
-    formatCurrency(c('Robot Interest', 'Robot Principal', 
+    formatCurrency(c(paste(milk_sys,'Interest'), paste(milk_sys,'Principal'), 
                      'Housing Interest', 'Housing Principal',
                      'Interest Total', 'Principal Total'))
 })
@@ -612,7 +614,9 @@ output$table_debt <- DT::renderDataTable({
 output$table_depreciation <- DT::renderDataTable({
   if (length(rv[["table_depreciation"]])==0) return()
   tbl <- round(rv[["table_depreciation"]])
-  colnames(tbl) <- c('Year', 'Robot', 'Housing', 'Total')
+  if (robot_parlor=="OFF" | input.profile_choice=="Robots") { milk_sys <- 'Robot' }
+  else { milk_sys <- 'Parlor'}
+  colnames(tbl) <- c('Year', milk_sys, 'Housing', 'Total')
   DT::datatable(tbl, 
                 # colnames = c('Year', 'Robot', 'Housing', 'Total'), 
                 rownames = FALSE,
@@ -625,7 +629,7 @@ output$table_depreciation <- DT::renderDataTable({
                   searching = FALSE,
                   showNone=TRUE, 
                   activate = 'mouseover')) %>% 
-    formatCurrency(c('Robot', 'Housing', 'Total'))
+    formatCurrency(c(milk_sys, 'Housing', 'Total'))
 })
 
 
