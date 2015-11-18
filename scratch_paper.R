@@ -396,8 +396,7 @@ library(googleVis)
 df <- data.frame(profile =c("A","B","C","D"),
                  var1 = c(1,2,2,1),
                  var2 = c(4,2,6,3))
-gvisColumnChart(df, xvar="profile", yvar=c("var1","var2"),
-                options=list(isStacked=FALSE)) %>% plot()
+gvisColumnChart(df, xvar="profile", yvar=c("var1","var2")) %>% plot()
 
 
 

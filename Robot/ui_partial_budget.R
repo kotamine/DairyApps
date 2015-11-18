@@ -3,6 +3,16 @@
 fluidRow(
   column(width=8,offset=2, 
           h4("Partial Budget Analysis",align="center"),
+         fluidRow(
+           column(width=6, offset=3,
+                  conditionalPanel('input.robot_parlor=="ON"',
+                                   div(class="well", style="background-color:#4863A0; color:white;", 
+                                       # uiOutput("copy_profile_choice1"),
+                                       selectInput("copy_profile_choice1","Select Investment Profile", 
+                                                   selected="Robots",
+                                                   choices=c("Barn Only","Retrofit Parlors","New Parlors","Robots")))
+                  )
+           )), 
                    div(wellPanel(
                      # h4("Results represented as future values accounting for inflations"),
                    sliderInput("budget_year", "Select budget year",value=1, min=1,max=30)), align="center")

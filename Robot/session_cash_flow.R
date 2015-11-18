@@ -4,8 +4,6 @@
 isolate({
 n_years <- rv$housing_years
 
-browser()
-
 ## ------------ Depreciation Table ------------
 if  (input$robot_parlor=="OFF" | input$profile_choice=="Robots") {
   yr_AGDS_robot <- 7
@@ -58,10 +56,13 @@ table_depreciation$total <- table_depreciation$depreciation_robot + table_deprec
 
 
 ## ------------ Debt Table ------------
-
-tbl_robot <- debt_table(rv$loan_milking1, input$r_milking1/100, input$n_yr_milking1, n_years, 1) +
+if (input$robot_parlor=="OFF" | input$profile_choice=="Robots") {
+  tbl_robot <- debt_table(rv$loan_milking1, input$r_milking1/100, input$n_yr_milking1, n_years, 1) +
   + debt_table(rv$loan_milking2, input$r_milking2/100, input$n_yr_milking2, n_years, input$robot_years+1) * 
-  (input$robot_parlor=="OFF" | input$profile_choice=="Robots")
+  (input$n_robot_life>=2)
+} else {
+  tbl_robot <- debt_table(rv$loan_milking1, input$r_milking1/100, input$n_yr_milking1, n_years, 1)
+}
 tbl_robot[,1] <- tbl_robot[,1]/2
 colnames(tbl_robot) <- lapply(colnames(tbl_robot), function(x) { paste0("robot_",x)}) %>% unlist()
 

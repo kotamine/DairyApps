@@ -9,14 +9,13 @@ suppressPackageStartupMessages(library(dplyr))
 suppressPackageStartupMessages(library(xlsx))
 suppressPackageStartupMessages(library(XLConnect))
 
-source("helper.R")
 source("global_parameters.R")
 
 
 shinyServer(function(input, output, session) {
   
   # Create a list of reactive values 
-  rv <- reactiveValues()
+  rv <- reactiveValues(recalculate=0)
 
   # Create a list of reactive values for robustness checks
   rb <- reactiveValues(c_val=20)
@@ -32,7 +31,10 @@ shinyServer(function(input, output, session) {
 #   
 #   # ------ Dashboard features ------
 #   source("session_dashboard.R", local=TRUE)
-
+  source("helper.R",local=TRUE)
+  
+  source("session_misc.R", local=TRUE)
+  
   source("session_calculations_base.R", local=TRUE)
 
   source("session_render_base.R", local=TRUE)
@@ -224,7 +226,7 @@ shinyServer(function(input, output, session) {
   output$resettableInput <- renderUI({
     input$remove
     
-    fileInput("file1", "Upload File",
+    fileInput("file1", "Upload Data File",
               accept=c(".xlsx", "application/vnd.ms-excel"))
   })
   

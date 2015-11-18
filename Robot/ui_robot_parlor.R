@@ -1,8 +1,9 @@
-div(     
+div(      
   fluidRow(column(width=6, offset=3,
                          radioButtons("robot_parlor","Robots vs Parlors Comparison",choices=c("OFF","ON"), inline=TRUE), 
-                  helpText("some explanation....The default investment profile is 'Robots'. 
-                           Data entered in this tab are linked with the investment profile selected in Data Entry tab.")
+                           helpText("The default investment profile is 'Robots'. 
+                           When 'Robots vs Parlors Comparison' is activated, 
+                           the user can adopt a different profile in Data Entry tab.") 
             )),
          fluidRow(
            column(
@@ -10,20 +11,50 @@ div(
            column(
              width=10, 
              conditionalPanel('input.robot_parlor=="ON"',
-             div(h4("Robots vs Parlors (Alternative Investment Profiles)"),
-            bsButton("robot_parlor_calculate", "Calculate",style="primary"),  align="center"),
+             div(h4("Robots vs Parlors Analysis (Alternative Investment Profiles)"), align="center"),
+             div(a(id = "readProfile","Show/hide explanations about the profiles"),align="center"),
+             shinyjs::hidden(
+               div(id = "ref_readProfile",
+                   includeMarkdown(file.path("text","profiles.md"))
+                   )), br(),  
+            fluidRow(column(width=2, offset=5, bsButton("robot_parlor_calculate", "Calculate",style="primary")),
+            column(4,bsAlert("p_input_change"))), br(),
             conditionalPanel('input.robot_parlor_calculate>=1', 
-            helpText("Summary Results tables and graphs here"), 
-            div(htmlOutput("profile_cashflow_chart"),align="center"),
+            h4("Analysis Results: Summary"),
+            div(htmlOutput("profile_impacts"),
+                 tabsetPanel(
+                   tabPanel("Operating Income",
+                            htmlOutput("profile_operating_income_chart")),
+                   tabPanel("Cashflow",
+                            htmlOutput("profile_cashflow_chart")),
+                 selected="Cashflow"),
+                 align="center"),
+            a(id = "tableProfile","Show/hide tables of summary results"),
+            shinyjs::hidden(
+              div(id = "tableProfileSummary",
             tabsetPanel(
               tabPanel("Before Tax",
                        DT::dataTableOutput("table_before_tax")
               ), 
               tabPanel("After Tax",
                        DT::dataTableOutput("table_after_tax")
-              )), 
+              ),
+              tabPanel("Operating Income",
+                       DT::dataTableOutput("table_operating_income")
+              ),
+              tabPanel("Cash Flow",
+                       DT::dataTableOutput("table_after_tax_cash_flow")
+              ))
+            )), 
             br(), br(),     
-             h4("Section A. Anticipated Changes in Production"),
+             h4("Analysis Data and Assumptions"),
+             helpText("Data entered below are linked with the investment profile that can be selected in Data Entry tab.
+                      The details of the results under the selected profile will appear under Partial Budget and Cash Flow tabs.
+                      The underlying calculations are the identical across profiles, but different data inputs lead 
+                      to different results for projected net impacts."), 
+             br(),
+             hr(),
+             h5("Section A. Anticipated Changes in Production"),
              div(style="background-color: #4863A0; color:white;",
                            fluidRow(
                              column(width=8,offset=4, 
@@ -44,9 +75,9 @@ div(
             ),
              fluidRow(column(width=4, h5("Maintenance"))),
              fluidRow(column(width=4, helpText("Estimated annual change in milking system repair ($)")),
-                      column(width=2, numericInput("repair_pr1",NULL,value=7000,min=0,step=500)),
-                      column(width=2, numericInput("repair_pr2",NULL,value=7000,min=0,step=500)),
-                      column(width=2, numericInput("repair_pr3",NULL,value=7000,min=0,step=500)),
+                      column(width=2, numericInput("repair_pr1",NULL,value=0,min=0,step=500)),
+                      column(width=2, numericInput("repair_pr2",NULL,value=1000,min=0,step=500)),
+                      column(width=2, numericInput("repair_pr3",NULL,value=1000,min=0,step=500)),
                       column(width=2, numericInput("repair_pr4",NULL,value=7000,min=0,step=500))
              ),
              fluidRow(column(width=4, helpText("Insurance rate per $1000 value (%)")),
@@ -138,10 +169,10 @@ div(
                       column(width=2, numericInput("change_chemical_pr3",NULL,value=1.50,step=0.25)),
                       column(width=2, numericInput("change_chemical_pr4",NULL,value=1.50,step=0.25))
              ),
-            helpText("*Note: Other production variables are shared across investment profiles."), 
+            helpText("*Note: all other production variables are shared across investment profiles."), 
          # ----- Financing ------
              hr(),
-             h4("Section B. Financing Schedule by Profile") , 
+             h5("Section B. Financing Schedule by Profile") , 
              tabsetPanel(
                tabPanel("Barn Only",
              div(style="background-color:#4863A0; color:white;",
@@ -164,24 +195,29 @@ div(
              ), 
              fluidRow(column(width=4, helpText("Down payment ($)")),
                       column(width=2,  
-                             numericInput("down_housing_pr1",NULL,value=100000, min=0,step=20000))
+                             numericInput("down_housing_pr1",NULL,value=100000, min=0,step=20000)),
+                      shinyjs::hidden(column(width=2, numericInput("down_milking1_pr1",NULL,value=0)))
              ), 
              fluidRow(column(width=4,  helpText("Loan amount ($)")),
-                      column(width=2,  uiOutput("loan_housing_pr1"))
+                      column(width=2,  uiOutput("loan_housing_pr1")),
+                      shinyjs::hidden(column(width=2, numericInput("loan_milking1_pr1", NULL,value=0)))
              ),
                fluidRow(column(width=4,  helpText("Interest rate (%)")),
-                        column(width=2,  numericInput("r_housing_pr1",NULL,value=4, min=0, step=.25))
+                        column(width=2,  numericInput("r_housing_pr1",NULL,value=4, min=0, step=.25)),
+                        shinyjs::hidden(column(width=2, numericInput("r_milking1_pr1", NULL,value=0)))
                         ), 
              fluidRow(column(width=4,  helpText("Loan period (years)")),
-                      column(width=2,  numericInput("n_yr_housing_pr1",NULL,value=24, min=0, step=1))
+                      column(width=2,  numericInput("n_yr_housing_pr1",NULL,value=24, min=0, step=1)),
+                      shinyjs::hidden(column(width=2, numericInput("n_yr_milking1_pr1", NULL,value=1)))
                       ),
              fluidRow(column(width=4,  helpText("Salvage value ($)")),
-                      column(width=2,  helpText("0"))
+                      column(width=2,  helpText("0")),
+                      shinyjs::hidden(column(width=2, numericInput("salvage_milking1_pr1", NULL,value=0)))
                       )
                ),
              tabPanel("Retro Parlor",
                div(style="background-color:#4863A0; color:white;",
-                   fluidRow(column(width=6, offset=4, h5(strong("Investment Assets"),align="center"))),
+                   fluidRow(column(width=6, offset=4, h4(strong("Investment Assets"),align="center"))),
                    fluidRow(column(width=4,  h5(strong("Item"), align="center")),
                             column(width=2,  h5(strong("Housing"), align="center")),
                             column(width=2,  h5(strong("Rertrofit"), align="center"))
@@ -227,7 +263,7 @@ div(
              ),
              tabPanel("New Parlor",
                div(style="background-color:#4863A0; color:white;",
-                   fluidRow(column(width=6, offset=4, h5(strong("Investment Assets"),align="center"))),
+                   fluidRow(column(width=6, offset=4, h4(strong("Investment Assets"),align="center"))),
                    fluidRow(column(width=4,  h5(strong("Item"), align="center")),
                             column(width=2,  h5(strong("Housing"), align="center")),
                             column(width=2,  h5(strong("Parlor"), align="center"))
@@ -272,8 +308,8 @@ div(
                )
              ),
              tabPanel("Robots",
-               div(style="background-color: #4863A0 color:white;",
-                   fluidRow(column(width=6, offset=4, h5(strong("Investment Assets"),align="center"))),
+                      div(style="background-color:#4863A0; color:white;",
+                   fluidRow(column(width=6, offset=4, h4(strong("Investment Assets"),align="center"))),
                    fluidRow(column(width=4,  h5(strong("Item"), align="center")),
                             column(width=2,  h5(strong("Housing"), align="center")),
                             column(width=2,  h5(strong("Robot 1"), align="center")),
@@ -310,9 +346,9 @@ div(
               ),
                fluidRow(column(width=4,  helpText("Investment amount ($)")), 
                         column(width=2, uiOutput("copy_cost_housing_pr4")),
-                        column(width=2, uiOutput("copy_cost_miking1_pr4")),
+                        column(width=2, uiOutput("copy_cost_milking1_pr4")),
                         conditionalPanel("input.n_robot_life>=2", 
-                                         column(width=2, uiOutput("cppy_cost_miking2_pr4")))
+                                         column(width=2, uiOutput("copy_cost_milking2_pr4")))
                ), 
                fluidRow(column(width=4, helpText("Down payment ($)")),
                         column(width=2,  

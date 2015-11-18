@@ -13,9 +13,9 @@ var_to_render_0 <- c("herd_size2", "cost_milking","cost_housing","total_investme
                      "total_investment", "housing_years",
                      "increased_insurance", "anticipated_hours_milking","milk_lb_alt_day",
                      "yr_robot2",  "loan_housing",
-                     "loan_robot1","loan_robot2",
-                     "copy_cost_housing", "copy_robot_invest1", "copy_robot_invest2", 
-                     "copy_salvage_robot1","copy_salvage_robot2",
+                     "loan_milking1","loan_milking2", 
+                     "copy_cost_housing", "copy_cost_milking1", "copy_cost_milking2", 
+                     "copy_salvage_milking1","copy_salvage_milking2",
                      "yr_invest_milking2_pr4", 
                      "copy_robot_years_pr4", "copy_n_robot_pr4", "copy_cost_robot_pr4",
                      "housing_years_pr2", "housing_years_pr3","housing_years_pr4",
@@ -31,9 +31,9 @@ var_to_render_0 <- c("herd_size2", "cost_milking","cost_housing","total_investme
                      'copy_r_housing_pr2', 'copy_r_milking1_pr2', 
                      'copy_r_housing_pr3', 'copy_r_milking1_pr3', 
                      'copy_r_housing_pr4', 'copy_r_milking1_pr4', 'copy_r_milking2_pr4',
-                     "salvage_milking2_pr4"
+                     "salvage_milking2_pr4" 
                      )
-var_to_render_1 <- c("copy_r_housing", "copy_r_robot1","copy_r_robot2")
+var_to_render_1 <- c("copy_r_housing", "copy_r_milking1","copy_r_milking2")
 var_to_render_2 <- c("adj_milk_cow_day")
 var_to_render_3 <- c("DMI_change","DMI_day","DMI_projected") 
 var_to_render_4 <- c("stage_lactation")
@@ -246,8 +246,22 @@ output$DMI_change_copy <- renderUI({
 
 
 
-## Dashboard 
+## ------------ Dashboard ------------
 
+robot_or_parlor <- reactive({
+  if (input$robot_parlor=="OFF" | input$profile_choice=="Robots")
+  {   return("Robots")
+  } else {
+    if (input$profile_choice=="Barn Only") {
+      return("New Barn")
+    } else if (input$profile_choice=="Retrofit Parlors") {
+      return("Retrofit")
+  } else {
+    return("New Parlors")
+  }
+  }
+})
+  
 output$IOFC <- renderUI({
   if (input$IOFC=="per cow") {
     dash_IOFC(rv$IOFC, rv$IOFC2, basis=input$IOFC)
@@ -267,7 +281,7 @@ output$milk_feed <- renderUI({
   )
   div(class="well well-sm", style= "background-color: #1569C7; color:white;", 
       rv$milk_feed %>% formatdollar2() %>% strong() %>% h4(),
-      h5("Milk Income - Feed Cost"), h5("under robot"))
+      h5("Milk Income - Feed Cost"), h5("under", robot_or_parlor()))
 })  
 
 output$labor_repair <- renderUI({
@@ -276,7 +290,7 @@ output$labor_repair <- renderUI({
   )
   div(class="well well-sm", style= "background-color: #FF926F; color:white;", 
       rv$labor_repair %>% formatdollar2() %>% strong() %>% h4(),
-      h5("Labor + Repair Cost"), h5("under robot"))
+      h5("Labor + Repair Cost"),  h5("under", robot_or_parlor()))
 })  
 
 output$captial_cost <- renderUI({
@@ -285,7 +299,7 @@ output$captial_cost <- renderUI({
   ) 
   div(class="well well-sm", style= "background-color: #64E986; color:white;", 
       (rv$capital) %>% formatdollar2() %>% strong() %>% h4(),
-      h5("Cost of Capital"),  h5("under robot"))
+      h5("Cost of Capital"),   h5("under", robot_or_parlor()))
 })  
 
 output$misc <- renderUI({
@@ -294,7 +308,7 @@ output$misc <- renderUI({
   )
   div(class="well well-sm", style= "background-color: #EDDA74; color:white;", 
       rv$misc %>% formatdollar2() %>% strong %>% h4(), 
-      h5("Others"), h5("under robot"))
+      h5("Others"),  h5("under", robot_or_parlor()))
 }) 
 
 output$inflation <- renderUI({
@@ -303,7 +317,7 @@ output$inflation <- renderUI({
   )
   div(class="well well-sm", style= "background-color: #7A5DC7; color:white;", 
       rv$inflation %>% formatdollar2() %>% strong %>% h4(), 
-      h5("Inflation Adjustments"), h5("under robot"))
+      h5("Inflation Adjustments"),  h5("under", robot_or_parlor()))
 })  
 
 output$plot1 <- renderPlot({ 
@@ -337,7 +351,7 @@ output$cashflow <- renderUI({
       h5("Max:", max),
       h5("S.D.:", sd),
       h5(pos, "stays positive"),
-      h5("under robot")
+      h5("under", robot_or_parlor())
       )
 }) 
 
@@ -352,7 +366,7 @@ output$cashflow2 <- renderGvis({
                 yvar=c("Cashflow"),
                 options=list(
                              title="After-tax Cash Flow", 
-                             vAxis="{title:'Impact under Robot ($)'}",
+                             vAxis= paste("{title:'Impact under", robot_or_parlor(),"($)'}"),
                              hAxis="{title:'Year'}",
                              legend="none"
                 ))
@@ -401,18 +415,18 @@ output$breakeven2 <- renderGvis({
   df <- data.frame(Year=c(1:input$horizon))
   df$Base <- lapply(c(1:input$horizon), function(t) { 
     input$labor_rate * (1 + input$inflation_labor/100)^(t-1)
-  }) %>% unlist() 
+  }) %>% unlist() %>% round(2)
   df$Wage <- lapply(c(1:input$horizon), function(t) { 
     labor_rate * (1 + input$inflation_labor/100)^(t-1)
-    }) %>% unlist()  
+    }) %>% unlist() %>% round(2)
   df$Wage_Inflation <- lapply(c(1:input$horizon), function(t) { 
      input$labor_rate * (1 + inflation)^(t-1)
-  }) %>% unlist()    
+  }) %>% unlist() %>% round(2)
   
   gvisLineChart(df, xvar="Year", 
                 yvar=c("Base", "Wage","Wage_Inflation"),
                 options=list(
-                  title=paste("Breakeven Wage for Robots",tax), 
+                  title=paste("Breakeven Wage for",robot_or_parlor(),tax), 
                   vAxis="{title:'Wage Trajectory ($)'}",
                   hAxis="{title:'Year'}",
                   legend="bottom"
@@ -457,7 +471,7 @@ output$breakeven <- renderUI({
       h5(yr_one, wage_one),
       h5(yr_two, wage_two),
       h5(yr_three, wage_three),
-      h5("under robot")
+      h5("under", robot_or_parlor())
   )
 }) 
 
@@ -598,7 +612,7 @@ output$table_cash_flow <- DT::renderDataTable({
 output$table_debt <- DT::renderDataTable({
   if (length(rv[["table_debt"]])==0) return()
   tbl <- round(rv[["table_debt"]])
-  if (robot_parlor=="OFF" | input.profile_choice=="Robots") { milk_sys <- 'Robot' }
+  if (input$robot_parlor=="OFF" | input$profile_choice=="Robots") { milk_sys <- 'Robot' }
   else { milk_sys <- 'Parlor'}
   colnames(tbl) <- c('Year', paste(milk_sys,'Payment Year'),paste(milk_sys, 'Interest'), paste(milk_sys,'Principal'), 
                      'Housing Payment Year','Housing Interest', 'Housing Principal',
@@ -623,7 +637,7 @@ output$table_debt <- DT::renderDataTable({
 output$table_depreciation <- DT::renderDataTable({
   if (length(rv[["table_depreciation"]])==0) return()
   tbl <- round(rv[["table_depreciation"]])
-  if (robot_parlor=="OFF" | input.profile_choice=="Robots") { milk_sys <- 'Robot' }
+  if (input$robot_parlor=="OFF" | input$profile_choice=="Robots") { milk_sys <- 'Robot' }
   else { milk_sys <- 'Parlor'}
   colnames(tbl) <- c('Year', milk_sys, 'Housing', 'Total')
   DT::datatable(tbl, 
@@ -642,22 +656,66 @@ output$table_depreciation <- DT::renderDataTable({
 })
 
 
+
+
 output$cashflow_chart <- renderGvis({
   if (length(rv[["table_cash_flow"]])==0) return()
   tbl <- round(rv[["table_cash_flow"]])
   tbl$Year <- tbl$year
   tbl$Operating_Income <- tbl$operating_income
   tbl$Cashflow <- tbl$after_tax_cash_flow 
-      gvisAreaChart(tbl, xvar="Year", 
-                       yvar=c("Cashflow","Operating_Income"),
-                       options=list(isStacked=TRUE,
-                                    title="Before-tax Operating Income & After-tax Cash Flow", 
-                                    vAxis="{title:'Net Annual Impact under Robot ($)'}",
-                                    hAxis="{title:'Year'}",
-                                    legend="bottom",
-                                    width=800, height=400
-                                      ))
+  gvisLineChart(tbl, xvar="Year", 
+                         yvar=c("Cashflow","Operating_Income"),
+                         options=list(title="Before-tax Operating Income & After-tax Cash Flow", 
+                                      vAxis="{title:'Net Annual Impact under Robot ($)'}",
+                                      hAxis="{title:'Year'}",
+                                      legend="bottom",
+                                      width=800, height=400
+                                        ))
+#       gvisAreaChart(tbl, xvar="Year", 
+#                        yvar=c("Cashflow","Operating_Income"),
+#                        options=list(isStacked=TRUE,
+#                                     title="Before-tax Operating Income & After-tax Cash Flow", 
+#                                     vAxis="{title:'Net Annual Impact under Robot ($)'}",
+#                                     hAxis="{title:'Year'}",
+#                                     legend="bottom",
+#                                     width=800, height=400
+#                                       ))
 })
 
 
+output$copy_profile_choice1 <- renderUI({ 
+    div(h4("Selected Investment Profile:"), 
+        h4(input$profile_choice), align="center")
+}) 
+        
+output$copy_profile_choice2 <- renderUI({
+  div(h4("Selected Investment Profile:"), 
+      h4(input$profile_choice), align="center")
+}) 
+
+observeEvent(input$profile_choice, {
+  updateSelectInput(session,"copy_profile_choice1",  selected=input$profile_choice,
+                    choices=c("Barn Only","Retrofit Parlors","New Parlors","Robots"))
+  
+  updateSelectInput(session,"copy_profile_choice2",  selected=input$profile_choice,
+                    choices=c("Barn Only","Retrofit Parlors","New Parlors","Robots"))
+})
+
+observeEvent(input$copy_profile_choice1, {
+  updateSelectInput(session,"profile_choice",  selected=input$copy_profile_choice1,
+                    choices=c("Barn Only","Retrofit Parlors","New Parlors","Robots"))
+  
+  updateSelectInput(session,"copy_profile_choice2",  selected=input$copy_profile_choice1,
+                    choices=c("Barn Only","Retrofit Parlors","New Parlors","Robots"))
+})
+
+
+observeEvent(input$copy_profile_choice2, {
+  updateSelectInput(session,"copy_profile_choice1",  selected=input$copy_profile_choice2,
+                    choices=c("Barn Only","Retrofit Parlors","New Parlors","Robots"))
+  
+  updateSelectInput(session,"profile_choice",  selected=input$copy_profile_choice2,
+                    choices=c("Barn Only","Retrofit Parlors","New Parlors","Robots"))
+})
 

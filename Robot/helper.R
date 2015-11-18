@@ -204,7 +204,7 @@ dash_IOFC <- function(IOFC, IOFC2, basis,
   if (is.null(compare)) {
     div(class="well", style=style,  align="center",
         diff  %>% formatdollar2(digit) %>% strong() %>% h3(),
-        h5(IOFC_unit), h5("under robot"))
+        h5(IOFC_unit), h5("under", robot_or_parlor()))
   } 
   else {
     diff1 <- compare2 - compare 
@@ -232,10 +232,11 @@ dash_NAI <- function(NAI,cutoff=0, compare=NULL) {
   }
   
   if (is.null(compare)) {
-    div(class="well", style=style, align="center",
+    div(class="well", style=style, align="center", 
         NAI %>% formatdollar2() %>% strong() %>% h3(),
-        h5("Net Impact ($/year)"),h5("under robot"))
-  } 
+        h5("Net Impact ($/year)"),
+        h5("under", robot_or_parlor()))
+  }  
   else {
     diff <- NAI - compare
     div(class="well", style=style, align="center",
@@ -266,7 +267,7 @@ dash_plot1 <- function(feed_current,feed_robot,milk_current,milk_robot) {
     #   ggtitle("Milk vs Feed")+ 
     geom_text(aes(label=label, ymax=max(values)*1.1), 
               vjust=0.5, hjust=1.2, color="white", position = position_dodge(0.9), size=5) +
-    scale_fill_brewer(palette="Paired", breaks=c(1,0), labels=c("Robots","Current")) +
+    scale_fill_brewer(palette="Paired", breaks=c(1,0), labels=c(robot_or_parlor(),"Current")) +
     theme_minimal() +
     scale_x_discrete(
       limits=c("feed","milk"),   
@@ -305,7 +306,7 @@ dash_plot2 <- function(inc_exp_repair,labor_current,labor_robot) {
     #   ggtitle("Labor vs Repair") + 
     geom_text(aes(label=label, ymax=max(values)*1.1), 
               vjust=0.5, hjust=1.2, color="white", position = position_dodge(0.9), size=5) +
-    scale_fill_brewer(palette="Reds", breaks=c(1,0), labels=c("Robots","Current")) +
+    scale_fill_brewer(palette="Reds", breaks=c(1,0), labels=c(robot_or_parlor(),"Current")) +
     theme_minimal() +
     scale_x_discrete(
       limits=c( "repair", "labor"),   
@@ -350,10 +351,10 @@ dash_plot3 <- function(inc_exp_capital_recovery,capital_recovery_housing,
     geom_text(aes(label=label,ymax=max(values_shadow)*1.0), 
               vjust=0.5, hjust=1.2, color="white", position = position_dodge(0.9), size=5) +
     theme_minimal() + 
-    scale_x_discrete(
+    scale_x_discrete( 
       limits=c("robot_end_PV","cost_downpayment", "capital_housing","capital_robot"),   
-      labels=c("Robot \n Salvage Value", "Downpayment \n Capital Cost", 
-               "Housing \n Capital Cost","Robot \n Capital Cost")    
+      labels=c(paste(robot_or_parlor(),"\n Salvage Value"), "Downpayment \n Capital Cost", 
+               "Housing \n Capital Cost",paste(robot_or_parlor(),"\n Capital Cost"))    
     ) + 
     theme(
       axis.title.x=element_blank(), 
@@ -363,7 +364,7 @@ dash_plot3 <- function(inc_exp_capital_recovery,capital_recovery_housing,
       text=element_text(family="sans", size=14),                       #changes font on entire graph
       plot.title=element_text(face="bold",hjust=c(0,0))  #changes font face and location for graph title
     )
-}
+} 
 
 
 # dash_plot3 <- function(inc_exp_capital_recovery,capital_recovery_housing,

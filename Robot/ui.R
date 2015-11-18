@@ -14,8 +14,8 @@ shinyUI(
     "Robotic Milking System",
     # ---------- Introduction  -----------
     tabPanel("Introduction",
-             fluidRow(column(width=1),
-                      column(width=10,
+             fluidRow(column(width=2),
+                      column(width=8,
                              includeMarkdown(file.path("text","introduction.md"))
 #                              div(class="well", style="background-color: #616D7E; color:white;",
 #                                  h4("Why robots?"),
@@ -26,15 +26,7 @@ shinyUI(
     tabPanel("Data Entry", id="data_entry",
              # Need to add "$value" for including source in UI: 
              # otherwise "TRUE" will show up at the end of file
-             fluidRow(
-               column(width=9, offset=3,
-                 conditionalPanel('input.robot_parlor=="ON"',
-                                  div(class="well", style="background-color:#4863A0; color:white;", 
-                                      selectInput("profile_choice","Select Investment Profile", 
-                                                  selected="Robots",
-                                              choices=c("Barn Only","Retrofit Parlors","New Parlors","Robots")))
-             )
-             )), 
+             
               source("ui_data_entry_tabs.R", local=TRUE)$value,    
              
              # ----- Dashboard -----
@@ -228,8 +220,9 @@ shinyUI(
              DT::dataTableOutput("table_robust")
             ),
              # --------- Data Table ---------
+             br(), br(),
              fluidRow(column(2,offset=3,
-                             downloadButton("c_download","Download")),
+                             downloadButton("c_download","Download Data")),
                       column(3, 
              # fileInput() is passessed from the server
              uiOutput('resettableInput'),
@@ -265,16 +258,15 @@ tabPanel("Cash Flow",
     # ---------- Additional Analyses -----------
     navbarMenu("More",
                tabPanel("Robustness Check Tools",
-                        fluidRow(
-                          column(10,offset=1, 
-                                        fluidRow(column(6, offset=3,
-                                                        radioButtons("robust", "Robustness analysis options", 
-                                                                     choices=c("Off","Sensitivity","Scenarios")))),
-                                        conditionalPanel('input.robust=="Sensitivity"', 
-                                                         helpText("Explanation about Sensitivity Analysis")),
-                                        conditionalPanel('input.robust=="Scenarios"', 
-                                                         helpText("Explanation about Scenario Analysis")))
-                        )),
+                        fluidRow(column(6, offset=3,
+                                        radioButtons("robust", "Robustness analysis options", 
+                                                                     choices=c("Off","Sensitivity","Scenarios")),
+                                        conditionalPanel('input.robust=="Sensitivity"', br(), hr(),
+                                                         includeMarkdown(file.path("text","sensitivity.md"))),
+                                        conditionalPanel('input.robust=="Scenarios"', br(), hr(),
+                                                         includeMarkdown(file.path("text","scenario.md")))
+                        ))
+                        ),
 
                tabPanel("Robots vs Parlors",
                         conditionalPanel("input.budget>0",

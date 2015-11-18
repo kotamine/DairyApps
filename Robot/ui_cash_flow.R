@@ -4,6 +4,16 @@ div(
 fluidRow(
   column(8,offset=2,
          h4("Cash Flow Analysis",align="center"),
+         fluidRow(
+           column(width=6, offset=3,
+                  conditionalPanel('input.robot_parlor=="ON"',
+                                   div(class="well", style="background-color:#4863A0; color:white;", 
+                                       # uiOutput("copy_profile_choice2"),
+                                       selectInput("copy_profile_choice2","Select Investment Profile", 
+                                                   selected="Robots",
+                                                   choices=c("Barn Only","Retrofit Parlors","New Parlors","Robots")))
+                  )
+           )), 
 br(), 
 # div(bsButton("calculate_cash_flow","Calculate",disabled = FALSE),align="center"),
 # tags$hr(), 
