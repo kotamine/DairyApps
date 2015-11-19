@@ -372,31 +372,6 @@ output$cashflow2 <- renderGvis({
                 ))
 })
 
-# output$cashflow2 <- renderGvis({
-#   if (length(rv[["table_cash_flow"]])==0) return()
-#   cashflow <- rv$table_cash_flow$after_tax_cash_flow 
-#   cut1 <- round(input$horizon/3)
-#   cut2 <- round(input$horizon*2/3)
-#   list_per <- list(c(1:cut1),c((cut1+1):cut2), c((cut2+1):input$horizon)) 
-# 
-#   df <- data.frame(period=c(paste0("1-",cut1),paste0(cut1+1,"-",cut2),
-#                             paste0(cut2+1,"-",input$horizon)))
-#   for (n in 1:3) {
-#     df$low[n] <- quantile(cashflow[list_per[[n]]],.01) %>% round() 
-#     df$close[n] <- quantile(cashflow[list_per[[n]]],.25) %>% round() 
-#     df$open[n] <- quantile(cashflow[list_per[[n]]],.75) %>% round() 
-#     df$high[n] <- quantile(cashflow[list_per[[n]]],.99) %>% round() 
-#   }
-#   gvisCandlestickChart(df,
-#                        xvar="period",
-#                        low="low", 
-#                        close="close",
-#                        open="open",
-#                        high="high",
-#                 options=list(legend="none"                
-#                              ))
-# })
-
 
 output$breakeven2 <- renderGvis({
   validate(
@@ -479,101 +454,143 @@ output$breakeven <- renderUI({
 
 
 
+# --- Dashboard features for Robustness Analysis ---
 
-# 
-# ## Dashboard -- Cash Flow Based Representation
-# 
-# output$cash_IOFC <- renderUI({
-#   if (input$cash_IOFC=="per cow") {
-#     dash_IOFC(rv$cash_IOFC, rv$cash_IOFC2, basis=input$IOFC)
-#   } else {
-#     dash_IOFC(rv$cash_IOFC_cwt, rv$cash_IOFC2_cwt, basis=input$IOFC)
-#   }
-# })  
-# 
-# output$cash_NAI <- renderUI({
-#   dash_NAI(rv$cash_NAI,cutoff=0)
-# }) 
-# 
-# output$cash_milk_feed <- renderUI({
-#   validate(
-#     need(!is.na(rv$cash_milk_feed),"NA")
-#   )
-#   div(class="well well-sm", style= "background-color: #1569C7; color:white;", 
-#       rv$cash_milk_feed %>% formatdollar2() %>% strong() %>% h4(),
-#       h5("Milk Income - Feed Cost"), h5("under robot"))
-# })  
-# 
-# output$cash_labor_repair <- renderUI({
-#   validate(
-#     need(!is.na(rv$cash_labor_repair ),"NA")
-#   )
-#   div(class="well well-sm", style= "background-color: #FF926F; color:white;", 
-#       rv$cash_labor_repair %>% formatdollar2() %>% strong() %>% h4(),
-#       h5("Labor + Repair Cost"), h5("under robot"))
-# })  
-# 
-# output$cash_captial_cost <- renderUI({
-#   validate(
-#     need(!is.na(rv$cash_capital_cost ),"NA")
-#   )
-#   div(class="well well-sm", style= "background-color: #64E986; color:white;", 
-#       rv$cash_capital_cost %>% formatdollar2() %>% strong() %>% h4(),
-#       h5("Cost of Capital"),  h5("under robot"))
-# })  
-# 
-# output$cash_misc <- renderUI({
-#   validate(
-#     need(!is.na(rv$cash_misc ),"NA")
-#   )
-#   div(class="well well-sm", style= "background-color: #C2B280; color:white;", 
-#       rv$cash_misc %>% formatdollar2() %>% strong %>% h4(), 
-#       h5("The Rest"), h5("under robot"))
-# })  
-# 
-# output$cash_plot1 <- renderPlot({ 
-#   dash_plot1(rv$cash_feed_current,rv$cash_feed_robot,rv$cash_milk_current,rv$cash_milk_robot)
-# })
-# 
-# output$cash_plot2 <- renderPlot({
-#   dash_plot2(rv$cash_inc_exp_repair,rv$cash_labor_current,rv$cash_labor_robot) 
-# })
-# 
-# output$cash_plot3 <- renderPlot({ 
-#   dash_plot3(rv$cash_capital_recovery_robot,rv$cash_capital_recovery_housing,
-#              rv$cash_robot_end_PV,input$cash_NAI)  
-# })
+## CHANGE THE DIFFERENCE OPERATIONS IN HELPER.R
+output$c_NAI <- renderUI({
+  isolate(base_NAI <- rv$NAI )
+  dash_NAI(rb$NAI,cutoff=0, compare=base_NAI)
+}) 
+
+output$c_IOFC <- renderUI({
+  isolate(IOFC_unit <- input$IOFC)
+  if (IOFC_unit=="per cow") {
+    isolate({
+      base_IOFC <- rv$IOFC
+      base_IOFC2 <- rv$IOFC2
+    })
+    dash_IOFC(rb$IOFC, rb$IOFC2, basis=IOFC_unit, 
+              compare=base_IOFC, compare2=base_IOFC2)
+  } else {
+    isolate({
+      base_IOFC_cwt <- rv$IOFC_cwt
+      base_IOFC2_cwt <- rv$IOFC2_cwt
+    })
+    dash_IOFC(rb$IOFC_cwt, rb$IOFC2_cwt, basis=IOFC_unit, 
+              compare=base_IOFC_cwt, compare2=base_IOFC2_cwt)
+  }
+})   
 
 
-## -----------------------------------------------------------------------
+output$c_milk_feed <- renderUI({ 
+  isolate(diff <- rb$milk_feed - rv$milk_feed ) 
+  validate( 
+    need(!is.na(diff), "NA")
+  ) 
+  div(class="well well-sm", style= "background-color: #1569C7; color:white;", 
+      rb$milk_feed %>% formatdollar2() %>% strong() %>% h4(),
+      diff %>% formatdollar2b() %>% strong() %>% h4())
+})   
 
 
-# lapply(c("table_cash_flow","table_debt"), 
-#        function(x) {
-#          output[[x]] <- DT::renderDataTable({
-#            if (length(rv[[x]])==0) return()
-#            tbl <- round(rv[[x]])
-#            DT::datatable(tbl, 
-#                          # colnames = c('Here', 'Are', 'Some', 'New', 'Names')
-#                          rownames = FALSE,
-#                          extensions = 'ColVis',
-#                          # extensions = 'ColReorder',
-#                          options = list(
-#                            dom = 'C<"clear">lfrtip',
-#                            scrollX = TRUE,
-#                            pageLength = 30,
-#                            lengthMenu = c(10, 20, 30, 40),
-#                            searching = FALSE,
-#                            #                           scrollCollapse = TRUE,
-#                            #                           scrollY = 500,
-#                            # scrollCollapse = TRUE,
-#                            # colVis = list(exclude = c(0, 1,1,0),
-#                            showNone=TRUE, 
-#                            activate = 'mouseover'))
-#            
-#          })
-#        })
 
+output$milk_feed <- renderUI({
+  validate(
+    need(!is.na(rv$milk_feed),"NA")
+  )
+  div(class="well well-sm", style= "background-color: #1569C7; color:white;", 
+      rv$milk_feed %>% formatdollar2() %>% strong() %>% h4(),
+      h5("Milk Income - Feed Cost"), h5("under", robot_or_parlor()))
+})  
+
+output$labor_repair <- renderUI({
+  validate(
+    need(!is.na(rv$labor_repair ),"NA")
+  )
+  div(class="well well-sm", style= "background-color: #FF926F; color:white;", 
+      rv$labor_repair %>% formatdollar2() %>% strong() %>% h4(),
+      h5("Labor + Repair Cost"),  h5("under", robot_or_parlor()))
+})  
+output$c_labor_repair <- renderUI({
+  isolate(diff <- rb$labor_repair - rv$labor_repair)
+  validate( 
+    need(!is.na(diff), "NA")
+  ) 
+  div(class="well well-sm", style= "background-color: #FF926F; color:white;", 
+      rb$labor_repair %>% formatdollar2() %>% strong() %>% h4(),
+      diff %>% formatdollar2b() %>% strong() %>% h4())
+})  
+
+output$c_captial_cost <- renderUI({
+  isolate( diff <- rb$capital_cost - rv$capital_cost ) 
+  validate( 
+    need(!is.na(diff), "NA")
+  ) 
+  div(class="well well-sm", style= "background-color: #64E986; color:white;", 
+      rb$capital_cost %>% formatdollar2() %>% strong() %>% h4(),
+      diff %>% formatdollar2b() %>% strong() %>% h4())
+})  
+
+output$c_misc <- renderUI({
+  isolate( diff <- rb$misc - rv$misc ) 
+  validate( 
+    need(!is.na(diff), "NA")
+  ) 
+  div(class="well well-sm", style= "background-color: #C2B280; color:white;", 
+      rb$misc %>% formatdollar2() %>% strong %>% h4(), 
+      diff %>% formatdollar2b() %>% strong() %>% h4())
+})  
+
+output$captial_cost <- renderUI({
+  validate(
+    need(!is.na(rv$capital),"NA")
+  ) 
+  div(class="well well-sm", style= "background-color: #64E986; color:white;", 
+      (rv$capital) %>% formatdollar2() %>% strong() %>% h4(),
+      h5("Cost of Capital"),   h5("under", robot_or_parlor()))
+})  
+
+output$misc <- renderUI({
+  validate(
+    need(!is.na(rv$misc ),"NA")
+  )
+  div(class="well well-sm", style= "background-color: #EDDA74; color:white;", 
+      rv$misc %>% formatdollar2() %>% strong %>% h4(), 
+      h5("Others"),  h5("under", robot_or_parlor()))
+}) 
+
+output$inflation <- renderUI({
+  validate(
+    need(!is.na(rv$inflation ),"NA")
+  )
+  div(class="well well-sm", style= "background-color: #7A5DC7; color:white;", 
+      rv$inflation %>% formatdollar2() %>% strong %>% h4(), 
+      h5("Inflation Adjustments"),  h5("under", robot_or_parlor()))
+})  
+
+
+output$c_plot1 <- renderPlot({ 
+  dash_plot1(rb$feed_current,rb$feed_robot,rb$milk_current,rb$milk_robot)
+})
+
+output$c_plot2 <- renderPlot({
+  dash_plot2(rb$inc_exp_repair,rb$labor_current,rb$labor_robot) 
+})
+
+output$c_plot3 <- renderPlot({ 
+  isolate( NAI_type <- input$NAI )
+  dash_plot3(rb$inc_exp_capital_recovery,rb$capital_recovery_housing,
+             rb$robot_end_PV, NAI_type)  
+})
+
+
+output$plot3 <- renderPlot({  
+  dash_plot3(rv$capital_recovery_robot2,rv$capital_recovery_housing2,
+             rv$cost_downpayment, rv$robot_end_PV)  
+})
+
+
+##  --- cash flow tables ---
 
 output$table_cash_flow <- DT::renderDataTable({
   if (length(rv[["table_cash_flow"]])==0) return()
@@ -683,6 +700,9 @@ output$cashflow_chart <- renderGvis({
 #                                       ))
 })
 
+
+
+## --- Robots vs Parlors ---
 
 output$copy_profile_choice1 <- renderUI({ 
     div(h4("Selected Investment Profile:"), 

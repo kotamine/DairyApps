@@ -127,9 +127,6 @@ isolate({
   }
   
   
-
-  
-  
   # Positive Impacts (year 1)
   rp$inc_rev_herd_size <- rp$milk_day_cow_alt * 330 *
     (input$price_milk/100) * rp$herd_increase
