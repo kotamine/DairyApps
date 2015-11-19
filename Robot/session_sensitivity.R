@@ -20,8 +20,9 @@ shinyjs::onclick("sensitivity_show",
 # This is not used as a reactive object but as a vector updated by a child function  
 rb$c_change_val <- c(20, 20, 50, 50, -50, -50, 50) 
 
-# creating an emptry table that reactively renders
-rb$table_sensitivity <- c_empty_table
+# creating emptry tables that reactively renders
+rb$table_sensitivity_before_tax <- c_empty_table
+rb$table_sensitivity_after_tax <- c_empty_table
 
 
 c_n <- reactive({
@@ -79,9 +80,58 @@ observeEvent(input$sensitivity_calculate, {
              new_val <- (base_val * (1 + c_val/100))
              label <- c_labels[x]
              
-             source("session_calculation_robustness.R", local=TRUE)  # Calculates new_row
-             rb$table_sensitivity[x,] <- new_row
+#              source("session_calculation_robustness.R", local=TRUE)  # Calculates new_row
+#              rb$table_sensitivity[x,] <- new_row
+#              
+#              
              
+             source("session_calculations_robustness.R", local=TRUE)
+             
+             rb$NAI_spec <- "before tax"
+             
+             source("session_dashboard_robustness.R", local=TRUE)
+             
+             # --- add a row of results to the table_sensitivity_before_tax ---
+             new_row <- c(c_val, base_val, new_val,  
+                          rb$NAI, rb$diff_NAI,
+                          rb$milk_feed, rb$diff_milk_feed, 
+                          rb$labor_repair, rb$diff_labor_repair, 
+                          rb$capital, rb$diff_capital, 
+                          rb$misc, rb$diff_misc,
+                          rb$inflation, rb$diff_inflation,
+                          rb$IOFC2 - rb$IOFC,  rb$diff_IOFC2 -rb$diff_IOFC,
+                          rb$IOFC2_cwt - rb$IOFC_cwt,  rb$diff_IOFC2_cwt -rb$diff_IOFC_cwt,
+                          rb$bw_wage_before_tax, rb$bw_wage_before_tax-rv$bw_wage_before_tax,  
+                          rb$bw_wage_inflation_before_tax,
+                          rb$bw_wage_inflation_before_tax - rv$bw_wage_inflation_before_tax
+                         )
+             
+             new_row <- matrix(c(label,new_row),nrow=1)
+             colnames(new_row) <- c_colnames
+             
+             rb$table_sensitivity_before_tax[x,] <- new_row
+             
+             rb$NAI_spec <- "after tax"
+             source("session_dashboard_robustness.R", local=TRUE)
+             
+             new_row <- c(c_val, base_val, new_val,  
+                          rb$NAI, rb$diff_NAI,
+                          rb$milk_feed, rb$diff_milk_feed, 
+                          rb$labor_repair, rb$diff_labor_repair, 
+                          rb$capital, rb$diff_capital, 
+                          rb$misc, rb$diff_misc,
+                          rb$inflation, rb$diff_inflation,
+                          rb$IOFC2 - rb$IOFC,  rb$diff_IOFC2 -rb$diff_IOFC,
+                          rb$IOFC2_cwt - rb$IOFC_cwt,  rb$diff_IOFC2_cwt -rb$diff_IOFC_cwt,
+                          rb$bw_wage_after_tax, rb$bw_wage_after_tax-rv$bw_wage_after_tax,  
+                          rb$bw_wage_inflation_after_tax,
+                          rb$bw_wage_inflation_after_tax - rv$bw_wage_inflation_after_tax
+             )
+             
+             new_row <- matrix(c(label,new_row),nrow=1)
+             colnames(new_row) <- c_colnames
+             
+             rb$table_sensitivity_after_tax[x,] <- new_row
          }
   )
 })

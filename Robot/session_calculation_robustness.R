@@ -376,6 +376,8 @@ isolate({ # isolate the robustness calculation
     ((rb$dec_exp_heat_detection + rb$dec_exp_labor )/input$labor_rate)
   
   
+
+  
 if (robust=="Sensitivity") {
   
 # --- add a row of results to the table_sensitivity ---
