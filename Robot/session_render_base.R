@@ -454,141 +454,6 @@ output$breakeven <- renderUI({
 
 
 
-# --- Dashboard features for Robustness Analysis ---
-
-## CHANGE THE DIFFERENCE OPERATIONS IN HELPER.R
-output$c_NAI <- renderUI({
-  isolate(base_NAI <- rv$NAI )
-  dash_NAI(rb$NAI,cutoff=0, compare=base_NAI)
-}) 
-
-output$c_IOFC <- renderUI({
-  isolate(IOFC_unit <- input$IOFC)
-  if (IOFC_unit=="per cow") {
-    isolate({
-      base_IOFC <- rv$IOFC
-      base_IOFC2 <- rv$IOFC2
-    })
-    dash_IOFC(rb$IOFC, rb$IOFC2, basis=IOFC_unit, 
-              compare=base_IOFC, compare2=base_IOFC2)
-  } else {
-    isolate({
-      base_IOFC_cwt <- rv$IOFC_cwt
-      base_IOFC2_cwt <- rv$IOFC2_cwt
-    })
-    dash_IOFC(rb$IOFC_cwt, rb$IOFC2_cwt, basis=IOFC_unit, 
-              compare=base_IOFC_cwt, compare2=base_IOFC2_cwt)
-  }
-})   
-
-
-output$c_milk_feed <- renderUI({ 
-  isolate(diff <- rb$milk_feed - rv$milk_feed ) 
-  validate( 
-    need(!is.na(diff), "NA")
-  ) 
-  div(class="well well-sm", style= "background-color: #1569C7; color:white;", 
-      rb$milk_feed %>% formatdollar2() %>% strong() %>% h4(),
-      diff %>% formatdollar2b() %>% strong() %>% h4())
-})   
-
-
-
-output$milk_feed <- renderUI({
-  validate(
-    need(!is.na(rv$milk_feed),"NA")
-  )
-  div(class="well well-sm", style= "background-color: #1569C7; color:white;", 
-      rv$milk_feed %>% formatdollar2() %>% strong() %>% h4(),
-      h5("Milk Income - Feed Cost"), h5("under", robot_or_parlor()))
-})  
-
-output$labor_repair <- renderUI({
-  validate(
-    need(!is.na(rv$labor_repair ),"NA")
-  )
-  div(class="well well-sm", style= "background-color: #FF926F; color:white;", 
-      rv$labor_repair %>% formatdollar2() %>% strong() %>% h4(),
-      h5("Labor + Repair Cost"),  h5("under", robot_or_parlor()))
-})  
-output$c_labor_repair <- renderUI({
-  isolate(diff <- rb$labor_repair - rv$labor_repair)
-  validate( 
-    need(!is.na(diff), "NA")
-  ) 
-  div(class="well well-sm", style= "background-color: #FF926F; color:white;", 
-      rb$labor_repair %>% formatdollar2() %>% strong() %>% h4(),
-      diff %>% formatdollar2b() %>% strong() %>% h4())
-})  
-
-output$c_captial_cost <- renderUI({
-  isolate( diff <- rb$capital_cost - rv$capital_cost ) 
-  validate( 
-    need(!is.na(diff), "NA")
-  ) 
-  div(class="well well-sm", style= "background-color: #64E986; color:white;", 
-      rb$capital_cost %>% formatdollar2() %>% strong() %>% h4(),
-      diff %>% formatdollar2b() %>% strong() %>% h4())
-})  
-
-output$c_misc <- renderUI({
-  isolate( diff <- rb$misc - rv$misc ) 
-  validate( 
-    need(!is.na(diff), "NA")
-  ) 
-  div(class="well well-sm", style= "background-color: #C2B280; color:white;", 
-      rb$misc %>% formatdollar2() %>% strong %>% h4(), 
-      diff %>% formatdollar2b() %>% strong() %>% h4())
-})  
-
-output$captial_cost <- renderUI({
-  validate(
-    need(!is.na(rv$capital),"NA")
-  ) 
-  div(class="well well-sm", style= "background-color: #64E986; color:white;", 
-      (rv$capital) %>% formatdollar2() %>% strong() %>% h4(),
-      h5("Cost of Capital"),   h5("under", robot_or_parlor()))
-})  
-
-output$misc <- renderUI({
-  validate(
-    need(!is.na(rv$misc ),"NA")
-  )
-  div(class="well well-sm", style= "background-color: #EDDA74; color:white;", 
-      rv$misc %>% formatdollar2() %>% strong %>% h4(), 
-      h5("Others"),  h5("under", robot_or_parlor()))
-}) 
-
-output$inflation <- renderUI({
-  validate(
-    need(!is.na(rv$inflation ),"NA")
-  )
-  div(class="well well-sm", style= "background-color: #7A5DC7; color:white;", 
-      rv$inflation %>% formatdollar2() %>% strong %>% h4(), 
-      h5("Inflation Adjustments"),  h5("under", robot_or_parlor()))
-})  
-
-
-output$c_plot1 <- renderPlot({ 
-  dash_plot1(rb$feed_current,rb$feed_robot,rb$milk_current,rb$milk_robot)
-})
-
-output$c_plot2 <- renderPlot({
-  dash_plot2(rb$inc_exp_repair,rb$labor_current,rb$labor_robot) 
-})
-
-output$c_plot3 <- renderPlot({ 
-  isolate( NAI_type <- input$NAI )
-  dash_plot3(rb$inc_exp_capital_recovery,rb$capital_recovery_housing,
-             rb$robot_end_PV, NAI_type)  
-})
-
-
-output$plot3 <- renderPlot({  
-  dash_plot3(rv$capital_recovery_robot2,rv$capital_recovery_housing2,
-             rv$cost_downpayment, rv$robot_end_PV)  
-})
-
 
 ##  --- cash flow tables ---
 
@@ -738,4 +603,170 @@ observeEvent(input$copy_profile_choice2, {
   updateSelectInput(session,"profile_choice",  selected=input$copy_profile_choice2,
                     choices=c("Barn Only","Retrofit Parlors","New Parlors","Robots"))
 })
+
+
+# ----------- Robustness tables ---------
+output$table_robust_variables <- DT::renderDataTable({
+  if (input$robust=="Sensitivity") {
+    if (dim(rb$table_sensitivity_before_tax)[1]==0) return()
+    tbl <- rb$table_sensitivity_before_tax
+    noncurrency <- c_noncurrency
+    change_var <- c(2:4)
+  }
+  else if (input$robust=="Scenarios") {
+    if (dim(rb$table_scenario_before_tax)[1]==0) return()
+    tbl <- rb$table_scenario_before_tax
+    noncurrency <- s_noncurrency
+    change_var <- c(2:11)
+  } else {
+    return()
+  }
+  L <- length(tbl[,1])
+  vars <- colnames(tbl)
+  tbl <- tbl[,vars[c(1,change_var)]]
+  DT::datatable(tbl,
+                rownames = FALSE,
+                extensions = 'ColVis',
+                options = list(
+                  dom = 'C<"clear">lfrtip',
+                  scrollX = TRUE,
+                  scrollCollapse = TRUE,
+                  scrollY = 500,
+                  pageLength = L,
+                  bLengthChange =FALSE,
+                  searching = FALSE,
+                  activate = 'mouseover')) 
+})
+
+
+  output$table_robust_before_tax <- DT::renderDataTable({
+    if (input$robust=="Sensitivity") {
+      if (dim(rb$table_sensitivity_before_tax)[1]==0) return()
+        tbl <- rb$table_sensitivity_before_tax
+        noncurrency <- c_noncurrency
+        change_var <- c(2:4)
+    }
+    else if (input$robust=="Scenarios") {
+      if (dim(rb$table_scenario_before_tax)[1]==0) return()
+      tbl <- rb$table_scenario_before_tax
+      noncurrency <- s_noncurrency
+      change_var <- c(2:11)
+    } else {
+      return()
+    }
+    L <- length(tbl[,1])
+    vars <- colnames(tbl)
+    tbl <- tbl[,vars[-c(change_var, grep("diff:",vars))]]
+    DT::datatable(tbl,
+                  rownames = FALSE,
+                  extensions = 'ColVis',
+                  options = list(
+                    dom = 'C<"clear">lfrtip',
+                    scrollX = TRUE,
+                    scrollCollapse = TRUE,
+                    scrollY = 500,
+                    pageLength = L,
+                    bLengthChange =FALSE,
+                    searching = FALSE,
+                    activate = 'mouseover')) %>% 
+      formatCurrency(colnames(tbl)[!(colnames(tbl) %in% noncurrency)])
+  })
+
+
+output$table_robust_after_tax <- DT::renderDataTable({
+  if (input$robust=="Sensitivity") {
+    if (dim(rb$table_sensitivity_after_tax)[1]==0) return()
+    tbl <- rb$table_sensitivity_after_tax
+    noncurrency <- c_noncurrency
+    change_var <- c(2:4)
+  }
+  else if (input$robust=="Scenarios") {
+    if (dim(rb$table_scenario_after_tax)[1]==0) return()
+    tbl <- rb$table_scenario_after_tax
+    noncurrency <- s_noncurrency
+    change_var <- c(2:11)
+  } else {
+    return()
+  }
+  L <- length(tbl[,1])
+  vars <- colnames(tbl)
+  tbl <- tbl[,vars[-c(change_var, grep("diff:",vars))]]
+  DT::datatable(tbl,
+                rownames = FALSE,
+                extensions = 'ColVis',
+                options = list(
+                  dom = 'C<"clear">lfrtip',
+                  scrollX = TRUE,
+                  scrollCollapse = TRUE,
+                  scrollY = 500,
+                  pageLength = L,
+                  bLengthChange =FALSE,
+                  searching = FALSE,
+                  activate = 'mouseover')) %>% 
+    formatCurrency(colnames(tbl)[!(colnames(tbl) %in% noncurrency)])
+}) 
+
+output$table_robust_before_tax_diff <- DT::renderDataTable({
+  if (input$robust=="Sensitivity") {
+    if (dim(rb$table_sensitivity_before_tax)[1]==0) return()
+    tbl <- rb$table_sensitivity_before_tax
+    noncurrency <- c_noncurrency
+  }
+  else if (input$robust=="Scenarios") {
+    if (dim(rb$table_scenario_before_tax)[1]==0) return()
+    tbl <- rb$table_scenario_before_tax
+    noncurrency <- s_noncurrency
+  } else {
+    return()
+  }
+  L <- length(tbl[,1])
+  vars <- colnames(tbl)
+  tbl <- tbl[,vars[c(1,grep("diff:",vars))]]
+  DT::datatable(tbl,
+                rownames = FALSE,
+                extensions = 'ColVis',
+                options = list(
+                  dom = 'C<"clear">lfrtip',
+                  scrollX = TRUE,
+                  scrollCollapse = TRUE,
+                  scrollY = 500,
+                  pageLength = L,
+                  bLengthChange =FALSE,
+                  searching = FALSE,
+                  activate = 'mouseover')) %>% 
+    formatCurrency(colnames(tbl)[!(colnames(tbl) %in% noncurrency)])
+})
+
+
+output$table_robust_after_tax_diff <- DT::renderDataTable({
+  if (input$robust=="Sensitivity") {
+    if (dim(rb$table_sensitivity_after_tax)[1]==0) return()
+    tbl <- rb$table_sensitivity_after_tax
+    noncurrency <- c_noncurrency
+  }
+  else if (input$robust=="Scenarios") {
+    if (dim(rb$table_scenario_after_tax)[1]==0) return()
+    tbl <- rb$table_scenario_after_tax
+    noncurrency <- s_noncurrency
+  } else {
+    return()
+  }
+  L <- length(tbl[,1])
+  vars <- colnames(tbl)
+  tbl <- tbl[,vars[c(1,grep("diff:",vars))]]
+  DT::datatable(tbl,
+                rownames = FALSE,
+                extensions = 'ColVis',
+                options = list(
+                  dom = 'C<"clear">lfrtip',
+                  scrollX = TRUE,
+                  scrollCollapse = TRUE,
+                  scrollY = 500,
+                  pageLength = L,
+                  bLengthChange =FALSE,
+                  searching = FALSE,
+                  activate = 'mouseover')) %>% 
+    formatCurrency(colnames(tbl)[!(colnames(tbl) %in% noncurrency)])
+}) 
+
 

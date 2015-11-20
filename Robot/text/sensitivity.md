@@ -1,5 +1,5 @@
 
-#### About Sensitivities
+#### About Sensitivity Analysis
 
 ...
 

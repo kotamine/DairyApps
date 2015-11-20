@@ -477,9 +477,9 @@ observe({
                  - rv$DMI_projected * input$cost_DM - input$pellets * input$cost_pellets/2000)*330 *
     rv$tax_factor  
   
-  rv$IOFC_cwt <- rv$IOFC /365 /input$milk_cow_day * 330 * rv$tax_factor
+  rv$IOFC_cwt <- rv$IOFC /365 /input$milk_cow_day * 330 
   
-  rv$IOFC2_cwt <- rv$IOFC2 /365 /rv$milk_day_cow_alt * 330 * rv$tax_factor
+  rv$IOFC2_cwt <- rv$IOFC2 /365 /rv$milk_day_cow_alt * 330 
   
   rv$milk_current <- 
     input$herd_size * 330 * input$milk_cow_day * (input$price_milk/100 + 

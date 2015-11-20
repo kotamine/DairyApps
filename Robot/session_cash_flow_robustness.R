@@ -2,22 +2,12 @@
 ## This file may be merged with the above file later. 
 
 
-# The following inputs are replaced by profile-specific variables. 
-# e.g. input$herd_increase replaced by  rb$herd_increase
-#   c("herd_increase", "repair","insurance_rate","hr_sv_milking", 
-#     "anticipated_hours_heat","increase_rc_mgt",
-#     "decrease_lab_mgt", "milk_change","scc_change","software",
-#     "pellets","cost_pellets","change_turnover","change_electricity",
-#     "change_water", "change_chemical",
-#     "down_housing", "down_milking1", "down_milking2",
-#     "n_yr_housing", "n_yr_milking1","n_yr_milking2" ,
-#     "salvage_housing", "salvage_milking1", 
-#     "milking_years")
 
 ## ------ Prepares cash flow, debt, and depreciation tables -------
 
 
 isolate({
+
   n_years <- rb$housing_years
   
   ## ------------ Depreciation Table ------------
@@ -41,7 +31,7 @@ isolate({
     dep_robot[1:yr_AGDS_robot] <- vdb(rb$cost_milking, 0,
                                       yr_AGDS_robot, factor=1.5, sequence=TRUE) 
     
-    if  (p==4) {
+    if (input$robot_parlor=="OFF" | input$profile_choice=="Robots") {
       dep_robot[(1+rb$robot_years):(rb$robot_years +yr_AGDS_robot)] <-  vdb(rb$cost_milking2, 0, 
                                                                             yr_AGDS_robot, factor=1.5, sequence=TRUE)
     }
@@ -74,16 +64,16 @@ isolate({
   ## ------------ Debt Table ------------
   
   if (input$robot_parlor=="OFF" | input$profile_choice=="Robots") {
-    tbl_robot <- debt_table(rb$loan_milking1, input$r_milking1/100, rb$n_yr_milking1, n_years, 1) +
-      + debt_table(rb$loan_milking2, input$r_milking2/100, rb$n_yr_milking2, n_years, rb$robot_years+1) * 
+    tbl_robot <- debt_table(rb$loan_milking1, input$r_milking1/100, input$n_yr_milking1, n_years, 1) +
+      + debt_table(rb$loan_milking2, input$r_milking2/100, input$n_yr_milking2, n_years, rb$robot_years+1) * 
       (input$n_robot_life>=2)
   } else {
-    tbl_robot <- debt_table(rb$loan_milking1, input$r_milking1/100, rb$n_yr_milking1, n_years, 1)
+    tbl_robot <- debt_table(rb$loan_milking1, input$r_milking1/100, input$n_yr_milking1, n_years, 1)
   }
   tbl_robot[,1] <- tbl_robot[,1]/2
   colnames(tbl_robot) <- lapply(colnames(tbl_robot), function(x) { paste0("robot_",x)}) %>% unlist()
   
-  tbl_barn <- debt_table(rb$loan_housing, input$r_housing/100, rb$n_yr_housing, n_years, 1)
+  tbl_barn <- debt_table(rb$loan_housing, input$r_housing/100, input$n_yr_housing, n_years, 1)
   colnames(tbl_barn) <- lapply(colnames(tbl_barn), function(x) { paste0("barn_",x)}) %>% unlist()
   
   table_debt <- cbind(tbl_robot, tbl_barn[,c(-1)])
@@ -155,6 +145,5 @@ isolate({
   rb$MIRR <- mirr(table_cash_flow$after_tax_cash_flow, input$interest/100, input$interest/100) * 100
   
 })
-
 
 

@@ -4,7 +4,7 @@
 ## - but it makes it easier to retrieve them later. 
 
 isolate({ # isolate the robustness calculation  
-  
+
  # Initialize changed values 
   rb$cost_robot <- input$cost_robot
   rb$cost_housing_cow <- input$cost_housing_cow
@@ -47,7 +47,7 @@ isolate({ # isolate the robustness calculation
     }
     rb$cost_housing_cow <- new_val[2]
     rb$milk_change <- new_val[3]
-    rb$scc_change < - new_val[4]
+    rb$scc_change <- new_val[4]
     rb$pellets <- new_val[5] 
     
   }
@@ -71,7 +71,7 @@ isolate({ # isolate the robustness calculation
   
 
 # Data Entry Level Calculations
-  rb$herd_size2 <- input$herd_size + rb$herd_increase
+  rb$herd_size2 <- input$herd_size + input$herd_increase
   
   rb$cost_housing <- rb$cost_housing_cow  * rb$herd_size2
   
@@ -110,9 +110,9 @@ isolate({ # isolate the robustness calculation
   # Cash Flow items to render in Data Entry
   rb$salvage_housing_fv <- 0  # Currently salvage value of housing is set at zero
   
-  rb$loan_housing <- rb$cost_housing - rb$down_housing
-  rb$loan_milking1 <- rb$cost_milking - rb$down_milking1
-  rb$loan_milking2 <- rb$cost_milking2 - rb$down_milking2
+  rb$loan_housing <- rb$cost_housing - input$down_housing
+  rb$loan_milking1 <- rb$cost_milking - input$down_milking1
+  rb$loan_milking2 <- rb$cost_milking2 - input$down_milking2
   
   rb$yr_robot2 <- rb$robot_years 
   rb$copy_salvage_milking1 <- rb$salvage_milking1
@@ -126,25 +126,25 @@ isolate({ # isolate the robustness calculation
 
   # Positive Impacts (year 1)
   rb$inc_rev_herd_size <- rb$milk_day_cow_alt * 330 *
-    (input$price_milk/100) * rb$herd_increase
+    (input$price_milk/100) * input$herd_increase
   
   rb$inc_rev_per_cow <- rb$milk_change * 330 * (input$price_milk/100) * input$herd_size
   
   rb$inc_rev_milk_premium  <- rb$milk_day_cow_alt *330 * input$scc_premium/100*
     (input$scc_average*(-rb$scc_change)/100)/1000 * rb$herd_size2
   
-  rb$inc_rev_cull_sale   <- rb$herd_size2 * rb$change_turnover/100 * input$cull_price
+  rb$inc_rev_cull_sale   <- rb$herd_size2 * input$change_turnover/100 * input$cull_price
   
-  rb$inc_rev_software  <- rb$software * rb$herd_size2
+  rb$inc_rev_software  <- input$software * rb$herd_size2
   
   rb$inc_rev_total <- rb$inc_rev_herd_size + rb$inc_rev_per_cow + rb$inc_rev_milk_premium +
     + rb$inc_rev_cull_sale + rb$inc_rev_software
   
-  rb$dec_exp_heat_detection <- (input$hr_heat_detection - rb$anticipated_hours_heat )*input$labor_rate *365
+  rb$dec_exp_heat_detection <- (input$hr_heat_detection - input$anticipated_hours_heat )*input$labor_rate *365
   
   rb$dec_exp_labor <- rb$hr_sv_milking * input$labor_rate *365 
   
-  rb$dec_exp_labor_management <- rb$decrease_lab_mgt * input$labor_rate_rc_mgt * 365
+  rb$dec_exp_labor_management <- input$decrease_lab_mgt * input$labor_rate_rc_mgt * 365
   
   rb$dec_exp_total <- rb$dec_exp_heat_detection  + rb$dec_exp_labor + rb$dec_exp_labor_management
   
@@ -152,27 +152,27 @@ isolate({ # isolate the robustness calculation
   
   
   # Negative Impacts (year 1)
-  rb$inc_exp_herd_increase <- (input$additional_labor + input$additional_cost)*rb$herd_increase
+  rb$inc_exp_herd_increase <- (input$additional_labor + input$additional_cost)*input$herd_increase
   
   
-  rb$inc_exp_repair <-rb$repair_total + rb$insurance_rate/100 * rb$increased_insurance
+  rb$inc_exp_repair <-rb$repair_total + input$insurance_rate/100 * rb$increased_insurance
   
   
   rb$inc_exp_feed <-  rb$DMI_change * input$cost_DM * 330 * rb$herd_size2
   
-  rb$inc_exp_pellet <- rb$cost_pellets * 330 * rb$herd_size2 * rb$pellets/2000
+  rb$inc_exp_pellet <- input$cost_pellets * 330 * rb$herd_size2 * rb$pellets/2000
   
-  rb$inc_exp_replacement <- input$cost_heifer * rb$change_turnover/100 * rb$herd_size2
+  rb$inc_exp_replacement <- input$cost_heifer * input$change_turnover/100 * rb$herd_size2
   
-  rb$inc_exp_utilities <- (rb$change_electricity + rb$change_water + rb$change_chemical) * rb$herd_size2
+  rb$inc_exp_utilities <- (input$change_electricity + input$change_water + input$change_chemical) * rb$herd_size2
   
-  rb$inc_exp_record_management <- rb$increase_rc_mgt * input$labor_rate_rc_mgt * 365
+  rb$inc_exp_record_management <- input$increase_rc_mgt * input$labor_rate_rc_mgt * 365
   
   rb$inc_exp_total <- rb$inc_exp_herd_increase + rb$inc_exp_repair + rb$inc_exp_feed + rb$inc_exp_pellet +
     + rb$inc_exp_replacement +  rb$inc_exp_utilities + rb$inc_exp_record_management 
   
   
-  rb$WACC <- ((rb$down_housing + rb$down_milking1) * input$hurdle_rate +
+  rb$WACC <- ((input$down_housing + input$down_milking1) * input$hurdle_rate +
                 + (rb$loan_housing * input$r_housing + rb$loan_milking1 * input$r_milking1)*
                 (1-input$tax_rate/100))/(rb$cost_housing + rb$cost_milking)
   
@@ -375,56 +375,54 @@ isolate({ # isolate the robustness calculation
     (rb$negative_total - rb$inc_rev_total - rb$dec_exp_labor_management)/ 
     ((rb$dec_exp_heat_detection + rb$dec_exp_labor )/input$labor_rate)
   
-  
-
-  
-if (robust=="Sensitivity") {
-  
-# --- add a row of results to the table_sensitivity ---
-new_row <- c(c_val, base_val, new_val,  
-                  rb$impact_without_housing, rb$impact_without_housing - rv$impact_without_housing, 
-                  rb$impact_with_housing, rb$impact_with_housing - rv$impact_with_housing,
-                  rb$impact_with_robot_salvage, rb$impact_with_robot_salvage - rv$impact_with_robot_salvage,
-                  rb$IOFC2 - rb$IOFC,  rb$IOFC2-rb$IOFC - (rv$IOFC2 - rv$IOFC),
-                  rb$IOFC2_cwt - rb$IOFC_cwt,  
-                  rb$IOFC2_cwt - rb$IOFC_cwt - (rv$IOFC2_cwt - rv$IOFC_cwt),           
-                  rb$milk_feed, rb$milk_feed - rv$milk_feed, 
-                  rb$labor_repair, rb$labor_repair - rv$labor_repair, 
-                  rb$capital_cost, rb$capital_cost - rv$capital_cost, 
-                  rb$misc, rb$misc - rv$misc)
-
-new_row <- matrix(c(label,round(new_row)),nrow=1)
-
-colnames(new_row) <- c_colnames
-
-}
-
-
-if (robust=="Scenarios") {
-
-  # --- add a row of results to the table_scenario ---
-  new_row <- c(s_val, new_val,  
-               rb$impact_without_housing, rb$impact_without_housing - rv$impact_without_housing, 
-               rb$impact_with_housing, rb$impact_with_housing - rv$impact_with_housing,
-               rb$impact_with_robot_salvage, rb$impact_with_robot_salvage - rv$impact_with_robot_salvage,
-               rb$IOFC2 - rb$IOFC,  rb$IOFC2-rb$IOFC - (rv$IOFC2 - rv$IOFC),
-               rb$IOFC2_cwt - rb$IOFC_cwt,  
-               rb$IOFC2_cwt - rb$IOFC_cwt - (rv$IOFC2_cwt - rv$IOFC_cwt),           
-               rb$milk_feed, rb$milk_feed - rv$milk_feed, 
-               rb$labor_repair, rb$labor_repair - rv$labor_repair, 
-               rb$capital_cost, rb$capital_cost - rv$capital_cost, 
-               rb$misc, rb$misc - rv$misc)
-  
-  new_row <- matrix(c(label,round(new_row)), nrow=1)
-  
-  colnames(new_row) <- s_colnames
-  
-}
+#   
+# 
+#   
+# if (robust=="Sensitivity") {
+#   
+# # --- add a row of results to the table_sensitivity ---
+# new_row <- c(c_val, base_val, new_val,  
+#                   rb$impact_without_housing, rb$impact_without_housing - rv$impact_without_housing, 
+#                   rb$impact_with_housing, rb$impact_with_housing - rv$impact_with_housing,
+#                   rb$impact_with_robot_salvage, rb$impact_with_robot_salvage - rv$impact_with_robot_salvage,
+#                   rb$IOFC2 - rb$IOFC,  rb$IOFC2-rb$IOFC - (rv$IOFC2 - rv$IOFC),
+#                   rb$IOFC2_cwt - rb$IOFC_cwt,  
+#                   rb$IOFC2_cwt - rb$IOFC_cwt - (rv$IOFC2_cwt - rv$IOFC_cwt),           
+#                   rb$milk_feed, rb$milk_feed - rv$milk_feed, 
+#                   rb$labor_repair, rb$labor_repair - rv$labor_repair, 
+#                   rb$capital_cost, rb$capital_cost - rv$capital_cost, 
+#                   rb$misc, rb$misc - rv$misc)
+# 
+# new_row <- matrix(c(label,round(new_row)),nrow=1)
+# 
+# colnames(new_row) <- c_colnames
+# 
+# }
+# 
+# 
+# if (robust=="Scenarios") {
+# 
+#   # --- add a row of results to the table_scenario ---
+#   new_row <- c(s_val, new_val,  
+#                rb$impact_without_housing, rb$impact_without_housing - rv$impact_without_housing, 
+#                rb$impact_with_housing, rb$impact_with_housing - rv$impact_with_housing,
+#                rb$impact_with_robot_salvage, rb$impact_with_robot_salvage - rv$impact_with_robot_salvage,
+#                rb$IOFC2 - rb$IOFC,  rb$IOFC2-rb$IOFC - (rv$IOFC2 - rv$IOFC),
+#                rb$IOFC2_cwt - rb$IOFC_cwt,  
+#                rb$IOFC2_cwt - rb$IOFC_cwt - (rv$IOFC2_cwt - rv$IOFC_cwt),           
+#                rb$milk_feed, rb$milk_feed - rv$milk_feed, 
+#                rb$labor_repair, rb$labor_repair - rv$labor_repair, 
+#                rb$capital_cost, rb$capital_cost - rv$capital_cost, 
+#                rb$misc, rb$misc - rv$misc)
+#   
+#   new_row <- matrix(c(label,round(new_row)), nrow=1)
+#   
+#   colnames(new_row) <- s_colnames
+#   
+# }
   
 
 })
-
-
 
 
 

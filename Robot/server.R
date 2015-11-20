@@ -23,35 +23,29 @@ shinyServer(function(input, output, session) {
   # Create a list of reactive values for robots vs parlors
   rp <- reactiveValues()
   
-#   # ---------- Fill out the calclated values in Data Entry ----------
-#   source("session_variables.R", local=TRUE)
-#   
-#   # ---------- Partial Budget Analysis ----------
-#   source("session_budget.R", local=TRUE)
-#   
-#   # ------ Dashboard features ------
-#   source("session_dashboard.R", local=TRUE)
+  # ----------- Functions: some of the depend on local variables  -----------
   source("helper.R",local=TRUE)
   
+  # ----------- Miselleneous tasks -----------
   source("session_misc.R", local=TRUE)
   
+  # ----------- Main Calculations for Partial Budget and Cash Flow Analyses -----------
   source("session_calculations_base.R", local=TRUE)
 
+  # ----------- Main Rendering -----------
   source("session_render_base.R", local=TRUE)
 
+  # ----------- Robots vs Parlors Analysis -----------
   source("session_robot_parlor.R", local=TRUE)
   
-  
-#   # ----------- Sensitivity Analysis -----------
-#   source("session_sensitivity.R", local=TRUE)
-#   
-#   # ----------- Scenario Analysis -----------
-#   source("session_scenarios.R", local=TRUE)  
-#   
-#   # --- Dashboard features ---
-#   source("session_dashboard_robustness.R", local=TRUE)
- 
 
+  # ----------- Sensitivity Analysis -----------
+   source("session_sensitivity.R", local=TRUE)
+  
+  # ----------- Scenario Analysis -----------
+   source("session_scenarios.R", local=TRUE)  
+  
+  
   
   # --- User Data Storage ---
   ## --- WORK IN PROGRESS --- 

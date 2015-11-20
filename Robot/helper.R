@@ -174,7 +174,7 @@ debt_table <- function(loan, interest_rate, loan_period,
 
 dash_IOFC <- function(IOFC, IOFC2, basis,
                       milk_cow_day, milk_change, cutoffs=NULL,
-                      compare=NULL, compare2=NULL) {
+                      difference=NULL) {
   validate( 
     need(!(is.na(IOFC) | is.na(IOFC2)), 
                  "NA")
@@ -201,23 +201,21 @@ dash_IOFC <- function(IOFC, IOFC2, basis,
     style <-  "background-color: #F70D1A; color:white;" 
   }
   
-  if (is.null(compare)) {
+  if (is.null(difference)) {
     div(class="well", style=style,  align="center",
         diff  %>% formatdollar2(digit) %>% strong() %>% h3(),
         h5(IOFC_unit), h5("under", robot_or_parlor()))
   } 
   else {
-    diff1 <- compare2 - compare 
-    diff2 <-  diff - diff1
     div(class="well", style=style,  align="center",
         diff  %>% formatdollar2(digit) %>% strong() %>% h3(),
-        diff2 %>% formatdollar2b(digit) %>% strong() %>% h4())
+        difference %>% formatdollar2b(digit) %>% strong() %>% h4())
   }
 }
 
 
 
-dash_NAI <- function(NAI,cutoff=0, compare=NULL) {
+dash_NAI <- function(NAI,cutoff=0, difference=NULL) {
 
   validate( 
     need(!is.na(NAI), 
@@ -231,17 +229,16 @@ dash_NAI <- function(NAI,cutoff=0, compare=NULL) {
     style <-  "background-color: #F70D1A; color:white;" 
   }
   
-  if (is.null(compare)) {
+  if (is.null(difference)) {
     div(class="well", style=style, align="center", 
         NAI %>% formatdollar2() %>% strong() %>% h3(),
         h5("Net Impact ($/year)"),
         h5("under", robot_or_parlor()))
   }  
   else {
-    diff <- NAI - compare
     div(class="well", style=style, align="center",
         NAI %>% formatdollar2() %>% strong() %>% h3(),
-        diff %>% formatdollar2b() %>% strong() %>% h4())
+        difference %>% formatdollar2b() %>% strong() %>% h4())
   }
 }
 
