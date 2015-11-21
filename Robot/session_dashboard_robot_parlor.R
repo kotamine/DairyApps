@@ -6,10 +6,13 @@
 #     "decrease_lab_mgt", "milk_change","scc_change","software",
 #     "pellets","cost_pellets","change_turnover","change_electricity",
 #     "change_water", "change_chemical",
+#     "cost_housing_cow",
 #     "down_housing", "down_milking1", "down_milking2",
 #     "n_yr_housing", "n_yr_milking1","n_yr_milking2" ,
 #     "salvage_housing", "salvage_milking1", 
-#     "milking_years") and input$NAI
+#     "milking_years", "cost_parlors", "cost_robot", "robot_years", "n_robot")
+#     
+#       and input$NAI
 
 #  ------ Dashboard portion of  Robot vs Parlor analysis -----------
 

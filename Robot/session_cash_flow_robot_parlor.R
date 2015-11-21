@@ -6,16 +6,17 @@
 #     "decrease_lab_mgt", "milk_change","scc_change","software",
 #     "pellets","cost_pellets","change_turnover","change_electricity",
 #     "change_water", "change_chemical",
+#     "cost_housing_cow",
 #     "down_housing", "down_milking1", "down_milking2",
 #     "n_yr_housing", "n_yr_milking1","n_yr_milking2" ,
 #     "salvage_housing", "salvage_milking1", 
-#     "milking_years")
+#     "milking_years", "cost_parlors", "cost_robot", "robot_years", "n_robot")
+#     
 
 ## ------ Prepares cash flow, debt, and depreciation tables -------
 
 
 isolate({
-  n_years <- rp$housing_years
   
   ## ------------ Depreciation Table ------------
   if (p==4)  {
@@ -26,9 +27,14 @@ isolate({
     yr_SLD_robot <-  20
   }
   
-  
   yr_AGDS_housing <- 10
   yr_SLD_housing <- 15
+  
+  n_years <- max(rp$housing_years, 
+                 rp$n_yr_housing, rp$n_yr_milking1,
+                 yr_AGDS_robot*(input$dep_method=="d1") +  yr_AGDS_robot*(input$dep_method!="d1"), 
+                 yr_AGDS_housing*(input$dep_method=="d1") +  yr_AGDS_housing*(input$dep_method!="d1"))  
+  
   
   dep_robot <- rep(0,n_years); dep_housing  <- rep(0,n_years)
   
@@ -39,8 +45,8 @@ isolate({
                                       yr_AGDS_robot, factor=1.5, sequence=TRUE) 
     
     if  (p==4) {
-      dep_robot[(1+input$robot_years):(input$robot_years +yr_AGDS_robot)] <-  vdb(rp$cost_milking2, 0, 
-                                                                                  yr_AGDS_robot, factor=1.5, sequence=TRUE)
+      dep_robot[(1+rp$robot_years):(rp$robot_years +yr_AGDS_robot)] <-  vdb(rp$cost_milking2, 0, 
+                                                                            yr_AGDS_robot, factor=1.5, sequence=TRUE)
     }
     
     dep_housing [1:yr_AGDS_housing] <- vdb(rp$cost_housing, 0,
@@ -49,15 +55,15 @@ isolate({
     
     ## if Straight line depreciation method is used 
     dep_robot[1:yr_SLD_robot] <- (rp$cost_milkingt - 0)/yr_SLD_robot
-    dep_robot[(1+input$robot_years):(input$robot_years + yr_SLD_robot)] <- (rp$cost_milking2 - 0)/yr_SLD_robot
+    dep_robot[(1+rp$robot_years):(rp$robot_years + yr_SLD_robot)] <- (rp$cost_milking2 - 0)/yr_SLD_robot
     
     dep_housing[1:yr_SLD_housing] <- (rp$cost_housing - 0)/yr_SLD_housing
   }
   
   # add back salvage at the end
   if (p==4) {
-    dep_robot[input$robot_years] <-  -rp$salvage_milking_fv1 
-    dep_robot[(2*input$robot_years)] <-  -rp$salvage_milking_fv2
+    dep_robot[rp$robot_years] <-  -rp$salvage_milking_fv1 
+    dep_robot[(2*rp$robot_years)] <-  -rp$salvage_milking_fv2
   } else {
     dep_robot[rp$milking_years] <-  -rp$salvage_milking_fv1 
   }
@@ -72,8 +78,8 @@ isolate({
   
   if (p==4) {
     tbl_robot <- debt_table(rp$loan_milking1, input$r_milking1/100, rp$n_yr_milking1, n_years, 1) +
-    + debt_table(rp$loan_milking2, input$r_milking2/100, rp$n_yr_milking2, n_years, input$robot_years+1) * 
-    (input$n_robot_life>=2)
+      + debt_table(rp$loan_milking2, input$r_milking2/100, rp$n_yr_milking2, n_years, rp$robot_years+1) * 
+      (input$n_robot_life>=2)
   } else {
     tbl_robot <- debt_table(rp$loan_milking1, input$r_milking1/100, rp$n_yr_milking1, n_years, 1)
   }
@@ -113,6 +119,10 @@ isolate({
       + rp$dec_exp_total * (1+input$inflation_labor/100)^(t-1)
   }) %>% unlist()
   
+  if (rp$housing_years < n_years) {
+    table_cash_flow$revenue_minus_expense[(rp$housing_years+1):n_years] <- 0 
+  }
+  
   table_cash_flow$operating_income <- table_cash_flow$revenue_minus_expense + table_cash_flow$interest_total +
     + table_cash_flow$depreciation
   
@@ -124,9 +134,9 @@ isolate({
   # downpayments and salvage values
   table_cash_flow$downpayment[1] <- -(input$down_milking1 + input$down_housing)
   if (p==4) {
-    table_cash_flow$downpayment[(1 + input$robot_years)] <-   -  input$down_milking2 
-    table_cash_flow$salvage[(1 + input$robot_years)] <-  rp$salvage_milking_fv1 
-    table_cash_flow$salvage[(1 + 2*input$robot_years)] <- rp$salvage_milking_fv2 + rp$salvage_housing_fv
+    table_cash_flow$downpayment[(1 + rp$robot_years)] <-   -  input$down_milking2 
+    table_cash_flow$salvage[(1 + rp$robot_years)] <-  rp$salvage_milking_fv1 
+    table_cash_flow$salvage[(1 + 2*rp$robot_years)] <- rp$salvage_milking_fv2 + rp$salvage_housing_fv
   } else {
     table_cash_flow$salvage[(1 + rp$milking_years)] <-  rp$salvage_milking_fv1 + rp$salvage_housing_fv
   }

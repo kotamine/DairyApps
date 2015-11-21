@@ -185,9 +185,10 @@ div(
                       ), 
              fluidRow(column(width=4,  helpText("Housing Investment per cow ($)")), 
                       column(width=2, numericInput("cost_housing_cow_pr1",NULL,value=3000,min=0,step=500))
-             ), 
+             ),
              fluidRow(column(width=4,  helpText("Investment amount ($)")), 
-                      column(width=2, uiOutput("copy_cost_housing_pr1"))
+                      column(width=2, uiOutput("copy_cost_housing_pr1")), 
+                      shinyjs::hidden(column(width=2,  numericInput("cost_parlors_pr1",NULL,value=0)))
                              ), 
              fluidRow(column(width=4, helpText("Years of Useful Life")),
                       column(width=2, numericInput("milking_years_pr1",NULL,value=30,min=0,step=1)) 
@@ -202,10 +203,14 @@ div(
                       column(width=2,  uiOutput("loan_housing_pr1")),
                       shinyjs::hidden(column(width=2, numericInput("loan_milking1_pr1", NULL,value=0)))
              ),
+             fluidRow(column(width=4,  helpText("Interest rate (%)")),
+                      column(width=2,  uiOutput('copy_r_housing_pr1'))
+             ),
+             shinyjs::hidden(  # Currently unused. I don't know if we want to use separate interest rates across assets 
                fluidRow(column(width=4,  helpText("Interest rate (%)")),
                         column(width=2,  numericInput("r_housing_pr1",NULL,value=4, min=0, step=.25)),
-                        shinyjs::hidden(column(width=2, numericInput("r_milking1_pr1", NULL,value=0)))
-                        ), 
+                        column(width=2, numericInput("r_milking1_pr1", NULL,value=0))
+               )), 
              fluidRow(column(width=4,  helpText("Loan period (years)")),
                       column(width=2,  numericInput("n_yr_housing_pr1",NULL,value=24, min=0, step=1)),
                       shinyjs::hidden(column(width=2, numericInput("n_yr_milking1_pr1", NULL,value=1)))
@@ -249,9 +254,15 @@ div(
                         column(width=2,  uiOutput("loan_milking1_pr2"))
                ),
                fluidRow(column(width=4,  helpText("Interest rate (%)")),
-                        column(width=2,  numericInput("r_housing_pr2",NULL,value=4, min=0, step=.25)),
-                        column(width=2,  numericInput("r_milking1_pr2",NULL,value=4, min=0, step=.25))
-               ), 
+                        column(width=2,  uiOutput('copy_r_housing_pr2')),
+                        column(width=2,  uiOutput('copy_r_milking1_pr2'))
+               ),
+               shinyjs::hidden(  # Currently unused. I don't know if we want to use separate interest rates across assets 
+                 fluidRow(column(width=4,  helpText("Interest rate (%)")),
+                          column(width=2,  numericInput("r_housing_pr2",NULL,value=4, min=0, step=.25)),
+                          column(width=2,  numericInput("r_milking1_pr2",NULL,value=4, min=0, step=.25))
+                 )), 
+               
                fluidRow(column(width=4,  helpText("Loan period (years)")),
                         column(width=2,  numericInput("n_yr_housing_pr2",NULL,value=24, min=0, step=1)),
                         column(width=2,  numericInput("n_yr_milking1_pr2",NULL,value=12, min=0, step=1))
@@ -295,9 +306,14 @@ div(
                         column(width=2,  uiOutput("loan_milking1_pr3"))
                ),
                fluidRow(column(width=4,  helpText("Interest rate (%)")),
-                        column(width=2,  numericInput("r_housing_pr3",NULL,value=4, min=0, step=.25)),
-                        column(width=2,  numericInput("r_milking1_pr3",NULL,value=4, min=0, step=.25))
-               ), 
+                        column(width=2,  uiOutput('copy_r_housing_pr3')),
+                        column(width=2,  uiOutput('copy_r_milking1_pr3'))
+               ),
+               shinyjs::hidden(  # Currently unused. I don't know if we want to use separate interest rates across assets 
+                 fluidRow(column(width=4,  helpText("Interest rate (%)")),
+                          column(width=2,  numericInput("r_housing_pr3",NULL,value=4, min=0, step=.25)),
+                          column(width=2,  numericInput("r_milking1_pr3",NULL,value=4, min=0, step=.25))
+                 )), 
                fluidRow(column(width=4,  helpText("Loan period (years)")),
                         column(width=2,  numericInput("n_yr_housing_pr3",NULL,value=24, min=0, step=1)),
                         column(width=2,  numericInput("n_yr_milking1_pr3",NULL,value=12, min=0, step=1))
@@ -371,7 +387,7 @@ div(
                          conditionalPanel("input.n_robot_life>=2", 
                                           column(width=2, uiOutput('copy_r_milking2_pr4')))
                 ),
-                shinyjs::hidden( 
+                shinyjs::hidden(  # Currently unused. I don't know if we want to use separate interest rates across assets 
                fluidRow(column(width=4,  helpText("Interest rate (%)")),
                         column(width=2,  numericInput("r_housing_pr4",NULL,value=4, min=0, step=.25)),
                         column(width=2,  numericInput("r_milking1_pr4",NULL,value=4, min=0, step=.25)),

@@ -81,11 +81,6 @@ lapply(var_to_render_1,
   )
   
   
-#   
-#   cash_render_0 <- c("yr_robot2", "yr_robot3", "loan_housing",
-#                      "loan_robot1","loan_robot2","loan_robot3",
-#                      "copy_robot_salvage1","copy_robot_salvage2","copy_robot_salvage3")
-#   
   cash_render_0_right <- c("NPV","ANPV", "ANPVr", 
                            "capital_recovery_robot", "capital_recovery_housing",
                            "cost_downpayment2", "robot_end_PV",
@@ -109,11 +104,6 @@ lapply(var_to_render_1,
   
   percent_render_3_right <- c("bw_wage_inflation_before_tax", "bw_wage_inflation_after_tax")
     
-#   lapply(cash_render_0, function(x) {
-#     output[[x]] <- renderUI({
-#       rv[[x]] %>% round() %>% helpText()
-#     })
-#   })
   
   lapply(cash_render_0_right, function(x) {
     output[[paste0(x)]] <- renderUI({
@@ -169,40 +159,16 @@ var_to_render_0_right <- c("inc_rev_herd_size","inc_rev_per_cow",
                            "dec_exp_heat_detection",  "dec_exp_labor",
                            "dec_exp_labor_management", 
                            "dec_exp_total", 
-                           # "cash_positive_total",
                            "inc_exp_herd_increase", "inc_exp_repair", "inc_exp_feed", "inc_exp_pellet", 
                            "inc_exp_replacement", "inc_exp_utilities", "inc_exp_record_management", 
                            "inc_exp_total" ) 
-#                            
-#                            "capital_recovery_robot", "capital_recovery_housing",
-#                            #"capital_recovery_total",
-#                            # "cash_negative_total",
-#                            # "cash_impact_without_salvage", 
-#                            "cost_downpayment2", "robot_end_PV",
-#                            "capital_cost_total"  
-#                            # "cash_impact_with_salvage", 
-#                            #"impact_with_inflation"
-                           # )
+                      
 
-# var_to_render_0_right_sum <- c("positive_total","negative_total",
-#                                "inflation_adjustment",
-#                                "net_annual_impact_before_tax",
-# #                                "bw_wage_before_tax",
-# #                                "bw_wage_inflation_before_tax",
-#                                "revenue_minus_expense", 
-#                                "tax_revenue_minus_expense",
-#                                "tax_interest",
-#                                "tax_depreciation",
-#                                "net_annual_impact_after_tax")
-# #                                "bw_wage_after_tax",
-# #                                "bw_wage_inflation_after_tax"
-#   
 
 inflation_factors <- c("inflation_margin", "inflation_robot",
                  "inflation_labor", "inflation_general")
-assign_factors <- c(rep(1,6), rep(3,4), rep(1,8)) #, rep(4,3), 2, NaN) 
-# assign_factors <- c(rep(1,6), rep(3,4), NaN, rep(1,8), rep(4,3), NaN,
-                    # NaN, 2, NaN, NaN) 
+assign_factors <- c(rep(1,6), rep(3,4), rep(1,8)) 
+
 # The order of factor assignments correspond to var_to_render_0_right
 
 inflation <- lapply(assign_factors, function(x) { inflation_factors[x] })
@@ -463,14 +429,15 @@ output$table_cash_flow <- DT::renderDataTable({
   colnames(tbl) <- c('Year', 'Revenue minus Expense', 'Interests on Debt', 'Depreciation',
                      'Operating Income', 'Income Tax','Principal Payments','Adding Back Depreciation',
                      'Down-payments','Salvage Values','After-tax Cashflow')
-  DT::datatable(tbl, 
+   L <- length(tbl[,1])
+   DT::datatable(tbl, 
                 # colnames = c('Year', 'Robot', 'Housing', 'Total'), 
                 rownames = FALSE,
                 extensions = 'ColVis',
                 options = list(
                   dom = 'C<"clear">lfrtip',
                   scrollX = TRUE,
-                  pageLength = rv$housing_years+1,
+                  pageLength = L,
                   lengthMenu = c(10, 20, 30, 40),
                   searching = FALSE,
                   showNone=TRUE, 
@@ -499,6 +466,7 @@ output$table_debt <- DT::renderDataTable({
   colnames(tbl) <- c('Year', paste(milk_sys,'Payment Year'),paste(milk_sys, 'Interest'), paste(milk_sys,'Principal'), 
                      'Housing Payment Year','Housing Interest', 'Housing Principal',
                      'Interest Total', 'Principal Total') 
+  L <- length(tbl[,1])
   DT::datatable(tbl, 
                 # colnames = c('Year', 'Robot', 'Housing', 'Total'), 
                 rownames = FALSE,
@@ -507,6 +475,7 @@ output$table_debt <- DT::renderDataTable({
                   dom = 'C<"clear">lfrtip',
                   scrollX = TRUE,
                   pageLength = rv$housing_years,
+                  pageLength = L,
                   lengthMenu = c(10, 20, 30, 40),
                   searching = FALSE,
                   showNone=TRUE, 
@@ -522,6 +491,8 @@ output$table_depreciation <- DT::renderDataTable({
   if (input$robot_parlor=="OFF" | input$profile_choice=="Robots") { milk_sys <- 'Robot' }
   else { milk_sys <- 'Parlor'}
   colnames(tbl) <- c('Year', milk_sys, 'Housing', 'Total')
+  L <- length(tbl[,1])
+  
   DT::datatable(tbl, 
                 # colnames = c('Year', 'Robot', 'Housing', 'Total'), 
                 rownames = FALSE,
@@ -529,7 +500,7 @@ output$table_depreciation <- DT::renderDataTable({
                 options = list(
                   dom = 'C<"clear">lfrtip',
                   scrollX = TRUE,
-                  pageLength = rv$housing_years,
+                  pageLength = L,
                   lengthMenu = c(10, 20, 30, 40),
                   searching = FALSE,
                   showNone=TRUE, 
