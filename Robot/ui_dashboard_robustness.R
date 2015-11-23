@@ -42,6 +42,10 @@ div(
                fluidRow(column(6,uiOutput("c_misc")),
                         column(6,uiOutput("c_inflation"))
                ), align="center")
+        ),
+        conditionalPanel('input.robust=="Sensitivity"', 
+                         actionButton("calculate_plot_robust","Calculate Plot"),
+                         htmlOutput("plot_robust")
         )
       )
       )), br(),

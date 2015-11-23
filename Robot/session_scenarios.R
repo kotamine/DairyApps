@@ -10,9 +10,6 @@ shinyjs::onclick("scenario_show",
                    shinyjs::toggle(id="sensitivity_control", anim = TRUE) 
                    shinyjs::toggle(id="scenario_control", anim = TRUE)
                    shinyjs::toggle(id="dashboard_robust", anim = TRUE) 
-                   createAlert(session, "s_toggle", "ref_s_toggle", 
-                               content = "Change scenarios to refresh the results.",
-                               append = FALSE) 
                  }
 )
 

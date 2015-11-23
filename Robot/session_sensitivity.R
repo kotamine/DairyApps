@@ -9,9 +9,7 @@ shinyjs::onclick("sensitivity_show",
                    shinyjs::toggle(id="sensitivity_control", anim = TRUE) 
                    shinyjs::toggle(id="scenario_control", anim = TRUE)
                    shinyjs::toggle(id="dashboard_robust", anim = TRUE) 
-                   createAlert(session, "c_toggle", "ref_c_toggle", 
-                               content = "Change sensitivity items to refresh the results.",
-                               append = FALSE) 
+ 
                  }
 )
 
@@ -37,6 +35,7 @@ observeEvent(input$c_choice, {
 
 # Update table_sensitivity when input$c_val or input$choice is changed as well as initial set up
 observe({
+
   if (input$robust=="Off") { return() }
 
   input$c_val
@@ -251,6 +250,41 @@ observeEvent(input$sensitivity_calculate, {
                                 "Projected change in milk production"="c7"
                       ))
   }
+})
+
+
+c_val_list <- c(c(-5:-1)*10,c(1:5)*10)
+# Plot Calculation
+observeEvent(input$calculate_plot_robust, {
+  browser()
+  
+  robust <- "Sensitivity"
+  calculation_plot <- TRUE
+    
+    if (input$robot_parlor=="OFF" | input$profile_choice=="Robots") { 
+      varnames <- c_varnames
+      labels <- c_labels
+    } else {
+      varnames <- c_varnames_parlor
+      labels <- c_labels_parlor
+    }
+    base_val <- input[[varnames[n]]]
+  
+    for (c_val in c_val_list ) {
+      
+    new_val <- (base_val * (1 + c_val/100))
+    label <- labels[n]
+    robust <- "Sensitivity" 
+    
+    source("session_calculations_robustness.R", local=TRUE)
+    
+    rv$table_plot_robust[,] <- rb$net_annual_impact_after_tax
+    rb$net_annual_impact_after_tax
+    
+  }
+  
+  calculation_plot <- FALSE
+  
 })
 
 

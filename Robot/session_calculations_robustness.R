@@ -4,7 +4,7 @@
 ## - but it makes it easier to retrieve them later. 
 
 isolate({ # isolate the robustness calculation  
-
+  
  # Initialize changed values 
   rb$cost_robot <- input$cost_robot
   rb$cost_housing_cow <- input$cost_housing_cow
@@ -199,8 +199,9 @@ isolate({ # isolate the robustness calculation
   
   
   ## ------------ Breakeven Calculations ------------
+  if(!calculation_plot) {
   
-  n_years <- rb$housing_years
+  n_years <- length(rb$table_cash_flow$depreciation) - 1  
   
   table_breakeven <- matrix(c(c(1:n_years), rep(rep(0,n_years),9)),ncol=10,byrow=FALSE)  %>% data.frame()
   
@@ -231,6 +232,12 @@ isolate({ # isolate the robustness calculation
   table_breakeven$reduced_labor <- lapply(c(1:n_years), function(t) {
     rb$dec_exp_labor *(1+input$inflation_labor/100)^(t-1)
   }) %>% unlist()
+  
+  if (rb$housing_years < n_years) {
+    for (i in c("increased_expense","increased_revenue","reduced_labor_management",
+                "reduced_heat_detection","reduced_labor"))
+      table_breakeven[[i]][(rb$housing_years+1):n_years] <- 0 
+  }
   
   table_breakeven <- rbind(0, table_breakeven)
   
@@ -287,9 +294,10 @@ isolate({ # isolate the robustness calculation
   
   rb$bw_wage_inflation_after_tax <-  (1 + rb$WACC/100)/(1 + rate(n_years-1, payment2, npv2)) - 1
   
+  }
   
   # --- Partial Budget Analysis-Specific items:  They need to respond to input$budget_year ---
-  rb$ positive_total <- 
+  rb$positive_total <- 
     rb$inc_rev_total * (1+input$inflation_margin/100)^(input$budget_year-1) +
     + rb$dec_exp_total *  (1+input$inflation_labor/100)^(input$budget_year-1)
   

@@ -320,6 +320,14 @@ observe({
             Press ``Calculate'' to updated the results.",
               append = FALSE) 
   
+  createAlert(session, "c_toggle", "ref_c_toggle", 
+              content = "Change sensitivity items to refresh the results.",
+              append = FALSE) 
+  
+  createAlert(session, "s_toggle", "ref_s_toggle", 
+              content = "Change scenarios to refresh the results.",
+              append = FALSE)
+  
   createAlert(session, "p_input_change", "ref_p_input_change", 
               content = "New base values. 
             Press ``Calculate'' to updated the results.",

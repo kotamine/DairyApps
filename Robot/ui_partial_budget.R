@@ -144,8 +144,7 @@ fluidRow(
                     into a constant income or payment (called annuity) during the planning horizon."),
            br(),
                   fluidRow(
-                    column(width=3,offset=9, div(helpText("Breakeven Labor"),
-                                                  align="right"))
+                    column(width=3,offset=9, div(helpText("Breakeven Labor"),align="right"))
                   ), 
            fluidRow(
              column(width=1,offset=10, div(helpText("Wage"),

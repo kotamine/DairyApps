@@ -66,10 +66,11 @@ isolate({
     tbl_robot <- debt_table(rv$loan_milking1, input$r_milking1/100, input$n_yr_milking1, n_years, 1) +
       + debt_table(rv$loan_milking2, input$r_milking2/100, input$n_yr_milking2, n_years, input$robot_years+1) * 
       (input$n_robot_life>=2)
+    tbl_robot[,1] <- tbl_robot[,1]/2
+    
   } else {
     tbl_robot <- debt_table(rv$loan_milking1, input$r_milking1/100, input$n_yr_milking1, n_years, 1)
   }
-  tbl_robot[,1] <- tbl_robot[,1]/2
   colnames(tbl_robot) <- lapply(colnames(tbl_robot), function(x) { paste0("robot_",x)}) %>% unlist()
   
   tbl_barn <- debt_table(rv$loan_housing, input$r_housing/100, input$n_yr_housing, n_years, 1)

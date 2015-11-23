@@ -236,8 +236,9 @@ div(
                         column(width=2, uiOutput("housing_years_pr2")), # This becomes the planning horizon
                         column(width=2, numericInput("milking_years_pr2",NULL,value=30,min=0,step=1))
                ), 
-               fluidRow(column(width=4,  helpText("Housing Investment per cow ($)")), 
-                        column(width=2, numericInput("cost_housing_cow_pr2",NULL,value=3000,min=0,step=500))
+               fluidRow(column(width=4, helpText("Housing Investment per cow ($)")), 
+                        column(width=2, numericInput("cost_housing_cow_pr2",NULL,value=3000,min=0,step=500)),
+                        column(width=2, helpText("-"))
                ), 
                fluidRow(column(width=4,  helpText("Investment amount ($)")), 
                         column(width=2, uiOutput("copy_cost_housing_pr2")),
@@ -285,7 +286,8 @@ div(
                         #column(width=2, numericInput("yr_invest_milking1_pr3",NULL,value=0,min=0,step=1))
                ), 
                fluidRow(column(width=4,  helpText("Housing Investment per cow ($)")), 
-                        column(width=2, numericInput("cost_housing_cow_pr3",NULL,value=3000,min=0,step=500))
+                        column(width=2, numericInput("cost_housing_cow_pr3",NULL,value=3000,min=0,step=500)),
+                        column(width=2, helpText("-"))
                ), 
                fluidRow(column(width=4,  helpText("Investment amount ($)")), 
                         column(width=2, uiOutput("copy_cost_housing_pr3")),
@@ -350,14 +352,18 @@ div(
                                          column(width=2, uiOutput("copy_robot_years_pr4")))
                ), 
                fluidRow(column(width=4,  helpText("Housing Investment per cow ($)")), 
-                        column(width=2, numericInput("cost_housing_cow_pr4",NULL,value=9500,min=0,step=500))
+                        column(width=2, numericInput("cost_housing_cow_pr4",NULL,value=9500,min=0,step=500)),
+                        column(width=2, helpText("-")),
+                        column(width=2, helpText("-"))
                ), 
               fluidRow(column(width=4, helpText("Number of robots")),
-                       column(width=2, offset=2, numericInput("n_robot_pr4",NULL,value=2,min=0,step=1)),
+                       column(width=2, helpText("-")),
+                       column(width=2, numericInput("n_robot_pr4",NULL,value=2,min=0,step=1)),
                        column(width=2, uiOutput("copy_n_robot_pr4"))
               ),
               fluidRow(column(width=4, helpText("Estimated cost per robot ($)")),
-                       column(width=2, offset=2, numericInput("cost_robot_pr4",NULL,value=180000,min=50000,step=10000)),
+                       column(width=2, helpText("-")),
+                       column(width=2,numericInput("cost_robot_pr4",NULL,value=180000,min=50000,step=10000)),
                        column(width=2, uiOutput("copy_cost_robot_pr4"))
               ),
                fluidRow(column(width=4,  helpText("Investment amount ($)")), 
