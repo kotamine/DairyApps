@@ -39,19 +39,12 @@ shinyUI(
              # --------- Data Table ---------
              br(), br(),
              fluidRow(column(3,offset=2,
-                             downloadButton("c_download","Download Data")),
+                             downloadButton("data_download","Download Data")),
                       column(3, 
              # fileInput() is passessed from the server
              uiOutput('resettableInput'),
              bsAlert("upload_alert")),   
              column(2, actionButton("remove", "Remove Data"))),
-#              #
-#              tabsetPanel(
-#                tabPanel(
-#              tableOutput('sheet1')),
-#              tabPanel(
-#              tableOutput('sheet2'))
-#              ),
              br(), br()
     ),
     # ---------- Partial Budget Analysis -----------

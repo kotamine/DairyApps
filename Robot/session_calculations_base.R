@@ -311,12 +311,12 @@ observe({
   
   # This is used for alerting the base-value change in sensitivity and scenario analysis  
   createAlert(session, "c_input_change", "ref_c_input_change", 
-              content = "New base values. 
+              content = "New data inputs. 
             Press ``Calculate'' to updated the results.",
               append = FALSE) 
   
   createAlert(session, "s_input_change", "ref_s_input_change", 
-              content = "New base values. 
+              content = "New data inputs. 
             Press ``Calculate'' to updated the results.",
               append = FALSE) 
   
@@ -329,7 +329,7 @@ observe({
               append = FALSE)
   
   createAlert(session, "p_input_change", "ref_p_input_change", 
-              content = "New base values. 
+              content = "New data inputs. 
             Press ``Calculate'' to updated the results.",
               append = FALSE) 
 }) 

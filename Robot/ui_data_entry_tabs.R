@@ -131,10 +131,10 @@ navlistPanel("Data and Assumptions",
                                    column(width=3, uiOutput("housing_years")),
                                    column(width=3, helpText("years", align="center"))
                           ),
-                          shinyjs::hidden( fluidRow(column(width=6, helpText("Planning horizon")),   
-                                   column(width=3, numericInput("horizon",NULL,value=30, min=1, step=5)),
-                                   column(width=3, helpText("years", align="center"))
-                          )),
+#                           shinyjs::hidden( fluidRow(column(width=6, helpText("Planning horizon")),   
+#                                    column(width=3, numericInput("horizon",NULL,value=30, min=1, step=5)),
+#                                    column(width=3, helpText("years", align="center"))
+#                           )),
                           fluidRow(column(width=6, 
                                           conditionalPanel('input.robot_parlor=="OFF"',helpText("Value of the robots after useful life")),
                                           conditionalPanel('input.robot_parlor=="ON"',helpText("Value of the robots/parlors after useful life"))),
@@ -170,7 +170,7 @@ navlistPanel("Data and Assumptions",
                                    column(width=3, helpText("hours per day", align="center"))
                           ),
                           fluidRow(column(width=6, helpText("Anticipated savings in milking & chore labor")),
-                                   column(width=3, numericInput("hr_sv_milking",NULL,value=10.82,step=.2)),
+                                   column(width=3, numericInput("hr_sv_milking",NULL,value=10.82, min=0, step=.2)),
                                    column(width=3, helpText("hours per day", align="center"))
                           ),
                           fluidRow(column(width=6, helpText("Anticipated hours of milking & chore labor")),
@@ -314,7 +314,7 @@ navlistPanel("Data and Assumptions",
                                 ),
                                 fluidRow(column(width=6, helpText("Lactation weeks")),
                                          column(width=2, numericInput("lcatation_week",NULL,value=24,min=0,step=1)),
-                                         column(width=2,numericInput("lactation_coeff1",NULL,value=-0.192,step=0.01)),
+                                         column(width=2,numericInput("lactation_coeff1",NULL,value=-0.192,min=0,step=0.01)),
                                          column(width=2,numericInput("lactation_coeff2",NULL,value=3.67,min=0,step=0.05))
                                 ),
                                 fluidRow(column(width=6, helpText("Stage of lactation adjustment")),
@@ -441,7 +441,7 @@ navlistPanel("Data and Assumptions",
                                    column(width=3, helpText("percent", align="center"))
                           ),
                           fluidRow(column(6, helpText("Hurdle rate")),   
-                                   column(3, numericInput("hurdle_rate",NULL,value=4, min=0, step=.25)),
+                                   column(3, numericInput("hurdle_rate",NULL,value=4, min=0, step=.1)),
                                    column(width=3, helpText("percent", align="center"))
                           ),
                           fluidRow(column(6, helpText("Marginal (federal + state) income tax rate")),   

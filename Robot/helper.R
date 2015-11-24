@@ -54,6 +54,14 @@ formatdollar2b <- function(x,digit=0) {
 }
 
 
+df_null <- function(colnames) {
+    dummy <- matrix(rep(NA,length(colnames)),nrow=1)
+    colnames(dummy) <- colnames 
+    empty_table <- data.frame(Column1 = numeric(0)) 
+    empty_table <- rbind(empty_table, dummy)[NULL,] 
+    empty_table
+}
+
 # --- Common Excel Financial Functions  ---
 # \url{http://cvs.moodle.org/contrib/patches/question_calculated_extended/calculated/packages/financial/financial_class.php?view=co}
 # @author Enrique Garcia M. \email{egarcia@@egm.as}

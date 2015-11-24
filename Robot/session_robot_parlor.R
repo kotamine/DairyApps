@@ -1,25 +1,5 @@
 
 
-varnames_production_change <- c("herd_increase", "repair","insurance_rate","hr_sv_milking", 
-                                "anticipated_hours_heat","increase_rc_mgt",
-                                "decrease_lab_mgt", "milk_change","scc_change","software", 
-                                "pellets","cost_pellets","change_turnover","change_electricity",
-                                "change_water", "change_chemical",
-                                "down_housing", "down_milking1", "down_milking2",
-                                "n_yr_housing", "n_yr_milking1","n_yr_milking2",
-                                "salvage_housing", "salvage_milking1", 
-                                "milking_years",  "robot_years", "n_robot",
-                                "cost_housing_cow",  "cost_parlors", "cost_robot")
-
-mins_production_change <- c(rep(0,12), -10, rep(0,11), rep(1, 2), rep(0,4))
-steps_production_change <- c(10, 500, 0.1, 0.2, 
-                             0.05, 0.1,
-                            0.1, 2, 0.25, 5, 
-                            2, 2, 0.25, 0.25,
-                            0.25, 0.25,
-                            rep(20000,3), rep(1,3),rep(5000,2), rep(1,2), 
-                            rep(10000,4)) 
-
 
 update_profile_vars  <- function(varnames, mins, steps, varname_ref=NULL) { 
   for (i in 1:length(varnames)) 
@@ -64,27 +44,27 @@ observe({
   if (input$robot_parlor=="OFF") { return() }
   
   if (input$profile_choice=="Barn Only") {
-    update_profile_vars(varnames_production_change,
-                        mins_production_change, 
-                        steps_production_change, 
+    update_profile_vars(vars_all_profiles,
+                       mins_vars_all_profiles, 
+                        steps_vars_all_profiles, 
                         varname_ref="_pr1")
   }
   else if (input$profile_choice=="Retrofit Parlors") {
-    update_profile_vars(varnames_production_change,
-                        mins_production_change, 
-                        steps_production_change, 
+    update_profile_vars(vars_all_profiles,
+                       mins_vars_all_profiles, 
+                        steps_vars_all_profiles, 
                         varname_ref="_pr2")
     
   } else if (input$profile_choice=="New Parlors") {
-    update_profile_vars(varnames_production_change,
-                        mins_production_change, 
-                        steps_production_change, 
+    update_profile_vars(vars_all_profiles,
+                       mins_vars_all_profiles, 
+                        steps_vars_all_profiles, 
                         varname_ref="_pr3")
 
   } else {
-    update_profile_vars(varnames_production_change,
-                         mins_production_change, 
-                         steps_production_change, 
+    update_profile_vars(vars_all_profiles,
+                        mins_vars_all_profiles, 
+                         steps_vars_all_profiles, 
                          varname_ref="_pr4")
 
   }
@@ -97,41 +77,58 @@ observe({
 
   isolate(profile <- input$profile_choice)
   if (profile=="Barn Only") {
-    update_profile_vars2(varnames_production_change,
-                         mins_production_change, 
-                         steps_production_change, 
+    update_profile_vars2(vars_all_profiles,
+                        mins_vars_all_profiles, 
+                         steps_vars_all_profiles, 
                          varname_ref="_pr1")
 
   }
   else if (profile=="Retrofit Parlors") {
-    update_profile_vars2(varnames_production_change,
-                         mins_production_change, 
-                         steps_production_change, 
+    update_profile_vars2(vars_all_profiles,
+                        mins_vars_all_profiles, 
+                         steps_vars_all_profiles, 
                          varname_ref="_pr2")
     
   } else if (profile=="New Parlors") {
-    update_profile_vars2(varnames_production_change,
-                         mins_production_change, 
-                         steps_production_change, 
+    update_profile_vars2(vars_all_profiles,
+                        mins_vars_all_profiles, 
+                         steps_vars_all_profiles, 
                          varname_ref="_pr3")
 
   } else {
 
-    update_profile_vars2(varnames_production_change,
-                         mins_production_change, 
-                         steps_production_change, 
+    update_profile_vars2(vars_all_profiles,
+                        mins_vars_all_profiles, 
+                         steps_vars_all_profiles, 
                          varname_ref="_pr4")
     
   }
 })
 
-# Notify change in any data input
-# INCOMPLETE HERE
-# createAlert(session, "p_input_change", "ref_p_input_change", 
-#             content = "New base values. 
-#             Press ``Calculate'' to updated the results.",
-#             append = FALSE) 
+# Create an alert in any change in data input
+observe({
 
+  lapply(vars_all_profiles, function(x) {
+    input[[paste0(x,"_pr1")]]
+  }) 
+  
+  lapply(vars_all_profiles, function(x) {
+    input[[paste0(x,"_pr2")]]
+  })   
+  
+  lapply(vars_all_profiles, function(x) {
+    input[[paste0(x,"_pr3")]]
+  })   
+  
+  lapply(vars_all_profiles, function(x) {
+    input[[paste0(x,"_pr4")]]
+  })   
+       
+createAlert(session, "p_input_change", "ref_p_input_change", 
+            content = "New data inputs. 
+            Press ``Calculate'' to updated the results.",
+            append = FALSE) 
+})
 
 
 # Update section B: Financing Schedule by Profile
@@ -186,7 +183,6 @@ rp$table_after_tax_cash_flow  <-  matrix(NA) %>% data.frame()
 
 # Calculate rp$table_profiles
 observeEvent(input$robot_parlor_calculate, {
-  browser()
   n_years_max <- max(input$milking_years_pr1,
                  input$milking_years_pr2,
                  input$milking_years_pr3,
@@ -208,7 +204,7 @@ observeEvent(input$robot_parlor_calculate, {
 
     profile <- choices[p]
     
-    use_profile_vars(varnames_production_change, profile_ref[p])
+    use_profile_vars(vars_all_profiles, profile_ref[p])
     
     source("session_calculations_robot_parlor.R", local=TRUE)
     

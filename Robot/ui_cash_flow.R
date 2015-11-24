@@ -46,7 +46,8 @@ fluidRow(column(6,  offset=1,helpText("Modified internal rate of return (MIRR)")
 br(), 
 fluidRow(
   column(width=10,offset=1, 
-         div(htmlOutput("cashflow_chart"),align="center"),
+         div(htmlOutput("cashflow_chart"),align="right"), br(),
+         div(uiOutput("dl_button_cash_flow"),br(),align="center"),
          tabsetPanel(
            tabPanel("Cash Flow",
                     DT::dataTableOutput("table_cash_flow")
@@ -58,7 +59,7 @@ fluidRow(
                     DT::dataTableOutput("table_depreciation")
            )
          ) 
-  )),
+  )), 
 br(),br()
 )
 

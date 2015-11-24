@@ -19,11 +19,6 @@ c_colnames <- c("Variable", "% Change","Base Value","New Value",
                 "Break.Wage Inflation","diff: Break.Wage Inflation")
 
 
-c_dummy <- matrix(rep(NA,length(c_colnames)),nrow=1)
-colnames(c_dummy) <- c_colnames 
-c_empty_table <- data.frame(Column1 = numeric(0)) 
-c_empty_table <- rbind(c_empty_table, c_dummy)[NULL,] 
-
 c_noncurrency <- c("Variable", "% Change","Base Value","New Value",
                    "Break.Wage Inflation","diff: Break.Wage Inflation")
                    
@@ -84,15 +79,51 @@ s_noncurrency <- c("Scenario",
                    "Break.Wage Inflation","diff: Break.Wage Inflation")
 
 
-s_dummy <- matrix(rep(NA,length(s_colnames)),nrow=1)
-colnames(s_dummy) <- s_colnames 
-s_empty_table <- data.frame(Column1 = numeric(0)) 
-s_empty_table <- rbind(s_empty_table, s_dummy)[NULL,] 
-
 
 p_colnames <- c("Barn Only","Retrofit Parlors","New Parlors","Robots")
-p_dummy <- matrix(rep(NA,length(p_colnames)),nrow=1)
-colnames(p_dummy) <- p_colnames 
-p_empty_table <- data.frame(Column1 = numeric(0)) 
-p_empty_table <- rbind(p_empty_table, p_dummy)[NULL,] 
+
+
+vars_selected_profile <- c("robot_parlor","profile_choice","herd_size","herd_increase",
+                           "additional_labor","additional_cost","n_robot","cost_robot",
+                           "cost_parlors", "cost_housing_cow","repair","robot_years",
+                           "n_robot_life","milking_years","salvage_milking1","insurance_rate",
+                           "hours_milking","hr_sv_milking",
+                           "hr_heat_detection", "anticipated_hours_heat", "labor_rate",
+                           "increase_rc_mgt","decrease_lab_mgt","labor_rate_rc_mgt",
+                           "price_milk","milk_cow_day","milk_change","scc_premium",
+                           "scc_average", "scc_change", "software","cost_DM",
+                           "pellets","cost_pellets","milk_cow_coeff","milk_fat",
+                           "milk_fat_coeff","adj_milk_cow_coeff","body_weight",
+                           "body_weight_coeff1", "body_weight_coeff2", "lcatation_week",
+                           "lactation_coeff1","lactation_coeff2", "culling_rate",
+                           "death_rate","cost_heifer","cull_price", "change_turnover",
+                           "change_electricity", "change_water","change_chemical",
+                           "inflation_robot","inflation_margin","inflation_labor",
+                           "interest", "hurdle_rate", "tax_rate", "dep_method",
+                           "down_housing","down_milking1","down_milking2",
+                           "r_housing","r_milking1","r_milking2","n_yr_housing",
+                           "n_yr_milking1","n_yr_milking2")
+
+
+vars_all_profiles <- c("herd_increase", "repair","insurance_rate","hr_sv_milking", 
+                                "anticipated_hours_heat","increase_rc_mgt",
+                                "decrease_lab_mgt", "milk_change","scc_change","software", 
+                                "pellets","cost_pellets","change_turnover","change_electricity",
+                                "change_water", "change_chemical",
+                                "down_housing", "down_milking1", "down_milking2",
+                                "n_yr_housing", "n_yr_milking1","n_yr_milking2",
+                                "salvage_housing", "salvage_milking1", 
+                                "milking_years",  "robot_years", "n_robot",
+                                "cost_housing_cow",  "cost_parlors", "cost_robot")
+
+mins_vars_all_profiles <- c(rep(0,12), -10, rep(0,11), rep(1, 2), rep(0,4))
+
+steps_vars_all_profiles <- c(10, 500, 0.1, 0.2, 
+                             0.05, 0.1,
+                             0.1, 2, 0.25, 5, 
+                             2, 2, 0.25, 0.25,
+                             0.25, 0.25,
+                             rep(20000,3), rep(1,3),rep(5000,2), rep(1,2), 
+                             rep(10000,4)) 
+
 

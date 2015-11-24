@@ -199,7 +199,7 @@ isolate({ # isolate the robustness calculation
   
   
   ## ------------ Breakeven Calculations ------------
-  if(!calculation_plot) {
+  if(!rb$calculation_plot) {
   
   n_years <- length(rb$table_cash_flow$depreciation) - 1  
   
@@ -383,53 +383,6 @@ isolate({ # isolate the robustness calculation
     (rb$negative_total - rb$inc_rev_total - rb$dec_exp_labor_management)/ 
     ((rb$dec_exp_heat_detection + rb$dec_exp_labor )/input$labor_rate)
   
-#   
-# 
-#   
-# if (robust=="Sensitivity") {
-#   
-# # --- add a row of results to the table_sensitivity ---
-# new_row <- c(c_val, base_val, new_val,  
-#                   rb$impact_without_housing, rb$impact_without_housing - rv$impact_without_housing, 
-#                   rb$impact_with_housing, rb$impact_with_housing - rv$impact_with_housing,
-#                   rb$impact_with_robot_salvage, rb$impact_with_robot_salvage - rv$impact_with_robot_salvage,
-#                   rb$IOFC2 - rb$IOFC,  rb$IOFC2-rb$IOFC - (rv$IOFC2 - rv$IOFC),
-#                   rb$IOFC2_cwt - rb$IOFC_cwt,  
-#                   rb$IOFC2_cwt - rb$IOFC_cwt - (rv$IOFC2_cwt - rv$IOFC_cwt),           
-#                   rb$milk_feed, rb$milk_feed - rv$milk_feed, 
-#                   rb$labor_repair, rb$labor_repair - rv$labor_repair, 
-#                   rb$capital_cost, rb$capital_cost - rv$capital_cost, 
-#                   rb$misc, rb$misc - rv$misc)
-# 
-# new_row <- matrix(c(label,round(new_row)),nrow=1)
-# 
-# colnames(new_row) <- c_colnames
-# 
-# }
-# 
-# 
-# if (robust=="Scenarios") {
-# 
-#   # --- add a row of results to the table_scenario ---
-#   new_row <- c(s_val, new_val,  
-#                rb$impact_without_housing, rb$impact_without_housing - rv$impact_without_housing, 
-#                rb$impact_with_housing, rb$impact_with_housing - rv$impact_with_housing,
-#                rb$impact_with_robot_salvage, rb$impact_with_robot_salvage - rv$impact_with_robot_salvage,
-#                rb$IOFC2 - rb$IOFC,  rb$IOFC2-rb$IOFC - (rv$IOFC2 - rv$IOFC),
-#                rb$IOFC2_cwt - rb$IOFC_cwt,  
-#                rb$IOFC2_cwt - rb$IOFC_cwt - (rv$IOFC2_cwt - rv$IOFC_cwt),           
-#                rb$milk_feed, rb$milk_feed - rv$milk_feed, 
-#                rb$labor_repair, rb$labor_repair - rv$labor_repair, 
-#                rb$capital_cost, rb$capital_cost - rv$capital_cost, 
-#                rb$misc, rb$misc - rv$misc)
-#   
-#   new_row <- matrix(c(label,round(new_row)), nrow=1)
-#   
-#   colnames(new_row) <- s_colnames
-#   
-# }
-  
-
 })
 
 

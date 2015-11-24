@@ -308,7 +308,7 @@ output$cashflow <- renderUI({
   avg <- mean(rv$table_cash_flow$after_tax_cash_flow) %>% formatdollar2() 
   max <- max(rv$table_cash_flow$after_tax_cash_flow) %>% formatdollar2() 
   sd <- sd(rv$table_cash_flow$after_tax_cash_flow) %>% formatdollar()
-  pos <- paste0(round(sum(rv$table_cash_flow$after_tax_cash_flow>0)/input$horizon*100),"%")
+  pos <- paste0(round(sum(rv$table_cash_flow$after_tax_cash_flow>0)/rv$housing_years*100),"%")
 
   div(class="well well-sm", style= "background-color: 	#778899; color:white;", 
       h4("Cash Flow", align="center"),
@@ -353,14 +353,14 @@ output$breakeven2 <- renderGvis({
     tax <- "(After Tax)"
   }
   
-  df <- data.frame(Year=c(1:input$horizon))
-  df$Base <- lapply(c(1:input$horizon), function(t) { 
+  df <- data.frame(Year=c(1:rv$housing_years))
+  df$Base <- lapply(c(1:rv$housing_years), function(t) { 
     input$labor_rate * (1 + input$inflation_labor/100)^(t-1)
   }) %>% unlist() %>% round(2)
-  df$Wage <- lapply(c(1:input$horizon), function(t) { 
+  df$Wage <- lapply(c(1:rv$housing_years), function(t) { 
     labor_rate * (1 + input$inflation_labor/100)^(t-1)
     }) %>% unlist() %>% round(2)
-  df$Wage_Inflation <- lapply(c(1:input$horizon), function(t) { 
+  df$Wage_Inflation <- lapply(c(1:rv$housing_years), function(t) { 
      input$labor_rate * (1 + inflation)^(t-1)
   }) %>% unlist() %>% round(2)
   
@@ -398,13 +398,13 @@ output$breakeven <- renderUI({
     labor_rate <- input$labor_rate
   }
 
-  yr_one <- paste("Year", round(input$horizon/3), ": ")
-  yr_two <- paste("Year", round(input$horizon*(2/3)),": ")
-  yr_three <- paste("Year", round(input$horizon),": ")
+  yr_one <- paste("Year", round(rv$housing_years/3), ": ")
+  yr_two <- paste("Year", round(rv$housing_years*(2/3)),": ")
+  yr_three <- paste("Year", round(rv$housing_years),": ")
   wage_zero <- labor_rate  %>% formatdollar(2)
-  wage_one <- (labor_rate * (1 + inflation)^(round(input$horizon/3)-1))  %>% formatdollar(2)
-  wage_two <- (labor_rate * (1 + inflation)^(round(input$horizon*2/3)-1))  %>% formatdollar(2)
-  wage_three <- (labor_rate * (1 + inflation)^(round(input$horizon)-1))  %>% formatdollar(2)
+  wage_one <- (labor_rate * (1 + inflation)^(round(rv$housing_years/3)-1))  %>% formatdollar(2)
+  wage_two <- (labor_rate * (1 + inflation)^(round(rv$housing_years*2/3)-1))  %>% formatdollar(2)
+  wage_three <- (labor_rate * (1 + inflation)^(round(rv$housing_years)-1))  %>% formatdollar(2)
   
   div(class="well well-sm", style= "background-color:	#778899; color:white;", 
       h4("Breakeven", option, be_val, align="center"),
@@ -423,6 +423,25 @@ output$breakeven <- renderUI({
 
 ##  --- cash flow tables ---
 
+output$download_table_cash_flow <- downloadHandler( 
+#   filename = function() { paste('cash_flow.csv') },
+#   content = function(file) {
+#     write.csv(df$table_cash_flow, file)
+#   }
+#   
+  filename = "cash_flow.xlsx", 
+  content = function(file) { 
+    wb <- XLConnect::loadWorkbook(file, create = TRUE)
+    XLConnect::createSheet(wb, name = "cashflow")
+    XLConnect::createSheet(wb, name = "debt")
+    XLConnect::createSheet(wb, name = "depreciation")
+    XLConnect::writeWorksheet(wb, df$table_cash_flow, sheet = "cashflow") 
+    XLConnect::writeWorksheet(wb, df$table_debt, sheet = "debt") 
+    XLConnect::writeWorksheet(wb, df$table_depreciation, sheet = "depreciation") 
+    XLConnect::saveWorkbook(wb)
+  }
+) 
+
 output$table_cash_flow <- DT::renderDataTable({
   if (length(rv[["table_cash_flow"]])==0) return()
   tbl <- round(rv[["table_cash_flow"]])
@@ -430,6 +449,7 @@ output$table_cash_flow <- DT::renderDataTable({
                      'Operating Income', 'Income Tax','Principal Payments','Adding Back Depreciation',
                      'Down-payments','Salvage Values','After-tax Cashflow')
    L <- length(tbl[,1])
+   df$table_cash_flow <- tbl
    DT::datatable(tbl, 
                 # colnames = c('Year', 'Robot', 'Housing', 'Total'), 
                 rownames = FALSE,
@@ -440,7 +460,6 @@ output$table_cash_flow <- DT::renderDataTable({
                   pageLength = L,
                   lengthMenu = c(10, 20, 30, 40),
                   searching = FALSE,
-                  showNone=TRUE, 
                   activate = 'mouseover')) %>% 
     formatCurrency(c( 'Revenue minus Expense', 'Interests on Debt', 'Depreciation',
                       'Operating Income', 'Income Tax','Principal Payments','Adding Back Depreciation',
@@ -467,6 +486,7 @@ output$table_debt <- DT::renderDataTable({
                      'Housing Payment Year','Housing Interest', 'Housing Principal',
                      'Interest Total', 'Principal Total') 
   L <- length(tbl[,1])
+  df$table_debt <- tbl
   DT::datatable(tbl, 
                 # colnames = c('Year', 'Robot', 'Housing', 'Total'), 
                 rownames = FALSE,
@@ -492,6 +512,7 @@ output$table_depreciation <- DT::renderDataTable({
   else { milk_sys <- 'Parlor'}
   colnames(tbl) <- c('Year', milk_sys, 'Housing', 'Total')
   L <- length(tbl[,1])
+  df$table_depreciation <- tbl
   
   DT::datatable(tbl, 
                 # colnames = c('Year', 'Robot', 'Housing', 'Total'), 
@@ -511,16 +532,16 @@ output$table_depreciation <- DT::renderDataTable({
 
 
 
-output$cashflow_chart <- renderGvis({
+output$cashflow_chart <- renderGvis({ 
   if (length(rv[["table_cash_flow"]])==0) return()
   tbl <- round(rv[["table_cash_flow"]])
   tbl$Year <- tbl$year
   tbl$Operating_Income <- tbl$operating_income
   tbl$Cashflow <- tbl$after_tax_cash_flow 
-  gvisLineChart(tbl, xvar="Year", 
+  gvisLineChart(tbl, xvar="Year",  
                          yvar=c("Cashflow","Operating_Income"),
                          options=list(title="Before-tax Operating Income & After-tax Cash Flow", 
-                                      vAxis="{title:'Net Annual Impact under Robot ($)'}",
+                                      vAxis=paste("{title:'Net Annual Impact under", robot_or_parlor()," ($)'}"),
                                       hAxis="{title:'Year'}",
                                       legend="bottom",
                                       width=800, height=400

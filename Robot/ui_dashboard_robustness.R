@@ -1,5 +1,5 @@
 # ---------- Dashboard for Sensitivity and Scenarios ---------- 
-div(
+conditionalPanel('input.robust=="Sensitivity" | input.robust=="Scenario"', 
   shinyjs::hidden(
   div(id = "dashboard_robust",
       fluidRow(
@@ -11,14 +11,14 @@ div(
                         uiOutput("c_NAI")) 
                ),
                fluidRow(
-                 conditionalPanel("input.dash_option!='chart'",
+                 conditionalPanel("input.dash_option!='chart'", 
                                   column(6,
                                          div(uiOutput("c_breakeven"),align="center")),
                                   column(6,
                                          div( uiOutput("c_cashflow"), align="center")
                                   )
                  ),
-                 conditionalPanel("input.dash_option=='chart'",
+                 conditionalPanel("input.dash_option=='chart'", 
                                   tabsetPanel(
                                     tabPanel("Breakeven Wage",
                                              htmlOutput("c_breakeven2")),
@@ -44,8 +44,7 @@ div(
                ), align="center")
         ),
         conditionalPanel('input.robust=="Sensitivity"', 
-                         actionButton("calculate_plot_robust","Calculate Plot"),
-                         htmlOutput("plot_robust")
+                        div(htmlOutput("plot_robust"), align="center")
         )
       )
       )), br(),
@@ -61,4 +60,4 @@ div(
     tabPanel("After Tax: Difference",
              DT::dataTableOutput("table_robust_after_tax_diff"))
   )
-)
+) 

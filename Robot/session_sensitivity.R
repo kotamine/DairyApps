@@ -254,13 +254,17 @@ observeEvent(input$sensitivity_calculate, {
 
 
 c_val_list <- c(c(-5:-1)*10,c(1:5)*10)
-# Plot Calculation
-observeEvent(input$calculate_plot_robust, {
-  browser()
+rb$calculation_plot <- FALSE
+# Plot Calculation at various values of percentage change 
+observe({
+  input$c_choice  # Triggered by input$c_choice
   
+  isolate({
   robust <- "Sensitivity"
-  calculation_plot <- TRUE
-    
+  rb$calculation_plot <- TRUE
+  rv$table_plot_robust <- nulls(length(c_val_list),3)
+  c_choice <-  input$c_choice 
+  
     if (input$robot_parlor=="OFF" | input$profile_choice=="Robots") { 
       varnames <- c_varnames
       labels <- c_labels
@@ -268,24 +272,45 @@ observeEvent(input$calculate_plot_robust, {
       varnames <- c_varnames_parlor
       labels <- c_labels_parlor
     }
-    base_val <- input[[varnames[n]]]
   
-    for (c_val in c_val_list ) {
+    for (n in 1:length(c_val_list)) {
       
+    c_val <- c_val_list[n]
+    base_val <- input[[varnames[n]]]
     new_val <- (base_val * (1 + c_val/100))
     label <- labels[n]
     robust <- "Sensitivity" 
     
     source("session_calculations_robustness.R", local=TRUE)
     
-    rv$table_plot_robust[,] <- rb$net_annual_impact_after_tax
-    rb$net_annual_impact_after_tax
-    
-  }
-  
-  calculation_plot <- FALSE
-  
+    rv$table_plot_robust[n,1] <- c_val_list[n]
+    rv$table_plot_robust[n,2] <- rb$net_annual_impact_before_tax
+    rv$table_plot_robust[n,3] <- rb$net_annual_impact_after_tax
+    }
+    colnames(rv$table_plot_robust) <- c("change","net_annual_impact_before_tax","net_annual_impact_after_tax")
+    rv$table_plot_robust <- rv$table_plot_robust %>% data.frame()
+  rb$calculation_plot <- FALSE 
+  })
 })
+
+
+output$plot_robust <- renderGvis({
+  if (length(rv[["table_plot_robust"]])==0) return()
+  tbl <- round(rv[["table_plot_robust"]])
+  tbl$Impact_Before_Tax <- tbl$net_annual_impact_before_tax
+  tbl$Impact_After_Tax <- tbl$net_annual_impact_after_tax
+  
+  gvisLineChart(tbl, xvar="change", 
+                yvar=c("Impact_Before_Tax","Impact_After_Tax"), 
+                options=list(title=paste("Sensitivity Plot: ", c_labels_parlor[c_n()]),
+                             vAxis=paste("{title:'Net Annual Impact under",  robot_or_parlor()," ($)'}"),
+                             hAxis="{title:'% Change'}", 
+                             legend="bottom",
+                             width=800, height=400
+                ))
+}) 
+
+
 
 
 # input$c_choice (or input$c_val via rb$c_change_val) triggers this
@@ -531,3 +556,8 @@ output$c_breakeven <- renderUI({
       h5(yr_three, wage_three)
   )
 }) 
+
+
+
+
+
