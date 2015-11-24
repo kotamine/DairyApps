@@ -1,5 +1,15 @@
 library(shiny)
 
+customHeaderPanel <- function(title,windowTitle=title){
+  tagList(
+    tags$head(
+      tags$title(windowTitle),
+      tags$link(rel="stylesheet", type="text/css",
+                href="app.css"),
+      tags$h1(a(href="www.someURLlogoLinksto.com"))
+    )
+  )
+}
 
 shinyServer(function(input, output,session) {
   

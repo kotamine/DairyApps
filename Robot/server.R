@@ -15,7 +15,7 @@ default_data_2 <- read.xlsx("www/default_user_input_data.xlsx", sheetIndex = 2)
 
 
 shinyServer(function(input, output, session) {
-  
+
   # Create a list of reactive values 
   rv <- reactiveValues(recalculate=0)
   
