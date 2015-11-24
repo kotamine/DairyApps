@@ -1,6 +1,6 @@
 library(shiny)
 library(shinyBS)
-library(markdown)
+library(rmarkdown)
 library(ggplot2)
 suppressPackageStartupMessages(library(googleVis))
 suppressPackageStartupMessages(library(shinyjs))
