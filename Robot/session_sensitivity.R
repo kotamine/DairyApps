@@ -9,7 +9,7 @@ shinyjs::onclick("sensitivity_show",
                    shinyjs::toggle(id="sensitivity_control", anim = TRUE) 
                    shinyjs::toggle(id="scenario_control", anim = TRUE)
                    shinyjs::toggle(id="dashboard_robust", anim = TRUE) 
- 
+                   
                  }
 )
 
@@ -35,9 +35,9 @@ observeEvent(input$c_choice, {
 
 # Update table_sensitivity when input$c_val or input$choice is changed as well as initial set up
 observe({
-
+  
   if (input$robust=="Off") { return() }
-
+  
   input$c_val
   input$c_choice
   closeAlert(session, "ref_c_toggle")
@@ -52,12 +52,12 @@ observe({
     c_val <- rb$c_change_val[n]
     
     if (input$robot_parlor=="OFF" | input$profile_choice=="Robots") { 
-        varnames <- c_varnames
-        labels <- c_labels
-      } else {
-        varnames <- c_varnames_parlor
-        labels <- c_labels_parlor
-      }
+      varnames <- c_varnames
+      labels <- c_labels
+    } else {
+      varnames <- c_varnames_parlor
+      labels <- c_labels_parlor
+    }
     
     base_val <- input[[varnames[n]]]
     new_val <- (base_val * (1 + c_val/100))
@@ -85,7 +85,7 @@ observe({
                    rb$bw_wage_inflation_before_tax,
                    rb$bw_wage_inflation_before_tax - rv$bw_wage_inflation_before_tax
       ) %>% round(c(rep(0,17),rep(2,4),rep(3,2)))
-
+      
       new_row <- matrix(c(label,new_row),nrow=1)
       colnames(new_row) <- c_colnames
       
@@ -107,7 +107,7 @@ observe({
                    rb$bw_wage_inflation_after_tax,
                    rb$bw_wage_inflation_after_tax - rv$bw_wage_inflation_after_tax
       ) %>% round(c(rep(0,17),rep(2,4),rep(3,2)))
-
+      
       new_row <- matrix(c(label,new_row),nrow=1)
       colnames(new_row) <- c_colnames
       
@@ -128,16 +128,16 @@ observe({
                                 "Anticipated savings in milking & chore labor"="c6",
                                 "Projected change in milk production"="c7"
                       ))
-    } else {
-      updateSelectInput(session, "c_choice",NULL, selected="c1",
-                        choices=c("Estimated cost of parlors"="c1",
-                                  "Related housing changes needed per cow"="c2",
-                                  "Estimated annual change in milking system repair"="c3",
-                                  "Parlors: years of useful life"="c4",
-                                  "Salvage value of parlors after useful life"="c5",
-                                  "Anticipated savings in milking & chore labor"="c6",
-                                  "Projected change in milk production"="c7"
-                        ))
+  } else {
+    updateSelectInput(session, "c_choice",NULL, selected="c1",
+                      choices=c("Estimated cost of parlors"="c1",
+                                "Related housing changes needed per cow"="c2",
+                                "Estimated annual change in milking system repair"="c3",
+                                "Parlors: years of useful life"="c4",
+                                "Salvage value of parlors after useful life"="c5",
+                                "Anticipated savings in milking & chore labor"="c6",
+                                "Projected change in milk production"="c7"
+                      ))
   }
 })
 
@@ -150,8 +150,8 @@ observeEvent(input$sensitivity_calculate, {
   closeAlert(session, "ref_c_toggle")
   
   robust <- "Sensitivity" 
- 
-
+  
+  
   # replace "n" in the previous case with "x" that goes from 1 to 7 
   lapply(c(7:1), 
          function(x) { 
@@ -221,14 +221,14 @@ observeEvent(input$sensitivity_calculate, {
            
            new_row <- matrix(c(label,new_row),nrow=1)
            colnames(new_row) <- c_colnames
-
+           
            rb$table_sensitivity_before_tax[x,] <- new_row
            
-
+           
          }
   )
   updateRadioButtons(session,"NAI",NULL, choices=c("before tax","after tax"),
-                                                 selected="before tax") 
+                     selected="before tax") 
   if (input$robot_parlor=="OFF" | input$profile_choice=="Robots") { 
     updateSelectInput(session, "c_choice",NULL, selected="c1",
                       choices=c("Estimated cost per robot"="c1",
@@ -262,11 +262,11 @@ observe({
   if (input$robust!="Sensitivity") { return() }
   
   isolate({
-  robust <- "Sensitivity"
-  rb$calculation_plot <- TRUE
-  rv$table_plot_robust <- nulls(length(c_val_list),3)
-  c_choice <-  input$c_choice 
-  
+    robust <- "Sensitivity"
+    rb$calculation_plot <- TRUE
+    rv$table_plot_robust <- nulls(length(c_val_list),3)
+    c_choice <-  input$c_choice 
+    
     if (input$robot_parlor=="OFF" | input$profile_choice=="Robots") { 
       varnames <- c_varnames
       labels <- c_labels
@@ -274,24 +274,24 @@ observe({
       varnames <- c_varnames_parlor
       labels <- c_labels_parlor
     }
-  
+    
     for (n in 1:length(c_val_list)) {
       
-    c_val <- c_val_list[n]
-    base_val <- input[[varnames[n]]]
-    new_val <- (base_val * (1 + c_val/100))
-    label <- labels[n]
-    robust <- "Sensitivity" 
-    
-    source("session_calculations_robustness.R", local=TRUE)
-    
-    rv$table_plot_robust[n,1] <- c_val_list[n]
-    rv$table_plot_robust[n,2] <- rb$net_annual_impact_before_tax
-    rv$table_plot_robust[n,3] <- rb$net_annual_impact_after_tax
+      c_val <- c_val_list[n]
+      base_val <- input[[varnames[n]]]
+      new_val <- (base_val * (1 + c_val/100))
+      label <- labels[n]
+      robust <- "Sensitivity" 
+      
+      source("session_calculations_robustness.R", local=TRUE)
+      
+      rv$table_plot_robust[n,1] <- c_val_list[n]
+      rv$table_plot_robust[n,2] <- rb$net_annual_impact_before_tax
+      rv$table_plot_robust[n,3] <- rb$net_annual_impact_after_tax
     }
     colnames(rv$table_plot_robust) <- c("change","net_annual_impact_before_tax","net_annual_impact_after_tax")
     rv$table_plot_robust <- rv$table_plot_robust %>% data.frame()
-  rb$calculation_plot <- FALSE 
+    rb$calculation_plot <- FALSE 
   })
 })
 

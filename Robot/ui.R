@@ -11,13 +11,14 @@ suppressPackageStartupMessages(library(XLConnect))
 
 
 shinyUI(
-   navbarPage(
+  navbarPage(
     "Robotic Milking System",
     # ---------- Introduction  -----------
     tabPanel("Introduction",
              fluidRow(column(width=2),
                       column(width=8,
-                             includeMarkdown(file.path("text","introduction.md"))
+                             includeMarkdown(file.path("text","introduction.md")), 
+                             br(),br()
                       ))
     ),
     # ---------- Data Entry -----------
@@ -25,7 +26,7 @@ shinyUI(
              # Need to add "$value" for including source in UI: 
              # otherwise "TRUE" will show up at the end of file
              
-              source("ui_data_entry_tabs.R", local=TRUE)$value,    
+             source("ui_data_entry_tabs.R", local=TRUE)$value,    
              
              conditionalPanel("input.budget>0",
                               # ---------- Dashboard ----------
@@ -41,14 +42,14 @@ shinyUI(
              br(), br(),
              hr(),
              fluidRow(column(2, offset=1,
-                             actionButton("defalut_data","Default Data")),
+                             actionButton("defalut_data","Default Input-Data")),
                       column(3,
-                             downloadButton("data_download","Download Data")),
+                             downloadButton("data_download","Download Input-Data")),
                       column(3, 
-             # fileInput() is passessed from the server
-             uiOutput('resettableInput'),
-             bsAlert("upload_alert")),   
-             column(2, actionButton("remove", "Remove Data"))),
+                             # fileInput() is passessed from the server
+                             uiOutput('resettableInput'),
+                             bsAlert("upload_alert")),   
+                      column(2, actionButton("remove", "Remove Input-Data"))),
              br(), br()
     ),
     # ---------- Partial Budget Analysis -----------
@@ -58,39 +59,39 @@ shinyUI(
                                   helpText("Please review all tabs in Data Entry."),align="center")
              ),
              conditionalPanel("input.budget>0",
-                source("ui_partial_budget.R", local=TRUE)$value
+                              source("ui_partial_budget.R", local=TRUE)$value
              )
+    ),
+    tabPanel("Cash Flow",
+             conditionalPanel("input.budget==0",
+                              div(helpText("Please review all tabs in Data Entry."),align="center")
              ),
-tabPanel("Cash Flow",
-         conditionalPanel("input.budget==0",
-                          div(helpText("Please review all tabs in Data Entry."),align="center")
-         ),
-        conditionalPanel("input.budget>0",
-        source("ui_cash_flow.R", local=TRUE)$value
-        )
-),
+             conditionalPanel("input.budget>0",
+                              source("ui_cash_flow.R", local=TRUE)$value
+             )
+    ),
     # ---------- Additional Analyses -----------
     navbarMenu("More",
-               tabPanel("Robustness Check Tools",
+               tabPanel("Robustness Checks",
                         conditionalPanel("input.budget==0",
                                          div(helpText("Please review all tabs in Data Entry."),align="center")
-                                         ),
+                        ),
                         conditionalPanel("input.budget>0",
-                        fluidRow(column(6, offset=3,
-                                        radioButtons("robust", "Robustness analysis options", 
-                                                                     choices=c("Off","Sensitivity","Scenarios")),
-                                        helpText("To assess the robustness of your results, consider changes in key variables. 
+                                         fluidRow(column(6, offset=3,
+                                                         radioButtons("robust", "Robustness analysis options", 
+                                                                      choices=c("Off","Sensitivity","Scenarios")),
+                                                         helpText("To assess the robustness of your results, consider changes in key variables. 
                                                  Sensitivity Analysis uses a change in one variable at a time, whereas
                                                  Scenario Analysis uses changes in a set of related variables at a time.
                                                  In Data Entry tab, the results of Sensitivity or Scneario Analysis will 
                                                  appear below the baseline results in a parallel fashion."),
-                                        conditionalPanel('input.robust=="Sensitivity"', br(), hr(),
-                                                         includeMarkdown(file.path("text","sensitivity.md"))),
-                                        conditionalPanel('input.robust=="Scenarios"', br(), hr(),
-                                                         includeMarkdown(file.path("text","scenario.md")))
-                        ))
+                                                         conditionalPanel('input.robust=="Sensitivity"', br(), hr(),
+                                                                          includeMarkdown(file.path("text","sensitivity.md"))),
+                                                         conditionalPanel('input.robust=="Scenarios"', br(), hr(),
+                                                                          includeMarkdown(file.path("text","scenario.md")))
+                                         ))
                         )),
-
+               
                tabPanel("Robots vs Parlors",
                         conditionalPanel("input.budget==0",
                                          div(helpText("Please review all tabs in Data Entry."),align="center")
@@ -107,7 +108,7 @@ tabPanel("Cash Flow",
                       ))
     ),
     useShinyjs(),
-collapsible = TRUE
+    collapsible = TRUE
   ))
 
 

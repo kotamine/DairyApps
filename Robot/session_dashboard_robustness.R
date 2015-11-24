@@ -2,7 +2,7 @@
 #  ------ Dashboard portion of  Robustness analysis -----------
 
 isolate({
-
+  
   rb$tax_factor <- (1-(rb$NAI_spec=="after tax")*input$tax_rate/100)
   
   if (rb$NAI_spec=="before tax") {

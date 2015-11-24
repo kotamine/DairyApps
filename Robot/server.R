@@ -18,16 +18,16 @@ shinyServer(function(input, output, session) {
   
   # Create a list of reactive values 
   rv <- reactiveValues(recalculate=0)
-
+  
   # Create a list of reactive values for robustness checks
   rb <- reactiveValues(c_val=20)
-
+  
   # Create a list of reactive values for robots vs parlors
   rp <- reactiveValues()
   
   # data tables to be downloaded
   df <- reactiveValues()
-    
+  
   # ----------- Functions: some of the depend on local variables  -----------
   source("helper.R",local=TRUE)
   
@@ -36,19 +36,19 @@ shinyServer(function(input, output, session) {
   
   # ----------- Main Calculations for Partial Budget and Cash Flow Analyses -----------
   source("session_calculations_base.R", local=TRUE)
-
+  
   # ----------- Main Rendering -----------
   source("session_render_base.R", local=TRUE)
-
+  
   # ----------- Robots vs Parlors Analysis -----------
   source("session_robot_parlor.R", local=TRUE)
   
-
+  
   # ----------- Sensitivity Analysis -----------
-   source("session_sensitivity.R", local=TRUE)
+  source("session_sensitivity.R", local=TRUE)
   
   # ----------- Scenario Analysis -----------
-   source("session_scenarios.R", local=TRUE)  
+  source("session_scenarios.R", local=TRUE)  
   
   
   
@@ -60,7 +60,7 @@ shinyServer(function(input, output, session) {
     input$remove
     closeAlert(session, "ref_upload_alert")
     
-    fileInput("data_upload", "Upload Data File",
+    fileInput("data_upload", "Upload Input-Data File",
               accept=c(".xlsx", "application/vnd.ms-excel"))
   })
   

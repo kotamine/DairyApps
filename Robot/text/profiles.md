@@ -1,4 +1,6 @@
 
+#### DISCLAIMER: DEFAULT VALUES UNDER EACH PROFILE NEEDS FURTHER REFINEMENTS.
+
 #### Profile 1: Barn Only     
 
 some explanation...

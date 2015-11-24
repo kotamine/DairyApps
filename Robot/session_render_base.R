@@ -32,7 +32,7 @@ var_to_render_0 <- c("herd_size2", "cost_milking","cost_housing","total_investme
                      'copy_r_housing_pr3', 'copy_r_milking1_pr3', 
                      'copy_r_housing_pr4', 'copy_r_milking1_pr4', 'copy_r_milking2_pr4',
                      "salvage_milking2_pr4" 
-                     )
+)
 var_to_render_1 <- c("copy_r_housing", "copy_r_milking1","copy_r_milking2")
 var_to_render_2 <- c("adj_milk_cow_day")
 var_to_render_3 <- c("DMI_change","DMI_day","DMI_projected") 
@@ -59,86 +59,86 @@ lapply(var_to_render_1,
        }
 )
 
-  lapply(var_to_render_2, 
-         function(x) { 
-             output[[paste0(x)]] <- renderUI({ 
-               rv[[paste0(x)]] %>% round(2) %>% helpText() })
-         }
-  )
+lapply(var_to_render_2, 
+       function(x) { 
+         output[[paste0(x)]] <- renderUI({ 
+           rv[[paste0(x)]] %>% round(2) %>% helpText() })
+       }
+)
 
-  lapply(var_to_render_3, 
-         function(x) { 
-           output[[paste0(x)]] <- renderUI({ 
-             rv[[paste0(x)]] %>% round(3) %>% helpText() })
-         }
-  )
-  
-  lapply(var_to_render_4, 
-         function(x) { 
-           output[[paste0(x)]] <- renderUI({ 
-             rv[[paste0(x)]] %>% round(4) %>% helpText() })
-         }
-  )
-  
-  
-  cash_render_0_right <- c("NPV","ANPV", "ANPVr", 
-                           "capital_recovery_robot", "capital_recovery_housing",
-                           "cost_downpayment2", "robot_end_PV",
-                           "capital_cost_total", 
-                           "positive_total","negative_total",
-                           "positive_minus_negative",
-                           "inflation_adjustment",
-                           "net_annual_impact_before_tax",
-                           "revenue_minus_expense", 
-                           "tax_revenue_minus_expense",
-                           "tax_interest",
-                           "tax_depreciation",
-                           "net_annual_impact_after_tax",
-                           "cost_downpayment",
-                           "adj_WACC_interest",
-                           "adj_WACC_hurdle")
-  
-  rate_render_2_right <- c("IRR","MIRR","WACC")
-  
-  cash_render_2_right <- c("be_wage_positive_minus_negative", "bw_wage_before_tax", "bw_wage_after_tax")
-  
-  percent_render_3_right <- c("bw_wage_inflation_before_tax", "bw_wage_inflation_after_tax")
-    
-  
-  lapply(cash_render_0_right, function(x) {
-    output[[paste0(x)]] <- renderUI({
-      rv[[paste0(x)]] %>% formatdollar() %>% helpText() %>% div(align="right")
-    })
+lapply(var_to_render_3, 
+       function(x) { 
+         output[[paste0(x)]] <- renderUI({ 
+           rv[[paste0(x)]] %>% round(3) %>% helpText() })
+       }
+)
+
+lapply(var_to_render_4, 
+       function(x) { 
+         output[[paste0(x)]] <- renderUI({ 
+           rv[[paste0(x)]] %>% round(4) %>% helpText() })
+       }
+)
+
+
+cash_render_0_right <- c("NPV","ANPV", "ANPVr", 
+                         "capital_recovery_robot", "capital_recovery_housing",
+                         "cost_downpayment2", "robot_end_PV",
+                         "capital_cost_total", 
+                         "positive_total","negative_total",
+                         "positive_minus_negative",
+                         "inflation_adjustment",
+                         "net_annual_impact_before_tax",
+                         "revenue_minus_expense", 
+                         "tax_revenue_minus_expense",
+                         "tax_interest",
+                         "tax_depreciation",
+                         "net_annual_impact_after_tax",
+                         "cost_downpayment",
+                         "adj_WACC_interest",
+                         "adj_WACC_hurdle")
+
+rate_render_2_right <- c("IRR","MIRR","WACC")
+
+cash_render_2_right <- c("be_wage_positive_minus_negative", "bw_wage_before_tax", "bw_wage_after_tax")
+
+percent_render_3_right <- c("bw_wage_inflation_before_tax", "bw_wage_inflation_after_tax")
+
+
+lapply(cash_render_0_right, function(x) {
+  output[[paste0(x)]] <- renderUI({
+    rv[[paste0(x)]] %>% formatdollar() %>% helpText() %>% div(align="right")
   })
-  
-  lapply(cash_render_2_right, function(x) {
-    output[[paste0(x)]] <- renderUI({
-      validate(
-        need(!is.na(rv[[paste0(x)]]), "NA")
-      )
-      rv[[paste0(x)]] %>% formatdollar(2) %>% helpText() %>% div(align="right")
-    })
+})
+
+lapply(cash_render_2_right, function(x) {
+  output[[paste0(x)]] <- renderUI({
+    validate(
+      need(!is.na(rv[[paste0(x)]]), "NA")
+    )
+    rv[[paste0(x)]] %>% formatdollar(2) %>% helpText() %>% div(align="right")
   })
-  
-  lapply(rate_render_2_right, function(x) {
-    output[[paste0(x)]] <- renderUI({
-      validate(
-        need(!is.na(rv[[paste0(x)]]), "NA")
-      )
-      rv[[paste0(x)]] %>% round(2) %>% helpText() %>% div(align="right")
-    })
+})
+
+lapply(rate_render_2_right, function(x) {
+  output[[paste0(x)]] <- renderUI({
+    validate(
+      need(!is.na(rv[[paste0(x)]]), "NA")
+    )
+    rv[[paste0(x)]] %>% round(2) %>% helpText() %>% div(align="right")
   })
-  
-  lapply(percent_render_3_right, function(x) {
-    output[[paste0(x)]] <- renderUI({
-      validate(
-        need(!is.na(rv[[paste0(x)]]), "NA")
-      )
-      a <- (rv[[paste0(x)]]*100) %>% round(3)
-      paste0(a,"%") %>% helpText() %>% div(align="right")
-    })
+})
+
+lapply(percent_render_3_right, function(x) {
+  output[[paste0(x)]] <- renderUI({
+    validate(
+      need(!is.na(rv[[paste0(x)]]), "NA")
+    )
+    a <- (rv[[paste0(x)]]*100) %>% round(3)
+    paste0(a,"%") %>% helpText() %>% div(align="right")
   })
-  
+})
+
 # This doesn't work  
 # for (r in 2:4) {
 # lapply(var_to_render[[r]], 
@@ -162,11 +162,11 @@ var_to_render_0_right <- c("inc_rev_herd_size","inc_rev_per_cow",
                            "inc_exp_herd_increase", "inc_exp_repair", "inc_exp_feed", "inc_exp_pellet", 
                            "inc_exp_replacement", "inc_exp_utilities", "inc_exp_record_management", 
                            "inc_exp_total" ) 
-                      
+
 
 
 inflation_factors <- c("inflation_margin", "inflation_robot",
-                 "inflation_labor", "inflation_general")
+                       "inflation_labor", "inflation_general")
 assign_factors <- c(rep(1,6), rep(3,4), rep(1,8)) 
 
 # The order of factor assignments correspond to var_to_render_0_right
@@ -182,9 +182,9 @@ lapply(var_to_render_0_right,
            } else {
              i_factor <- 1
            } 
-             (rv[[paste0(x)]] * i_factor) %>% 
-               formatdollar() %>% helpText() %>% div(align="right")
-           })
+           (rv[[paste0(x)]] * i_factor) %>% 
+             formatdollar() %>% helpText() %>% div(align="right")
+         })
        }
 )
 
@@ -222,12 +222,12 @@ robot_or_parlor <- reactive({
       return("New Barn")
     } else if (input$profile_choice=="Retrofit Parlors") {
       return("Retrofit")
-  } else {
-    return("New Parlors")
-  }
+    } else {
+      return("New Parlors")
+    }
   }
 })
-  
+
 output$IOFC <- renderUI({
   if (input$IOFC=="per cow") {
     dash_IOFC(rv$IOFC, rv$IOFC2, basis=input$IOFC)
@@ -309,7 +309,7 @@ output$cashflow <- renderUI({
   max <- max(rv$table_cash_flow$after_tax_cash_flow) %>% formatdollar2() 
   sd <- sd(rv$table_cash_flow$after_tax_cash_flow) %>% formatdollar()
   pos <- paste0(round(sum(rv$table_cash_flow$after_tax_cash_flow>0)/rv$housing_years*100),"%")
-
+  
   div(class="well well-sm", style= "background-color: 	#778899; color:white;", 
       h4("Cash Flow", align="center"),
       h5("Min:", min), 
@@ -318,7 +318,7 @@ output$cashflow <- renderUI({
       h5("S.D.:", sd),
       h5(pos, "stays positive"),
       h5("under", robot_or_parlor())
-      )
+  )
 }) 
 
 
@@ -331,10 +331,10 @@ output$cashflow2 <- renderGvis({
   gvisAreaChart(tbl, xvar="Year", 
                 yvar=c("Cashflow"),
                 options=list(
-                             title="After-tax Cash Flow", 
-                             vAxis= paste("{title:'Impact under", robot_or_parlor(),"($)'}"),
-                             hAxis="{title:'Year'}",
-                             legend="none"
+                  title="After-tax Cash Flow", 
+                  vAxis= paste("{title:'Impact under", robot_or_parlor(),"($)'}"),
+                  hAxis="{title:'Year'}",
+                  legend="none"
                 ))
 })
 
@@ -359,9 +359,9 @@ output$breakeven2 <- renderGvis({
   }) %>% unlist() %>% round(2)
   df$Wage <- lapply(c(1:rv$housing_years), function(t) { 
     labor_rate * (1 + input$inflation_labor/100)^(t-1)
-    }) %>% unlist() %>% round(2)
+  }) %>% unlist() %>% round(2)
   df$Wage_Inflation <- lapply(c(1:rv$housing_years), function(t) { 
-     input$labor_rate * (1 + inflation)^(t-1)
+    input$labor_rate * (1 + inflation)^(t-1)
   }) %>% unlist() %>% round(2)
   
   gvisLineChart(df, xvar="Year", 
@@ -397,7 +397,7 @@ output$breakeven <- renderUI({
     be_val <- paste0(round(inflation*100,3),"%") 
     labor_rate <- input$labor_rate
   }
-
+  
   yr_one <- paste("Year", round(rv$housing_years/3), ": ")
   yr_two <- paste("Year", round(rv$housing_years*(2/3)),": ")
   yr_three <- paste("Year", round(rv$housing_years),": ")
@@ -424,11 +424,11 @@ output$breakeven <- renderUI({
 ##  --- cash flow tables ---
 
 output$download_table_cash_flow <- downloadHandler( 
-#   filename = function() { paste('cash_flow.csv') },
-#   content = function(file) {
-#     write.csv(df$table_cash_flow, file)
-#   }
-#   
+  #   filename = function() { paste('cash_flow.csv') },
+  #   content = function(file) {
+  #     write.csv(df$table_cash_flow, file)
+  #   }
+  #   
   filename = "cash_flow.xlsx", 
   content = function(file) { 
     wb <- XLConnect::loadWorkbook(file, create = TRUE)
@@ -448,9 +448,9 @@ output$table_cash_flow <- DT::renderDataTable({
   colnames(tbl) <- c('Year', 'Revenue minus Expense', 'Interests on Debt', 'Depreciation',
                      'Operating Income', 'Income Tax','Principal Payments','Adding Back Depreciation',
                      'Down-payments','Salvage Values','After-tax Cashflow')
-   L <- length(tbl[,1])
-   df$table_cash_flow <- tbl
-   DT::datatable(tbl, 
+  L <- length(tbl[,1])
+  df$table_cash_flow <- tbl
+  DT::datatable(tbl, 
                 # colnames = c('Year', 'Robot', 'Housing', 'Total'), 
                 rownames = FALSE,
                 extensions = 'ColVis',
@@ -470,11 +470,11 @@ output$table_cash_flow <- DT::renderDataTable({
       color =  styleInterval(0, c('gray', 'white')),
       backgroundColor = styleInterval(0, c('yellow', 'lightblue'))) %>%
     
-     formatStyle( 
-          'Operating Income',
-          fontWeight = c('bold'),
-          color =  styleInterval(0.001, c('gray', 'white')),
-          backgroundColor = styleInterval(0.001, c('yellow', 'lightblue')))
+    formatStyle( 
+      'Operating Income',
+      fontWeight = c('bold'),
+      color =  styleInterval(0.001, c('gray', 'white')),
+      backgroundColor = styleInterval(0.001, c('yellow', 'lightblue')))
 })  
 
 output$table_debt <- DT::renderDataTable({
@@ -539,22 +539,22 @@ output$cashflow_chart <- renderGvis({
   tbl$Operating_Income <- tbl$operating_income
   tbl$Cashflow <- tbl$after_tax_cash_flow 
   gvisLineChart(tbl, xvar="Year",  
-                         yvar=c("Cashflow","Operating_Income"),
-                         options=list(title="Before-tax Operating Income & After-tax Cash Flow", 
-                                      vAxis=paste("{title:'Net Annual Impact under", robot_or_parlor()," ($)'}"),
-                                      hAxis="{title:'Year'}",
-                                      legend="bottom",
-                                      width=800, height=400
-                                        ))
-#       gvisAreaChart(tbl, xvar="Year", 
-#                        yvar=c("Cashflow","Operating_Income"),
-#                        options=list(isStacked=TRUE,
-#                                     title="Before-tax Operating Income & After-tax Cash Flow", 
-#                                     vAxis="{title:'Net Annual Impact under Robot ($)'}",
-#                                     hAxis="{title:'Year'}",
-#                                     legend="bottom",
-#                                     width=800, height=400
-#                                       ))
+                yvar=c("Cashflow","Operating_Income"),
+                options=list(title="Before-tax Operating Income & After-tax Cash Flow", 
+                             vAxis=paste("{title:'Net Annual Impact under", robot_or_parlor()," ($)'}"),
+                             hAxis="{title:'Year'}",
+                             legend="bottom",
+                             width=800, height=400
+                ))
+  #       gvisAreaChart(tbl, xvar="Year", 
+  #                        yvar=c("Cashflow","Operating_Income"),
+  #                        options=list(isStacked=TRUE,
+  #                                     title="Before-tax Operating Income & After-tax Cash Flow", 
+  #                                     vAxis="{title:'Net Annual Impact under Robot ($)'}",
+  #                                     hAxis="{title:'Year'}",
+  #                                     legend="bottom",
+  #                                     width=800, height=400
+  #                                       ))
 })
 
 
@@ -562,10 +562,10 @@ output$cashflow_chart <- renderGvis({
 ## --- Robots vs Parlors ---
 
 output$copy_profile_choice1 <- renderUI({ 
-    div(h4("Selected Investment Profile:"), 
-        h4(input$profile_choice), align="center")
+  div(h4("Selected Investment Profile:"), 
+      h4(input$profile_choice), align="center")
 }) 
-        
+
 output$copy_profile_choice2 <- renderUI({
   div(h4("Selected Investment Profile:"), 
       h4(input$profile_choice), align="center")
@@ -631,38 +631,38 @@ output$table_robust_variables <- DT::renderDataTable({
 })
 
 
-  output$table_robust_before_tax <- DT::renderDataTable({
-    if (input$robust=="Sensitivity") {
-      if (dim(rb$table_sensitivity_before_tax)[1]==0) return()
-        tbl <- rb$table_sensitivity_before_tax
-        noncurrency <- c_noncurrency
-        change_var <- c(2:4)
-    }
-    else if (input$robust=="Scenarios") {
-      if (dim(rb$table_scenario_before_tax)[1]==0) return()
-      tbl <- rb$table_scenario_before_tax
-      noncurrency <- s_noncurrency
-      change_var <- c(2:11)
-    } else {
-      return()
-    }
-    L <- length(tbl[,1])
-    vars <- colnames(tbl)
-    tbl <- tbl[,vars[-c(change_var, grep("diff:",vars))]]
-    DT::datatable(tbl,
-                  rownames = FALSE,
-                  extensions = 'ColVis',
-                  options = list(
-                    dom = 'C<"clear">lfrtip',
-                    scrollX = TRUE,
-                    scrollCollapse = TRUE,
-                    scrollY = 500,
-                    pageLength = L,
-                    bLengthChange =FALSE,
-                    searching = FALSE,
-                    activate = 'mouseover')) %>% 
-      formatCurrency(colnames(tbl)[!(colnames(tbl) %in% noncurrency)])
-  })
+output$table_robust_before_tax <- DT::renderDataTable({
+  if (input$robust=="Sensitivity") {
+    if (dim(rb$table_sensitivity_before_tax)[1]==0) return()
+    tbl <- rb$table_sensitivity_before_tax
+    noncurrency <- c_noncurrency
+    change_var <- c(2:4)
+  }
+  else if (input$robust=="Scenarios") {
+    if (dim(rb$table_scenario_before_tax)[1]==0) return()
+    tbl <- rb$table_scenario_before_tax
+    noncurrency <- s_noncurrency
+    change_var <- c(2:11)
+  } else {
+    return()
+  }
+  L <- length(tbl[,1])
+  vars <- colnames(tbl)
+  tbl <- tbl[,vars[-c(change_var, grep("diff:",vars))]]
+  DT::datatable(tbl,
+                rownames = FALSE,
+                extensions = 'ColVis',
+                options = list(
+                  dom = 'C<"clear">lfrtip',
+                  scrollX = TRUE,
+                  scrollCollapse = TRUE,
+                  scrollY = 500,
+                  pageLength = L,
+                  bLengthChange =FALSE,
+                  searching = FALSE,
+                  activate = 'mouseover')) %>% 
+    formatCurrency(colnames(tbl)[!(colnames(tbl) %in% noncurrency)])
+})
 
 
 output$table_robust_after_tax <- DT::renderDataTable({

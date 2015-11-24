@@ -26,11 +26,11 @@ formatdollar <- function(x,digit=0) {
   #if (is.na(x)) { return(NA) }
   if (length(x)==0) { return(NA) }
   #if (is.null(x)) { return(NA) }
-    if (x>=0) {
-      paste0("$",x %>% round(digit) %>% formatcomma()) 
-    } else {
-      paste0("-$",-x %>% round(digit) %>% formatcomma()) 
-    }
+  if (x>=0) {
+    paste0("$",x %>% round(digit) %>% formatcomma()) 
+  } else {
+    paste0("-$",-x %>% round(digit) %>% formatcomma()) 
+  }
 }
 
 formatdollar2 <- function(x,digit=0) {
@@ -47,19 +47,19 @@ formatdollar2b <- function(x,digit=0) {
   if (is.na(x)) { return(NA) }
   if (is.null(x)) { return(NA) }
   if (x>=0) {
-      paste0("( +$",x %>% round(digit) %>% formatcomma()," )") 
-    } else {
-      paste0("( -$",-x %>% round(digit) %>% formatcomma()," )") 
-    }
+    paste0("( +$",x %>% round(digit) %>% formatcomma()," )") 
+  } else {
+    paste0("( -$",-x %>% round(digit) %>% formatcomma()," )") 
+  }
 }
 
 
 df_null <- function(colnames) {
-    dummy <- matrix(rep(NA,length(colnames)),nrow=1)
-    colnames(dummy) <- colnames 
-    empty_table <- data.frame(Column1 = numeric(0)) 
-    empty_table <- rbind(empty_table, dummy)[NULL,] 
-    empty_table
+  dummy <- matrix(rep(NA,length(colnames)),nrow=1)
+  colnames(dummy) <- colnames 
+  empty_table <- data.frame(Column1 = numeric(0)) 
+  empty_table <- rbind(empty_table, dummy)[NULL,] 
+  empty_table
 }
 
 # --- Common Excel Financial Functions  ---
@@ -105,7 +105,7 @@ mirr <- function(values, finance_rate, reinvest_rate) {
 rate <- function(nper, pmt, pv) {
   irr(c(pv,rep(pmt, nper)))
 }
-  
+
 
 # annualized net present value
 # need: library(dplyr) for %>% operation
@@ -116,7 +116,7 @@ anpv <- function(x, r, i, nper) {
 
 # Used to bring anpv() back to the real term basis 
 deflator <- function(nper, i) {
- nper/sum((1 + i)^(seq_along(c(1:nper)-1))) 
+  nper/sum((1 + i)^(seq_along(c(1:nper)-1))) 
 }
 
 # http://www.experts-exchange.com/articles/1948/A-Guide-to-the-PMT-FV-IPMT-and-PPMT-Functions.html
@@ -185,8 +185,8 @@ dash_IOFC <- function(IOFC, IOFC2, basis,
                       difference=NULL) {
   validate( 
     need(!(is.na(IOFC) | is.na(IOFC2)), 
-                 "NA")
-    ) 
+         "NA")
+  ) 
   
   if (basis=="per cow")
   {  if (is.null(cutoffs)) { cutoffs <- c(663,331) } 
@@ -224,7 +224,7 @@ dash_IOFC <- function(IOFC, IOFC2, basis,
 
 
 dash_NAI <- function(NAI,cutoff=0, difference=NULL) {
-
+  
   validate( 
     need(!is.na(NAI), 
          "NA")
@@ -253,7 +253,7 @@ dash_NAI <- function(NAI,cutoff=0, difference=NULL) {
 
 
 dash_plot1 <- function(feed_current,feed_robot,milk_current,milk_robot) { 
-
+  
   validate( 
     need(!(is.na(feed_current) | is.na(feed_robot) | 
              is.na(milk_current) | is.na(milk_robot)), 
@@ -294,7 +294,7 @@ dash_plot2 <- function(inc_exp_repair,labor_current,labor_robot) {
   
   validate( 
     need(!(is.na(inc_exp_repair) | is.na(labor_current) | 
-              is.na(labor_robot)), 
+             is.na(labor_robot)), 
          "NA")
   )     
   
@@ -331,7 +331,7 @@ dash_plot2 <- function(inc_exp_repair,labor_current,labor_robot) {
 
 dash_plot3 <- function(inc_exp_capital_recovery,capital_recovery_housing,
                        cost_downpayment, robot_end_PV) { 
-
+  
   validate( 
     need(!(is.na(inc_exp_capital_recovery) | is.na(capital_recovery_housing) | 
              is.na(cost_downpayment) | is.na(robot_end_PV)), 

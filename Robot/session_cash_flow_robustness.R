@@ -7,7 +7,7 @@
 
 
 isolate({
-
+  
   ## ------------ Depreciation Table ------------
   if (input$robot_parlor=="OFF" | input$profile_choice=="Robots")  {
     yr_AGDS_robot <- 7

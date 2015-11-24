@@ -21,28 +21,28 @@ c_colnames <- c("Variable", "% Change","Base Value","New Value",
 
 c_noncurrency <- c("Variable", "% Change","Base Value","New Value",
                    "Break.Wage Inflation","diff: Break.Wage Inflation")
-                   
+
 c_varnames <- c("cost_robot","cost_housing_cow", "repair",
-                   "robot_years","salvage_milking1", "hr_sv_milking",
-                   "milk_change")
-
-c_labels <- c("Estimated cost per robot", "Related housing changes needed per cow",
-                 "Estimated annual change in milking system repair",
-                 "Robots: years of useful life",
-                 "Value of robots after useful life",
-                 "Anticipated savings in milking & chore labor",
-                 "Projected change in milk production") 
-
-c_varnames_parlor <- c("cost_parlors","cost_housing_cow", "repair",
-                "milking_years","salvage_milking1", "hr_sv_milking",
+                "robot_years","salvage_milking1", "hr_sv_milking",
                 "milk_change")
 
-c_labels_parlor <- c("Estimated cost of parlors", "Related housing changes needed per cow",
+c_labels <- c("Estimated cost per robot", "Related housing changes needed per cow",
               "Estimated annual change in milking system repair",
-              "Parlors: years of useful life",
-              "Salvage value of parlors after useful life",
+              "Robots: years of useful life",
+              "Value of robots after useful life",
               "Anticipated savings in milking & chore labor",
               "Projected change in milk production") 
+
+c_varnames_parlor <- c("cost_parlors","cost_housing_cow", "repair",
+                       "milking_years","salvage_milking1", "hr_sv_milking",
+                       "milk_change")
+
+c_labels_parlor <- c("Estimated cost of parlors", "Related housing changes needed per cow",
+                     "Estimated annual change in milking system repair",
+                     "Parlors: years of useful life",
+                     "Salvage value of parlors after useful life",
+                     "Anticipated savings in milking & chore labor",
+                     "Projected change in milk production") 
 
 s_varnames <- c("cost_robot","cost_housing_cow", "milk_change",
                 "scc_change","pellets")
@@ -106,15 +106,15 @@ vars_selected_profile <- c("robot_parlor","profile_choice","herd_size","herd_inc
 
 
 vars_all_profiles <- c("herd_increase", "repair","insurance_rate","hr_sv_milking", 
-                                "anticipated_hours_heat","increase_rc_mgt",
-                                "decrease_lab_mgt", "milk_change","scc_change","software", 
-                                "pellets","cost_pellets","change_turnover","change_electricity",
-                                "change_water", "change_chemical",
-                                "down_housing", "down_milking1", "down_milking2",
-                                "n_yr_housing", "n_yr_milking1","n_yr_milking2",
-                                "salvage_housing", "salvage_milking1", 
-                                "milking_years",  "robot_years", "n_robot",
-                                "cost_housing_cow",  "cost_parlors", "cost_robot")
+                       "anticipated_hours_heat","increase_rc_mgt",
+                       "decrease_lab_mgt", "milk_change","scc_change","software", 
+                       "pellets","cost_pellets","change_turnover","change_electricity",
+                       "change_water", "change_chemical",
+                       "down_housing", "down_milking1", "down_milking2",
+                       "n_yr_housing", "n_yr_milking1","n_yr_milking2",
+                       "salvage_housing", "salvage_milking1", 
+                       "milking_years",  "robot_years", "n_robot",
+                       "cost_housing_cow",  "cost_parlors", "cost_robot")
 
 mins_vars_all_profiles <- c(rep(0,12), -10, rep(0,11), rep(1, 2), rep(0,4))
 
