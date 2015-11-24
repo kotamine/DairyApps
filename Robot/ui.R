@@ -9,6 +9,7 @@ suppressPackageStartupMessages(library(dplyr))
 suppressPackageStartupMessages(library(xlsx))
 suppressPackageStartupMessages(library(XLConnect))
 
+
 shinyUI(
    navbarPage(
     "Robotic Milking System",
@@ -38,7 +39,10 @@ shinyUI(
              ),
              # --------- Data Table ---------
              br(), br(),
-             fluidRow(column(3,offset=2,
+             hr(),
+             fluidRow(column(2, offset=1,
+                             actionButton("defalut_data","Default Data")),
+                      column(3,
                              downloadButton("data_download","Download Data")),
                       column(3, 
              # fileInput() is passessed from the server
@@ -68,6 +72,10 @@ tabPanel("Cash Flow",
     # ---------- Additional Analyses -----------
     navbarMenu("More",
                tabPanel("Robustness Check Tools",
+                        conditionalPanel("input.budget==0",
+                                         div(helpText("Please review all tabs in Data Entry."),align="center")
+                                         ),
+                        conditionalPanel("input.budget>0",
                         fluidRow(column(6, offset=3,
                                         radioButtons("robust", "Robustness analysis options", 
                                                                      choices=c("Off","Sensitivity","Scenarios")),
@@ -81,9 +89,12 @@ tabPanel("Cash Flow",
                                         conditionalPanel('input.robust=="Scenarios"', br(), hr(),
                                                          includeMarkdown(file.path("text","scenario.md")))
                         ))
-                        ),
+                        )),
 
                tabPanel("Robots vs Parlors",
+                        conditionalPanel("input.budget==0",
+                                         div(helpText("Please review all tabs in Data Entry."),align="center")
+                        ),
                         conditionalPanel("input.budget>0",
                                          source("ui_robot_parlor.R", local=TRUE)$value
                         ))

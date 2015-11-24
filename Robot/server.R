@@ -10,6 +10,8 @@ suppressPackageStartupMessages(library(xlsx))
 suppressPackageStartupMessages(library(XLConnect))
 
 source("global_parameters.R")
+default_data_1 <- read.xlsx("www/default_user_input_data.xlsx", sheetIndex = 1) 
+default_data_2 <- read.xlsx("www/default_user_input_data.xlsx", sheetIndex = 2) 
 
 
 shinyServer(function(input, output, session) {
@@ -56,6 +58,7 @@ shinyServer(function(input, output, session) {
   # http://stackoverflow.com/questions/17352086/how-can-i-update-a-shiny-fileinput-object
   output$resettableInput <- renderUI({
     input$remove
+    closeAlert(session, "ref_upload_alert")
     
     fileInput("data_upload", "Upload Data File",
               accept=c(".xlsx", "application/vnd.ms-excel"))

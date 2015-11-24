@@ -61,7 +61,7 @@ shinyjs::onclick("readProfile",
 )
 
 
-#
+## download cashflow, debt, depreciation tables
 output$dl_button_cash_flow <- renderUI({
   if (!is.null(df$table_cash_flow) & !is.null(df$table_debt) & !is.null(df$table_depreciation))
   {   downloadButton('download_table_cash_flow', 'Download')
@@ -70,14 +70,6 @@ output$dl_button_cash_flow <- renderUI({
   } 
 })
 
-# observe({
-#   browser() 
-#   if (input$cash_flow_on=="ON") {
-#   shinyjs::show(id="cash_flow_details")
-#   } else {
-#     shinyjs::hide(id="cash_flow_details")
-#   }
-# })
 
 #   observe({
 #     toggle(id="DMI_inputs", condition = input$customDMI, anim = TRUE)
@@ -120,19 +112,6 @@ WACC <- reactive({
                (1-input$tax_rate/100))/(rv$cost_housing + rv$cost_milking)
   rv$WACC
 })
-
-
-# Execute initial calculations when robustness option is changed 
-observeEvent(input$robust, {
-  if (input$robust=="Sensitivity") {
-   updateButton(session, "sensitivity_calculate","Calculate", style="primary")
-  } else if (input$robust=="Scenario") {
-    updateButton(session, "scenario_calculate","Calculate", style="primary")
-  } else {
-    return()
-  }
-})
-
 
 
 # Download the tables as an Excel file   
@@ -182,15 +161,15 @@ all_profiles <- function() {
 
 # Upload an Excel file, validate it, and then update tables
 observe({
-  
+  if (is.null(input$data_upload)) { return() }
   
   inFile <- input$data_upload
   if (is.null(inFile)) {
     return(NULL) 
   }
   
-  browser()
-  
+  isolate({
+
   closeAlert(session, "ref_upload_alert")
   
   # Check file type: This is automatically handled when launched to the web
@@ -214,20 +193,39 @@ observe({
     return()
   }
   
-  user_data_1 <- read.xlsx(inFile$datapath, sheetIndex = 1) 
-  user_data_2 <- read.xlsx(inFile$datapath, sheetIndex = 2) 
+  rv$user_data_1 <- read.xlsx(inFile$datapath, sheetIndex = 1) 
+  rv$user_data_2 <- read.xlsx(inFile$datapath, sheetIndex = 2) 
+ })
+
+})
+
+observeEvent(input$defalut_data,{
+
+  rv$user_data_1 <- default_data_1
+  rv$user_data_2 <- default_data_2
+  
+})
+
+
+# change to default data or uploaded data triggers updates of inputs 
+observe({ 
+  if (is.null(rv$user_data_1)) { return() }
+  rv$user_data_1 
+  rv$user_data_2 
+  
+  isolate({
   # Replace "." symbole with space " "
-  colnames(user_data_1) <- gsub("\\."," ",colnames(user_data_1))
-  colnames(user_data_2) <- gsub("\\."," ",colnames(user_data_2))
+  colnames(rv$user_data_1) <- gsub("\\."," ",colnames(rv$user_data_1))
+  colnames(rv$user_data_2) <- gsub("\\."," ",colnames(rv$user_data_2))
   
   colnames_1 <- c("variable","value")
   colnames_2 <- c("variable","value")
     
   # Check colname names
-  if (!(all(colnames(user_data_1) %in% colnames_1) &
-        all(colnames_1 %in% colnames(user_data_1)) &
-        all(colnames(user_data_2) %in% colnames_2) &
-        all(colnames_2 %in% colnames(user_data_2)))) {
+  if (!(all(colnames(rv$user_data_1) %in% colnames_1) &
+        all(colnames_1 %in% colnames(rv$user_data_1)) &
+        all(colnames(rv$user_data_2) %in% colnames_2) &
+        all(colnames_2 %in% colnames(rv$user_data_2)))) {
     createAlert(session, "upload_alert", "ref_upload_alert", 
                 content = "Wrong column names: 
                 please upload  a proper file.",
@@ -237,15 +235,19 @@ observe({
   
   rownames_1 <- vars_selected_profile
   rownames_2 <- c()
+  ii <- 1
     for (varname_ref in c( "_pr1", "_pr2", "_pr3", "_pr4"))  {
       for(i in 1:length(vars_all_profiles)) {
-        if (!is.null(input[[paste(vars_all_profiles[i], varname_ref)]])) 
-          rownames_2[i] <-  c(paste(vars_all_profiles[i]))
+        if (!is.null(input[[paste0(vars_all_profiles[i], varname_ref)]])) {
+          rownames_2[ii] <-  c(paste0(vars_all_profiles[i], varname_ref))
+          ii <- ii + 1
+        }
       } 
     }
+  
     # Check row names of the first column
-    if(!(all(user_data_1[,1] %in% rownames_1) & 
-         all(user_data_2[,1] %in% rownames_2) )) {
+    if(!(all(rv$user_data_1[,1] %in% rownames_1) & 
+         all(rv$user_data_2[,1] %in% rownames_2) )) {
     createAlert(session, "upload_alert", "ref_upload_alert", 
                 content = "Wrong row names in the first column: 
                 please upload a proper file.",
@@ -257,24 +259,24 @@ observe({
   closeAlert(session, "ref_upload_alert")
   
   # Some processing is needed to treat numeric and non-numeric variables separately
-  idx_1 <-  c(1:length(user_data_1[,"variable"]))[user_data_1[,"variable"] 
+  idx_1 <-  c(1:length(rv$user_data_1[,"variable"]))[rv$user_data_1[,"variable"] 
                                                 %in% c("robot_parlor","profile_choice", "dep_method")]
   # "robot_parlor","profile_choice", "dep_method" are assumed to be ordered in that way
   
-  data_1 <- matrix(as.numeric(user_data_1[ -idx_1,"value"]),nrow=1) %>% data.frame()
-  colnames(data_1) <-   user_data_1[ -idx_1,"variable"]
+  data_1 <- matrix(rv$user_data_1[ -idx_1,"value"],nrow=1) %>% data.frame()
+  colnames(data_1) <-   rv$user_data_1[ -idx_1,"variable"]
   
   
   # Update data with uploaded data 
   updateRadioButtons(session, "robot_parlor","Robots vs Parlors Comparison",
-                     selected=user_data_1[idx_1[1],"value"], choices=c("OFF","ON"), inline=TRUE)  
+                     selected=rv$user_data_1[idx_1[1],"value"], choices=c("OFF","ON"), inline=TRUE)  
   
   updateSelectInput(session,"profile_choice","Select Investment Profile", 
-                    selected=user_data_1[idx_1[2],"value"], 
+                    selected=rv$user_data_1[idx_1[2],"value"], 
                     choices=c("Barn Only","Retrofit Parlors","New Parlors","Robots"))
   
   updateRadioButtons(session, "dep_method", "Depreciation accounting method:", 
-                     selected=user_data_1[idx_1[3],"value"], 
+                     selected=rv$user_data_1[idx_1[3],"value"], 
                      choices=c("Accelerated GDS"="d1","Straight-line ADS"="d2"))
   
   updateNumericInput(session, "herd_size",NULL,value=data_1$herd_size, min=30,step=10)
@@ -347,12 +349,12 @@ observe({
   for (varname_ref in c( "_pr1", "_pr2", "_pr3", "_pr4"))  {
     for(i in 1:length(vars_all_profiles)) {
       if (!is.null(input[[paste(vars_all_profiles[i], varname_ref)]])) 
-        updateNumericInput(session, paste(vars_all_profiles[i], varname_ref), NULL,
-                           value=user_data_2[[paste(vars_all_profiles[i], varname_ref)]], 
+        updateNumericInput(session, paste0(vars_all_profiles[i], varname_ref), NULL,
+                           value=rv$user_data_2[[paste0(vars_all_profiles[i], varname_ref)]], 
                            min= mins_vars_all_profiles[i],step=steps_vars_all_profiles[i] )
     } 
   }
-  
+  })
 })
 
 

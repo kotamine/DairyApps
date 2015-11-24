@@ -148,7 +148,7 @@ observe({
 }) 
 
 
-# Recalculate all rows of table_sensitivity 
+# Recalculate all rows of table_scenario
 observeEvent(input$scenario_calculate, {
   
   if (!(input$robot_parlor=="OFF" | input$profile_choice=="Robots")) { return() } 

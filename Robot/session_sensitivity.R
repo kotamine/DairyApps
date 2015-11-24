@@ -259,6 +259,8 @@ rb$calculation_plot <- FALSE
 observe({
   input$c_choice  # Triggered by input$c_choice
   
+  if (input$robust!="Sensitivity") { return() }
+  
   isolate({
   robust <- "Sensitivity"
   rb$calculation_plot <- TRUE
@@ -452,7 +454,7 @@ output$c_cashflow <- renderUI({
   avg <- mean(rb$table_cash_flow$after_tax_cash_flow) %>% formatdollar2() 
   max <- max(rb$table_cash_flow$after_tax_cash_flow) %>% formatdollar2() 
   sd <- sd(rb$table_cash_flow$after_tax_cash_flow) %>% formatdollar()
-  pos <- paste0(round(sum(rb$table_cash_flow$after_tax_cash_flow>0)/input$horizon*100),"%")
+  pos <- paste0(round(sum(rb$table_cash_flow$after_tax_cash_flow>0)/rb$housing_years*100),"%")
   
   div(class="well well-sm", style= "background-color: 	#778899; color:white;", 
       h4("Cash Flow", align="center"),
@@ -495,14 +497,14 @@ output$c_breakeven2 <- renderGvis({
     tax <- "(After Tax)"
   }
   
-  df <- data.frame(Year=c(1:input$horizon))
-  df$Base <- lapply(c(1:input$horizon), function(t) { 
+  df <- data.frame(Year=c(1:rb$housing_years))
+  df$Base <- lapply(c(1:rb$housing_years), function(t) { 
     input$labor_rate * (1 + input$inflation_labor/100)^(t-1)
   }) %>% unlist() %>% round(2)
-  df$Wage <- lapply(c(1:input$horizon), function(t) { 
+  df$Wage <- lapply(c(1:rb$housing_years), function(t) { 
     labor_rate * (1 + input$inflation_labor/100)^(t-1)
   }) %>% unlist() %>% round(2)
-  df$Wage_Inflation <- lapply(c(1:input$horizon), function(t) { 
+  df$Wage_Inflation <- lapply(c(1:rb$housing_years), function(t) { 
     input$labor_rate * (1 + inflation)^(t-1)
   }) %>% unlist() %>% round(2)
   
@@ -540,13 +542,13 @@ output$c_breakeven <- renderUI({
     labor_rate <- input$labor_rate
   }
   
-  yr_one <- paste("Year", round(input$horizon/3), ": ")
-  yr_two <- paste("Year", round(input$horizon*(2/3)),": ")
-  yr_three <- paste("Year", round(input$horizon),": ")
+  yr_one <- paste("Year", round(rb$housing_years/3), ": ")
+  yr_two <- paste("Year", round(rb$housing_years*(2/3)),": ")
+  yr_three <- paste("Year", round(rb$housing_years),": ")
   wage_zero <- labor_rate  %>% formatdollar(2)
-  wage_one <- (labor_rate * (1 + inflation)^(round(input$horizon/3)-1))  %>% formatdollar(2)
-  wage_two <- (labor_rate * (1 + inflation)^(round(input$horizon*2/3)-1))  %>% formatdollar(2)
-  wage_three <- (labor_rate * (1 + inflation)^(round(input$horizon)-1))  %>% formatdollar(2)
+  wage_one <- (labor_rate * (1 + inflation)^(round(rb$housing_years/3)-1))  %>% formatdollar(2)
+  wage_two <- (labor_rate * (1 + inflation)^(round(rb$housing_years*2/3)-1))  %>% formatdollar(2)
+  wage_three <- (labor_rate * (1 + inflation)^(round(rb$housing_years)-1))  %>% formatdollar(2)
   
   div(class="well well-sm", style= "background-color:	#778899; color:white;", 
       h4("Breakeven", option, be_val, align="center"),
