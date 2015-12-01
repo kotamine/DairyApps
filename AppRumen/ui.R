@@ -2,6 +2,7 @@ library(shiny)
 library(shinyBS)
 library(shinydashboard)
 library(googlesheets)
+library(rmongodb)
 suppressPackageStartupMessages(library(dplyr))
 
 source("helpers.R")
