@@ -356,4 +356,40 @@ dim(m0d)
 ## mongoimport -h ds039484.mongolab.com:39484 -d posts  -c restaurants -u newuser -p newuser --file /data/db/primer-dataset.json --drop
 
 
+## csv file must be saved as "Windows Comma Separated(.csv)" format 
+# mongoimport -h ds061954.mongolab.com:61954 -d app_rumen  -c posts -u user1 -p user1 --file /data/db/app_rumen/posts.csv --headerline --type csv --drop 
 
+# mongoimport -h ds061954.mongolab.com:61954 -d app_rumen  -c comments -u user1 -p user1 --file /data/db/app_rumen/comments.csv --headerline --type csv --drop 
+
+# mongoimport -h ds061954.mongolab.com:61954 -d app_rumen  -c archive_posts -u user1 -p user1 --file /data/db/app_rumen/archive_posts.csv --headerline --type csv --drop 
+
+# mongoimport -h ds061954.mongolab.com:61954 -d app_rumen  -c archive_comments -u user1 -p user1 --file /data/db/app_rumen/archive_comments.csv --headerline --type csv --drop 
+
+# mongoimport -h ds061954.mongolab.com:61954 -d app_rumen  -c system_use -u user1 -p user1 --file /data/db/app_rumen/system_use.csv --headerline --type csv --drop 
+
+
+
+
+host <- "ds061954.mongolab.com:61954" 
+username <- "user1" 
+password <- "user1" 
+db <- "app_rumen" 
+
+## Connect to mongodb from a mongolab location 
+url <- paste0("mongodb://",username,":",password,"@", host, "/",db) 
+data1 <- mongo(collection="posts", db=db, url = url)$find()
+
+
+data1 <- mongo(collection="posts", db=db, url = url)
+data1$update('{"postID":1445138342}', update='{"$set":{ "current_views": 6 }}' )
+data1$find('{"postID":1445138342}')  
+
+update_views <- paste('{"$set":{', '"current_views":', 1 + 1,
+                       ', "cumulative_views":', 2 + 1, '}}',sep='')
+
+update_views <- paste('{"$set":{', '"current_views":', (4 + 3),'}}', sep="")
+data1$update('{"postID":1445138342}', update=update_views)
+
+
+
+  

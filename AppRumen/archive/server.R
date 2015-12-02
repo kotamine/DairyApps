@@ -2,8 +2,6 @@ library(shiny)
 library(shinyBS)
 library(shinydashboard)
 library(googlesheets)
-library(mongolite) 
-
 suppressPackageStartupMessages(library(dplyr))
 library(magrittr)
 
@@ -17,108 +15,22 @@ shinyServer(function(input, output, session) {
   
      rv <- reactiveValues(view = NULL, edit_auth = FALSE, 
                           selectedPost = NULL, selectedComments = NULL)
+     
      browser()
      
-     ## Connect to mongodb from a mongolab location 
-     host <- "ds061954.mongolab.com:61954" 
-     username <- "user1" 
-     password <- "user1" 
-     db <- "app_rumen" 
-     url <- paste0("mongodb://",username,":",password,"@", host, "/",db) 
-
-     
-     # load databases after "Send"  
-     table_posts <- reactive({
-       input$post_send
-       # load_data_gsheets("table_posts")
-        mongo(collection="posts", db=db, url = url)$find()
-     })
-     
-     table_comments <- reactive({
-       input$comment_send
-      # load_data_gsheets("table_comments")  
-       mongo(collection="comments", db=db, url = url)$find()
-     })
-     
-     table_archive_posts <- reactive({
-       input$edit_send
-       # load_data_gsheets("table_archive_posts")
-       mongo(collection="table_archive_posts", db=db, url = url)$find()
-     })
-     
-     table_archive_comments <- reactive({
-       input$edit_send
-       # load_data_gsheets("table_archive_comments")
-       mongo(collection="table_archive_comments", db=db, url = url)$find()
-     })
-     
-     # obtain initial copies of tables for post-processing
-#      table_posts_copy <- gs_title("table_posts")  
-#      table_posts_copy <- gs_read_csv(table_posts_copy)  
-     table_posts_copy <- mongo(collection="posts", db=db, url = url)$find()
-     N <- dim(table_posts_copy)[1]
-     
-#      table_comments_copy <- gs_title("table_comments")  
-#      table_comments_copy <- gs_read_csv(table_comments_copy)  
-     table_comments_copy <- mongo(collection="comments", db=db, url = url)$find()
-     
-     # Prepare postings in Posts
-     output$postboxes <- renderUI({
-       
-       # table_posts_copy <- load_data_gsheets("table_posts")
-       table_posts_copy <-  mongo(collection="posts", db=db, url = url)$find()
-       table_posts_copy <-  table_posts_copy[table_posts_copy$post_category %in% input$filterCategory,]
-       table_posts_copy$average_interest[table_posts_copy$average_interest=="NA"] <- 0        
-       tmp_sort <- switch(input$sortPost, 
-                          "Most recently posted"=table_posts_copy$timestamp,
-                          "Most recently commented"=table_posts_copy$timestamp_comment,
-                          "Most commented"= - table_posts_copy$cumulative_comments, 
-                          "Most viewed"= - table_posts_copy$cumulative_views,
-                          "Highest interests"= - table_posts_copy$average_interest)
-       
-       sorted_table_posts <- table_posts_copy[order(tmp_sort),]
-       
-       N <- dim(table_posts_copy)[1]
-       if (is.null(input$n_boxes) || is.na(input$n_boxes)) {
-         n <- 0
-       } else {
-         n <- min(input$n_boxes,N)
-       }
-       
-       lapply(1:n, function(i) {
-         tmp_post <- sorted_table_posts[i,]  
-         box(
-           # helpText(paste(table_posts_copy[i,])),
-           # browser(), 
-           p("App Name:  ", strong(tmp_post$post_name),br(),
-             "Category:  ", tmp_post$post_category,br(),
-             "Description:  ",paste(strtrim(tmp_post$post,140),"..."),br(),
-             "Views:  ", tmp_post$cumulative_views, br(),
-             "Comments:  ", tmp_post$cumulative_comments, br(),
-             "Average Interest:  ",tmp_post$average_interest, br(),
-             "Date:  ", strtrim(tmp_post$timestamp,10),br(),
-             "By:  ", tmp_post$user_name
-           ),
-           br(),
-           actionButton(inputId = paste0("view", i),"View","primary") 
-         )
-       })
-     })
-     
-     
      # --------------- initializing the setup --------------------
-#      # Get keys for google sheets  
-#      ( KEY_1 <- "1d4tp2eMxs4u0UgQmiCNSM5Md3J0d2TUnrl6VlEciU5o")
-#      ( KEY_2 <- "1dpMa59iRabMR1c0Q6nu5U8g2Um9IMBFcpCmmCHu-4WE")
-#      ( KEY_3 <- "1HbE_bJDoe5t90mKAkbw8cRaLfOcVitwj76glZQ2R41o")
-#      ( KEY_4 <- "19vNaXeUjkYsKMOvCQXsUl29kR6xNTgDMIpeAXR_Ihb0") 
-#      ( KEY_5 <- "1irfY3pIOCFupFeBAXErj1_fDtUnh2heZc3WvCoVBkxg") 
-#      
-#      third_party_key_1 <- KEY_1 %>%  gs_key()
-#      third_party_key_2 <- KEY_2 %>%  gs_key()
-#      third_party_key_3 <- KEY_3 %>%  gs_key()
-#      third_party_key_4 <- KEY_4 %>%  gs_key()
-#      third_party_key_5 <- KEY_5 %>%  gs_key()
+     # Get keys for google sheets  
+     ( KEY_1 <- "1d4tp2eMxs4u0UgQmiCNSM5Md3J0d2TUnrl6VlEciU5o")
+     ( KEY_2 <- "1dpMa59iRabMR1c0Q6nu5U8g2Um9IMBFcpCmmCHu-4WE")
+     ( KEY_3 <- "1HbE_bJDoe5t90mKAkbw8cRaLfOcVitwj76glZQ2R41o")
+     ( KEY_4 <- "19vNaXeUjkYsKMOvCQXsUl29kR6xNTgDMIpeAXR_Ihb0") 
+     ( KEY_5 <- "1irfY3pIOCFupFeBAXErj1_fDtUnh2heZc3WvCoVBkxg") 
+
+     third_party_key_1 <- KEY_1 %>%  gs_key()
+     third_party_key_2 <- KEY_2 %>%  gs_key()
+     third_party_key_3 <- KEY_3 %>%  gs_key()
+     third_party_key_4 <- KEY_4 %>%  gs_key()
+     third_party_key_5 <- KEY_5 %>%  gs_key()
      
       # Enable the Submit button when all mandatory fields are filled out
      observe({
@@ -194,7 +106,59 @@ shinyServer(function(input, output, session) {
           updateTextInput(session, "comment_user_name", value = user_session_info$displayName)
           updateTextInput(session, "comment_email_address", value =  user_session_info$emailAddress)
      })
+     system_use <- gs_title("system_use")
      
+     messageData <- system_use  %>% gs_read_csv(ws="messageData")
+     #messageData <-  load_data_gsheets("system_use", ws="messageData")
+          
+     output$messageMenu <- renderMenu({
+       # Code to generate each of the messageItems here, in a list. This assumes
+       # that messageData is a data frame with two columns, 'from' and 'message'.
+       loc_messageData <-  messageData 
+        msgs <- apply(loc_messageData, 1, function(row) {
+         messageItem(from = row[["from"]], message = row[["message"]])
+       })
+       
+       # This is equivalent to calling:
+       #   dropdownMenu(type="messages", msgs[[1]], msgs[[2]], ...)
+       dropdownMenu(type = "messages", .list = msgs)
+     })
+     
+     output$taskMenu <- renderMenu({
+     dropdownMenu(type = "tasks", badgeStatus = "success",
+                  taskItem(value = 90, color = "green",
+                           "Documentation"
+                  ),
+                  taskItem(value = 17, color = "aqua",
+                           "Project X"
+                  ),
+                  taskItem(value = 75, color = "yellow",
+                           "Server deployment"
+                  ),
+                  taskItem(value = 80, color = "red",
+                           "Overall project"
+                  )
+     )
+     })
+     
+     output$notificationMenu <- renderMenu({ 
+     dropdownMenu(type = "notifications",
+                  notificationItem(
+                    text = "5 new users today",
+                    icon("users")
+                  ),
+                  notificationItem(
+                    text = "12 items delivered",
+                    icon("truck"),
+                    status = "success"
+                  ),
+                  notificationItem(
+                    text = "Server load at 86%",
+                    icon = icon("exclamation-triangle"),
+                    status = "warning"
+                  )
+     )
+     })
      
      # When the post_send button is clicked 
      observeEvent(input$post_send, {
@@ -269,7 +233,27 @@ shinyServer(function(input, output, session) {
      })
      
 
-
+     # Update the tables whenever a new submission is made 
+     table_posts <- reactive({
+          input$post_send
+          load_data_gsheets("table_posts")
+     })
+     
+     table_comments <- reactive({
+          input$comment_send
+          load_data_gsheets("table_comments")
+     })
+     
+     table_archive_posts <- reactive({
+          input$edit_send
+          load_data_gsheets("table_archive_posts")
+     })
+     
+     table_archive_comments <- reactive({
+          input$edit_send
+          load_data_gsheets("table_archive_comments")
+     })
+     
      
      # Show tables of posts and comments 
      output$viewTable <- DT::renderDataTable({
@@ -303,7 +287,54 @@ shinyServer(function(input, output, session) {
      })
      
      
+     # obtain initial copies of tables for post-processing
+     table_posts_copy <- gs_title("table_posts")  
+     table_posts_copy <- gs_read_csv(table_posts_copy)  
+     N <- dim(table_posts_copy)[1]
+     
+     table_comments_copy <- gs_title("table_comments")  
+     table_comments_copy <- gs_read_csv(table_comments_copy)  
+     
+     # Prepare postings in Posts
+     output$postboxes <- renderUI({
+       table_posts_copy <- load_data_gsheets("table_posts")
+       table_posts_copy <-  table_posts_copy[ table_posts_copy$post_category %in% input$filterCategory,]
+       table_posts_copy$average_interest[table_posts_copy$average_interest=="NA"] <- 0        
+       tmp_sort <- switch(input$sortPost, 
+                          "Most recently posted"=table_posts_copy$timestamp,
+                          "Most recently commented"=table_posts_copy$timestamp_comment,
+                          "Most commented"= - table_posts_copy$cumulative_comments, 
+                          "Most viewed"= - table_posts_copy$cumulative_views,
+                          "Highest interests"= - table_posts_copy$average_interest)
+       
+       sorted_table_posts <- table_posts_copy[order(tmp_sort),]
+       
+       N <- dim(table_posts_copy)[1]
+       if (is.null(input$n_boxes) || is.na(input$n_boxes)) {
+         n <- 0
+       } else {
+         n <- min(input$n_boxes,N)
+       }
 
+       lapply(1:n, function(i) {
+         tmp_post <- sorted_table_posts[i,]  
+         box(
+           # helpText(paste(table_posts_copy[i,])),
+           # browser(), 
+           p("App Name:  ", strong(tmp_post$post_name),br(),
+             "Category:  ", tmp_post$post_category,br(),
+             "Description:  ",paste(strtrim(tmp_post$post,140),"..."),br(),
+             "Views:  ", tmp_post$cumulative_views, br(),
+             "Comments:  ", tmp_post$cumulative_comments, br(),
+             "Average Interest:  ",tmp_post$average_interest, br(),
+             "Date:  ", strtrim(tmp_post$timestamp,10),br(),
+             "By:  ", tmp_post$user_name
+             ),
+           br(),
+           actionButton(inputId = paste0("view", i),"View","primary") 
+         )
+       })
+     })
      
      # ------------ Show Selected Post and Enable Edit process ----------------
      # Prepare the display of a selectet post in Details
@@ -313,11 +344,8 @@ shinyServer(function(input, output, session) {
           )
           # obtain a new copy of table (may be updated from some othere sessions)
          # table_posts_copy <- table_posts() 
-#           table_posts_copy <- load_data_gsheets("table_posts")
-#           table_comments_copy <- load_data_gsheets("table_comments") 
-          table_posts_copy <-  mongo(collection="posts", db=db, url = url)$find()
-          table_comments_copy <-  mongo(collection="comments", db=db, url = url)$find()
-       
+          table_posts_copy <- load_data_gsheets("table_posts")
+          table_comments_copy <- load_data_gsheets("table_comments") 
           rv$selectedPost <- table_posts_copy[rv$view,]
           tmp_post <- rv$selectedPost
           updateTextInput(session, "postID", value = tmp_post$postID)
@@ -365,20 +393,12 @@ shinyServer(function(input, output, session) {
 #        updateTextInput(session, "post_name", value = tmp_post$post_name)
 #        
        # Increase the counter of views            
-#        tmp_location <- which(tmp_post$postID ==  table_posts_copy[,c("postID")] ) + 1
-#        rv$post_location <- paste0("A",tmp_location)
-#        tmp_post$current_views <- tmp_post$current_views + 1
-#        tmp_post$cumulative_views <- tmp_post$cumulative_views + 1
-#        "table_posts" %>% gs_title %>% gs_edit_cells(input = tmp_post,  
-#                                                     anchor=rv$post_location, col_names = FALSE)
-#         
-       update_views <- paste0('{"$set":{', '"current_views":', (tmp_post$current_views + 1),
-                               ', "cumulative_views":', (tmp_post$cumulative_views + 1), '}}')
-
-        postID <- paste0('{"postID":', tmp_post$postID, '}')
-        mongo(collection="posts", db=db, url = url)$update(postID, update=update_views)
-       
-       
+       tmp_location <- which(tmp_post$postID ==  table_posts_copy[,c("postID")] ) + 1
+       rv$post_location <- paste0("A",tmp_location)
+       tmp_post$current_views <- tmp_post$current_views + 1
+       tmp_post$cumulative_views <- tmp_post$cumulative_views + 1
+       "table_posts" %>% gs_title %>% gs_edit_cells(input = tmp_post,  
+                                                    anchor=rv$post_location, col_names = FALSE)
        
 #        tmp_comments <- table_comments_copy[tmp_post$postID==table_comments_copy$postID,]
 #        tmp_comments <- tmp_comments[order(tmp_comments$timestamp2),]
@@ -512,7 +532,6 @@ shinyServer(function(input, output, session) {
      })) 
      
      
-     source("session_notification.R", local=TRUE)
 
      
 #      output$selectedPost <- reactive({
