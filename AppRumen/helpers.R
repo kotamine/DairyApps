@@ -119,3 +119,21 @@ actionButton <- function(inputId, label, btn.style = "" , css.class = "") {
   
   tags$button(id=inputId, type="button", class=paste("btn action-button",btn.css.class,css.class,collapse=" "), label)
 }
+
+
+# Function to insert previuos comments
+retrieveComments <- function(N_comments, tmp_comments) {
+  if (N_comments>0) {
+    lapply(1:N_comments, function(i) {
+      tmp_com_item  <- tmp_comments[i,] 
+      wellPanel(
+        p(tmp_com_item$comment,br(),
+          " - ",tmp_com_item$comment_user_name, " posted on ",
+          strtrim(tmp_com_item$timestamp2,10))
+      )
+    })
+  } else { 
+    (p("Leave the first comment for this idea!"))
+  }
+}    
+

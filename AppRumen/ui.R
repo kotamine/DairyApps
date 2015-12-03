@@ -154,7 +154,7 @@ dashboardSidebar(
             # ------------- Post --------------------
             #$ title="New Post", id="postTab",
                div(id = "post_form",
-                   textInput("post_name","Suggested App Name"),
+                   textInput("post_name","Suggested App Name", value=""),
                    selectInput("post_category","Category", 
                                choices=c("Milk","Forage","Labor","Social")),
 #                    textInput(inputId="post", label="Description"),

@@ -92,26 +92,16 @@ shinyServer(function(input, output, session) {
        })
      })
      
-     lapply()
-     observeEvent(input$view1, ({
-       updateCollapse(session, "collapseMain", open = "Details")
-       rv$view <- 1
-     }))
-     
-     observeEvent(input$view2, ({
-       updateCollapse(session, "collapseMain", open = "Details")
-       rv$view <- 2
-     }))
-     
-     observeEvent(input$view3, ({
-       updateCollapse(session, "collapseMain", open = "Details")
-       rv$view <- 3
-     })) 
-     
-     
-     
-
-    
+     observeEvent(input$n_boxes, {
+     lapply(c(1:input$n_boxes), function(x) {
+       browser()      
+       observeEvent(input[[paste0("view",x)]], ({
+         updateCollapse(session, "collapseMain", open = "Details")
+         rv$view <- x
+       }))
+     })
+     })
+ 
 
      # ---------- Event: post_send button ------------
      observeEvent(input$post_send, {
@@ -119,6 +109,8 @@ shinyServer(function(input, output, session) {
           updateTextInput(session, "timestamp", value = get_time_human())
           updateTextInput(session, "postID", value = get_time_epoch())
        
+          browser()  
+          
           # User-experience stuff
           shinyjs::disable("post_send")
           shinyjs::show("submitMsg")
@@ -131,7 +123,11 @@ shinyServer(function(input, output, session) {
           # Add a row to the data (show an error message in case of error)
           tryCatch({
               # save_data_gsheets(post_data(), "table_posts")
-              "table_posts" %>% gs_title %>% gs_add_row(input = post_data())
+              # "table_posts" %>% gs_title %>% gs_add_row(input = post_data())
+              
+                      
+               mongo(collection="posts", db=db, url = url)$insert(data.frame(post_data()))
+  
                updateTabItems(session, "tabs","postTab")
           },
           error = function(err) {
@@ -157,11 +153,20 @@ shinyServer(function(input, output, session) {
                                                input$interest) / (tmp_post$current_comments + 1)     
        }
        
-       tmp_post$current_comments <- tmp_post$cumulative_comments + 1
-       tmp_post$cumulative_comments <- tmp_post$cumulative_comments + 1
-       tmp_post$timestamp_comment <- get_time_epoch()
-       "table_posts" %>% gs_title %>% gs_edit_cells(input = tmp_post, 
-                                                    anchor=paste0("A",rv$post_location), col_names=FALSE)
+#        tmp_post$current_comments <- tmp_post$cumulative_comments + 1
+#        tmp_post$cumulative_comments <- tmp_post$cumulative_comments + 1
+#        tmp_post$timestamp_comment <- get_time_epoch()
+#        "table_posts" %>% gs_title %>% gs_edit_cells(input = tmp_post, 
+#                                                     anchor=paste0("A",rv$post_location), col_names=FALSE)
+#        
+
+       update_comments <- paste0('{"$set":{', '"current_views":', (tmp_post$current_comments  + 1),
+                              ', "cumulative_views":', (tmp_post$cumulative_comments + 1),
+                              ', "timestamp_comment":', get_time_epoch(), '}}')
+       
+       postID <- paste0('{"postID":', tmp_post$postID, '}')
+       mongo(collection="posts", db=db, url = url)$update(postID, update=update_comments)
+       
        
        # User-experience stuff
        shinyjs::disable("comment_send")
@@ -175,21 +180,25 @@ shinyServer(function(input, output, session) {
        # Add a row to the data (show an error message in case of error)
        tryCatch({
          #save_data_gsheets(comment_data(), "table_comments")
-         "table_comments" %>% gs_title %>% gs_add_row(input = comment_data())
+         # "table_comments" %>% gs_title %>% gs_add_row(input = comment_data())
+         
+         mongo(collection="comments", db=db, url = url)$insert( data.frane(comment_data()) )
          updateTabItems(session,"tabs","mainTab")
-       },
+       }, 
        error = function(err) {
          shinyjs::text("errorMsg2", err$message)
          shinyjs::show(id = "error2", anim = TRUE, animType = "fade")      
          shinyjs::logjs(err)
-       })
-     })
+       }) 
+     }) 
      
 
 
      
      # Show tables of posts and comments 
      output$viewTable <- DT::renderDataTable({
+         browser()
+       
           view_posts <- table_posts(); 
           view_posts <- view_posts %>% select(timestamp, post_name, post_category, user_name,
                                               edits,current_views,cumulative_views,current_comments,
@@ -265,8 +274,8 @@ shinyServer(function(input, output, session) {
               strong("Average Interest: "),tmp_post$average_interest, br(),
               strong("Date:  "), strtrim(tmp_post$timestamp,10),br(),br(),
               strong("Edits:"), tmp_post$edits, br(),
-              strong("Views since last edit: "), tmp_post$current_views, br(),
-              strong("Comments since last edit:"), tmp_post$current_comments, br(),
+              strong("Views since last edited: "), tmp_post$current_views, br(),
+              strong("Comments since last edited:"), tmp_post$current_comments, br(),
               br(), 
               strong("<< Comments >> ")),
            
@@ -333,22 +342,7 @@ shinyServer(function(input, output, session) {
      })
      
      
-     # Function to insert previuos comments
-     retrieveComments <- function(N_comments, tmp_comments) {
-          if (N_comments>0) {
-          lapply(1:N_comments, function(i) {
-               tmp_com_item  <- tmp_comments[i,] 
-               wellPanel(
-                    p(tmp_com_item$comment,br(),
-                      " - ",tmp_com_item$comment_user_name, " posted on ",
-                      strtrim(tmp_com_item$timestamp2,10))
-               )
-          })
-          } else { 
-               (p("Leave the first comment for this idea!"))
-          }
-     }    
-      
+
          
      # Open up description for edit 
      observeEvent(input$edit, { 
