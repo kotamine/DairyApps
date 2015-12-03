@@ -11,7 +11,8 @@ source("helpers.R")
 
 
 shinyServer(function(input, output, session) {
-     # Give an initial value to the timestamp field
+     
+   # Give an initial value to the timestamp field
      updateTextInput(session, "timestamp", value = get_time_human())
      updateTextInput(session, "postID", value = get_time_epoch())
   
@@ -136,43 +137,7 @@ shinyServer(function(input, output, session) {
           
      })
     
-     # Gather all the form inputs
-     post_data <- reactive({
-          sapply(fields_post, function(x) x = input[[x]])
-     })
-     
-     comment_data <- reactive({
-          sapply(fields_comment, function(x) x = input[[x]])
-     })
-     
-    # disable email_address in Post
-     shinyjs::toggleState("email_address", FALSE)
-     user_session <- reactiveValues(info = NULL)
-     output$userpanel <- renderUI({
-       # session$user is non-NULL only in authenticated sessions
-       if (!is.null(user_session$info$token_valid)) {
-         sidebarUserPanel(
-           span("Welcome ", user_session$info$displayName),
-           subtitle = actionButton("log_out", "Logout","link")) 
-       } else {
-         sidebarUserPanel(span("   ",icon("google"),  
-         actionButton("log_in","Login","link")))
-       } 
-     }) 
-     
-     observe({
-       if (is.null(user_session$info$token_valid)) {
-         tmp_edit <- FALSE
-       }
-       else {
-         if (user_session$info$emailAddress == rv$selectedPost$email_address) {
-           tmp_edit <- TRUE
-         } else {
-           tmp_edit <- FALSE
-         }
-       }
-       shinyjs::toggleState("edit", tmp_edit)
-     })
+
      
      observeEvent(input$gmail1, {
           # Give googlesheets permission to access your spreadsheets and google drive
@@ -513,7 +478,9 @@ shinyServer(function(input, output, session) {
      
      
      source("session_notification.R", local=TRUE)
-
+     
+     source("session_misc.R", local=TRUE)
+     
      
 #      output$selectedPost <- reactive({
 #        tmp0 <- input$view1
