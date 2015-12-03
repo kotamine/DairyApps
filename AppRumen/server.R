@@ -31,42 +31,29 @@ shinyServer(function(input, output, session) {
      # load databases after "Send"  
      table_posts <- reactive({
        input$post_send
-       # load_data_gsheets("table_posts")
         mongo(collection="posts", db=db, url = url)$find()
      })
      
      table_comments <- reactive({
        input$comment_send
-      # load_data_gsheets("table_comments")  
        mongo(collection="comments", db=db, url = url)$find()
      })
      
      table_archive_posts <- reactive({
        input$edit_send
-       # load_data_gsheets("table_archive_posts")
        mongo(collection="table_archive_posts", db=db, url = url)$find()
      })
      
      table_archive_comments <- reactive({
        input$edit_send
-       # load_data_gsheets("table_archive_comments")
        mongo(collection="table_archive_comments", db=db, url = url)$find()
      })
      
-     # obtain initial copies of tables for post-processing
-#      table_posts_copy <- gs_title("table_posts")  
-#      table_posts_copy <- gs_read_csv(table_posts_copy)  
-     table_posts_copy <- mongo(collection="posts", db=db, url = url)$find()
-     N <- dim(table_posts_copy)[1]
      
-#      table_comments_copy <- gs_title("table_comments")  
-#      table_comments_copy <- gs_read_csv(table_comments_copy)  
-     table_comments_copy <- mongo(collection="comments", db=db, url = url)$find()
+     # N <- mongo(collection="posts", db=db, url = url)$count()  # not needed?  
      
      # Prepare postings in Posts
      output$postboxes <- renderUI({
-       
-       # table_posts_copy <- load_data_gsheets("table_posts")
        table_posts_copy <-  mongo(collection="posts", db=db, url = url)$find()
        table_posts_copy <-  table_posts_copy[table_posts_copy$post_category %in% input$filterCategory,]
        table_posts_copy$average_interest[table_posts_copy$average_interest=="NA"] <- 0        
@@ -89,7 +76,6 @@ shinyServer(function(input, output, session) {
        lapply(1:n, function(i) {
          tmp_post <- sorted_table_posts[i,]  
          box(
-           # helpText(paste(table_posts_copy[i,])),
            # browser(), 
            p("App Name:  ", strong(tmp_post$post_name),br(),
              "Category:  ", tmp_post$post_category,br(),
@@ -106,62 +92,28 @@ shinyServer(function(input, output, session) {
        })
      })
      
+     lapply()
+     observeEvent(input$view1, ({
+       updateCollapse(session, "collapseMain", open = "Details")
+       rv$view <- 1
+     }))
      
-     # --------------- initializing the setup --------------------
-#      # Get keys for google sheets  
-#      ( KEY_1 <- "1d4tp2eMxs4u0UgQmiCNSM5Md3J0d2TUnrl6VlEciU5o")
-#      ( KEY_2 <- "1dpMa59iRabMR1c0Q6nu5U8g2Um9IMBFcpCmmCHu-4WE")
-#      ( KEY_3 <- "1HbE_bJDoe5t90mKAkbw8cRaLfOcVitwj76glZQ2R41o")
-#      ( KEY_4 <- "19vNaXeUjkYsKMOvCQXsUl29kR6xNTgDMIpeAXR_Ihb0") 
-#      ( KEY_5 <- "1irfY3pIOCFupFeBAXErj1_fDtUnh2heZc3WvCoVBkxg") 
-#      
-#      third_party_key_1 <- KEY_1 %>%  gs_key()
-#      third_party_key_2 <- KEY_2 %>%  gs_key()
-#      third_party_key_3 <- KEY_3 %>%  gs_key()
-#      third_party_key_4 <- KEY_4 %>%  gs_key()
-#      third_party_key_5 <- KEY_5 %>%  gs_key()
+     observeEvent(input$view2, ({
+       updateCollapse(session, "collapseMain", open = "Details")
+       rv$view <- 2
+     }))
      
-      # Enable the Submit button when all mandatory fields are filled out
-     observe({
-          fields_post_filled <-
-               fields_post_mandatory %>%
-               sapply(function(x) !is.null(input[[x]]) && input[[x]] != "") %>%
-               all
-          shinyjs::toggleState("post_send", fields_post_filled)
-          
-          fields_comment_filled <-
-               fields_comment_mandatory %>%
-               sapply(function(x) !is.null(input[[x]]) && input[[x]] != "") %>%
-               all
-          shinyjs::toggleState("comment_send", fields_comment_filled)
-          
-     })
+     observeEvent(input$view3, ({
+       updateCollapse(session, "collapseMain", open = "Details")
+       rv$view <- 3
+     })) 
+     
+     
+     
+
     
 
-     
-     observeEvent(input$gmail1, {
-          # Give googlesheets permission to access your spreadsheets and google drive
-          gs_auth( new_user = TRUE)
-          user_session$info <- gs_user()
-          browser()
-          updateTextInput(session, "user_name", value = user_session$info$displayName)
-          updateTextInput(session, "email_address", value = user_session$info$emailAddress)
-          updateTextInput(session, "comment_user_name", value = user_session$info$displayName)
-          updateTextInput(session, "comment_email_address", value =  user_session$info$emailAddress)
-     })
-     
-     observeEvent(input$gmail2, {
-          # Give googlesheets permission to access your spreadsheets and google drive
-          gs_auth( new_user = TRUE)
-          user_session_info <- gs_user()
-          updateTextInput(session, "user_name", value = user_session_info$displayName)
-          updateTextInput(session, "email_address", value =  user_session_info$emailAddress)
-          updateTextInput(session, "comment_user_name", value = user_session_info$displayName)
-          updateTextInput(session, "comment_email_address", value =  user_session_info$emailAddress)
-     })
-     
-     
-     # When the post_send button is clicked 
+     # ---------- Event: post_send button ------------
      observeEvent(input$post_send, {
           # Update the timestamp field to be the current time
           updateTextInput(session, "timestamp", value = get_time_human())
@@ -189,7 +141,7 @@ shinyServer(function(input, output, session) {
           })
      })
      
-     # When the comment_send button is clicked 
+     # ---------- Event: comment_send button ------------
      observeEvent(input$comment_send, {
        # Update the timestamp field to be the current time
        updateTextInput(session, "timestamp2", value = get_time_human())
@@ -404,6 +356,7 @@ shinyServer(function(input, output, session) {
        rv$edit_auth <- TRUE
      })
      
+     # ---------- Event: edit_send button ------------
      observeEvent(input$edit_send, {
 #  not needed?       # Update the timestamp field to be the current time
 #        updateTextInput(session, "timestamp", value = get_time_human())
@@ -461,93 +414,11 @@ shinyServer(function(input, output, session) {
        rv$edit_auth <- FALSE
      })
      
-     observeEvent(input$view1, ({
-       updateCollapse(session, "collapseMain", open = "Details")
-       rv$view <- 1
-     }))
-     
-     observeEvent(input$view2, ({
-       updateCollapse(session, "collapseMain", open = "Details")
-       rv$view <- 2
-    }))
-     
-     observeEvent(input$view3, ({
-       updateCollapse(session, "collapseMain", open = "Details")
-       rv$view <- 3
-     })) 
-     
+
      
      source("session_notification.R", local=TRUE)
      
      source("session_misc.R", local=TRUE)
-     
-     
-#      output$selectedPost <- reactive({
-#        tmp0 <- input$view1
-#        tmp <- paste(substitute(input$view1))[3]
-#        i <- as.integer(sub("view","",tmp))
-#        browser()
-#        paste(table_posts_copy[i,])
-#      })
-#      
-#      output$selectedPost <- reactive({
-#        tmp0 <- input$view2
-#        tmp <- paste(substitute(input$view2))
-#        i <- as.integer(sub("view","",tmp[3]))
-#        browser()
-#        
-#        paste(table_posts_copy[i,])
-#      })
-#      
-#      output$selectedPost <- reactive({
-#        tmp0 <- input$view3
-#        tmp <- paste(substitute(input$view3))
-#        i <- as.integer(sub("view","",tmp[3]))
-#        browser()
-#        paste(table_posts_copy[i,])
-#      })
-#      
-   #  browser()
-     
-#      # Allow user to download responses
-#      output$downloadBtn <- downloadHandler(
-#           filename = function() { 
-#                paste0(TABLE_NAME, "_", input$storage, "_", get_time_human(), '.csv')
-#           },
-#           content = function(file) {
-#                write.csv(responses_data(), file, row.names = FALSE)
-#           }
-#      )
-#      
-
-#      
-#   
-#   gap <- gap %>% gs_gs()
-#   
-#   oceania <- gap %>% gs_read_csv(ws = "Oceania")
-#   oceania
-#   
-#   browser()   
- 
-#     gap_xlsx <- gs_upload(system.file("mini-gap.xlsx", package = "googlesheets"))
-# #   gs_title("Gapminder") %>% 
-# #     gs_download(to = "gap_xlsx.xlsx")
-#   iris %>%
-#     head(5) %>%
-#     write.csv("iris.csv", row.names = FALSE)
-#   iris_ss <- gs_upload("iris.csv")
-#   
-#   foo <- gs_new("foo")
-#   foo <- foo %>% gs_ws_new("add_row")
-#   foo <- foo %>% 
-#     gs_add_row(ws = "add_row", input = head(iris, 1), trim = TRUE)
-#   for(i in 2:6) {
-#     foo <- foo %>% gs_add_row(ws = "add_row", input = iris[i, ])
-#     Sys.sleep(0.3)
-#   }
-#   
-#   Gapminder %>% gs_add_row(ws = "Africa", input = head(africa, 1))
-#   
 
 })
 
