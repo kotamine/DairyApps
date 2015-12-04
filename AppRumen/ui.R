@@ -185,8 +185,10 @@ dashboardSidebar(
            shinyjs::hidden(numericInput("cumulative_views","", value=0)),
            shinyjs::hidden(numericInput("current_comments","", value=0)),
            shinyjs::hidden(numericInput("cumulative_comments","", value=0)),
-           shinyjs::hidden(textInput("timestamp_comment","", value=NA)),
-           shinyjs::hidden(numericInput("average_interests","",value=NA))
+textInput("timestamp_comment",""),
+textInput("average_interest","",value=NA)
+         #  shinyjs::hidden(textInput("timestamp_comment","")),
+          # shinyjs::hidden(textInput("average_interest","",value=NA))
      ),
      tabItem(tabName="completedTab", 
              helpText("list of completed posts")

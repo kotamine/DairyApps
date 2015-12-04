@@ -384,12 +384,18 @@ data1 <- mongo(collection="posts", db=db, url = url)
 data1$update('{"postID":1445138342}', update='{"$set":{ "current_views": 6 }}' )
 data1$find('{"postID":1445138342}')  
 
-update_views <- paste('{"$set":{', '"current_views":', 1 + 1,
-                       ', "cumulative_views":', 2 + 1, '}}',sep='')
 
-update_views <- paste('{"$set":{', '"current_views":', (4 + 3),'}}', sep="")
-data1$update('{"postID":1445138342}', update=update_views)
+new_row <- data1[1,] %>% rbind() %>% as.data.frame() 
+colnames(new_row) <- colnames(data1)
+
+new_row <- data1[1,] %>% matrix(nrow=1) %>% c() %>% as.data.frame() 
+
+colnames(new_row) <- colnames(data1) 
+
+new_row <-data.frame(lapply(new_row, function(x) t(data.frame(x))))
+
+new_row2 <- data1[1,] 
 
 
+mongo(collection="posts", db=db, url = url)$insert(new_row)
 
-  

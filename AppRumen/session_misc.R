@@ -41,7 +41,8 @@ observe({
 })
 
 observe({
-  if (is.null(user_session$info$token_valid)) {
+
+  if (is.null(user_session$info$token_valid) | is.null( rv$selectedPost$email_address)) {
     tmp_edit <- FALSE
   }
   else {
@@ -59,7 +60,6 @@ observeEvent(input$gmail1, {
   # Give googlesheets permission to access your spreadsheets and google drive
   gs_auth( new_user = TRUE)
   user_session$info <- gs_user()
-  browser()
   updateTextInput(session, "user_name", value = user_session$info$displayName)
   updateTextInput(session, "email_address", value = user_session$info$emailAddress)
   updateTextInput(session, "comment_user_name", value = user_session$info$displayName)
@@ -74,6 +74,41 @@ observeEvent(input$gmail2, {
   updateTextInput(session, "email_address", value =  user_session_info$emailAddress)
   updateTextInput(session, "comment_user_name", value = user_session_info$displayName)
   updateTextInput(session, "comment_email_address", value =  user_session_info$emailAddress)
+})
+
+
+
+# Show tables of posts and comments 
+output$viewTable <- DT::renderDataTable({
+  browser()
+  
+  view_posts <- table_posts(); 
+  view_posts <- view_posts %>% select(timestamp, postID, post_name, post_category, user_name,
+                                      edits,current_views,cumulative_views,current_comments,
+                                      cumulative_comments, average_interest)
+  view_comments <- table_comments(); 
+  view_comments <- view_comments %>% select(timestamp2, commentID, postID, post_name, comment_user_name,
+                                            novelty, app_link, interest)
+  
+  view_archive_posts <- table_archive_posts(); 
+  view_archive_posts <- view_archive_posts %>% select(timestamp, postID, post_name, post_category, user_name,
+                                                      edits,current_views,cumulative_views,current_comments,
+                                                      cumulative_comments, average_interest)
+  view_archive_comments <- table_archive_comments(); 
+  view_archive_comments <- view_archive_comments %>% select(timestamp2, commentID, postID, post_name, comment_user_name,
+                                                            novelty, app_link, interest)
+  
+  tbl <- switch(input$selectTable,
+                "table_posts"=  view_posts ,
+                "table_comments"=  view_comments,
+                "table_archive_posts"= view_archive_posts,
+                "table_archive_comments"= view_archive_comments
+  )
+  DT::datatable( 
+    tbl,
+    rownames = FALSE, 
+    options = list(searching = FALSE, lengthChange = FALSE, scrollX = TRUE)
+  )
 })
 
 
