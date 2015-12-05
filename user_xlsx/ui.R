@@ -41,10 +41,8 @@ shinyUI(fluidPage(theme = shinytheme("united"),
                       # fileInput() is passessed from the server
                       uiOutput('resettableInput'),
                       bsAlert("upload_alert"), 
-                      actionButton("remove", "Remove File"),
+                      actionButton("remove", "Remove File")
                       
-                      # hidden input field tracking the timestamp of the submission
-                      shinyjs::hidden(textInput("timestamp", NULL))
                     ),
                     mainPanel(
                       includeMarkdown("overview.md"),

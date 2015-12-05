@@ -399,3 +399,8 @@ new_row2 <- data1[1,]
 
 mongo(collection="posts", db=db, url = url)$insert(new_row)
 
+
+postID <- paste0('{"postID":', 1445138342, '}')
+data1$find(postID)
+
+

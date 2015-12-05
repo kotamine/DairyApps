@@ -28,20 +28,16 @@ shinyServer(function(input, output, session) {
   
   # Add a row to table 1 
   observeEvent(input$add_1,{
-    updateTextInput(session, "timestamp", value = get_time_human())
-    
     new_row <- matrix(c(input$user_name, input$feeling, 
-                        input$hours_sleep, input$timestamp),nrow=1)
+                        input$hours_sleep, get_time_human()),nrow=1)
     colnames(new_row) <- colnames_1
     rv$table_1 <- rbind(rv$table_1, new_row)
   })
   
   # Add a row to table 2
   observeEvent(input$add_2,{
-    updateTextInput(session, "timestamp", value = get_time_human())
-    
     new_row <- matrix(c(input$user_name, input$exercise_day, 
-                        input$hours_exercise, input$timestamp),nrow=1)
+                        input$hours_exercise, get_time_human()),nrow=1)
     colnames(new_row) <- colnames_2
     rv$table_2 <- rbind(rv$table_2, new_row)
   })

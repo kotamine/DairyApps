@@ -1,19 +1,27 @@
 
 # Gather all the form inputs
-post_data <- reactive({
-  sapply(fields_post, function(x) x = input[[x]])
-})
+row_inputs <- function(fields) {
+  new_row <- lapply(fields, function(x) {
+    if (!is.null(input[[x]])) {
+      x = input[[x]] 
+    } else {
+      x = rv[[x]]
+    }
+  }) %>% data.frame()
+  rownames(new_row) <- NULL
+  colnames(new_row) <- fields
+  return(new_row)
+}
 
-comment_data <- reactive({
-  sapply(fields_comment, function(x) x = input[[x]])
-})
 
 
 # disable email_address in Post
 shinyjs::toggleState("email_address", FALSE)
-user_session <- reactiveValues(info = NULL)
+
+
+
 output$userpanel <- renderUI({
-  # session$user is non-NULL only in authenticated sessions
+  # session$user is non-NULL only when authenticated 
   if (!is.null(user_session$info$token_valid)) {
     sidebarUserPanel(
       span("Welcome ", user_session$info$displayName),
@@ -40,6 +48,9 @@ observe({
   
 })
 
+
+
+# Allow the owner of the selected post to edit
 observe({
 
   if (is.null(user_session$info$token_valid) | is.null( rv$selectedPost$email_address)) {
@@ -69,11 +80,11 @@ observeEvent(input$gmail1, {
 observeEvent(input$gmail2, {
   # Give googlesheets permission to access your spreadsheets and google drive
   gs_auth( new_user = TRUE)
-  user_session_info <- gs_user()
-  updateTextInput(session, "user_name", value = user_session_info$displayName)
-  updateTextInput(session, "email_address", value =  user_session_info$emailAddress)
-  updateTextInput(session, "comment_user_name", value = user_session_info$displayName)
-  updateTextInput(session, "comment_email_address", value =  user_session_info$emailAddress)
+  user_session$info <- gs_user()
+  updateTextInput(session, "user_name", value = user_session$info$displayName)
+  updateTextInput(session, "email_address", value =  user_session$info$emailAddress)
+  updateTextInput(session, "comment_user_name", value = user_session$info$displayName)
+  updateTextInput(session, "comment_email_address", value =  user_session$info$emailAddress)
 })
 
 

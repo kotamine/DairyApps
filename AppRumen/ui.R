@@ -95,6 +95,7 @@ dashboardSidebar(
                                 #h4("Suggested App Name"),
                                 uiOutput("selectedPost"),
                                 br(),
+                                div(id="show_comment_box",
                                 fluidRow(column(5,
                                   actionButton("edit","Edit (author only)","primary")
                                 ), 
@@ -126,27 +127,29 @@ dashboardSidebar(
                                                        "There's an App for that!"=3)),
                                 conditionalPanel("input.novelty>1",
                                                  textInput("app_link","Name of an Existing App",value="NA")),
-                                sliderInput("interest","Interest",min=0,max=5,step=1,value=3),
+                                sliderInput("interest","Interest",min=1,max=5,step=1,value=3),
                                 tags$head(tags$style(type="text/css", "#post {height: 100px}")),
                                 br(),
                                 actionButton("gmail2","Google Account", "primary"), br(),br(), 
                                 textInput("comment_user_name","User Name"),
                                 textInput("comment_email_address","Email Address"),
                                 
-                                actionButton("comment_send", "Send","primary"),
+                                actionButton("comment_send", "Send","primary")
+                                ),
                                 shinyjs::hidden(
                                   span(id = "submitMsg2", "Sending...", style = "margin-left: 15px;")
                                 )
+
                             ),
                             shinyjs::hidden(
                               div(id = "error2",
                                   div(br(), tags$b("Error: "), span(id = "errorMsg2")),
                                   style = "color: red;"
                               )
-                            ),
-                            # hidden input field tracking the timestamp of the submission
-                            shinyjs::hidden(textInput("timestamp2", "")),
-                            shinyjs::hidden(textInput("commentID", ""))
+                             )
+#                             # hidden input field tracking the timestamp of the submission
+#                             shinyjs::hidden(textInput("timestamp2", "")),
+#                             shinyjs::hidden(textInput("commentID", ""))
                )
           )
     ),
@@ -177,18 +180,16 @@ dashboardSidebar(
                     style = "color: red;"
                 )
            ),
-           # hidden input field tracking the timestamp of the submission
-           shinyjs::hidden(textInput("timestamp", "")),
-           shinyjs::hidden(textInput("postID", "")),
+           # hidden input field 
+#            shinyjs::hidden(textInput("timestamp", "")),
+#            shinyjs::hidden(textInput("postID", "")),
+#            shinyjs::hidden(textInput("timestamp_comment","", value=NA)),
            shinyjs::hidden(numericInput("edits","", value=0)),
-           shinyjs::hidden(numericInput("currnet_views","", value=0)),
+           shinyjs::hidden(numericInput("current_views","", value=0)),
            shinyjs::hidden(numericInput("cumulative_views","", value=0)),
            shinyjs::hidden(numericInput("current_comments","", value=0)),
            shinyjs::hidden(numericInput("cumulative_comments","", value=0)),
-textInput("timestamp_comment",""),
-textInput("average_interest","",value=NA)
-         #  shinyjs::hidden(textInput("timestamp_comment","")),
-          # shinyjs::hidden(textInput("average_interest","",value=NA))
+           shinyjs::hidden(numericInput("average_interest","",value=0))
      ),
      tabItem(tabName="completedTab", 
              helpText("list of completed posts")

@@ -52,11 +52,11 @@ library(googlesheets)
 
 # mandatory fields in the form
 fields_post_mandatory <- c(
-    "post_name", "post_category", "user_name", "email_address", "post"
+  "post_name", "post_category", "user_name", "email_address", "post"
 )
 
 fields_comment_mandatory <- c(
-  "postID", "post_name", "novelty", "app_link", "interest", "comment_user_name", "comment_email_address", "comment" 
+  "novelty", "app_link", "interest", "comment_user_name", "comment_email_address", "comment" 
 )
 
 # fields_post_ed_mandatory <- c(
@@ -65,13 +65,15 @@ fields_comment_mandatory <- c(
 
 # all fields in the form we want to save
 fields_post <- c(
-  "timestamp", "postID", "edits", "currnet_views", "cumulative_views", "current_comments",
+  "timestamp", "postID", "edits", "current_views", "cumulative_views", "current_comments",
   "cumulative_comments", "timestamp_comment", "average_interest", fields_post_mandatory
 )
 
 fields_comment <- c(
-  "timestamp2", "commentID", fields_comment_mandatory
+  "timestamp2", "commentID", "postID", "post_name", fields_comment_mandatory
 )
+
+
 
 # fields_post_ed <- c(
 #   "timestamp", "postID", "edits", "currnet_views", "cumulative_views", "current_comments",
@@ -90,14 +92,14 @@ get_time_human <- function() {
 }
 
 
-#### Method 5: Google Sheets ####
-save_data_gsheets <- function(data, TABLE_NAME) {
- TABLE_NAME %>% gs_title %>% gs_add_row(input = data)
-}
-
-load_data_gsheets <- function(TABLE_NAME,...) {
-  TABLE_NAME %>% gs_title %>% gs_read_csv(...)
-}
+# #### Method 5: Google Sheets ####
+# save_data_gsheets <- function(data, TABLE_NAME) {
+#  TABLE_NAME %>% gs_title %>% gs_add_row(input = data)
+# }
+# 
+# load_data_gsheets <- function(TABLE_NAME,...) {
+#   TABLE_NAME %>% gs_title %>% gs_read_csv(...)
+# }
 
 
 inputTextarea <- function(inputId, value="", nrows, ncols) {
