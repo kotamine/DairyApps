@@ -385,6 +385,7 @@ data1$update('{"postID":1445138342}', update='{"$set":{ "current_views": 6 }}' )
 data1$find('{"postID":1445138342}')  
 
 
+
 new_row <- data1[1,] %>% rbind() %>% as.data.frame() 
 colnames(new_row) <- colnames(data1)
 

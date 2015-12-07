@@ -128,14 +128,30 @@ retrieveComments <- function(N_comments, tmp_comments) {
   if (N_comments>0) {
     lapply(1:N_comments, function(i) {
       tmp_com_item  <- tmp_comments[i,] 
-      wellPanel(
-        p(tmp_com_item$comment,br(),
-          " - ",tmp_com_item$comment_user_name, " posted on ",
-          strtrim(tmp_com_item$timestamp2,10))
-      )
+      if(is.null(tmp_com_item$app_link)) {
+        tmp_com_item$app_link <- NA
+      }
+      
+      if (is.na(tmp_com_item$app_link)) { 
+        wellPanel(
+          p(HTML("&ldquo;"),tmp_com_item$comment,HTML("&rdquo;"), br(),
+            " - ",tmp_com_item$comment_user_name, " posted on ",
+            strtrim(tmp_com_item$timestamp2,10))
+        )
+      } else { 
+        app_suggested <- paste("Similar App:", tmp_com_item$app_link)  
+        
+        wellPanel( 
+          p(HTML("&ldquo;"),tmp_com_item$comment,HTML("&rdquo;"),br(),
+            app_suggested, br(),
+            " - ",tmp_com_item$comment_user_name, " posted on ", 
+            strtrim(tmp_com_item$timestamp2,10)) 
+        )
+        
+      }
     })
   } else { 
-    (p("Leave the first comment for this idea!"))
+    (p("Leave the first comment on this idea!"))
   }
 }    
 

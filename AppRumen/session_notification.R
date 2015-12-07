@@ -1,8 +1,23 @@
 
 
 # system_use <- gs_title("system_use")
-messageData <-   mongo(collection="system_use", db=db, url = url)$find()
-#messageData <-  load_data_gsheets("system_use", ws="messageData")
+messageData <-   mongo_system_use$find() 
+
+
+
+output$userpanel <- renderUI({
+  # session$user is non-NULL only when authenticated 
+  if (!is.null(user_session$info$token_valid)) {
+    fist_name <- paste0("Welcome ", strsplit(user_session$info$displayName," ")[[1]][1],"!")
+    sidebarUserPanel(
+      span(fist_name),
+      subtitle = actionButton("log_out", "Logout","link")) 
+  } else {
+    sidebarUserPanel(span("   ",icon("google"),  
+                          actionButton("log_in","Login","link")))
+  } 
+}) 
+
 
 output$messageMenu <- renderMenu({
   # Code to generate each of the messageItems here, in a list. This assumes
@@ -13,7 +28,6 @@ output$messageMenu <- renderMenu({
   })
   
   # This is equivalent to calling:
-  #   dropdownMenu(type="messages", msgs[[1]], msgs[[2]], ...)
   dropdownMenu(type = "messages", .list = msgs)
 })
 

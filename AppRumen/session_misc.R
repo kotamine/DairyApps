@@ -19,18 +19,11 @@ row_inputs <- function(fields) {
 shinyjs::toggleState("email_address", FALSE)
 
 
+# Show/hide archive comments
+shinyjs::onclick("a_view_archive_comments",
+                 shinyjs::toggle(id="view_archive_comments", anim = TRUE)
+)
 
-output$userpanel <- renderUI({
-  # session$user is non-NULL only when authenticated 
-  if (!is.null(user_session$info$token_valid)) {
-    sidebarUserPanel(
-      span("Welcome ", user_session$info$displayName),
-      subtitle = actionButton("log_out", "Logout","link")) 
-  } else {
-    sidebarUserPanel(span("   ",icon("google"),  
-                          actionButton("log_in","Login","link")))
-  } 
-}) 
 
 # Enable the Submit button when all mandatory fields are filled out
 observe({
@@ -88,33 +81,71 @@ observeEvent(input$gmail2, {
 })
 
 
+# load databases after "Send" operations   
+tables$posts <- reactive({
+  input$post_send
+  input$comment_send
+  input$edit_send
+  mongo_posts$find()
+})
+
+tables$comments <- reactive({
+  input$comment_send
+  mongo_comments$find()
+})
+
+tables$archive_posts <- reactive({
+  input$edit_send
+  mongo_archive_posts$find()
+})
+
+tables$archive_comments <- reactive({
+  input$edit_send
+  mongo_archive_comments$find()
+})
+
+tables$completed_posts <- reactive({
+  input$edit_send
+  mongo_completed_posts$find()
+})
+
+tables$resolved_posts <- reactive({
+  input$edit_send
+  mongo_resolved_posts$find()
+})
+
+tables$discontinued_posts <- reactive({
+  input$edit_send
+  mongo_discontinued_posts$find()
+})
+
+
 
 # Show tables of posts and comments 
-output$viewTable <- DT::renderDataTable({
-  browser()
+output$viewTable <- DT::renderDataTable({ 
+  view_tables <- list()
+
+  for (x in c("posts","completed_posts","resolved_posts","discontinued_posts", "archive_posts")) {
+    view_tables[[paste(x)]] <- tables[[paste(x)]]() %>% select(timestamp, postID, post_name, post_category, user_name,
+                                                               edits,current_views,cumulative_views,current_comments,
+                                                               cumulative_comments, average_interest)
+  }  
   
-  view_posts <- table_posts(); 
-  view_posts <- view_posts %>% select(timestamp, postID, post_name, post_category, user_name,
-                                      edits,current_views,cumulative_views,current_comments,
-                                      cumulative_comments, average_interest)
-  view_comments <- table_comments(); 
-  view_comments <- view_comments %>% select(timestamp2, commentID, postID, post_name, comment_user_name,
-                                            novelty, app_link, interest)
-  
-  view_archive_posts <- table_archive_posts(); 
-  view_archive_posts <- view_archive_posts %>% select(timestamp, postID, post_name, post_category, user_name,
-                                                      edits,current_views,cumulative_views,current_comments,
-                                                      cumulative_comments, average_interest)
-  view_archive_comments <- table_archive_comments(); 
-  view_archive_comments <- view_archive_comments %>% select(timestamp2, commentID, postID, post_name, comment_user_name,
-                                                            novelty, app_link, interest)
-  
+  for (x in c("comments","archive_comments")) {
+    view_tables[[paste(x)]] <- tables[[paste(x)]]() %>% select(timestamp2, commentID, postID, post_name, comment_user_name,
+                                                               novelty, app_link, interest)
+    
+  }
+
   tbl <- switch(input$selectTable,
-                "table_posts"=  view_posts ,
-                "table_comments"=  view_comments,
-                "table_archive_posts"= view_archive_posts,
-                "table_archive_comments"= view_archive_comments
-  )
+                "posts"=  view_tables[["posts"]],
+                "completed_posts"= view_tables[["completed_posts"]],
+                "resolved_posts"= view_tables[["resolved_posts"]],
+                "discontinued_posts"= view_tables[["discontinued_posts"]],
+                "archive_posts"= view_tables[["archive_posts"]],
+                "comments"=  view_tables[["comments"]],
+                "archive_comments"= view_tables[["archive_comments"]]
+  ) 
   DT::datatable( 
     tbl,
     rownames = FALSE, 

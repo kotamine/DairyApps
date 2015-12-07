@@ -14,8 +14,6 @@ shinyUI(
                     dropdownMenuOutput("notificationMenu"),
                     dropdownMenuOutput("taskMenu")
                    ), 
-    # shinyjs::hidden(selectInput("storage", "Select Storage Type", choices=c("gsheets"))),
- 
     
 #     ## Sidebar content
 #     dashboardSidebar(
@@ -50,9 +48,7 @@ shinyUI(
 dashboardSidebar(
   sidebarMenu(
     id = "tabs",
-#     # Custom CSS to hide the default logout panel
-#     tags$head(tags$style(HTML('.shiny-server-account { display: none; }'))),
-#     
+     
     # The dynamically-generated user panel
     uiOutput("userpanel"),
     
@@ -69,18 +65,19 @@ dashboardSidebar(
     tags$head(
       tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
     ), 
-    # includeMarkdown(file.path("text", "appDesc.md"))
       tabItems(
-#         id="mainTabs",type="tabs",
         tabItem(tabName = "mainTab", 
       # ------------- Main --------------------
                bsCollapse(id = "collapseMain", open = "Posts",
                           bsCollapsePanel(
                             "Posts", style = "info",
+                            checkboxGroupInput("filterStatus", "Status", 
+                                               choices=c("Active","Completed","Resolved","Discontinued"),
+                                               selected = c("Active"), inline = TRUE), 
                             checkboxGroupInput("filterCategory", "Category", choices=c("Milk","Forage","Labor","Social"),
                                                selected = c("Milk","Forage","Labor","Social"), inline = TRUE), 
                             fluidRow(column(5,numericInput("n_boxes","Number of Posts", value=10, min=0,step=5,max=100)),
-                                     column(7,selectInput("sortPost","Sort",
+                                     column(7,selectInput("sortPost","Sort by",
                                                           choices=c("Most recently posted","Most recently commented",
                                                                     "Most commented", "Most viewed",
                                                                     "Highest interests")))),
@@ -92,41 +89,38 @@ dashboardSidebar(
                             "Details", style = "success",
                             # ------------- Comment --------------------
                             div(id = "post_form",
-                                #h4("Suggested App Name"),
-                                uiOutput("selectedPost"),
+                                shinyjs::hidden(
+                                  div(id = "loadMsg", wellPanel("Loading..."), align="center")
+                                ), 
+                                div(id="details_contents",
+                                  uiOutput("selectedPost"),
                                 br(),
                                 div(id="show_comment_box",
                                 fluidRow(column(5,
                                   actionButton("edit","Edit (author only)","primary")
                                 ), 
-                                column(5,
-                                  conditionalPanel("input.view_archive_comments ==  
-                                                 input.close_archive_comments",     
-                                  actionButton("view_archive_comments","View comments in archive","link")
-                                       ))),
-                                conditionalPanel("input.view_archive_comments >
-                                                 input.close_archive_comments",
+                                
+                                column(5, 
+                                       a(id = "a_view_archive_comments","Show/hide comments in archive")
+                                )),
+                                                 shinyjs::hidden(
+                                                   div(id = "view_archive_comments",                  
                                     br(),
                                     numericInput("n_archive_comments","Number of archived comments",
-                                                 min=1, step=5, value=10, max=100),
-                                    uiOutput("selectedArchiveComments"),
-                                    fluidRow(column(3,offset=9, 
-                                                    actionButton("close_archive_comments","Hide","link")
-                                       ))
+                                                 min=1, max=100, value=10, step=5),
+                                    uiOutput("selectedArchiveComments")
+
+                                    )
                                 ),
                                 br(), br(),
-#                                 textInput(inputId="comment", label="Comment"),
-#                                 tags$head(tags$style(type="text/css", "#comment {height: 100px}")),
-#                                 tags$textarea(id="comment", rows=30, cols=40, "Default value"),
                                 h5(strong("Comment")), 
-                                inputTextarea('comment', '',5,50), 
-                                   tags$head(tags$style(type="text/css", "#comment {border-color: #C0C0C0}")),
+                                uiOutput("resetable_comment"),
                                 selectInput("novelty","Novelty", 
                                             choices=c("That's a new idea!"=1,
                                                        "Tweak a similar App!"=2,
                                                        "There's an App for that!"=3)),
                                 conditionalPanel("input.novelty>1",
-                                                 textInput("app_link","Name of an Existing App",value="NA")),
+                                                 textInput("app_link","Name of a similar App",value="NA")),
                                 sliderInput("interest","Interest",min=1,max=5,step=1,value=3),
                                 tags$head(tags$style(type="text/css", "#post {height: 100px}")),
                                 br(),
@@ -139,7 +133,7 @@ dashboardSidebar(
                                 shinyjs::hidden(
                                   span(id = "submitMsg2", "Sending...", style = "margin-left: 15px;")
                                 )
-
+                                )
                             ),
                             shinyjs::hidden(
                               div(id = "error2",
@@ -147,10 +141,9 @@ dashboardSidebar(
                                   style = "color: red;"
                               )
                              )
-#                             # hidden input field tracking the timestamp of the submission
-#                             shinyjs::hidden(textInput("timestamp2", "")),
-#                             shinyjs::hidden(textInput("commentID", ""))
+                            
                )
+                        
           )
     ),
           tabItem(tabName ="postTab",
@@ -160,11 +153,8 @@ dashboardSidebar(
                    textInput("post_name","Suggested App Name", value=""),
                    selectInput("post_category","Category", 
                                choices=c("Milk","Forage","Labor","Social")),
-#                    textInput(inputId="post", label="Description"),
-#                    tags$head(tags$style(type="text/css", "#post {height: 200px}")),
                    h5(strong("Description")), 
-                   inputTextarea('post', '',20,50), 
-                   tags$head(tags$style(type="text/css", "#post {border-color: #C0C0C0}")),
+                   uiOutput("resetable_post"), 
                br(), br(),
                actionButton("gmail1","Google Account","primary"), br(), br(),    
                textInput("user_name","User Name"),
@@ -181,9 +171,6 @@ dashboardSidebar(
                 )
            ),
            # hidden input field 
-#            shinyjs::hidden(textInput("timestamp", "")),
-#            shinyjs::hidden(textInput("postID", "")),
-#            shinyjs::hidden(textInput("timestamp_comment","", value=NA)),
            shinyjs::hidden(numericInput("edits","", value=0)),
            shinyjs::hidden(numericInput("current_views","", value=0)),
            shinyjs::hidden(numericInput("cumulative_views","", value=0)),
@@ -202,8 +189,9 @@ dashboardSidebar(
      ),
      tabItem(tabName="tableTab",
           selectInput("selectTable","Table Type",
-                      choices=c("table_posts","table_comments",
-                                "table_archive_posts", "table_archive_comments")),
+                      choices=c("posts","completed_posts", "resolved_posts",
+                                "discontinued_posts", "archive_posts", 
+                                "comments", "archive_comments")),
           DT::dataTableOutput("viewTable")
      ),
     tabItem(tabName="aboutTab", 

@@ -1,8 +1,6 @@
 # ---------- Event: post_send button ------------
 observeEvent(input$post_send, {
   
-  browser()
-  
   # User-experience stuff
   shinyjs::disable("post_send")
   shinyjs::show("submitMsg")
@@ -19,8 +17,8 @@ observeEvent(input$post_send, {
   
   # Add a row to the data (show an error message in case of error)
   tryCatch({
-    mongo(collection="posts", db=db, url = url)$insert(new_row) 
-    updateTabItems(session, "tabs","mainTab")
+    mongo_posts$insert(new_row) 
+    updateTabItems(session, "tabs","mainTab") 
   },
   
   error = function(err) {
@@ -28,7 +26,14 @@ observeEvent(input$post_send, {
     shinyjs::show(id = "error", anim = TRUE, animType = "fade")      
     shinyjs::logjs(err)
   })
+  
+  updateTextInput(session, "post_name","Suggested App Name", value="")
+  updateSelectInput(session, "post_category","Category", 
+              choices=c("Milk","Forage","Labor","Social"))
+  
+  rv$post_reset  <- rv$post_reset + 1
   rv$back_to_active_post <- rv$back_to_active_post + 1
+  updateNumericInput(session,"n_boxes","Number of Posts", value=(input$n_boxes+1), min=0,step=5,max=100)
   updateCollapse(session, "collapseMain", open = "Posts")
 })
 
@@ -51,12 +56,12 @@ observeEvent(input$comment_send, {
   rv$commentID <- as.integer(get_time_epoch())
   rv$timestamp2 <- get_time_human()
   rv$postID <- tmp_post$postID
-  rv$post_name <- tmp_post$post_name 
   new_row <- row_inputs(fields_comment)
-
+  new_row$post_name <- tmp_post$post_name 
+  
   # Add a row to Comments table (show an error message in case of error)
   tryCatch({
-    mongo(collection="comments", db=db, url = url)$insert(new_row) 
+    mongo_comments$insert(new_row) 
     updateTabItems(session,"tabs","mainTab")
   }, 
 
@@ -65,6 +70,7 @@ observeEvent(input$comment_send, {
     shinyjs::show(id = "error2", anim = TRUE, animType = "fade")      
     shinyjs::logjs(err)
   }) 
+  
   
   # Updae comment number and average_interest in Posts table
   if (tmp_post$average_interest==0) {
@@ -75,6 +81,7 @@ observeEvent(input$comment_send, {
                            input$interest) / (tmp_post$cumulative_comments + 1)     
   }
   
+
   update_comments <- paste0('{"$set":{', 
                             '"current_comments":', (tmp_post$current_comments  + 1),
                             ', "cumulative_comments":', (tmp_post$cumulative_comments + 1),
@@ -82,8 +89,34 @@ observeEvent(input$comment_send, {
                             ', "average_interest":', average_interest, '}}')
   
   field_postID <- paste0('{"postID":', tmp_post$postID, '}')
-  mongo(collection="posts", db=db, url = url)$update(field_postID, update=update_comments)
+  mongo_posts$update(field_postID, update=update_comments)
   
+  updateTextInput(session, "app_link","Name of a similar App",value="NA") 
+  updateSliderInput(session, "interest","Interest",min=1,max=5,step=1,value=3) 
+  rv$comment_reset <-  rv$comment_reset + 1 
   rv$back_to_selected_post <- rv$back_to_selected_post + 1
 }) 
+
+
+output$resetable_comment <- renderUI({
+  # Acts as a trigger when the user is viewing
+  rv$comment_reset 
+  
+  div(
+    inputTextarea('comment', '',5,50), 
+    tags$head(tags$style(type="text/css", "#comment {border-color: #C0C0C0}"))
+    )
+})
+
+
+output$resetable_post <- renderUI({
+  # Acts as a trigger when the user is viewing
+  rv$post_reset 
+ 
+   div(
+    inputTextarea('post', '', 40,50), 
+    tags$head(tags$style(type="text/css", "#post {border-color: #C0C0C0}"))
+  )
+})
+
 

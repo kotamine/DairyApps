@@ -1,12 +1,32 @@
 
 # ------- Prepare postings in Active Posts ------- 
+
+
+filter_category <- reactive({
+  filter <- paste0('{ "$or":[')  
+  for (i in 1:length(input$filterCategory)) {
+    if (i>1) { 
+      filter <-  paste0(filter,',') 
+    }
+    filter <-  paste0(filter, '{"post_category":','"',input$filterCategory[i],'"}')
+  }
+  filter <-  paste0(filter, ']}')
+  return(filter)
+})
+
+
 output$postboxes <- renderUI({
-  rv$back_to_active_post
+  # Acts as a trigger when the user is viewing
+  rv$back_to_active_post 
   
-  table_posts_copy <-  mongo(collection="posts", db=db, url = url)$find()
-  table_posts_copy <-  table_posts_copy[table_posts_copy$post_category %in% input$filterCategory,]
-  # table_posts_copy$average_interest[table_posts_copy$average_interest=="NA"] <- 0        
+    validate(
+      need( (!is.null(input$n_boxes) & input$n_boxes>0) , 'Please enter the number of posts.')
+    )  
   
+  browser()
+  
+  table_posts_copy <-  mongo_posts$find(filter_category()) 
+
   tmp_sort <- switch(input$sortPost, 
                      "Most recently posted"=  table_posts_copy$timestamp,
                      "Most recently commented"= table_posts_copy$timestamp_comment,
@@ -14,8 +34,18 @@ output$postboxes <- renderUI({
                      "Most viewed"= table_posts_copy$cumulative_views,
                      "Highest interests"=  table_posts_copy$average_interest)
 
+  # Sorted posts that will be retrived in "Details" panel via rv$view 
   sorted_table_posts <- table_posts_copy[rev(order(tmp_sort)),]
   rv$active_postsID <-  sorted_table_posts$postID 
+  lapply(c(1:input$n_boxes), function(x) {
+    observeEvent(input[[paste0("view",x)]], ({
+      rv$view <- x
+      # Update "Details" panel via trigger "rv$back_to_selected_post"  
+      rv$back_to_selected_post <- rv$back_to_selected_post + 1
+      updateTabItems(session, "tabs","mainTab")
+      updateCollapse(session, "collapseMain", open = "Details")
+    }))
+  })
   
   N <- dim(table_posts_copy)[1]
   if (is.null(input$n_boxes) || is.na(input$n_boxes)) {
@@ -33,7 +63,7 @@ output$postboxes <- renderUI({
         "Description:  ",paste(strtrim(tmp_post$post,140),"..."),br(),
         "Views:  ", tmp_post$cumulative_views, br(),
         "Comments:  ", tmp_post$cumulative_comments, br(),
-        "Average Interest:  ",tmp_post$average_interest, br(),
+        "Average Interest:  ", round(tmp_post$average_interest,2), br(),
         "Date:  ", strtrim(tmp_post$timestamp,10),br(),
         "By:  ", tmp_post$user_name
       ),
@@ -43,12 +73,14 @@ output$postboxes <- renderUI({
   })
 })
 
-observeEvent(input$n_boxes, {
-  lapply(c(1:input$n_boxes), function(x) {
-    observeEvent(input[[paste0("view",x)]], ({
-      updateCollapse(session, "collapseMain", open = "Details")
-      rv$view <- x
-    }))
-  })
-})
+# 
+# observeEvent(input$n_boxes, {
+#   lapply(c(1:input$n_boxes), function(x) {
+#     observeEvent(input[[paste0("view",x)]], ({
+#       updateTabItems(session, "tabs","mainTab")
+#       updateCollapse(session, "collapseMain", open = "Details")
+#       rv$view <- x
+#     }))
+#   })
+# })
 
