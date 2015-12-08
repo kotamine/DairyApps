@@ -52,11 +52,12 @@ dashboardSidebar(
     # The dynamically-generated user panel
     uiOutput("userpanel"),
     
-    menuItem("Active Posts",tabName = "mainTab",icon=icon("group")),
-    menuItem("New Post", tabName = "postTab", icon = icon("comment")),
-    menuItem("Completed Posts", tabName = "completedTab", icon = icon("trophy")),
-    menuItem("Resolved Posts", tabName = "resolvedTab", icon = icon("check")),
-    menuItem("Discontinued Posts", tabName = "discontinuedTab", icon = icon("moon-o")),
+    menuItem("All Posts",tabName = "mainTab",icon=icon("comments")),
+    menuItem("New Post", tabName = "postTab", icon = icon("lightbulb-o")),
+    menuItem("People", tabName="peopleTab", icon=icon("group")), 
+#     menuItem("Completed Posts", tabName = "completedTab", icon = icon("trophy")),
+#     menuItem("Resolved Posts", tabName = "resolvedTab", icon = icon("check")),
+#     menuItem("Discontinued Posts", tabName = "discontinuedTab", icon = icon("moon-o")),
     menuItem("Table View", tabName = "tableTab", icon = icon("th")), 
     menuItem("About", tabName = "aboutTab", icon = icon("cog"))
   )
@@ -143,12 +144,11 @@ dashboardSidebar(
                              )
                             
                )
-                        
           )
     ),
           tabItem(tabName ="postTab",
-            # ------------- Post --------------------
-            #$ title="New Post", id="postTab",
+            # ------------- New Post --------------------
+            # title="New Post", id="postTab",
                div(id = "post_form",
                    textInput("post_name","Suggested App Name", value=""),
                    selectInput("post_category","Category", 
@@ -178,15 +178,50 @@ dashboardSidebar(
            shinyjs::hidden(numericInput("cumulative_comments","", value=0)),
            shinyjs::hidden(numericInput("average_interest","",value=0))
      ),
-     tabItem(tabName="completedTab", 
-             helpText("list of completed posts")
-     ),
-     tabItem(tabName="resolvedTab", 
-             helpText("list of resolved posts for which app already exists")
-     ),
-     tabItem(tabName="discontinuedTab", 
-             helpText("list of discontinued posts")
-     ),
+    tabItem(tabName="peopleTab",
+            bsCollapse(id = "collapsePeople", open = "People",
+                       bsCollapsePanel(
+                         "People", style = "info",
+                         checkboxGroupInput("filterProfessions", "Professions", 
+                                            choices=c("Student"=1,
+                                                      "Producer"=2,
+                                                      "Industry"=3, 
+                                                      "Extension"=4,
+                                                      "Other"=5),
+                                            selected = c(1:5),  
+                                            inline=TRUE), 
+                         checkboxGroupInput("filterInterests", "Interests", 
+                                            choices=c("Generating new ideas"=1,
+                                                      "Collaborating with others"=2,
+                                                      "Outreach/Education"=3, 
+                                                      "Learning more about dairy"=4,
+                                                      "Networking"=5),
+                                            selected = c(1:5), 
+                                            inline = TRUE), 
+                         fluidRow(column(5,numericInput("n_boxes_people","Number of People", value=10, min=0,step=5,max=100)),
+                                  column(7,selectInput("sortPeople","Sort by",
+                                                       choices=c("Most recently posted","Most recently commented",
+                                                                 "Most commented", "Most viewed",
+                                                                 "Highest interests")))),
+                         fluidRow(
+                           uiOutput("peopleboxes")
+                         ) 
+                       ),
+            bsCollapsePanel(
+              "Details", style = "warning",
+              uiOutput("selectedUser")
+            )
+            )
+    ),
+#      tabItem(tabName="completedTab", 
+#              helpText("list of completed posts")
+#      ),
+#      tabItem(tabName="resolvedTab", 
+#              helpText("list of resolved posts for which app already exists")
+#      ),
+#      tabItem(tabName="discontinuedTab", 
+#              helpText("list of discontinued posts")
+#      ),
      tabItem(tabName="tableTab",
           selectInput("selectTable","Table Type",
                       choices=c("posts","completed_posts", "resolved_posts",

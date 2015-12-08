@@ -15,6 +15,7 @@ shinyServer(function(input, output, session) {
                           selectedPost = NULL, selectedComments = NULL,
                           comment_reset =0, post_reset=0, 
                           back_to_selected_post = 0, 
+                          back_to_selected_user = 0,
                           view_rest=0) 
      
      user_session <- reactiveValues(info = NULL)
@@ -34,9 +35,9 @@ shinyServer(function(input, output, session) {
      mongo_comments <- mongo(collection="comments", db=db, url = url)
      mongo_archive_posts <- mongo(collection="archive_posts", db=db, url = url)
      mongo_archive_comments <- mongo(collection="archive_comments", db=db, url = url)
-     mongo_completed_posts <- mongo(collection="completed_posts", db=db, url = url)
-     mongo_resolved_posts <- mongo(collection="resolved_posts", db=db, url = url)
-     mongo_discontinued_posts <- mongo(collection="discontinued_posts", db=db, url = url)
+#      mongo_completed_posts <- mongo(collection="completed_posts", db=db, url = url)
+#      mongo_resolved_posts <- mongo(collection="resolved_posts", db=db, url = url)
+#      mongo_discontinued_posts <- mongo(collection="discontinued_posts", db=db, url = url)
      mongo_system_use <-   mongo(collection="system_use", db=db, url = url)
      
      mongo_posts$index('{"post_category":1}')
@@ -46,6 +47,8 @@ shinyServer(function(input, output, session) {
      source("session_post_comment.R", local=TRUE)
      
      source("session_details_edit.R", local=TRUE)
+     
+     source("session_user_edit.R", local=TRUE)
      
      source("session_notification.R", local=TRUE)
      

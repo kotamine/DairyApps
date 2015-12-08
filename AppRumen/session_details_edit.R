@@ -14,8 +14,6 @@ output$selectedPost  <- renderUI({
   })
   shinyjs::hide("view_archive_comments")
   
-  browser()
-  
   isolate({
   field_postID <- paste0('{"postID":', rv$active_postsID[rv$view],'}')
   rv$selectedPost <-  mongo_posts$find(field_postID)
@@ -29,18 +27,49 @@ output$selectedPost  <- renderUI({
   
   rv$selectedComments <- mongo_comments$find(field_postID)
   tmp_comments <- rv$selectedComments 
+  rv$active_comment_users_email <- tmp_comments$comment_email_address
+  
+  rv$user_trafic <- "post"
   
   N_comments <- dim(tmp_comments)[1]
+
   if (N_comments>0) {
   tmp_comments <- tmp_comments[order(tmp_comments$timestamp2),]
-  } 
   
+  lapply(c(1:N_comments), function(x) {
+    observeEvent(input[[paste0("comment_user",x)]], ({
+      browser()
+      rv$view_comment_user <- x
+      rv$user_trafic <- "comment"
+      # Update "Details" panel via trigger "rv$back_to_selected_user"  
+      rv$back_to_selected_user <- rv$back_to_selected_user + 1
+      updateTabItems(session, "tabs","peopleTab")
+      updateCollapse(session, "collapsePeople", open = "Details")
+    }))
+  })
+  }
+  
+  # Repeat for archive_comments
   rv$selectedArchiveComments <- mongo_archive_comments$find(field_postID)
   tmp_archive_comments <- rv$selectedArchiveComments
 
   N_archive_comments <- dim(tmp_archive_comments)[1]
   if (N_archive_comments>0) {
     rv$tmp_archive_comments <- tmp_archive_comments[order(tmp_archive_comments$timestamp2),]
+    
+    lapply(c(1:N_archive_comments), function(x) {
+      observeEvent(input[[paste0("archive_comment_user",x)]], ({
+        browser()
+        rv$view_archive_comment_user <- x
+        rv$user_trafic <- "archive_comment" 
+        # Update "Details" panel via trigger "rv$back_to_selected_user"  
+        rv$back_to_selected_user <- rv$back_to_selected_user + 1
+        updateTabItems(session, "tabs","peopleTab")
+        updateCollapse(session, "collapsePeople", open = "Details")
+      })
+     )
+    })
+    
   } else {
     rv$tmp_archive_comments <- NULL
   }
@@ -59,8 +88,8 @@ output$selectedPost  <- renderUI({
     
     # prepare output$selectedPost for commenting
     wellPanel(
-      h4(strong("App Name: "), tmp_post$post_name),
-      p( strong("By: "), tmp_post$user_name, br(), br(),
+      h3(strong(tmp_post$post_name)),
+      p( strong("By: "), actionButton(inputId = "post_user", tmp_post$user_name, "link"), br(),
          strong("Category: "), tmp_post$post_category,br(),
          strong("Description: "),tmp_post$post,br(), br(),
          strong("Views: "), tmp_post$cumulative_views, br(),
@@ -119,6 +148,14 @@ output$selectedArchiveComments <- renderUI({
   }
 })
   
+
+observeEvent(input$post_user, {
+    rv$view_user <- rv$view 
+    # Update "Details" panel via trigger "rv$back_to_selected_user"  
+    rv$back_to_selected_user <- rv$back_to_selected_user + 1
+    updateTabItems(session, "tabs","peopleTab")
+    updateCollapse(session, "collapsePeople", open = "Details")
+})
   
 
 # Open up description for edit 

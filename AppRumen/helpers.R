@@ -75,10 +75,6 @@ fields_comment <- c(
 
 
 
-# fields_post_ed <- c(
-#   "timestamp", "postID", "edits", "currnet_views", "cumulative_views", "current_comments",
-#   "cumulative_comments", "average_interest", fields_post_ed_mandatory
-# )
 
 # get current Epoch time
 get_time_epoch <- function() {
@@ -124,7 +120,12 @@ actionButton <- function(inputId, label, btn.style = "" , css.class = "") {
 
 
 # Function to insert previuos comments
-retrieveComments <- function(N_comments, tmp_comments) {
+retrieveComments <- function(N_comments, tmp_comments, archive=FALSE) {
+  if (archive)  {
+    comment_user <-  "archive_comment_user"
+  } else {
+    comment_user <-  "comment_user"
+  }
   if (N_comments>0) {
     lapply(1:N_comments, function(i) {
       tmp_com_item  <- tmp_comments[i,] 
@@ -133,22 +134,19 @@ retrieveComments <- function(N_comments, tmp_comments) {
       }
       
       if (is.na(tmp_com_item$app_link)) { 
-        wellPanel(
-          p(HTML("&ldquo;"),tmp_com_item$comment,HTML("&rdquo;"), br(),
-            " - ",tmp_com_item$comment_user_name, " posted on ",
-            strtrim(tmp_com_item$timestamp2,10))
-        )
+        app_suggested <- ""
       } else { 
-        app_suggested <- paste("Similar App:", tmp_com_item$app_link)  
-        
+        app_suggested <- paste("Similar App:", tmp_com_item$app_link, "HTML(<br>)")
+      }
+      
         wellPanel( 
-          p(HTML("&ldquo;"),tmp_com_item$comment,HTML("&rdquo;"),br(),
-            app_suggested, br(),
-            " - ",tmp_com_item$comment_user_name, " posted on ", 
+          p(
+            HTML("&ldquo;"), tmp_com_item$comment, HTML("&rdquo;"),br(),
+            app_suggested,
+            " - ", actionButton(inputId =paste0(comment_user,i), tmp_com_item$comment_user_name, "link"), 
+            " posted on ", 
             strtrim(tmp_com_item$timestamp2,10)) 
         )
-        
-      }
     })
   } else { 
     (p("Leave the first comment on this idea!"))

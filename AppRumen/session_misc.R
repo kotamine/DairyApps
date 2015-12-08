@@ -14,9 +14,11 @@ row_inputs <- function(fields) {
 }
 
 
-
-# disable email_address in Post
-shinyjs::toggleState("email_address", FALSE)
+# -- temporarily disabled for dev & testing purposes --
+# # disable email_address and user_name in Post, 
+# # which forces the user to log in through Google Account
+# shinyjs::toggleState("email_address", FALSE)
+# shinyjs::toggleState("user_name", FALSE)
 
 
 # Show/hide archive comments
@@ -45,7 +47,6 @@ observe({
 
 # Allow the owner of the selected post to edit
 observe({
-
   if (is.null(user_session$info$token_valid) | is.null( rv$selectedPost$email_address)) {
     tmp_edit <- FALSE
   }
@@ -59,7 +60,7 @@ observe({
   shinyjs::toggleState("edit", tmp_edit)
 })
 
-
+# log in from new post
 observeEvent(input$gmail1, {
   # Give googlesheets permission to access your spreadsheets and google drive
   gs_auth( new_user = TRUE)
@@ -70,6 +71,7 @@ observeEvent(input$gmail1, {
   updateTextInput(session, "comment_email_address", value =  user_session$info$emailAddress)
 })
 
+# log in from comment 
 observeEvent(input$gmail2, {
   # Give googlesheets permission to access your spreadsheets and google drive
   gs_auth( new_user = TRUE)
@@ -80,6 +82,16 @@ observeEvent(input$gmail2, {
   updateTextInput(session, "comment_email_address", value =  user_session$info$emailAddress)
 })
 
+# log in from the top of the side bar
+observeEvent(input$log_in, {
+  # Give googlesheets permission to access your spreadsheets and google drive
+  gs_auth( new_user = TRUE)
+  user_session$info <- gs_user()
+  updateTextInput(session, "user_name", value = user_session$info$displayName)
+  updateTextInput(session, "email_address", value =  user_session$info$emailAddress)
+  updateTextInput(session, "comment_user_name", value = user_session$info$displayName)
+  updateTextInput(session, "comment_email_address", value =  user_session$info$emailAddress)
+})
 
 # load databases after "Send" operations   
 tables$posts <- reactive({
