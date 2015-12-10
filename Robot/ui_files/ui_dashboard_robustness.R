@@ -42,12 +42,11 @@ conditionalPanel('input.robust=="Sensitivity" | input.robust=="Scenario"',
                                 fluidRow(column(6,uiOutput("c_misc")),
                                          column(6,uiOutput("c_inflation"))
                                 ), align="center")
-                         ),
-                         conditionalPanel('input.robust=="Sensitivity"', 
-                                          div(htmlOutput("plot_robust"), align="center")
-                         )
+                         )),  br(), 
+                       conditionalPanel('input.robust=="Sensitivity"', 
+                                        div(htmlOutput("plot_robust"), align="center")
                        )
-                   )), br(),
+                   )), br(), 
                  tabsetPanel(
                    tabPanel("Change in Variables",
                             DT::dataTableOutput("table_robust_variables")),

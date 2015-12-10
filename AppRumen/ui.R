@@ -171,6 +171,7 @@ dashboardSidebar(
                 )
            ),
            # hidden input field 
+           shinyjs::hidden(textInput("status","", value="Active")),
            shinyjs::hidden(numericInput("edits","", value=0)),
            shinyjs::hidden(numericInput("current_views","", value=0)),
            shinyjs::hidden(numericInput("cumulative_views","", value=0)),

@@ -182,7 +182,7 @@ isolate({
                 + (rp$loan_housing * input$r_housing + rp$loan_milking1 * input$r_milking1)*
                 (1-input$tax_rate/100))/(rp$cost_housing + rp$cost_milking)
   
-  source("session_cash_flow_robot_parlor.R", local=TRUE)  # Calculates cash flow tables
+  source(file.path("session_files", "session_cash_flow_robot_parlor.R"), local=TRUE)  # Calculates cash flow tables
   
   rp$capital_recovery_robot <-  -pmt(input$interest/100, rp$housing_years, 
                                      npv(input$interest/100, 

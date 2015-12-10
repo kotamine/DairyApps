@@ -59,7 +59,6 @@ output$selectedPost  <- renderUI({
     
     lapply(c(1:N_archive_comments), function(x) {
       observeEvent(input[[paste0("archive_comment_user",x)]], ({
-        browser()
         rv$view_archive_comment_user <- x
         rv$user_trafic <- "archive_comment" 
         # Update "Details" panel via trigger "rv$back_to_selected_user"  

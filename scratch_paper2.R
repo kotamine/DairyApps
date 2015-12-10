@@ -356,6 +356,10 @@ dim(m0d)
 ## mongoimport -h ds039484.mongolab.com:39484 -d posts  -c restaurants -u newuser -p newuser --file /data/db/primer-dataset.json --drop
 
 
+
+## --------------------------------------------------
+
+
 ## csv file must be saved as "Windows Comma Separated(.csv)" format 
 # mongoimport -h ds061954.mongolab.com:61954 -d app_rumen  -c posts -u user1 -p user1 --file /data/db/app_rumen/posts.csv --headerline --type csv --drop 
 
@@ -367,8 +371,18 @@ dim(m0d)
 
 # mongoimport -h ds061954.mongolab.com:61954 -d app_rumen  -c system_use -u user1 -p user1 --file /data/db/app_rumen/system_use.csv --headerline --type csv --drop 
 
+#  mkdir /Volumes/iMacSATA/data/db/app_rumen
+mongoexport -h ds061954.mongolab.com:61954 -d app_rumen -u user1 -p user1 -c posts \
+-f timestamp,postID  \
+-o /Volumes/iMacSATA/data/db/app_rumen/posts.csv 
 
 
+# mongoimport -h ds061954.mongolab.com:61954 -d app_rumen  -c posts -u user1 -p user1 --file /Volumes/iMacSATA/data/db/app_rumen/posts.csv --headerline --type csv --drop 
+
+# mongoimport -h ds061954.mongolab.com:61954 -d app_rumen  -c comments -u user1 -p user1 --file /Volumes/iMacSATA/data/db/app_rumen/comments.csv --headerline --type csv --drop 
+
+
+# --------------------------------
 
 host <- "ds061954.mongolab.com:61954" 
 username <- "user1" 
@@ -381,8 +395,36 @@ data1 <- mongo(collection="posts", db=db, url = url)$find()
 
 
 data1 <- mongo(collection="posts", db=db, url = url)
-data1$update('{"postID":1445138342}', update='{"$set":{ "current_views": 6 }}' )
+#data1$update('{"postID":1445138342}', update='{"$set":{ "current_views": 6 }}' )
 data1$find('{"postID":1445138342}')  
+
+data1_all <- data1$find()
+
+write.table(data1_all, "/Volumes/iMacSATA/data/db/app_rumen/posts.csv", sep=",", row.names = FALSE) 
+
+myMongoExportCsv <- function(db, url, location, collection_name, field=NULL) {
+
+  if (is.null(field)) d1 <- mongo(collection=collection_name, db=db, url = url)$find()
+  else                d1 <- mongo(collection=collection_name, db=db, url = url)$find(field)
+  
+  file <- paste0(location,collection_name, ".csv")
+  write.table(d1, file, sep=",",row.names = FALSE)
+} 
+
+loc_app_rumen <- "/Volumes/iMacSATA/data/db/app_rumen/"
+myMongoExportCsv(db, url, loc_app_rumen, "posts")
+myMongoExportCsv(db, url, loc_app_rumen, "comments")
+myMongoExportCsv(db, url, loc_app_rumen, "archive_posts")
+myMongoExportCsv(db, url, loc_app_rumen, "archive_comments")
+
+myMongoExportCsv(db, url, loc_app_rumen, "completed_posts")
+myMongoExportCsv(db, url, loc_app_rumen, "resolved_posts")
+myMongoExportCsv(db, url, loc_app_rumen, "discontinued_posts")
+
+
+
+
+
 
 
 

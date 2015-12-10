@@ -176,7 +176,7 @@ isolate({ # isolate the robustness calculation
                 + (rb$loan_housing * input$r_housing + rb$loan_milking1 * input$r_milking1)*
                 (1-input$tax_rate/100))/(rb$cost_housing + rb$cost_milking)
   
-  source("session_cash_flow_robustness.R", local=TRUE)  # Calculates cash flow tables
+  source(file.path("session_files", "session_cash_flow_robustness.R"), local=TRUE)  # Calculates cash flow tables
   
   rb$capital_recovery_robot <-  -pmt(input$interest/100, rb$housing_years, 
                                      npv(input$interest/100, 

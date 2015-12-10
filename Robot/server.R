@@ -14,7 +14,7 @@ default_data_1 <- read.xlsx("www/default_user_input_data.xlsx", sheetIndex = 1)
 default_data_2 <- read.xlsx("www/default_user_input_data.xlsx", sheetIndex = 2) 
 
 
-shinyServer(function(input, output, session) {
+shinyServer(function(input, output, session) { 
 
   # Create a list of reactive values 
   rv <- reactiveValues(recalculate=0)
@@ -32,23 +32,23 @@ shinyServer(function(input, output, session) {
   source("helper.R",local=TRUE)
   
   # ----------- Miselleneous tasks -----------
-  source("session_misc.R", local=TRUE)
+  source(file.path("session_files","session_misc.R"), local=TRUE)
   
   # ----------- Main Calculations for Partial Budget and Cash Flow Analyses -----------
-  source("session_calculations_base.R", local=TRUE)
+  source(file.path("session_files","session_calculations_base.R"), local=TRUE)
   
   # ----------- Main Rendering -----------
-  source("session_render_base.R", local=TRUE)
+  source(file.path("session_files","session_render_base.R"), local=TRUE)
   
   # ----------- Robots vs Parlors Analysis -----------
-  source("session_robot_parlor.R", local=TRUE)
+  source(file.path("session_files","session_robot_parlor.R"), local=TRUE)
   
   
   # ----------- Sensitivity Analysis -----------
-  source("session_sensitivity.R", local=TRUE)
+  source(file.path("session_files","session_sensitivity.R"), local=TRUE)
   
   # ----------- Scenario Analysis -----------
-  source("session_scenarios.R", local=TRUE)  
+  source(file.path("session_files","session_scenarios.R"), local=TRUE)  
   
   
   
@@ -64,6 +64,6 @@ shinyServer(function(input, output, session) {
               accept=c(".xlsx", "application/vnd.ms-excel"))
   })
   
-})
+}) 
 
 

@@ -179,7 +179,7 @@ observe({
   # rv$cash_impact_without_salvage <-  rv$impact_without_salvage 
   # rv$cash_impact_with_salvage <-  rv$impact_with_salvage 
   
-  source("session_cash_flow.R", local=TRUE)  # Calculates cash flow tables
+  source(file.path("session_files", "session_cash_flow.R"), local=TRUE)   # Calculates cash flow tables
   
   
   rv$capital_recovery_robot <-  -pmt(input$interest/100, rv$housing_years, 

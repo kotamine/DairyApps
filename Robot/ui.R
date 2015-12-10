@@ -34,17 +34,18 @@ shinyUI(
                # Need to add "$value" for including source in UI: 
                # otherwise "TRUE" will show up at the end of file
                
-               source("ui_data_entry_tabs.R", local=TRUE)$value,    
-               
+                source(file.path("ui_files","ui_data_entry_tabs.R"), local=TRUE)$value,    
+
                conditionalPanel("input.budget>0",
                                 # ---------- Dashboard ----------
-                                source("ui_dashboard.R", local=TRUE)$value,    
-                                
+                                source(file.path("ui_files", "ui_dashboard.R"), local=TRUE)$value,    
+
                                 # ---------- Robustness ----------
-                                source("ui_robustness.R", local=TRUE)$value,
+                                source(file.path("ui_files", "ui_robustness.R"), local=TRUE)$value,    
                                 
                                 #---------- Dashboard for Sensitivity and Scenarios ---------- 
-                                source("ui_dashboard_robustness.R", local=TRUE)$value
+                                source(file.path("ui_files", "ui_dashboard_robustness.R"), local=TRUE)$value
+                                
                ),
                # --------- Data Table ---------
                br(), br(),
@@ -67,7 +68,8 @@ shinyUI(
                                     helpText("Please review all tabs in Data Entry."),align="center")
                ),
                conditionalPanel("input.budget>0",
-                                source("ui_partial_budget.R", local=TRUE)$value
+                                source(file.path("ui_files", "ui_partial_budget.R"), local=TRUE)$value    
+                                
                )
       ),
       tabPanel("Cash Flow",
@@ -75,7 +77,8 @@ shinyUI(
                                 div(helpText("Please review all tabs in Data Entry."),align="center")
                ),
                conditionalPanel("input.budget>0",
-                                source("ui_cash_flow.R", local=TRUE)$value
+                                source(file.path("ui_files", "ui_cash_flow.R"), local=TRUE)$value
+                                
                )
       ),
       # ---------- Additional Analyses -----------
@@ -105,7 +108,8 @@ shinyUI(
                                            div(helpText("Please review all tabs in Data Entry."),align="center")
                           ),
                           conditionalPanel("input.budget>0",
-                                           source("ui_robot_parlor.R", local=TRUE)$value
+                                           source(file.path("ui_files", "ui_robot_parlor.R"), local=TRUE)$value  
+                                           
                           ))
       ),
       # ---------- About -----------

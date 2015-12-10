@@ -206,7 +206,7 @@ observeEvent(input$robot_parlor_calculate, {
     
     use_profile_vars(vars_all_profiles, profile_ref[p])
     
-    source("session_calculations_robot_parlor.R", local=TRUE)
+    source(file.path("session_files", "session_calculations_robot_parlor.R"), local=TRUE)
     
     if (n_years_max > length(rp$table_cash_flow$operating_income)) {
       tmp_zero <- rep(0, n_years_max - length(rp$table_cash_flow$operating_income))
@@ -221,8 +221,8 @@ observeEvent(input$robot_parlor_calculate, {
                                             profile  = rp$table_cash_flow$after_tax_cash_flow)      
     } 
     
-    rp$NAI_spec <- "before tax"
-    source("session_dashboard_robot_parlor.R", local=TRUE)
+    rp$NAI_spec <- "before tax" 
+    source(file.path("session_files", "session_dashboard_robot_parlor.R"), local=TRUE)
     
     rp$table_before_tax <-  cbind(rp$table_before_tax, 
                                   profile =c(rp$NAI, rp$milk_feed,  rp$labor_repair, rp$capital, 
@@ -233,7 +233,7 @@ observeEvent(input$robot_parlor_calculate, {
                                              rp$bw_wage_inflation_before_tax)) 
     
     rp$NAI_spec <- "after tax"
-    source("session_dashboard_robot_parlor.R", local=TRUE)
+    source(file.path("session_files", "session_dashboard_robot_parlor.R"), local=TRUE)
     
     rp$table_after_tax <-   cbind(rp$table_after_tax, 
                                   profile =c(rp$NAI, rp$milk_feed,  rp$labor_repair, rp$capital, 

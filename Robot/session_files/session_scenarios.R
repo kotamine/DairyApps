@@ -93,11 +93,11 @@ observe({
 #     rb$table_scenario[n,] <- new_row
 #     
     
-    source("session_calculations_robustness.R", local=TRUE)
+    source(file.path("session_files", "session_calculations_robustness.R"), local=TRUE)
     
     rb$NAI_spec <- input$NAI
     
-    source("session_dashboard_robustness.R", local=TRUE)
+    source(file.path("session_files", "session_dashboard_robustness.R"), local=TRUE)
     
     if (input$NAI=="before tax") {
       # --- add a row of results to the table_sensitivity_before_tax ---
@@ -122,7 +122,7 @@ observe({
       rb$table_scenario_before_tax[n,] <- new_row
     } else {
       rb$NAI_spec <- "after tax"
-      source("session_dashboard_robustness.R", local=TRUE)
+      source(file.path("session_files","session_dashboard_robustness.R"), local=TRUE)
       
       new_row <- c(s_val, new_val,  
                    rb$NAI, rb$diff_NAI,
@@ -186,10 +186,10 @@ observeEvent(input$scenario_calculate, {
 #            rb$table_scenario[s,] <- new_row
            
            
-           source("session_calculations_robustness.R", local=TRUE)
+           source(file.path("session_files", "session_calculations_robustness.R"), local=TRUE)
            
            rb$NAI_spec <- "after tax"
-           source("session_dashboard_robustness.R", local=TRUE)
+           source(file.path("session_files", "session_dashboard_robustness.R"), local=TRUE)
            
            new_row <-  c(s_val, new_val,  
                          rb$NAI, rb$diff_NAI,
@@ -212,7 +212,7 @@ observeEvent(input$scenario_calculate, {
            
            rb$NAI_spec <- "before tax"
            
-           source("session_dashboard_robustness.R", local=TRUE)
+           source(file.path("session_files", "session_dashboard_robustness.R"), local=TRUE)
            
            # --- add a row of results to the table_sensitivity_before_tax ---
            new_row <- c(s_val, new_val,  

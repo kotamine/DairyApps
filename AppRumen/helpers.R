@@ -59,13 +59,10 @@ fields_comment_mandatory <- c(
   "novelty", "app_link", "interest", "comment_user_name", "comment_email_address", "comment" 
 )
 
-# fields_post_ed_mandatory <- c(
-#   "post_name_ed", "post_category_ed", "user_name", "email_address", "post_ed"
-# )
 
 # all fields in the form we want to save
 fields_post <- c(
-  "timestamp", "postID", "edits", "current_views", "cumulative_views", "current_comments",
+  "timestamp", "postID", "status", "edits", "current_views", "cumulative_views", "current_comments",
   "cumulative_comments", "timestamp_comment", "average_interest", fields_post_mandatory
 )
 

@@ -42,8 +42,11 @@ output$selectedUser  <- renderUI({
     
   })
   
-  h3(tmp_user$user_name)
-  
+  if (rv$user_trafic=="comment" | rv$user_trafic=="archive_comment") {
+    h3(tmp_user$comment_user_name)
+  } else {
+    h3(tmp_user$user_name)
+  }
   
 #   
 #   if (!rv$edit_user_auth) {

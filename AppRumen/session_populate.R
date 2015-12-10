@@ -2,15 +2,21 @@
 # ------- Prepare postings in Active Posts ------- 
 
 
-filter_category <- reactive({
-  filter <- paste0('{ "$or":[')  
-  for (i in 1:length(input$filterCategory)) {
-    if (i>1) { 
-      filter <-  paste0(filter,',') 
-    }
-    filter <-  paste0(filter, '{"post_category":','"',input$filterCategory[i],'"}')
+filter_posts <- reactive({
+  
+  status <- c()
+  for (i in 1:length(input$filterStatus)) {
+    status  <- paste0( status,'"',input$filterStatus[i],'"')
+    if (i < length(input$filterStatus))  status <- paste0( status,',')  
   }
-  filter <-  paste0(filter, ']}')
+  
+  categories <- c()
+  for (i in 1:length(input$filterCategory)) {
+    categories <- paste0(categories,'"',input$filterCategory[i],'"')
+    if (i < length(input$filterCategory)) categories <- paste0(categories,',')  
+  }
+  
+  filter <-paste0('{"status": { "$in": [', status,'] }, "post_category": {"$in": [', categories,'] }}')
   return(filter)
 })
 
@@ -23,7 +29,7 @@ output$postboxes <- renderUI({
       need( (!is.null(input$n_boxes) & input$n_boxes>0) , 'Please enter the number of posts.')
     )  
   
-  table_posts_copy <-  mongo_posts$find(filter_category()) 
+  table_posts_copy <-  mongo_posts$find(filter_posts()) 
 
   tmp_sort <- switch(input$sortPost, 
                      "Most recently posted"=  table_posts_copy$timestamp,
@@ -35,6 +41,7 @@ output$postboxes <- renderUI({
   # Sorted posts that will be retreived in "Details" panel via rv$view 
   sorted_table_posts <- table_posts_copy[rev(order(tmp_sort)),]
   rv$active_postsID <-  sorted_table_posts$postID 
+  rv$user_trafic <- "post"
   
   lapply(c(1:input$n_boxes), function(x) {
     observeEvent(input[[paste0("view",x)]], ({

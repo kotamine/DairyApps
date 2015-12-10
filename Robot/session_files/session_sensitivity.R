@@ -64,11 +64,11 @@ observe({
     label <- labels[n]
     robust <- "Sensitivity" 
     
-    source("session_calculations_robustness.R", local=TRUE)
+    source(file.path("session_files", "session_calculations_robustness.R"), local=TRUE)
     
     rb$NAI_spec <- input$NAI
     
-    source("session_dashboard_robustness.R", local=TRUE)
+    source(file.path("session_files", "session_dashboard_robustness.R"), local=TRUE)
     
     if (input$NAI=="before tax") {
       # --- add a row of results to the table_sensitivity_before_tax ---
@@ -92,7 +92,7 @@ observe({
       rb$table_sensitivity_before_tax[n,] <- new_row
     } else {
       rb$NAI_spec <- "after tax"
-      source("session_dashboard_robustness.R", local=TRUE)
+      source(file.path("session_files", "session_dashboard_robustness.R"), local=TRUE)
       
       new_row <- c(c_val, base_val, new_val,  
                    rb$NAI, rb$diff_NAI,
@@ -176,10 +176,10 @@ observeEvent(input$sensitivity_calculate, {
            #              
            #              
            
-           source("session_calculations_robustness.R", local=TRUE)
+           source(file.path("session_files", "session_calculations_robustness.R"), local=TRUE)
            
            rb$NAI_spec <- "after tax"
-           source("session_dashboard_robustness.R", local=TRUE)
+           source(file.path("session_files", "session_dashboard_robustness.R"), local=TRUE)
            
            new_row <- c(c_val, base_val, new_val,  
                         rb$NAI, rb$diff_NAI,
@@ -202,7 +202,7 @@ observeEvent(input$sensitivity_calculate, {
            
            rb$NAI_spec <- "before tax"
            
-           source("session_dashboard_robustness.R", local=TRUE)
+           source(file.path("session_files", "session_dashboard_robustness.R"), local=TRUE)
            
            # --- add a row of results to the table_sensitivity_before_tax ---
            new_row <- c(c_val, base_val, new_val,  
@@ -283,7 +283,7 @@ observe({
       label <- labels[n]
       robust <- "Sensitivity" 
       
-      source("session_calculations_robustness.R", local=TRUE)
+      source(file.path("session_files", "session_calculations_robustness.R"), local=TRUE)
       
       rv$table_plot_robust[n,1] <- c_val_list[n]
       rv$table_plot_robust[n,2] <- rb$net_annual_impact_before_tax
