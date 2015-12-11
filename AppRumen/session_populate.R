@@ -16,6 +16,8 @@ filter_posts <- reactive({
     if (i < length(input$filterCategory)) categories <- paste0(categories,',')  
   }
   
+  #paste(input$filterCategory, 1:length(input$filterCategory), sep=",") %>% cat() 
+  
   filter <-paste0('{"status": { "$in": [', status,'] }, "post_category": {"$in": [', categories,'] }}')
   return(filter)
 })

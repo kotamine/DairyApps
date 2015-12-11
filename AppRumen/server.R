@@ -8,7 +8,7 @@ library(magrittr)
 
 source("helpers.R")
 
-
+ 
 shinyServer(function(input, output, session) {
      
      rv <- reactiveValues(view = NULL, edit_auth = FALSE, 
