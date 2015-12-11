@@ -70,7 +70,17 @@ fields_comment <- c(
   "timestamp2", "commentID", "postID", "post_name", fields_comment_mandatory
 )
 
+fields_user <- c(
+  "timestamp", "email_address", "user_name","profession","interests","last_logged_in", "profile_views", "about"
+)
 
+fields_follow_posts <- c(
+  "timestamp", "email_address", "user_name", "postID","post_name"
+)
+
+fields_follow_people <- c(
+  "timestamp", "email_address_following", "user_name_followwing", "email_address_followed", "user_name_followed"
+)
 
 
 # get current Epoch time

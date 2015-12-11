@@ -179,6 +179,7 @@ dashboardSidebar(
            shinyjs::hidden(numericInput("cumulative_comments","", value=0)),
            shinyjs::hidden(numericInput("average_interest","",value=0))
      ),
+    # ------------- People --------------------
     tabItem(tabName="peopleTab",
             bsCollapse(id = "collapsePeople", open = "People",
                        bsCollapsePanel(
