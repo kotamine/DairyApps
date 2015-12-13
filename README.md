@@ -1,5 +1,5 @@
 # shiny
-A Shiny project for dairy something.
+Shiny projects for Dairy Extension and Research. 
 
 ## Collaborator
 *Kota Minegishi* (kotamine@gmail.com)
