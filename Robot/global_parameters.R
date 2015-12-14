@@ -3,9 +3,6 @@
 
 conv_factor <- 2.2046  # conversion factor from kg to pound 
 
-input_colnames <- c("input_id", "milk_cow_day","milk_change") # UNUSED 
-
-
 c_colnames <- c("Variable", "% Change","Base Value","New Value",
                 "Net Impact","diff: Net Impact", 
                 "Milk minus Feed", "diff: Milk minus Feed",
@@ -47,9 +44,7 @@ c_labels_parlor <- c("Estimated cost of parlors", "Related housing changes neede
 s_varnames <- c("cost_robot","cost_housing_cow", "milk_change",
                 "scc_change","pellets")
 
-# s_labels <- c("Estimated cost per robot", "Related housing changes needed per cow",
-#               "Projected change in milk production",
-#               "Estimated percent change in SCC (%)", "Pellets fed in robot booth") 
+
 
 s_labels <- c("Increased investment",
               "Use less pellets",
@@ -125,5 +120,6 @@ steps_vars_all_profiles <- c(10, 500, 0.1, 0.2,
                              0.25, 0.25,
                              rep(20000,3), rep(1,3),rep(5000,2), rep(1,2), 
                              rep(10000,4)) 
+
 
 

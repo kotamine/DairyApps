@@ -46,8 +46,8 @@ div(
   br(), 
   fluidRow(
     column(width=10,offset=1, 
-           div(htmlOutput("cashflow_chart"),align="right"), br(),
-           div(uiOutput("dl_button_cash_flow"),br(),align="center"),
+           div(htmlOutput("cashflow_chart"),align="center"), br(),
+           div(uiOutput("dl_button_cash_flow"),align="center"),
            tabsetPanel(
              tabPanel("Cash Flow",
                       DT::dataTableOutput("table_cash_flow")

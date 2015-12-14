@@ -399,4 +399,26 @@ df <- data.frame(profile =c("A","B","C","D"),
 gvisColumnChart(df, xvar="profile", yvar=c("var1","var2")) %>% plot()
 
 
+ls()
+f <- function() {
+  browser()
+  x <- 0
+  y <- 0
+  g <- function() { 
+     x <<- 1
+    h <- function() {
+       y <<-1
+       z <<-1
+    }
+      h()
+      list(x1=x,y1=h())
+      }
+  g()
+  browser()
+  print(x)
+  print(y)
+  print(z)
+}
+f()
+ls()
 

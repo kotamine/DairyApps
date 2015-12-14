@@ -5,6 +5,7 @@
 observe({ 
   # rv$recalculate # respond to the change in rv$recalculate
   
+  
   isolate(robot_parlor <- input$robot_parlor)
   if (robot_parlor=="OFF" | input$profile_choice=="Robots") {
     rv$cost_milking <- input$n_robot * input$cost_robot

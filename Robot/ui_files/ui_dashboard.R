@@ -4,13 +4,13 @@ fluidRow(
          fluidRow(
            column(6,
                   uiOutput("IOFC"),
-                  radioButtons("IOFC",NULL,choices=c("per cow","per cwt"))),
+                  radioButtons("IOFC",NULL,choices=c("per cow","per cwt"), selected="per cwt")),
            column(6,
                   uiOutput("NAI"),
                   radioButtons("NAI",NULL,
                                choices=c("before tax",
                                          "after tax"),
-                               selected="before tax")) 
+                               selected="after tax")) 
          ),
          fluidRow(
            conditionalPanel("input.dash_option!='chart'",
@@ -26,10 +26,10 @@ fluidRow(
            ),
            conditionalPanel("input.dash_option=='chart'",
                             tabsetPanel(
-                              tabPanel("Breakeven Wage",
-                                       htmlOutput("breakeven2")),
                               tabPanel("Cash Flow",
-                                       htmlOutput("cashflow2"))
+                                       htmlOutput("cashflow2")),
+                              tabPanel("Breakeven Wage",
+                                       htmlOutput("breakeven2"))
                             ) 
            ),
            br(), div( radioButtons("dash_option",NULL, inline=TRUE,

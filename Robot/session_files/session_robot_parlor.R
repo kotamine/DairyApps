@@ -1,109 +1,202 @@
 
 
+## --- This was an alternative version but it is slow ---
+# current_profile <-  reactive({
+#   switch(input$profile_choice, 
+#          "Barn Only"="_pr1",
+#          "Retrofit Parlors"="_pr2",
+#          "New Parlors"="_pr3",
+#          "Robots"="_pr4")
+# })
+# 
+# 
+# update_profile_vars  <- function(varnames, mins, steps, varname_ref=NULL) {
+#   for (i in 1:length(varnames)) 
+#   { x <- varnames[i]
+#   isolate({ 
+#     if (!is.null(input[[paste0(x)]])) {  
+#       updateNumericInput(session, paste0(x),NULL, 
+#                          value=input[[paste0(x,varname_ref)]], 
+#                          min=mins[i],
+#                          step=steps[i])
+#     }
+#   }) 
+#   }
+# }
+# 
+# 
+# # update all variables in Data Entry when input$profile_choice changes 
+# observe({
+#   if (input$robot_parlor=="OFF") { return() }
+#   input$profile_choice
+#   isolate({
+#   if (input$profile_choice=="Barn Only") {
+#     update_profile_vars(vars_all_profiles,
+#                         mins_vars_all_profiles, 
+#                         steps_vars_all_profiles, 
+#                         varname_ref="_pr1")
+#   }
+#   else if (input$profile_choice=="Retrofit Parlors") {
+#     update_profile_vars(vars_all_profiles,
+#                         mins_vars_all_profiles, 
+#                         steps_vars_all_profiles, 
+#                         varname_ref="_pr2")
+#     
+#   } else if (input$profile_choice=="New Parlors") {
+#     update_profile_vars(vars_all_profiles,
+#                         mins_vars_all_profiles, 
+#                         steps_vars_all_profiles, 
+#                         varname_ref="_pr3")
+#     
+#   } else {
+#     update_profile_vars(vars_all_profiles,
+#                         mins_vars_all_profiles, 
+#                         steps_vars_all_profiles, 
+#                         varname_ref="_pr4")
+#     
+#   }
+#   })
+# })
+# 
+# # update variables in Data Entry when their counterparts change in Robot vs Parlors
+#   for (varname_ref in c("_pr1","_pr2","_pr3","_pr4")) { 
+#     lapply(vars_all_profiles, function(x) { 
+#       observeEvent(input[[paste0(x,varname_ref)]],{  
+#       shinyjs:: disable(paste0(x,varname_ref))
+#         on.exit(shinyjs:: enable(paste0(x,varname_ref)))
+#       if (current_profile() !=varname_ref) return()
+#       if (is.null(input[[paste0(x)]])) return() 
+#       if (input[[paste0(x,varname_ref)]]==input[[paste0(x)]]) return()
+# #         browser()
+#       i <- which(vars_all_profiles==x)   
+#       updateNumericInput(session, paste0(x),NULL, 
+#                          value=input[[paste0(x,varname_ref)]], 
+#                          min=mins_vars_all_profiles[i],
+#                          step=steps_vars_all_profiles[i])
+#     })   
+#   })
+# } 
+#  
+# 
+# for (varname_ref in c("_pr1","_pr2","_pr3","_pr4")) { 
+#   lapply(vars_all_profiles, function(x) { 
+#     observeEvent(input[[paste0(x)]],{  
+#       shinyjs:: disable(paste0(x))
+#       on.exit(shinyjs:: enable(paste0(x)))
+#       if (input$robot_parlor=="OFF") return() 
+#       if (current_profile() !=varname_ref) return()
+#       if (is.null(input[[paste0(x,varname_ref)]])) return() 
+#         # browser()
+#         i <- which(vars_all_profiles==x)   
+#         updateNumericInput(session, paste0(x,varname_ref),NULL, 
+#                            value=input[[paste0(x)]],
+#                            min=mins_vars_all_profiles[i],
+#                            step=steps_vars_all_profiles[i])
+#       
+#     })    
+#   }) 
+# } 
 
-update_profile_vars  <- function(varnames, mins, steps, varname_ref=NULL) { 
-  for (i in 1:length(varnames)) 
-  { x <- varnames[i]
-  isolate( x_pr <- input[[paste0(x,varname_ref)]])
-  if (!is.null(x_pr)) {  
-    
-    updateNumericInput(session, paste0(x),NULL, 
-                       value=input[[paste0(x,varname_ref)]], 
-                       min=mins[i],
-                       step=steps[i])
-  }
-  }
-}
-
-update_profile_vars2  <- function(varnames, mins, steps, varname_ref=NULL) {
-  for (i in 1:length(varnames)) 
-  { x <- varnames[i]
-  isolate( x_pr <- input[[paste0(x,varname_ref)]])
-  if (!is.null(x_pr)) {  
-    
-    updateNumericInput(session, paste0(x,varname_ref),NULL, 
-                       value=input[[paste0(x)]], 
-                       min=mins[i],
-                       step=steps[i])
-  }
-  }
-}
 
 
-use_profile_vars  <- function(varnames, varname_ref=NULL) {
-  for (i in 1:length(varnames)) 
-  {   x <- varnames[i]
-  rp[[paste0(x)]] <- input[[paste0(x,varname_ref)]]
-  }
-}
+##  ---- Initial version ----
+# update_profile_vars  <- function(varnames, mins, steps, varname_ref=NULL) { 
+#   for (i in 1:length(varnames)) 
+#   { x <- varnames[i]
+#   isolate( x_pr <- input[[paste0(x,varname_ref)]])
+#   if (!is.null(x_pr)) {  
+#     
+#     updateNumericInput(session, paste0(x),NULL, 
+#                        value=input[[paste0(x,varname_ref)]], 
+#                        min=mins[i],
+#                        step=steps[i])
+#   }
+#   }
+# }
+# 
+# update_profile_vars2  <- function(varnames, mins, steps, varname_ref=NULL) {
+#   for (i in 1:length(varnames)) 
+#   { x <- varnames[i]
+#   isolate( x_pr <- input[[paste0(x,varname_ref)]])
+#   if (!is.null(x_pr)) {  
+#     
+#     updateNumericInput(session, paste0(x,varname_ref),NULL, 
+#                        value=input[[paste0(x)]], 
+#                        min=mins[i],
+#                        step=steps[i])
+#   }
+#   }
+# }
+# 
+# 
+# # update variables in Data Entry when their counterparts change in Robot vs Parlors
+# observe({
+#   
+#   if (input$robot_parlor=="OFF") { return() }
+#   
+#   if (input$profile_choice=="Barn Only") {
+#     update_profile_vars(vars_all_profiles,
+#                         mins_vars_all_profiles, 
+#                         steps_vars_all_profiles, 
+#                         varname_ref="_pr1")
+#   }
+#   else if (input$profile_choice=="Retrofit Parlors") {
+#     update_profile_vars(vars_all_profiles,
+#                         mins_vars_all_profiles, 
+#                         steps_vars_all_profiles, 
+#                         varname_ref="_pr2")
+#     
+#   } else if (input$profile_choice=="New Parlors") {
+#     update_profile_vars(vars_all_profiles,
+#                         mins_vars_all_profiles, 
+#                         steps_vars_all_profiles, 
+#                         varname_ref="_pr3")
+#     
+#   } else {
+#     update_profile_vars(vars_all_profiles,
+#                         mins_vars_all_profiles, 
+#                         steps_vars_all_profiles, 
+#                         varname_ref="_pr4")
+#     
+#   }
+# })
+# 
+# 
+# 
+# # update variables in Robot vs Parlors when their counterparts change in Data Entry 
+# observe({
+#   
+#   isolate(profile <- input$profile_choice)
+#   if (profile=="Barn Only") {
+#     update_profile_vars2(vars_all_profiles,
+#                          mins_vars_all_profiles, 
+#                          steps_vars_all_profiles, 
+#                          varname_ref="_pr1")
+#     
+#   }
+#   else if (profile=="Retrofit Parlors") {
+#     update_profile_vars2(vars_all_profiles,
+#                          mins_vars_all_profiles, 
+#                          steps_vars_all_profiles, 
+#                          varname_ref="_pr2")
+#     
+#   } else if (profile=="New Parlors") {
+#     update_profile_vars2(vars_all_profiles,
+#                          mins_vars_all_profiles, 
+#                          steps_vars_all_profiles, 
+#                          varname_ref="_pr3")
+#     
+#   } else {
+#     
+#     update_profile_vars2(vars_all_profiles,
+#                          mins_vars_all_profiles, 
+#                          steps_vars_all_profiles, 
+#                          varname_ref="_pr4")
+#     
+#   }
+# })
+# 
 
-
-# update variables in Data Entry when their counterparts change in Robot vs Parlors
-observe({
-  
-  if (input$robot_parlor=="OFF") { return() }
-  
-  if (input$profile_choice=="Barn Only") {
-    update_profile_vars(vars_all_profiles,
-                        mins_vars_all_profiles, 
-                        steps_vars_all_profiles, 
-                        varname_ref="_pr1")
-  }
-  else if (input$profile_choice=="Retrofit Parlors") {
-    update_profile_vars(vars_all_profiles,
-                        mins_vars_all_profiles, 
-                        steps_vars_all_profiles, 
-                        varname_ref="_pr2")
-    
-  } else if (input$profile_choice=="New Parlors") {
-    update_profile_vars(vars_all_profiles,
-                        mins_vars_all_profiles, 
-                        steps_vars_all_profiles, 
-                        varname_ref="_pr3")
-    
-  } else {
-    update_profile_vars(vars_all_profiles,
-                        mins_vars_all_profiles, 
-                        steps_vars_all_profiles, 
-                        varname_ref="_pr4")
-    
-  }
-})
-
-
-
-# update variables in Robot vs Parlors when their counterparts change in Data Entry 
-observe({
-  
-  isolate(profile <- input$profile_choice)
-  if (profile=="Barn Only") {
-    update_profile_vars2(vars_all_profiles,
-                         mins_vars_all_profiles, 
-                         steps_vars_all_profiles, 
-                         varname_ref="_pr1")
-    
-  }
-  else if (profile=="Retrofit Parlors") {
-    update_profile_vars2(vars_all_profiles,
-                         mins_vars_all_profiles, 
-                         steps_vars_all_profiles, 
-                         varname_ref="_pr2")
-    
-  } else if (profile=="New Parlors") {
-    update_profile_vars2(vars_all_profiles,
-                         mins_vars_all_profiles, 
-                         steps_vars_all_profiles, 
-                         varname_ref="_pr3")
-    
-  } else {
-    
-    update_profile_vars2(vars_all_profiles,
-                         mins_vars_all_profiles, 
-                         steps_vars_all_profiles, 
-                         varname_ref="_pr4")
-    
-  }
-})
 
 # Create an alert in any change in data input
 observe({
@@ -180,6 +273,13 @@ rp$table_before_tax <- matrix(NA) %>% data.frame()
 rp$table_after_tax  <- matrix(NA) %>% data.frame()
 rp$table_operating_income  <-  matrix(NA) %>% data.frame()
 rp$table_after_tax_cash_flow  <-  matrix(NA) %>% data.frame()
+
+use_profile_vars  <- function(varnames, varname_ref=NULL) {
+  for (i in 1:length(varnames)) 
+  {   x <- varnames[i]
+  rp[[paste0(x)]] <- input[[paste0(x,varname_ref)]]
+  }
+}
 
 # Calculate rp$table_profiles
 observeEvent(input$robot_parlor_calculate, {

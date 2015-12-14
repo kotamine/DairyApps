@@ -4,7 +4,7 @@ s_empty_table <- df_null(s_colnames)
 p_empty_table <- df_null(p_colnames) 
 
 
-# This sets the default value for additional_labor and additional_cost when hidden from the user
+# The following provides the default value for additional_labor and additional_cost when hidden from the user
 updateNumericInput(session, "additional_labor",NULL,value=450,step=50,min=0)
 updateNumericInput(session, "additional_cost",NULL,value=200,step=50,min=0)
 # 
@@ -31,7 +31,7 @@ updateNumericInput(session, "additional_cost",NULL,value=200,step=50,min=0)
 
 # Temporary fix between horizon year and housing year 
 observeEvent(rv$housing_years,{
-  updateNumericInput(session, "horizon",NULL,value=rv$housing_years, min=1, step=1)
+  updateNumericInput(session, "horizon",NULL,value=rv$housing_years, min=1, step=1) # Is input$horizon used?  
   updateSliderInput(session, "budget_year", "Select budget year",value=1, min=1,max=rv$housing_years)
 })
 

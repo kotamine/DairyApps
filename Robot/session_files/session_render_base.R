@@ -731,6 +731,7 @@ output$table_robust_before_tax_diff <- DT::renderDataTable({
 
 
 output$table_robust_after_tax_diff <- DT::renderDataTable({
+  
   if (input$robust=="Sensitivity") {
     if (dim(rb$table_sensitivity_after_tax)[1]==0) return()
     tbl <- rb$table_sensitivity_after_tax

@@ -1,5 +1,5 @@
 # ---------- Dashboard for Sensitivity and Scenarios ---------- 
-conditionalPanel('input.robust=="Sensitivity" | input.robust=="Scenario"', 
+conditionalPanel('input.robust=="Sensitivity" | input.robust=="Scenarios"', 
                  shinyjs::hidden(
                    div(id = "dashboard_robust",
                        fluidRow(
@@ -56,7 +56,7 @@ conditionalPanel('input.robust=="Sensitivity" | input.robust=="Scenario"',
                             DT::dataTableOutput("table_robust_before_tax_diff")),
                    tabPanel("After tax",
                             DT::dataTableOutput("table_robust_after_tax")),
-                   tabPanel("After Tax: Difference",
+                   tabPanel("After Tax: Difference", 
                             DT::dataTableOutput("table_robust_after_tax_diff"))
                  )
 ) 

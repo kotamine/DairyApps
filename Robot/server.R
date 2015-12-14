@@ -28,7 +28,7 @@ shinyServer(function(input, output, session) {
   # data tables to be downloaded
   df <- reactiveValues()
   
-  # ----------- Functions: some of the depend on local variables  -----------
+  # ----------- Functions: some of them depend on local variables  -----------
   source("helper.R",local=TRUE)
   
   # ----------- Miselleneous tasks -----------
