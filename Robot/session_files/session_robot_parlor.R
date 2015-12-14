@@ -100,102 +100,102 @@
 
 
 ##  ---- Initial version ----
-# update_profile_vars  <- function(varnames, mins, steps, varname_ref=NULL) { 
-#   for (i in 1:length(varnames)) 
-#   { x <- varnames[i]
-#   isolate( x_pr <- input[[paste0(x,varname_ref)]])
-#   if (!is.null(x_pr)) {  
-#     
-#     updateNumericInput(session, paste0(x),NULL, 
-#                        value=input[[paste0(x,varname_ref)]], 
-#                        min=mins[i],
-#                        step=steps[i])
-#   }
-#   }
-# }
-# 
-# update_profile_vars2  <- function(varnames, mins, steps, varname_ref=NULL) {
-#   for (i in 1:length(varnames)) 
-#   { x <- varnames[i]
-#   isolate( x_pr <- input[[paste0(x,varname_ref)]])
-#   if (!is.null(x_pr)) {  
-#     
-#     updateNumericInput(session, paste0(x,varname_ref),NULL, 
-#                        value=input[[paste0(x)]], 
-#                        min=mins[i],
-#                        step=steps[i])
-#   }
-#   }
-# }
-# 
-# 
-# # update variables in Data Entry when their counterparts change in Robot vs Parlors
-# observe({
-#   
-#   if (input$robot_parlor=="OFF") { return() }
-#   
-#   if (input$profile_choice=="Barn Only") {
-#     update_profile_vars(vars_all_profiles,
-#                         mins_vars_all_profiles, 
-#                         steps_vars_all_profiles, 
-#                         varname_ref="_pr1")
-#   }
-#   else if (input$profile_choice=="Retrofit Parlors") {
-#     update_profile_vars(vars_all_profiles,
-#                         mins_vars_all_profiles, 
-#                         steps_vars_all_profiles, 
-#                         varname_ref="_pr2")
-#     
-#   } else if (input$profile_choice=="New Parlors") {
-#     update_profile_vars(vars_all_profiles,
-#                         mins_vars_all_profiles, 
-#                         steps_vars_all_profiles, 
-#                         varname_ref="_pr3")
-#     
-#   } else {
-#     update_profile_vars(vars_all_profiles,
-#                         mins_vars_all_profiles, 
-#                         steps_vars_all_profiles, 
-#                         varname_ref="_pr4")
-#     
-#   }
-# })
-# 
-# 
-# 
-# # update variables in Robot vs Parlors when their counterparts change in Data Entry 
-# observe({
-#   
-#   isolate(profile <- input$profile_choice)
-#   if (profile=="Barn Only") {
-#     update_profile_vars2(vars_all_profiles,
-#                          mins_vars_all_profiles, 
-#                          steps_vars_all_profiles, 
-#                          varname_ref="_pr1")
-#     
-#   }
-#   else if (profile=="Retrofit Parlors") {
-#     update_profile_vars2(vars_all_profiles,
-#                          mins_vars_all_profiles, 
-#                          steps_vars_all_profiles, 
-#                          varname_ref="_pr2")
-#     
-#   } else if (profile=="New Parlors") {
-#     update_profile_vars2(vars_all_profiles,
-#                          mins_vars_all_profiles, 
-#                          steps_vars_all_profiles, 
-#                          varname_ref="_pr3")
-#     
-#   } else {
-#     
-#     update_profile_vars2(vars_all_profiles,
-#                          mins_vars_all_profiles, 
-#                          steps_vars_all_profiles, 
-#                          varname_ref="_pr4")
-#     
-#   }
-# })
-# 
+update_profile_vars  <- function(varnames, mins, steps, varname_ref=NULL) { 
+  for (i in 1:length(varnames)) 
+  { x <- varnames[i]
+  isolate( x_pr <- input[[paste0(x,varname_ref)]])
+  if (!is.null(x_pr)) {  
+    
+    updateNumericInput(session, paste0(x),NULL, 
+                       value=input[[paste0(x,varname_ref)]], 
+                       min=mins[i],
+                       step=steps[i])
+  }
+  }
+}
+
+update_profile_vars2  <- function(varnames, mins, steps, varname_ref=NULL) {
+  for (i in 1:length(varnames)) 
+  { x <- varnames[i]
+  isolate( x_pr <- input[[paste0(x,varname_ref)]])
+  if (!is.null(x_pr)) {  
+    
+    updateNumericInput(session, paste0(x,varname_ref),NULL, 
+                       value=input[[paste0(x)]], 
+                       min=mins[i],
+                       step=steps[i])
+  }
+  }
+}
+
+
+# update variables in Data Entry when their counterparts change in Robot vs Parlors
+observe({
+  
+  if (input$robot_parlor=="OFF") { return() }
+  
+  if (input$profile_choice=="Barn Only") {
+    update_profile_vars(vars_all_profiles,
+                        mins_vars_all_profiles, 
+                        steps_vars_all_profiles, 
+                        varname_ref="_pr1")
+  }
+  else if (input$profile_choice=="Retrofit Parlors") {
+    update_profile_vars(vars_all_profiles,
+                        mins_vars_all_profiles, 
+                        steps_vars_all_profiles, 
+                        varname_ref="_pr2")
+    
+  } else if (input$profile_choice=="New Parlors") {
+    update_profile_vars(vars_all_profiles,
+                        mins_vars_all_profiles, 
+                        steps_vars_all_profiles, 
+                        varname_ref="_pr3")
+    
+  } else {
+    update_profile_vars(vars_all_profiles,
+                        mins_vars_all_profiles, 
+                        steps_vars_all_profiles, 
+                        varname_ref="_pr4")
+    
+  }
+})
+
+
+
+# update variables in Robot vs Parlors when their counterparts change in Data Entry 
+observe({
+  
+  isolate(profile <- input$profile_choice)
+  if (profile=="Barn Only") {
+    update_profile_vars2(vars_all_profiles,
+                         mins_vars_all_profiles, 
+                         steps_vars_all_profiles, 
+                         varname_ref="_pr1")
+    
+  }
+  else if (profile=="Retrofit Parlors") {
+    update_profile_vars2(vars_all_profiles,
+                         mins_vars_all_profiles, 
+                         steps_vars_all_profiles, 
+                         varname_ref="_pr2")
+    
+  } else if (profile=="New Parlors") {
+    update_profile_vars2(vars_all_profiles,
+                         mins_vars_all_profiles, 
+                         steps_vars_all_profiles, 
+                         varname_ref="_pr3")
+    
+  } else {
+    
+    update_profile_vars2(vars_all_profiles,
+                         mins_vars_all_profiles, 
+                         steps_vars_all_profiles, 
+                         varname_ref="_pr4")
+    
+  }
+})
+
 
 
 # Create an alert in any change in data input
