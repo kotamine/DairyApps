@@ -15,6 +15,7 @@ div(
 #              ))
 #     )),  
   navlistPanel("Baseline",  id="navlistPanel",
+               ## ---------------  Baseline --------------- 
                tabPanel("Operation", value="Operation",
                         #                         herdsize, milk output, average scc, 
                         #                         milking labor, heat detection, feed calc.
@@ -121,96 +122,65 @@ div(
                             ), br(),
                             radioButtons("dep_method","Depreciation accounting method:",
                                          choices=c("Accelerated GDS"="d1","Straight-line ADS"="d2"))
-                            
                           )),
                         icon=icon("money")),
-               ## --------------- Profile-specific Inpiuts  ---------------------- 
+               ## --------------- Profile-specific Inpiuts  --------------- 
                "Change",
                 tabPanel("Capital", value="Capital",
                          fluidRow(column(width=10, offset=1,
                          tabsetPanel(id="prCapital", 
-                                     tabPanel("Robots", value="_pr4",
+                                     tabPanel("Robots", value=base_profiles[1],
                                               changeVariablesCapital("Robots")),
-                                     tabPanel("Freestall Barn", value="_pr1",
-                                              changeVariablesCapital("Freestall Barn")),
-                                     tabPanel("Retrofit Parlors", value="_pr2",
+                                     tabPanel("Retrofit Parlors", value=base_profiles[2],
                                               changeVariablesCapital("Retrofit Parlors")),
-                                     tabPanel("New Parlors", value="_pr3",
-                                              changeVariablesCapital("New Parlors"))
+                                     tabPanel("New Parlors", value=base_profiles[3],
+                                              changeVariablesCapital("New Parlors")),
+                                     tabPanel("Retrofit/Robots",  value=combo_profiles[1],
+                                              helpText("* This assumes first Retrofit Parlors and then New Parlors."),
+                                              helpText("* Values are taken from the two profiles.")),
+                                     tabPanel("Retrofit/New",  value=combo_profiles[2],
+                                              helpText("* This assumes first Retrofit Parlors and then New Parlors."),
+                                              helpText("* Values are taken from the two profiles."))
                         )
                         )),
-                        icon=icon("wrench")
+                        icon=icon("gears")
                 ), 
+               tabPanel("Maintenance", value="Maintenance",
+                        fluidRow(column(width=10, offset=1,
+                                        tabsetPanel(id="prMaintenace", 
+                                                    tabPanel("Robots", value=base_profiles[1],
+                                                             changeVariablesMaintenace("Robots")),
+                                                    tabPanel("Retrofit Parlors", value=base_profiles[2],
+                                                             changeVariablesMaintenace("Retrofit Parlors")),
+                                                    tabPanel("New Parlors", value=base_profiles[3],
+                                                             changeVariablesMaintenace("New Parlors")),
+                                                    tabPanel("Retrofit/Robots",  value=combo_profiles[1],
+                                                             helpText("* This assumes first Retrofit Parlors and then New Parlors."),
+                                                             helpText("* Values are taken from the two profiles.")),
+                                                    tabPanel("Retrofit/New",  value=combo_profiles[2],
+                                                             helpText("* This assumes first Retrofit Parlors and then New Parlors."),
+                                                             helpText("* Values are taken from the two profiles."))
+                                        )
+                        )),
+                        icon=icon("wrench")
+               ), 
                 tabPanel("Milk & Feed", value="Milk",
                          fluidRow(column(width=10, offset=1,
                         tabsetPanel(id="prMilk", 
-                                     tabPanel("Robots", value="_pr4",
+                                     tabPanel("Robots", value=base_profiles[1],
                                               changeVariablesMilkfeed("Robots"),
-                                              ## This is just an alternative way to show/hide a section 
-                                              # checkboxInput("customDMI","Show calculations of projected DMI change",value=FALSE),
-                                              # conditionalPanel("input.customDMI",
-                                              a(id = "customDMI","Show/hide calculations of projected DMI change"),
-                                              shinyjs::hidden(
-                                                div(id = "DMI_inputs",
-                                                    div(style="background-color: #616D7E; color:white;",
-                                                        fluidRow(column(width=6, h5(strong("Item"), align="center")),
-                                                                 column(width=3, h5(strong("Value"), align="center")), 
-                                                                 column(width=3, h5(strong("Coefficient"), align="center"))
-                                                        )), br(),
-                                                    fluidRow(column(width=6, helpText("Milk per cow per day")),
-                                                             column(width=3, uiOutput("rep_milk_cow_day")),
-                                                             column(width=3, numericInput("milk_cow_coeff",NULL,value=0.4,min=0,step=0.1))
-                                                    ),
-                                                    fluidRow(column(width=6, helpText("Milk fat content (%)")),
-                                                             column(width=3, numericInput("milk_fat",NULL,value=3.65,min=0,step=0.2)),
-                                                             column(width=3, numericInput("milk_fat_coeff",NULL,value=15,min=0,step=0.5))
-                                                    ),
-                                                    fluidRow(column(width=6, helpText("Milk/cow/day adjusted to 4% fat ")),
-                                                             column(width=3, uiOutput("adj_milk_cow_day")),
-                                                             column(width=3,numericInput("adj_milk_cow_coeff",NULL,value=0.372,min=0,step=0.1))
-                                                    ),
-                                                    fluidRow(column(width=6, helpText("Milking herd avg body weight (lb)")),
-                                                             column(width=2, numericInput("body_weight",NULL,value=1500,min=1000,step=50)),
-                                                             column(width=2,numericInput("body_weight_coeff1",NULL,value=0.0968,min=0,step=0.005)),
-                                                             column(width=2,numericInput("body_weight_coeff2",NULL,value=0.75,min=0,step=0.05))
-                                                    ),
-                                                    fluidRow(column(width=6, helpText("Lactation weeks")),
-                                                             column(width=2, numericInput("lcatation_week",NULL,value=24,min=0,step=1)),
-                                                             column(width=2,numericInput("lactation_coeff1",NULL,value=-0.192,min=0,step=0.01)),
-                                                             column(width=2,numericInput("lactation_coeff2",NULL,value=3.67,min=0,step=0.05))
-                                                    ),
-                                                    fluidRow(column(width=6, helpText("Stage of lactation adjustment")),
-                                                             column(width=3, uiOutput("stage_lactation"))
-                                                             
-                                                    ),
-                                                    fluidRow(column(width=6, helpText("Current DMI per day")),
-                                                             column(width=3, uiOutput("DMI_day"))
-                                                    ), br(),
-                                                    fluidRow(column(width=6, helpText("Projected change in milk production (lbs/cow/day)")),
-                                                             column(width=3, uiOutput("rep_milk_change"))
-                                                    ),
-                                                    fluidRow(column(width=6, 
-                                                                    conditionalPanel('input.robot_parlor=="OFF" | input.profile_choice=="Robots"',
-                                                                                     helpText("Projected DMI per day with robots")),
-                                                                    conditionalPanel('input.robot_parlor=="ON" & input.profile_choice!="Robots"',
-                                                                                     helpText("Projected DMI per day with parlor investment"))),
-                                                             column(width=3, uiOutput("DMI_projected"))
-                                                    ),
-                                                    #                                   fluidRow(column(width=6, helpText("Projected change in DMI per day (lbs DM/day)")),
-                                                    #                                            column(width=3, uiOutput("DMI_change_copy"))
-                                                    #                                   ), 
-                                                    fluidRow(column(width=3, offset=9,
-                                                                    span(actionButton("coeff_reset","reset"),align="center"))
-                                                    ),
-                                                    br(), br()
-                                                ))
+                                              source(file.path("ui_files","ui_feed_calculation.R"), local=TRUE)$value
                                               ),
-                                     tabPanel("Freestall Barn", value="_pr1",
-                                              changeVariablesMilkfeed("Freestall Barn")),
-                                     tabPanel("Retrofit Parlors", value="_pr2",
+                                     tabPanel("Retrofit Parlors", value=base_profiles[2],
                                               changeVariablesMilkfeed("Retrofit Parlors")),
-                                     tabPanel("New Parlors", value="_pr3",
-                                              changeVariablesMilkfeed("New Parlors"))
+                                     tabPanel("New Parlors", value=base_profiles[3],
+                                              changeVariablesMilkfeed("New Parlors")),
+                                    tabPanel("Retrofit/Robots",  value=combo_profiles[1],
+                                             helpText("* This assumes first Retrofit Parlors and then New Parlors."),
+                                             helpText("* Values are taken from the two profiles.")),
+                                    tabPanel("Retrofit/New",  value=combo_profiles[2],
+                                             helpText("* This assumes first Retrofit Parlors and then New Parlors."),
+                                             helpText("* Values are taken from the two profiles."))
                         )
                           )),
                         icon=icon("truck")
@@ -218,22 +188,47 @@ div(
                  tabPanel("Labor & Energy", value="Labor",
               fluidRow(column(width=10, offset=1,
                               tabsetPanel(id="prLabor", 
-                                          tabPanel("Robots", value="_pr4",
+                                          tabPanel("Robots", value=base_profiles[1],
                                                    changeVariablesLaborenergy("Robots")),
-                                          tabPanel("Freestall Barn", value="_pr1",
-                                                   changeVariablesLaborenergy("Freestall Barn")),
-                                          tabPanel("Retrofit Parlors", value="_pr2",
+                                          tabPanel("Retrofit Parlors", value=base_profiles[2],
                                                    changeVariablesLaborenergy("Retrofit Parlors")),
-                                          tabPanel("New Parlors", value="_pr3",
-                                                   changeVariablesLaborenergy("New Parlors"))
+                                          tabPanel("New Parlors", value=base_profiles[3],
+                                                   changeVariablesLaborenergy("New Parlors")),
+                                          tabPanel("Retrofit/Robots",  value=combo_profiles[1],
+                                                   helpText("* This assumes first Retrofit Parlors and then New Parlors."),
+                                                   helpText("* Values are taken from the two profiles.")),
+                                          tabPanel("Retrofit/New",  value=combo_profiles[2],
+                                                   helpText("* This assumes first Retrofit Parlors and then New Parlors."),
+                                                   helpText("* Values are taken from the two profiles."))
                               )
               )),
               icon=icon("male")
                 ),
-#                 tabPanel("Financing",
-#                 
-# icon=icon("bank")
-# )
+              tabPanel("Finance", value="Finance",
+              fluidRow(column(width=10, offset=1,
+                              tabsetPanel(id="prFinance", 
+                                          tabPanel("Robots", value=base_profiles[1],
+                                                   changeVariablesFinance("Robots")),
+                                          tabPanel("Retrofit Parlors", value=base_profiles[2],
+                                                   changeVariablesFinance("Retrofit Parlors")),
+                                          tabPanel("New Parlors", value=base_profiles[3],
+                                                   changeVariablesFinance("New Parlors")),
+                                          tabPanel("Retrofit/Robots",   value=combo_profiles[1],
+                                                   changeVariablesCombo("Retrofit/Robots","Retrofit Parlors","Robots"),
+                                                   helpText("* This assumes first Retrofit Parlors and then New Parlors."),
+                                                   helpText("* The second set of Parlors are excluded from the calculation."),
+                                                   helpText("* The rest of the values are taken from the two profiles.")
+                                                   ),
+                                          tabPanel("Retrofit/New",    value=combo_profiles[2],
+                                                   changeVariablesCombo("Retrofit/New","Retrofit Parlors","New Parlors"),
+                                                   helpText("* This assumes first Retrofit Parlors and then New Parlors."),
+                                                   helpText("* The second set of Parlors are excluded from the calculation."),
+                                                   helpText("* The rest of the values are taken from the two profiles.")
+                                          )
+                              )
+              )),
+               icon=icon("bank")
+               ), 
                                widths=c(3,9)
   )    
 ) 

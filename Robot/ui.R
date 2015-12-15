@@ -12,6 +12,9 @@ suppressPackageStartupMessages(library(XLConnect))
 
 source(file.path("ui_files","ui_functions.R"), local=TRUE)
 
+base_profiles <- c("Robots","Retrofit","New")
+combo_profiles <- c("RetrofitRobots","RetrofitNew")
+
 
 shinyUI(  
   fluidPage(
@@ -37,20 +40,24 @@ shinyUI(
                # Need to add "$value" for including source in UI: 
                # otherwise "TRUE" will show up at the end of file
 
-                source(file.path("ui_files","ui_data_entry_tabs.R"), local=TRUE)$value,
+               source(file.path("ui_files","ui_data_entry_tabs.R"), local=TRUE)$value,
                tabsetPanel(id="dashboard",
-                           tabPanel("Robots", value="_pr4",
+                           tabPanel("Robots", value=base_profiles[1],
                                     helpText("Robots")),
-                           tabPanel("Freestall Barn", value="_pr1",
-                                    helpText("Freestall Barn")),
-                           tabPanel("Retrofit Parlors", value="_pr2",
+                           tabPanel("Retrofit Parlors", value=base_profiles[2],
                                     helpText("Retrofit")),
-                           tabPanel("New Parlors", value="_pr3",
+                           tabPanel("New Parlors", value=base_profiles[3],
                                     helpText("New")),
+                           tabPanel("Retrofit/Robots",  value=combo_profiles[1],
+                                    helpText("This assumes first Retrofit Parlors and then Robots."),
+                                    helpText("Values are taken from the two profiles.")),
+                           tabPanel("Retrofit/New",  value=combo_profiles[2],
+                                    helpText("This assumes first Retrofit Parlors and then New Parlors."),
+                                    helpText("Values are taken from the two profiles.")),
                            tabPanel("Summary",
                                     helpText("Summary")),
                           tabPanel("Test",
-                                     uiOutput("herd_size2")
+                                     uiOutput("herd_size2"), br(), br()
                                  )
                            )
       ), 
