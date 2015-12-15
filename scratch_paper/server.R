@@ -98,6 +98,15 @@ shinyServer(function(input, output,session) {
   output$showVar8 <- renderUI({
     h3(rv$var8)  
   })
+  
+  observe({
+    browser()
+    if (1 < 0 ) {
+      # never triggered
+      input$var1
+      stop('negative')
+    }
+  })
     
   observe({
   updateNumericInput(session,"var1", "Var 1", value=input$var1_copy, step=2)
