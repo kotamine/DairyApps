@@ -49,13 +49,11 @@ div(
                             ),
                             fluidRow(column(width=8, helpText("Current hours of heat detection (hours per day)")),
                                      column(width=4, numericInput("hr_heat_detection",NULL,value=0.65,min=0,step=.05))
-                            ),
-                            fluidRow(column(width=8, helpText("Projected change in dry matter intake (DMI) per day (lbs DM/day)")),
-                                     column(width=4, uiOutput("DMI_change"))
-                            ),
-                            fluidRow(column(width=8, helpText("Cost per lb of TMR dry matter ($ per lb DM)")),
-                                     column(width=4, numericInput("cost_DM",NULL,value=0.115,min=0,step=0.005))
                             )
+#                             fluidRow(column(width=8, helpText("Projected change in dry matter intake (DMI) per day (lbs DM/day)")),
+#                                      column(width=4, uiOutput("DMI_change"))
+#                             ),
+                           
                             )),  
                         icon=icon("home")), 
                tabPanel("Markets", value="Markets",
@@ -76,6 +74,9 @@ div(
                             ),
                             fluidRow(column(width=8, helpText("SCC premium per 1,000 SCC (SCC/ml)")),
                                      column(width=4, numericInput("scc_premium",NULL,value=0.003,min=0,step=.001))
+                            ),
+                            fluidRow(column(width=8, helpText("Cost per lb of TMR dry matter ($ per lb DM)")),
+                                     column(width=4, numericInput("cost_DM",NULL,value=0.115,min=0,step=0.005))
                             ),
                             fluidRow(column(width=8, helpText("Cost of replacement heifer ($)")),
                                      column(width=4,  numericInput("cost_heifer",NULL,value=1600,min=0,step=100))

@@ -19,7 +19,6 @@ combo_profiles <- c("RetrofitRobots","RetrofitNew")
 
 
 shinyServer(function(input, output, session) { 
-browser()
 
    observeEvent(input$dashboard,{
      updateTabsetPanel(session,"prMilk",input$dashboard)
@@ -74,14 +73,14 @@ browser()
    ans <- reactiveValues() 
    lapply(base_profiles, function(x) {x <- list()} )
 
-
-   lapply(base_profiles, function(x) {
-   observe({
-     # Calculations given a profile start here  
-     herd_increase <- input[[paste0("herd_increase",x)]]
-     ans[[x]]$herd_size2 <- input$herd_size + herd_increase
-   })
-   })
+# 
+#    lapply(base_profiles, function(x) {
+#    observe({
+#      # Calculations given a profile start here  
+#      herd_increase <- input[[paste0("herd_increase",x)]]
+#      ans[[x]]$herd_size2 <- input$herd_size + herd_increase
+#    })
+#    })
    
    
 #    output$herd_size2 <- renderUI({ 
@@ -121,15 +120,19 @@ browser()
   # data tables to be downloaded
   df <- reactiveValues()
   
-#   # ----------- Functions: some of them depend on local variables  -----------
-#   source("helper.R",local=TRUE)
-#   
+  browser()
+  
+  # ----------- Functions: some of them depend on local variables  -----------
+  source("helper.R",local=TRUE)
+  
 #   # ----------- Miselleneous tasks -----------
 #   source(file.path("session_files","session_misc.R"), local=TRUE)
 #   
-#   # ----------- Main Calculations for Partial Budget and Cash Flow Analyses -----------
-#   source(file.path("session_files","session_calculations_base.R"), local=TRUE)
-#   
+  # ----------- Main Calculations for Partial Budget and Cash Flow Analyses -----------
+  source(file.path("session_files","session_calculations_main.R"), local=TRUE)
+  
+  
+  
 #   # ----------- Main Rendering -----------
 #   source(file.path("session_files","session_render_base.R"), local=TRUE)
 #   

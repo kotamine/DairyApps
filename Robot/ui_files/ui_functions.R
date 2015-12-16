@@ -40,16 +40,27 @@ changeVariablesCapital<- function(x) {
                              helpText("Projected milking herd size (cows)")),
                       column(width=4, uiOutput(paste0("herd_size2",refProfile(x))))
              ),
-             fluidRow(column(width=8, helpText(paste("Unit cost for", x, "($)"))),
-                      column(width=4, numericInput(paste0("cost_robot",refProfile(x)),
-                                                   NULL,value=180000,min=50000,step=10000))
-             ),
-             fluidRow(column(width=8, helpText(paste("Number of", x,"(units)"))),
-                      column(width=4, numericInput(paste0("n_robot",refProfile(x)),NULL,value=2,min=0,step=1))
-             ),
-             fluidRow(column(width=8, helpText("Total investment for", x, "alone ($)")),
-                      column(width=4, uiOutput(paste0("cost_milking",refProfile(x))))
-             ),
+            
+             
+             lapply(x, function(x1) { 
+               if(x1==base_profiles[1]) {
+                 div(fluidRow(column(width=8, helpText(paste("Unit cost for", x, "($)"))),
+                          column(width=4, numericInput(paste0("cost_robot",refProfile(x)),
+                                                       NULL,value=180000,min=50000,step=10000))
+                 ),
+                 fluidRow(column(width=8, helpText(paste("Number of", x,"(units)"))),
+                          column(width=4, numericInput(paste0("n_robot",refProfile(x)),NULL,value=2,min=0,step=1))
+                 ),
+                 fluidRow(column(width=8, helpText("Total investment for", x, "alone ($)")),
+                          column(width=4, uiOutput(paste0("cost_milking",refProfile(x))))
+                 )) 
+               } else {
+                 fluidRow(column(width=8, helpText(paste("Cost for", x, "($)"))),
+                          column(width=4, numericInput(paste0("cost_parlors",refProfile(x)),
+                                                       NULL,value=180000,min=50000,step=10000))
+                 )
+               }
+             }),
              fluidRow(column(width=8, helpText("Housing changes per cow ($)")),
                       column(width=4, numericInput(paste0("cost_housing_cow",refProfile(x)),
                                                    NULL,value=9500,min=0,step=500))
@@ -83,7 +94,7 @@ changeVariablesMaintenace <- function(x) {
                                                    NULL,value=7000,min=0,step=500))
              ),
              fluidRow(column(width=8, helpText(paste0(x, " useful life (years)"))),
-                      column(width=4, numericInput("useful_years",NULL,value=15, min=0, step=1))
+                      column(width=4, numericInput(paste0("useful_years",refProfile(x)),NULL,value=15, min=0, step=1))
              ),
              fluidRow(column(width=8, helpText(paste("Sets of ", x, " in planing horizon"))),
                       column(width=4, radioButtons(paste0("n_sets",refProfile(x)),NULL, choices=c("one"=1, "two"=2), selected=2, inline=TRUE))
@@ -92,7 +103,7 @@ changeVariablesMaintenace <- function(x) {
                       column(width=4, uiOutput(paste0("planning_horizon",refProfile(x))))
              ),
              fluidRow(column(width=8, helpText(paste("Salvage value of", x, "in today's term ($)"))),
-                      column(width=4, numericInput("salvage_milking1",NULL,value=45000,min=0,step=1000))
+                      column(width=4, numericInput(paste0("salvage_milking1",refProfile(x)),NULL,value=45000,min=0,step=1000))
              ),
              fluidRow(column(width=8, helpText("Increased insurance value of milking system & housing")),
                       column(width=4, uiOutput(paste0("increased_insurance",refProfile(x))))
@@ -106,15 +117,6 @@ changeVariablesMaintenace <- function(x) {
 }            
 
 
-# uiIf <- function(x, x1, condition, contents, contents_null=NULL) { 
-#   lapply(x, function(x1) {  
-#     if(condition) {
-#       contents
-#     } else {
-#       if (!is.null(contents_null)) contents_null
-#     }
-#   })
-# }
 
 changeVariablesMilkfeed<- function(x) {
   #   milkfeed: milk increase, (projected milk per day),
@@ -255,10 +257,13 @@ changeVariablesFinance<- function(x) {
                                            uiOutput(paste0("loan_milking2",refProfile(x)))))
              ),     
              fluidRow(column(width=6,  helpText("Interest rate (%)")),
-                      column(width=2,  uiOutput(paste0("r_housing",refProfile(x)))),
-                      column(width=2,  uiOutput(paste0("r_milking1",refProfile(x)))),
+                      column(width=2,  numericInput(paste0("r_housing",refProfile(x)),
+                                                    NULL,value=4, min=0, step=.25)),
+                      column(width=2,  numericInput(paste0("r_milking1",refProfile(x)),
+                                                    NULL,value=4, min=0, step=.25)),
                       column(width=2,  div(id=paste0(refProfile(x),2), 
-                                           uiOutput(paste0("r_milking2",refProfile(x)))))
+                                           numericInput(paste0("r_milking2",refProfile(x)),
+                                                        NULL,value=4, min=0, step=.25)))
              ),     
              #              shinyjs::hidden( 
              #                fluidRow(column(width=4,  helpText("Interest rate (%)")),
