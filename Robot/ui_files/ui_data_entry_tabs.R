@@ -92,7 +92,7 @@ div(
                             )
                           )),
                         icon=icon("bell-o")),
-               tabPanel("Inflations & Interests", value="Inflations",
+               tabPanel("Inflations", value="Inflations",
                         fluidRow(
                           column(
                             width=10, offset=1, 
@@ -112,10 +112,10 @@ div(
                             fluidRow(column(width=8, helpText("Milking & chore labor rate per hour (%)")),
                                      column(width=4, numericInput("inflation_labor",NULL,value=1.5,step=0.25))
                             ),
-                            fluidRow(column(width=8, helpText("Interest rate required on the overall investment (%)")),
-                                     column(width=4,  numericInput("interest",NULL,value=4.0,min=0.0,step=0.1))
-                            ),
-                            fluidRow(column(width=8, helpText("Hurdle rate (%)")),   
+#                             fluidRow(column(width=8, helpText("Interest rate required on the overall investment (%)")),
+#                                      column(width=4,  numericInput("interest",NULL,value=4.0,min=0.0,step=0.1))
+#                             ),
+                            fluidRow(column(width=8, helpText("Hurdle rate for equity (%)")),   
                                      column(width=4, numericInput("hurdle_rate",NULL,value=4, min=0, step=.1))
                             ),
                             fluidRow(column(width=8, helpText("Marginal (federal + state) income tax rate (%)")),   
@@ -123,7 +123,7 @@ div(
                             ), br(),
                             radioButtons("dep_method","Depreciation accounting method:",
                                          choices=c("Accelerated GDS"="d1","Straight-line ADS"="d2"))
-                          )),
+                            )),
                         icon=icon("money")),
                ## --------------- Profile-specific Inpiuts  --------------- 
                "Change",

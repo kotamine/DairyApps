@@ -149,9 +149,17 @@ changeVariablesMilkfeed<- function(x) {
                  )) 
                } else {
                  fluidRow(column(width=8, helpText("Projected milk output (lbs/cow/day)")),
-                          column(width=4, uiOutput(paste0("milk_alt_day",refProfile(x1))))
-                 )
-               }
+                          column(width=4, uiOutput(paste0("milk_alt_day", refProfile(x))))
+                 )   
+                  shinyjs::hidden( 
+                   fluidRow(column(width=8, helpText("Pellets fed in robot booth (lb/cow/day)")),
+                          column(width=4, numericInput(paste0("pellets",refProfile(x)),NULL,value=0,min=0,step=1))
+                    ), 
+                    fluidRow(column(width=8, helpText("Extra cost for pellets fed in robot booth ($/ton)")),
+                          column(width=4, numericInput(paste0("cost_pellets",refProfile(x)),NULL,value=0,min=0,step=2))
+                    )
+                )  
+               }  
              }),    
              fluidRow(column(width=8, helpText("Estimated percent change in SCC (%)")),
                       column(width=4, numericInput(paste0("scc_change",refProfile(x)),NULL,value=-5, min=-100, step=0.25))
@@ -238,12 +246,6 @@ changeVariablesFinance<- function(x) {
                       column(width=2,  helpText("-",align="center")),
                       column(width=2,  div(id=paste0(refProfile(x),2),  helpText("-",align="center")))
              )), 
-#              div(id=paste0(refProfile(x),"delay",2),
-#                  fluidRow(column(width=4,  helpText(paste("Delayed investment of housing till", x,"2 ($)"))),
-#                           column(width=2,  numericInput(paste0("delay_housing2",refProfile(x)),NULL,value=0, min=0,step=20000)),
-#                           column(width=2,  helpText("-",align="center")),
-#                           column(width=2,  helpText("-",align="center"))
-#               )), 
              fluidRow(column(width=6,  helpText("Down payment ($)")),
                       column(width=2,  numericInput(paste0("down_housing",refProfile(x)),NULL,value=100000, min=0,step=20000)),
                       column(width=2,  numericInput(paste0("down_milking1",refProfile(x)),NULL,value=0, min=0,step=20000)),
@@ -262,8 +264,7 @@ changeVariablesFinance<- function(x) {
                       column(width=2,  numericInput(paste0("r_milking1",refProfile(x)),
                                                     NULL,value=4, min=0, step=.25)),
                       column(width=2,  div(id=paste0(refProfile(x),2), 
-                                           numericInput(paste0("r_milking2",refProfile(x)),
-                                                        NULL,value=4, min=0, step=.25)))
+                                           uiOutput(paste0("r_milking2",refProfile(x)))))
              ),     
              #              shinyjs::hidden( 
              #                fluidRow(column(width=4,  helpText("Interest rate (%)")),
