@@ -19,55 +19,6 @@ combo_profiles <- c("RetrofitRobots","RetrofitNew")
 
 
 shinyServer(function(input, output, session) { 
-
-   observeEvent(input$dashboard,{
-     updateTabsetPanel(session,"prMilk",input$dashboard)
-     updateTabsetPanel(session,"prLabor",input$dashboard)
-     updateTabsetPanel(session,"prFinance",input$dashboard)
-     updateTabsetPanel(session,"prMaintenance",input$dashboard)
-     updateTabsetPanel(session,"prCapital",input$dashboard)
-   })
-   
-   observeEvent(input$prCapital,{
-     updateTabsetPanel(session,"prLabor",input$prCapital)
-     updateTabsetPanel(session,"prMilk",input$prCapital)
-     updateTabsetPanel(session,"prFinance",input$prCapital)
-     updateTabsetPanel(session,"prMaintenance",input$prCapital)
-     updateTabsetPanel(session,"dashboard",input$prCapital)
-   })
-   
-   observeEvent(input$prLabor,{
-     updateTabsetPanel(session,"prCapital",input$prLabor)
-     updateTabsetPanel(session,"prMilk",input$prlabor)
-     updateTabsetPanel(session,"prFinance",input$prlabor)
-     updateTabsetPanel(session,"prMaintenance",input$prlabor)
-     updateTabsetPanel(session,"dashboard",input$prLabor)
-   })
-   
-   observeEvent(input$prMilk,{
-     updateTabsetPanel(session,"prCapital",input$prMilk)
-     updateTabsetPanel(session,"prLabor",input$prMilk)
-     updateTabsetPanel(session,"prFinance",input$prMilk)
-     updateTabsetPanel(session,"prMaintenance",input$prMilk)
-     updateTabsetPanel(session,"dashboard",input$prMilk)
-   })
-   
-   observeEvent(input$prFinance,{
-     updateTabsetPanel(session,"prCapital",input$prFinance)
-     updateTabsetPanel(session,"prLabor",input$prFinance)
-     updateTabsetPanel(session,"prMilk",input$prFinance)
-     updateTabsetPanel(session,"prMaintenance",input$prFinance)
-     updateTabsetPanel(session,"dashboard",input$prFinance)
-   })
-   
-   observeEvent(input$prMaintenance,{
-     updateTabsetPanel(session,"prCapital",input$prMaintenance)
-     updateTabsetPanel(session,"prLabor",input$prMaintenance)
-     updateTabsetPanel(session,"prFinance",input$prMaintenance)
-     updateTabsetPanel(session,"prMilk",input$prMaintenance)
-     updateTabsetPanel(session,"dashboard",input$prMaintenance)
-   })
-   
    
    # All calculations results are stored in "ans" as lists for various profiles  
    ans <- reactiveValues() 
@@ -88,16 +39,16 @@ shinyServer(function(input, output, session) {
 #    }) 
    
    
-   # Show/hide the second set of robots/parlors 
-   lapply(base_profiles, function(x) {
-   observe({
-     if (input[[paste0("n_sets",x)]]==2) { 
-       shinyjs::show(paste0(x,2))
-     } else {
-       shinyjs::hide(paste0(x,2))
-     }
-   })
-   })
+#    # Show/hide the second set of robots/parlors 
+#    lapply(base_profiles, function(x) {
+#    observe({
+#      if (input[[paste0("n_sets",x)]]==2) { 
+#        shinyjs::show(paste0(x,2))
+#      } else {
+#        shinyjs::hide(paste0(x,2))
+#      }
+#    })
+#    })
    
    
 
@@ -125,17 +76,17 @@ shinyServer(function(input, output, session) {
   # ----------- Functions: some of them depend on local variables  -----------
   source("helper.R",local=TRUE)
   
-#   # ----------- Miselleneous tasks -----------
-#   source(file.path("session_files","session_misc.R"), local=TRUE)
-#   
+  # ----------- Miselleneous tasks -----------
+  source(file.path("session_files","session_misc.R"), local=TRUE)
+  
   # ----------- Main Calculations for Partial Budget and Cash Flow Analyses -----------
   source(file.path("session_files","session_calculations_main.R"), local=TRUE)
   
+  source(file.path("session_files","session_partial_budget.R"), local=TRUE)
   
+  source(file.path("session_files","session_render_base.R"), local=TRUE)
   
-#   # ----------- Main Rendering -----------
-#   source(file.path("session_files","session_render_base.R"), local=TRUE)
-#   
+
 #   # ----------- Robots vs Parlors Analysis -----------
 #   source(file.path("session_files","session_robot_parlor.R"), local=TRUE)
 #   

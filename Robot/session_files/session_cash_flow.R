@@ -16,8 +16,7 @@
 ## ------ Prepares cash flow, debt, and depreciation tables -------
 isolate({
   
-  browser()
-  
+  # browser()
   
   ## ------------ Depreciation Table ------------
   yr_AGDS_milking <- 7
@@ -140,17 +139,21 @@ isolate({
   ans[[x]]$table_debt <- table_debt
   ans[[x]]$table_depreciation <- table_depreciation
   
-  rate <- ans[[x]]$WACC/100
+   rate <- ans[[x]]$WACC/100
   
+   browser()
+   
   ans[[x]]$NPV <- npv(rate, table_cash_flow$after_tax_cash_flow[-1]) +
     + table_cash_flow$after_tax_cash_flow[1]
   ans[[x]]$ANPV <- -pmt(rate,ans[[x]]$planning_horizon,ans[[x]]$NPV)
   #ans[[x]]$ANPVr <- ans[[x]]$ANPV  * ans[[x]]$deflator
   # IRR is probably not appropriate
-  ans[[x]]$IRR <- irr(table_cash_flow$after_tax_cash_flow) * 100
-  if (ans[[x]]$IRR>1000) {
+  IRR <- irr(table_cash_flow$after_tax_cash_flow) * 100
+  if (IRR <=1000) {
+    ans[[x]]$IRR <- IRR
+  } else {
     ans[[x]]$IRR <- NA
-  } 
+  }
   # MIRR is probably not appropriate
   ans[[x]]$MIRR <- mirr(table_cash_flow$after_tax_cash_flow, input$interest/100, input$interest/100) * 100
   

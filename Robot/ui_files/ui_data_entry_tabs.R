@@ -22,7 +22,12 @@ div(
                         fluidRow(
                           column(
                             width=10, offset=1, 
-                            div(style="background-color: #616D7E; color:white;",
+                            h4("Shared across All Investment Profiles", align="center")
+                          )),
+                        fluidRow(
+                          column(
+                            width=10, offset=1, 
+                            div(style="background-color:#4863A0; color:white;",
                                           fluidRow(column(width=8, 
                                                           h5(strong("Item"),align="center")),
                                                    column(width=4, h5(strong("User Data"), 
@@ -62,7 +67,12 @@ div(
                         fluidRow(
                           column(
                             width=10, offset=1, 
-                            div(style="background-color: #616D7E; color:white;",
+                            h4("Shared across All Investment Profiles", align="center")
+                          )),
+                        fluidRow(
+                          column(
+                            width=10, offset=1, 
+                            div(style="background-color:#4863A0; color:white;",
                                 fluidRow(column(width=8, 
                                                 h5(strong("Item"),align="center")),
                                          column(width=4, h5(strong("User Data"), 
@@ -96,7 +106,12 @@ div(
                         fluidRow(
                           column(
                             width=10, offset=1, 
-                            div(style="background-color: #616D7E; color:white;",
+                            h4("Shared across All Investment Profiles", align="center")
+                          )),
+                        fluidRow(
+                          column(
+                            width=10, offset=1, 
+                            div(style="background-color:#4863A0; color:white;",
                                 fluidRow(column(width=8, 
                                                 h5(strong("Item"),align="center")),
                                          column(width=4, h5(strong("User Data"), 

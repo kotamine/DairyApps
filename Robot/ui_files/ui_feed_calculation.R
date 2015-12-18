@@ -13,7 +13,7 @@ shinyjs::hidden(
                    column(width=3, h5(strong("Coefficient"), align="center"))
           )), br(),
       fluidRow(column(width=6, helpText("Milk per cow per day")),
-               column(width=3, uiOutput("rep_milk_cow_day")),
+               column(width=3, uiOutput("milk_cow_day_copy")),
                column(width=3, numericInput("milk_cow_coeff",NULL,value=0.4,min=0,step=0.1))
       ),
       fluidRow(column(width=6, helpText("Milk fat content (%)")),
@@ -21,8 +21,8 @@ shinyjs::hidden(
                column(width=3, numericInput("milk_fat_coeff",NULL,value=15,min=0,step=0.5))
       ),
       fluidRow(column(width=6, helpText("Milk/cow/day adjusted to 4% fat ")),
-               column(width=3, uiOutput("adj_milk_cow_day")),
-               column(width=3,numericInput("adj_milk_cow_coeff",NULL,value=0.372,min=0,step=0.1))
+               column(width=3, uiOutput("adj_milk_cow_day")), 
+               column(width=3, numericInput("adj_milk_cow_coeff",NULL,value=0.372,min=0,step=0.1))
       ),
       fluidRow(column(width=6, helpText("Milking herd avg body weight (lb)")),
                column(width=2, numericInput("body_weight",NULL,value=1500,min=1000,step=50)),
@@ -36,7 +36,6 @@ shinyjs::hidden(
       ),
       fluidRow(column(width=6, helpText("Stage of lactation adjustment")),
                column(width=3, uiOutput("stage_lactation"))
-               
       ),
       fluidRow(column(width=6, helpText("Current DMI per day")),
                column(width=3, uiOutput("DMI_day"))
@@ -51,9 +50,6 @@ shinyjs::hidden(
                                        helpText("Projected DMI per day with parlor investment"))),
                column(width=3, uiOutput("DMI_projected"))
       ),
-      #                                   fluidRow(column(width=6, helpText("Projected change in DMI per day (lbs DM/day)")),
-      #                                            column(width=3, uiOutput("DMI_change_copy"))
-      #                                   ), 
       fluidRow(column(width=3, offset=9,
                       span(actionButton("coeff_reset","reset"),align="center"))
       ),

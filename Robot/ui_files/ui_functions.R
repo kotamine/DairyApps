@@ -28,6 +28,7 @@ changeVariablesCapital<- function(x) {
                column(width=4, 
                       numericInput(paste0("herd_increase",refProfile(x)),NULL,value=0,step=10))
              ), 
+             conditionalPanel(paste0("input.herd_increase",x,">0"),
              fluidRow(column(width=8, helpText("Additional labor expense with herd expansion ($/cow)")),
                       column(width=4,  numericInput(paste0("additional_labor",refProfile(x)),
                                                     NULL,value=450,step=50,min=0))
@@ -35,13 +36,12 @@ changeVariablesCapital<- function(x) {
              fluidRow(column(width=8, helpText("Other expense with herd expansion ($/cow)")),
                       column(width=4,  numericInput(paste0("additional_cost",refProfile(x)),
                                                     NULL,value=200,step=50,min=0))
-             ),
+             )),
+             
              fluidRow(column(width=8, 
                              helpText("Projected milking herd size (cows)")),
                       column(width=4, uiOutput(paste0("herd_size2",refProfile(x))))
              ),
-            
-             
              lapply(x, function(x1) { 
                if(x1==base_profiles[1]) {
                  div(fluidRow(column(width=8, helpText(paste("Unit cost for", x, "($)"))),
@@ -77,6 +77,8 @@ changeVariablesCapital<- function(x) {
     )
   )
 }    
+
+
 
 changeVariablesMaintenace <- function(x) {   
   # capital:  repiar, life of milking system, cycles, (planning horizon), insurance value, insurance

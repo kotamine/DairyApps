@@ -11,6 +11,7 @@ suppressPackageStartupMessages(library(XLConnect))
 
 
 source(file.path("ui_files","ui_functions.R"), local=TRUE)
+source(file.path("ui_files", "ui_partial_budget.R"), local=TRUE)  
 
 base_profiles <- c("Robots","Retrofit","New")
 combo_profiles <- c("RetrofitRobots","RetrofitNew")
@@ -60,9 +61,9 @@ shinyUI(
                                      uiOutput("herd_size2"), br(), br()
                                  )
                            )
-      ), 
-      tabPanel("Test",
-               uiOutput("herd_increase_pr4")
+      # ), 
+#       tabPanel("Test",
+#                uiOutput("herd_increase_pr4")
 
 # tabsetPanel("Investment",
 #             tabPanel("Robot",
@@ -96,17 +97,33 @@ shinyUI(
 #                         column(2, actionButton("remove", "Remove Input-Data"))),
 #                br(), br()
       ),
-#       # ---------- Partial Budget Analysis -----------
-#       tabPanel("Partial Budget",
+      # ---------- Partial Budget Analysis -----------
+      tabPanel("Partial Budget",
 #                conditionalPanel("input.budget==0",
 #                                 div(bsButton("budget","Calculate",disabled = TRUE, icon = icon("ban")),
 #                                     helpText("Please review all tabs in Data Entry."),align="center")
 #                ),
-#                conditionalPanel("input.budget>0",
-#                                 source(file.path("ui_files", "ui_partial_budget.R"), local=TRUE)$value    
-#                                 
-#                )
-#       ),
+               # conditionalPanel("input.budget>0",
+                                fluidRow(column(6, offset=3,
+                                                  h4("Partial Budget Analysis",align="center")
+                                                )), 
+                                tabsetPanel(id="partial_budget",
+                                            tabPanel("Robots", value=base_profiles[1],
+                                                     partialBudget("Robots")),
+                                            tabPanel("Retrofit Parlors", value=base_profiles[2],
+                                                     partialBudget("Retrofit Parlors")),
+                                            tabPanel("New Parlors", value=base_profiles[3],
+                                                     partialBudget("New Parlors")),
+                                            tabPanel("Retrofit/Robots",  value=combo_profiles[1],
+                                                     helpText("This assumes first Retrofit Parlors and then Robots."),
+                                                     helpText("Values are taken from the two profiles.")),
+                                            tabPanel("Retrofit/New",  value=combo_profiles[2],
+                                                     helpText("This assumes first Retrofit Parlors and then New Parlors."),
+                                                     helpText("Values are taken from the two profiles."))
+                                )
+               # ) 
+      ),
+#       # ---------- Cash Flow Analysis -----------
 #       tabPanel("Cash Flow",
 #                conditionalPanel("input.budget==0",
 #                                 div(helpText("Please review all tabs in Data Entry."),align="center")
