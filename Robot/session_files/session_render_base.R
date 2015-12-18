@@ -2,29 +2,6 @@
 
 ## rendering UI 
 
-copy_render_0 <- c("milk_cow_day_copy", "rep_milk_change", "DMI_change_copy") 
-copy_render_1 <- c()
-copy_render_2 <- c("adj_milk_cow_day")
-copy_render_3 <- c("DMI_day","DMI_projected") 
-copy_render_4 <- c("stage_lactation")
-
-copy_render <- list(copy_render_1, copy_render_2, copy_render_3, copy_render_4)
-
-lapply(copy_render_0, 
-       function(z) { 
-         output[[paste0(z)]] <- renderUI({ 
-           ans[[paste0(z)]] %>% formatcomma(0) %>% helpText()  })
-       }
-)
-
-lapply(c(1:4), function(r) { 
-  lapply(copy_render[[r]], 
-         function(z) { 
-           output[[paste0(z)]] <- renderUI({ 
-             ans[[paste0(z)]] %>% round(r) %>% helpText() })
-         }
-  )
-})  
 
 
 var_to_render_0 <- c("herd_size2", "cost_milking","cost_housing","total_investment_cow",
@@ -37,9 +14,9 @@ var_to_render_0 <- c("herd_size2", "cost_milking","cost_housing","total_investme
                      "yr_system2", 
                      "copy_milking_years", "copy_n_robot", "copy_cost_robot")
 var_to_render_1 <- c()
-var_to_render_2 <- c("r_milking2")
+var_to_render_2 <- c("r_milking2","adj_milk_cow_day")
 var_to_render_3 <- c("DMI_change","DMI_day","DMI_projected") 
-var_to_render_4 <- c()
+var_to_render_4 <- c("stage_lactation")
 
 var_to_render <- list(var_to_render_1, var_to_render_2, var_to_render_3, var_to_render_4)  
 
@@ -151,9 +128,22 @@ lapply(pb_var_to_render_right,
        }
 )
 
+output$DMI_change_copy <- renderUI({
+ ans[[x]]$DMI_change  %>% round(3) %>% helpText() 
+})  
+
 })
 
+# replicated variables 
+output$rep_milk_cow_day <- renderUI({
+  input$milk_cow_day %>% formatcomma() %>% helpText() 
+})
 
+output$rep_milk_change <- renderUI({
+  input[[paste0("milk_change","Robots")]]  %>% formatcomma() %>% helpText() 
+})             
+
+ 
 
 # 
 # ## ------------ Dashboard ------------

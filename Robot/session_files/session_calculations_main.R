@@ -195,7 +195,6 @@ lapply(base_profiles, function(x) {
                                          npv(input[[paste0("r_housing",x)]]/100, 
                                              ans[[x]]$table_debt$barn_interest+ans[[x]]$table_debt$barn_principal))
     
-    browser()
     ans[[x]]$salvage_milking_PV <-   pmt(input[[paste0("r_milking1",x)]]/100, ans[[x]]$planning_horizon,  
                              npv(input[[paste0("r_milking1",x)]]/100, 
                                  ans[[x]]$table_cash_flow$salvage[-1])) 

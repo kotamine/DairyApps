@@ -16,7 +16,7 @@
 ## ------ Prepares cash flow, debt, and depreciation tables -------
 isolate({
   
-   browser()
+   # browser()
   
   ## ------------ Depreciation Table ------------
   yr_AGDS_milking <- 7

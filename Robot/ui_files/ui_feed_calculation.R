@@ -13,7 +13,7 @@ shinyjs::hidden(
                    column(width=3, h5(strong("Coefficient"), align="center"))
           )), br(),
       fluidRow(column(width=6, helpText("Milk per cow per day")),
-               column(width=3, uiOutput("milk_cow_day_copy")),
+               column(width=3, uiOutput("rep_milk_cow_day")),
                column(width=3, numericInput("milk_cow_coeff",NULL,value=0.4,min=0,step=0.1))
       ),
       fluidRow(column(width=6, helpText("Milk fat content (%)")),
@@ -21,7 +21,7 @@ shinyjs::hidden(
                column(width=3, numericInput("milk_fat_coeff",NULL,value=15,min=0,step=0.5))
       ),
       fluidRow(column(width=6, helpText("Milk/cow/day adjusted to 4% fat ")),
-               column(width=3, uiOutput("adj_milk_cow_day")), 
+               column(width=3, uiOutput(paste0("adj_milk_cow_day","Robots"))), 
                column(width=3, numericInput("adj_milk_cow_coeff",NULL,value=0.372,min=0,step=0.1))
       ),
       fluidRow(column(width=6, helpText("Milking herd avg body weight (lb)")),
@@ -35,20 +35,17 @@ shinyjs::hidden(
                column(width=2,numericInput("lactation_coeff2",NULL,value=3.67,min=0,step=0.05))
       ),
       fluidRow(column(width=6, helpText("Stage of lactation adjustment")),
-               column(width=3, uiOutput("stage_lactation"))
+               column(width=3, uiOutput(paste0("stage_lactation","Robots")))
       ),
       fluidRow(column(width=6, helpText("Current DMI per day")),
-               column(width=3, uiOutput("DMI_day"))
+               column(width=3, uiOutput(paste0("DMI_day","Robots")))
       ), br(),
       fluidRow(column(width=6, helpText("Projected change in milk production (lbs/cow/day)")),
                column(width=3, uiOutput("rep_milk_change"))
       ),
       fluidRow(column(width=6, 
-                      conditionalPanel('input.robot_parlor=="OFF" | input.profile_choice=="Robots"',
-                                       helpText("Projected DMI per day with robots")),
-                      conditionalPanel('input.robot_parlor=="ON" & input.profile_choice!="Robots"',
-                                       helpText("Projected DMI per day with parlor investment"))),
-               column(width=3, uiOutput("DMI_projected"))
+                              helpText("Projected DMI per day with robots")),
+               column(width=3, uiOutput(paste0("DMI_projected","Robots")))
       ),
       fluidRow(column(width=3, offset=9,
                       span(actionButton("coeff_reset","reset"),align="center"))

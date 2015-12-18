@@ -19,8 +19,6 @@ lapply(base_profiles, function(x) {
 # This needs to respond to change in any data input or change in input[[paste0("budget_year",x)]]
 observe({ 
   
- browser()
-  
   if (is.null(ans[[x]]$positive_total)) {  return() } 
   ans[[x]]$pb_positive_total <- ans[[x]]$inc_rev_total * (1+input$inflation_margin/100)^(input[[paste0("budget_year",x)]]-1) +
     + ans[[x]]$dec_exp_total *  (1+input$inflation_labor/100)^(input[[paste0("budget_year",x)]]-1)
@@ -40,8 +38,7 @@ observe({
 
 
 observe({ 
-  browser()
-  
+
   ans[[x]]$inc_rev_total
   ans[[x]]$dec_exp_total
   ans[[x]]$inc_exp_total
