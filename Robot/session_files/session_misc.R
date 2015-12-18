@@ -9,75 +9,66 @@ shinyjs::onclick("customDMI",
                  shinyjs::toggle(id="DMI_inputs", anim = TRUE)
 )
 
-# Enable calculation button in Economic Analysis when Data Entry tabs are viewed by the user 
-updateButton(session, "budget", disabled = FALSE, style = "primary", icon = "")
 
-# observe({
-#   if (input$budget==0) {
-#     if (!is.null(rv$DMI_change) & !is.null(rv$DMI_day) & 
-#         !is.null(rv$herd_size2) & !is.null(rv$increased_insurance) &
-#         !is.null(rv$anticipated_hours_milking) & !is.null(rv$milk_lb_alt_day)
-#     ) {
-#       updateButton(session, "budget", disabled = FALSE, style = "primary", icon = "")
-#     } 
-#     else {
-#       return()
-#     }
-#   } else {
-#     return()
-#   }
-# })
+observeEvent(input$coeff_reset,{ 
+  updateNumericInput(session, "milk_cow_coeff",NULL,value=0.4,min=0,step=0.1)
+  updateNumericInput(session, "milk_fat",NULL,value=3.65,min=0,step=0.2)
+  updateNumericInput(session, "milk_fat_coeff",NULL,value=15,min=0,step=0.5)
+  updateNumericInput(session, "adj_milk_cow_coeff",NULL,value=0.372,min=0,step=0.1)
+  updateNumericInput(session, "body_weight_coeff1",NULL,value=0.0968,min=0,step=0.005)
+  updateNumericInput(session, "body_weight_coeff2",NULL,value=0.75,min=0,step=0.05)
+  updateNumericInput(session, "lactation_coeff1",NULL,value=-0.192,step=0.01)
+  updateNumericInput(session, "lactation_coeff2",NULL,value=3.67,min=0,step=0.05)
+}) 
 
 
 observeEvent(input$dashboard,{
-  updateTabsetPanel(session,"prMilk",input$dashboard)
-  updateTabsetPanel(session,"prLabor",input$dashboard)
-  updateTabsetPanel(session,"prFinance",input$dashboard)
-  updateTabsetPanel(session,"prMaintenance",input$dashboard)
-  updateTabsetPanel(session,"prCapital",input$dashboard)
-})
+      updateTabsetPanel(session,"prMilk",input$dashboard)
+       updateTabsetPanel(session,"prLabor",input$dashboard)
+       updateTabsetPanel(session,"prFinance",input$dashboard)
+       updateTabsetPanel(session,"prMaintenance",input$dashboard)
+       updateTabsetPanel(session,"prCapital",input$dashboard)
+     })
+  
+     observeEvent(input$prCapital,{
+     updateTabsetPanel(session,"prLabor",input$prCapital)
+     updateTabsetPanel(session,"prMilk",input$prCapital)
+     updateTabsetPanel(session,"prFinance",input$prCapital)
+     updateTabsetPanel(session,"prMaintenance",input$prCapital)
+     updateTabsetPanel(session,"dashboard",input$prCapital)
+   })
 
-observeEvent(input$prCapital,{
-  updateTabsetPanel(session,"prLabor",input$prCapital)
-  updateTabsetPanel(session,"prMilk",input$prCapital)
-  updateTabsetPanel(session,"prFinance",input$prCapital)
-  updateTabsetPanel(session,"prMaintenance",input$prCapital)
-  updateTabsetPanel(session,"dashboard",input$prCapital)
-})
+      observeEvent(input$prLabor,{
+     updateTabsetPanel(session,"prCapital",input$prLabor)
+     updateTabsetPanel(session,"prMilk",input$prlabor)
+     updateTabsetPanel(session,"prFinance",input$prlabor)
+     updateTabsetPanel(session,"prMaintenance",input$prlabor)
+     updateTabsetPanel(session,"dashboard",input$prLabor)
+   })
 
-observeEvent(input$prLabor,{
-  updateTabsetPanel(session,"prCapital",input$prLabor)
-  updateTabsetPanel(session,"prMilk",input$prlabor)
-  updateTabsetPanel(session,"prFinance",input$prlabor)
-  updateTabsetPanel(session,"prMaintenance",input$prlabor)
-  updateTabsetPanel(session,"dashboard",input$prLabor)
-})
-
-observeEvent(input$prMilk,{
-  updateTabsetPanel(session,"prCapital",input$prMilk)
-  updateTabsetPanel(session,"prLabor",input$prMilk)
-  updateTabsetPanel(session,"prFinance",input$prMilk)
-  updateTabsetPanel(session,"prMaintenance",input$prMilk)
-  updateTabsetPanel(session,"dashboard",input$prMilk)
-})
-
-observeEvent(input$prFinance,{
-  updateTabsetPanel(session,"prCapital",input$prFinance)
-  updateTabsetPanel(session,"prLabor",input$prFinance)
-  updateTabsetPanel(session,"prMilk",input$prFinance)
-  updateTabsetPanel(session,"prMaintenance",input$prFinance)
-  updateTabsetPanel(session,"dashboard",input$prFinance)
-})
-
-observeEvent(input$prMaintenance,{
-  updateTabsetPanel(session,"prCapital",input$prMaintenance)
-  updateTabsetPanel(session,"prLabor",input$prMaintenance)
-  updateTabsetPanel(session,"prFinance",input$prMaintenance)
-  updateTabsetPanel(session,"prMilk",input$prMaintenance)
-  updateTabsetPanel(session,"dashboard",input$prMaintenance)
-})
-
-
+    observeEvent(input$prMilk,{
+     updateTabsetPanel(session,"prCapital",input$prMilk)
+     updateTabsetPanel(session,"prLabor",input$prMilk)
+     updateTabsetPanel(session,"prFinance",input$prMilk)
+     updateTabsetPanel(session,"prMaintenance",input$prMilk)
+     updateTabsetPanel(session,"dashboard",input$prMilk)
+   })
+   
+   observeEvent(input$prFinance,{
+     updateTabsetPanel(session,"prCapital",input$prFinance)
+     updateTabsetPanel(session,"prLabor",input$prFinance)
+     updateTabsetPanel(session,"prMilk",input$prFinance)
+     updateTabsetPanel(session,"prMaintenance",input$prFinance)
+     updateTabsetPanel(session,"dashboard",input$prFinance)
+   })
+   
+   observeEvent(input$prMaintenance,{
+     updateTabsetPanel(session,"prCapital",input$prMaintenance)
+     updateTabsetPanel(session,"prLabor",input$prMaintenance)
+     updateTabsetPanel(session,"prFinance",input$prMaintenance)
+     updateTabsetPanel(session,"prMilk",input$prMaintenance)
+     updateTabsetPanel(session,"dashboard",input$prMaintenance)
+   })
 
 # The following provides the default value for additional_labor and additional_cost when hidden from the user
 # updateNumericInput(session, "additional_labor",NULL,value=450,step=50,min=0)
@@ -115,7 +106,7 @@ observeEvent(input$prMaintenance,{
 # shinyjs::onclick("readProfile",
 #                  shinyjs::toggle(id="ref_readProfile", anim = TRUE)
 # )
-
+# 
 
 # ## download cashflow, debt, depreciation tables
 # output$dl_button_cash_flow <- renderUI({
@@ -127,21 +118,6 @@ observeEvent(input$prMaintenance,{
 # })
 
 
-observeEvent(input$coeff_reset,{ 
-  updateNumericInput(session, "milk_cow_coeff",NULL,value=0.4,min=0,step=0.1)
-  updateNumericInput(session, "milk_fat",NULL,value=3.65,min=0,step=0.2)
-  updateNumericInput(session, "milk_fat_coeff",NULL,value=15,min=0,step=0.5)
-  updateNumericInput(session, "adj_milk_cow_coeff",NULL,value=0.372,min=0,step=0.1)
-  updateNumericInput(session, "body_weight_coeff1",NULL,value=0.0968,min=0,step=0.005)
-  updateNumericInput(session, "body_weight_coeff2",NULL,value=0.75,min=0,step=0.05)
-  updateNumericInput(session, "lactation_coeff1",NULL,value=-0.192,step=0.01)
-  updateNumericInput(session, "lactation_coeff2",NULL,value=3.67,min=0,step=0.05)
-}) 
-
-
-
-
-# 
 # 
 # # Download the tables as an Excel file   
 # output$data_download <- downloadHandler(
@@ -187,7 +163,7 @@ observeEvent(input$coeff_reset,{
 # }
 # 
 # 
-# 
+
 # # Upload an Excel file, validate it, and then update tables
 # observe({
 #   if (is.null(input$data_upload)) { return() }
@@ -386,4 +362,4 @@ observeEvent(input$coeff_reset,{
 #   })
 # })
 # 
-# 
+

@@ -44,8 +44,7 @@ lapply(base_profiles, function(x) {
     else  ans[[x]]$n_sets <- 1
   
     ans[[x]]$cost_milking2 <-  ans[[x]]$cost_milking*(1+input$inflation_robot/100)^
-      (input[[paste0("useful_years",x)]] + input[[paste0("yr_system1",x)]])*
-      (input[[paste0("n_sets",x)]] == 2) 
+      (input[[paste0("useful_years",x)]] + input[[paste0("yr_system1",x)]]) *(input[[paste0("n_sets",x)]] == 2) 
     
     ans[[x]]$planning_horizon <- ans[[x]]$n_sets * input[[paste0("useful_years",x)]] + input[[paste0("yr_system1",x)]] 
     updateSliderInput(session, paste0("budget_year",x), "Select budget year",value=1, min=1, max=ans[[x]]$planning_horizon)
@@ -176,10 +175,14 @@ lapply(base_profiles, function(x) {
     
     
     ans[[x]]$WACC <- ((input[[paste0("down_housing",x)]] +input[[paste0("down_milking1",x)]]) * input$hurdle_rate +
-                  + (ans[[x]]$loan_housing * input[[paste0("r_housing",x)]]/100 + ans[[x]]$loan_milking1 * input[[paste0("r_housing",x)]])/100*
+                  + (ans[[x]]$loan_housing * input[[paste0("r_housing",x)]] +
+                       + ans[[x]]$loan_milking1 * input[[paste0("r_milking1",x)]])*
                   (1-input$tax_rate/100))/(ans[[x]]$cost_housing + ans[[x]]$cost_milking)  
 
-  
+    ans[[x]]$avg_interest <-  (ans[[x]]$loan_housing * input[[paste0("r_housing",x)]] + 
+                                 + ans[[x]]$loan_milking1 * input[[paste0("r_milking1",x)]])/
+      (ans[[x]]$loan_housing + ans[[x]]$loan_milking1)  
+    
   
     source(file.path("session_files", "session_cash_flow.R"), local=TRUE)  # Calculates cash flow tables
     
@@ -198,13 +201,13 @@ lapply(base_profiles, function(x) {
                                  ans[[x]]$table_cash_flow$salvage[-1])) 
     # This will be shown as negative cost
     
-    ans[[x]]$cost_downpayment <-  pmt(input$hurdle_rate/100, ans[[x]]$planning_horizon, 
-                                npv(input$hurdle_rate/100, 
-                                    ans[[x]]$table_cash_flow$downpayment[-1])+ans[[x]]$table_cash_flow$downpayment[1]) 
+    ans[[x]]$cost_downpayment <-  pmt(input$hurdle_rate/100, ans[[x]]$planning_horizon,  npv(input$hurdle_rate/100, 
+                                    ans[[x]]$table_cash_flow$downpayment[-1]) + ans[[x]]$table_cash_flow$downpayment[1]) 
     
     ans[[x]]$capital_cost_total <- ans[[x]]$capital_recovery_milking + ans[[x]]$capital_recovery_housing +
       + ans[[x]]$cost_downpayment + ans[[x]]$salvage_milking_PV
     
+    ans[[x]]$negative_total <- ans[[x]]$inc_exp_total + ans[[x]]$capital_cost_total
     
     # # This is used for alerting the base-value change in sensitivity and scenario analysis  
     # createAlert(session, "c_input_change", "ref_c_input_change", 

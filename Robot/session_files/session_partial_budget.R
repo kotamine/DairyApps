@@ -29,12 +29,9 @@ observe({
     + ans[[x]]$capital_cost_total
   
   ans[[x]]$pb_positive_minus_negative <-  ans[[x]]$pb_positive_total - ans[[x]]$pb_negative_total 
-  
-  ans[[x]]$pb_inflation_adjustment <-   - pmt(input$interest/100, ans[[x]]$planning_horizon, npv(input$interest/100, ans[[x]]$table_cash_flow$revenue_minus_expense[-1])) +
+ 
+  ans[[x]]$pb_inflation_adjustment <-  - pmt(ans[[x]]$avg_interest/100, ans[[x]]$planning_horizon, npv(ans[[x]]$avg_interest/100, ans[[x]]$table_cash_flow$revenue_minus_expense[-1])) +
     - (ans[[x]]$pb_positive_total - ans[[x]]$pb_negative_total + ans[[x]]$capital_cost_total)
-  
-  ans[[x]]$pb_revenue_minus_expense <-  ans[[x]]$pb_positive_total -(ans[[x]]$pb_negative_total -ans[[x]]$capital_cost_total) +
-    + ans[[x]]$pb_inflation_adjustment
   
   ans[[x]]$pb_net_annual_impact_before_tax <- ans[[x]]$pb_positive_minus_negative + ans[[x]]$pb_inflation_adjustment
   
@@ -51,44 +48,63 @@ observe({
   ans[[x]]$capital_cost_total
   
   isolate({
-  if (is.null(ans[[x]]$revenue_minus_expense)) {  return() } 
+  # if ( is.null(ans[[x]]$planning_horizon) ) {  return() } 
 
-  ans[[x]]$tax_revenue_minus_expense <-  -input$tax_rate/100 * ans[[x]]$revenue_minus_expense
+  ans[[x]]$tax_revenue_minus_expense <-  input$tax_rate/100 * 
+         pmt(ans[[x]]$avg_interest/100, ans[[x]]$planning_horizon, 
+           npv(ans[[x]]$avg_interest/100, ans[[x]]$table_cash_flow$revenue_minus_expense[-1])) 
   
-  ans[[x]]$tax_interest <-  input$tax_rate/100 * pmt(input$interest/100, ans[[x]]$planning_horizon, 
-                                  npv(input$interest/100, ans[[x]]$table_cash_flow$interest[-1]))
+  # cost of cash flows for interest payments (evaluated at separate instests for milking and housing)
+  ans[[x]]$interest_at_interest <-  pmt(input[[paste0("r_milking1",x)]]/100, ans[[x]]$planning_horizon, 
+                                         npv(input[[paste0("r_milking1",x)]]/100, ans[[x]]$table_debt$milking_interest)) +
+                                       + pmt(input[[paste0("r_housing",x)]]/100, ans[[x]]$planning_horizon, 
+                                             npv(input[[paste0("r_housing",x)]]/100, ans[[x]]$table_debt$barn_interest))
   
-  ans[[x]]$tax_depreciation <-  input$tax_rate/100 * pmt(input$interest/100, ans[[x]]$planning_horizon, 
-                                   npv(input$interest/100, ans[[x]]$table_cash_flow$depreciation[-1])) 
+  ans[[x]]$tax_interest <-  -input$tax_rate/100 * ans[[x]]$interest_at_interest 
+    
+                         
+  ans[[x]]$principal_at_interest <-  pmt(input[[paste0("r_milking1",x)]]/100, ans[[x]]$planning_horizon, 
+                                           npv(input[[paste0("r_milking1",x)]]/100, ans[[x]]$table_debt$milking_principal)) +
+                                         + pmt(input[[paste0("r_housing",x)]]/100, ans[[x]]$planning_horizon, 
+                                               npv(input[[paste0("r_housing",x)]]/100, ans[[x]]$table_debt$barn_principal))
+    
+  
+    # cost of depreciation (evaluated at separate instests for milking and housing)
+    ans[[x]]$depreciation_at_interest <-   
+      (pmt(input[[paste0("r_milking1",x)]]/100, ans[[x]]$planning_horizon, 
+              npv(input[[paste0("r_milking1",x)]]/100, ans[[x]]$table_depreciation$depreciation_milking_system)) +
+            + pmt(input[[paste0("r_housing",x)]]/100, ans[[x]]$planning_horizon, 
+                       npv(input[[paste0("r_housing",x)]]/100, ans[[x]]$table_depreciation$depreciation_housing)))
+   
+     ans[[x]]$tax_depreciation <- -input$tax_rate/100 * ans[[x]]$depreciation_at_interest
+      
+  
   
   # axillary functions for  ans[[x]]$adj_WACC_interest
   ans[[x]]$adj_depr <- -pmt(ans[[x]]$WACC/100, ans[[x]]$planning_horizon, 
                npv(ans[[x]]$WACC/100, ans[[x]]$table_cash_flow$depreciation[-1])) +
-    + pmt(input$interest/100, ans[[x]]$planning_horizon, 
-          npv(input$interest/100, ans[[x]]$table_cash_flow$depreciation[-1])) 
+    - ans[[x]]$depreciation_at_interest
   
   ans[[x]]$adj_salvage <- -pmt(ans[[x]]$WACC/100, ans[[x]]$planning_horizon, 
                   npv(ans[[x]]$WACC/100, ans[[x]]$table_cash_flow$salvage[-1])) +
-    + pmt(input$interest/100, ans[[x]]$planning_horizon, 
-          npv(input$interest/100, ans[[x]]$table_cash_flow$salvage[-1])) 
+    + pmt(input[[paste0("r_milking1",x)]]/100, ans[[x]]$planning_horizon, 
+          npv(input[[paste0("r_milking1",x)]]/100, ans[[x]]$table_cash_flow$salvage[-1])) 
   
   ans[[x]]$adj_interest <- -pmt(ans[[x]]$WACC/100, ans[[x]]$planning_horizon, 
                    npv(ans[[x]]$WACC/100, ans[[x]]$table_cash_flow$interest[-1])) +
-    + pmt(input$interest/100, ans[[x]]$planning_horizon, 
-          npv(input$interest/100, ans[[x]]$table_cash_flow$interest[-1]))
+    - ans[[x]]$interest_at_interest
   
   ans[[x]]$adj_principal <- -pmt(ans[[x]]$WACC/100, ans[[x]]$planning_horizon, 
                     npv(ans[[x]]$WACC/100, ans[[x]]$table_cash_flow$principal[-1])) +
-    + pmt(input$interest/100, ans[[x]]$planning_horizon, 
-          npv(input$interest/100, ans[[x]]$table_cash_flow$principal[-1])) 
+    - ans[[x]]$principal_at_interest
   
   ans[[x]]$adj_revenue_minus_expense <- -pmt(ans[[x]]$WACC/100, ans[[x]]$planning_horizon, 
                                 npv(ans[[x]]$WACC/100, ans[[x]]$table_cash_flow$revenue_minus_expense[-1])) +
-    + pmt(input$interest/100, ans[[x]]$planning_horizon, 
-          npv(input$interest/100, ans[[x]]$table_cash_flow$revenue_minus_expense[-1])) 
+    + pmt(ans[[x]]$avg_interest/100, ans[[x]]$planning_horizon, 
+          npv(ans[[x]]$avg_interest/100, ans[[x]]$table_cash_flow$revenue_minus_expense[-1])) 
 
   ans[[x]]$adj_WACC_interest <- (ans[[x]]$adj_revenue_minus_expense + ans[[x]]$adj_interest)*(1-input$tax_rate/100) + 
-    - ans[[x]]$adi_depr*input$tax_rate/100 + ans[[x]]$adj_principal + ans[[x]]$adj_salvage
+    - ans[[x]]$adj_depr*input$tax_rate/100 + ans[[x]]$adj_principal + ans[[x]]$adj_salvage
   
   ans[[x]]$adj_WACC_hurdle <- -pmt(ans[[x]]$WACC/100, ans[[x]]$planning_horizon, 
                                      npv(ans[[x]]$WACC/100,  ans[[x]]$table_cash_flow$downpayment[-1])+
@@ -96,20 +112,20 @@ observe({
           + pmt(input$hurdle_rate/100, ans[[x]]$planning_horizon, 
           npv(input$hurdle_rate/100, ans[[x]]$table_cash_flow$downpayment[-1])+ans[[x]]$table_cash_flow$downpayment[1])
   
-  ans[[x]]$net_annual_impact_after_tax <-  ans[[x]]$net_annual_impact_before_tax + ans[[x]]$tax_revenue_minus_expense +
+  ans[[x]]$net_annual_impact_after_tax <-  ans[[x]]$pb_net_annual_impact_before_tax + ans[[x]]$tax_revenue_minus_expense +
     + ans[[x]]$tax_interest + ans[[x]]$tax_depreciation + ans[[x]]$adj_WACC_interest + ans[[x]]$adj_WACC_hurdle
   
   ans[[x]]$tax_deduction_milking <- 
-    -input$tax_rate/100 *(pmt(input$interest/100, ans[[x]]$planning_horizon, 
-                              npv(input$interest/100, ans[[x]]$table_depreciation$depreciation_robot))
-                          +  pmt(input$interest/100, ans[[x]]$planning_horizon, 
-                                 npv(input$interest/100, ans[[x]]$table_debt$robot_interest)))
+    -input$tax_rate/100 *(pmt(ans[[x]]$avg_interest/100, ans[[x]]$planning_horizon, 
+                              npv(ans[[x]]$avg_interest/100, ans[[x]]$table_depreciation$depreciation_robot))
+                          +  pmt(ans[[x]]$avg_interest/100, ans[[x]]$planning_horizon, 
+                                 npv(ans[[x]]$avg_interest/100, ans[[x]]$table_debt$robot_interest)))
   
   ans[[x]]$tax_deduction_housing <-   
-    -input$tax_rate/100 *(pmt(input$interest/100, ans[[x]]$planning_horizon, 
-                              npv(input$interest/100, ans[[x]]$table_depreciation$depreciation_housing))
-                          +  pmt(input$interest/100, ans[[x]]$planning_horizon, 
-                                 npv(input$interest/100, ans[[x]]$table_debt$barn_interest)))
+    -input$tax_rate/100 *(pmt(ans[[x]]$avg_interest/100, ans[[x]]$planning_horizon, 
+                              npv(ans[[x]]$avg_interest/100, ans[[x]]$table_depreciation$depreciation_housing))
+                          +  pmt(ans[[x]]$avg_interest/100, ans[[x]]$planning_horizon, 
+                                 npv(ans[[x]]$avg_interest/100, ans[[x]]$table_debt$barn_interest)))
   })
 })
   

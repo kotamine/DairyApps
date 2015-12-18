@@ -16,7 +16,7 @@
 ## ------ Prepares cash flow, debt, and depreciation tables -------
 isolate({
   
-  # browser()
+   browser()
   
   ## ------------ Depreciation Table ------------
   yr_AGDS_milking <- 7
@@ -37,7 +37,7 @@ isolate({
     # setting salvage = 0 for total depreciation 
     dep_milking[1:yr_AGDS_milking] <- vdb(ans[[x]]$cost_milking, 0,
                                       yr_AGDS_milking, factor=1.5, sequence=TRUE) 
-    if (input[[paste0("n_sets",x)]] >=2) {
+    if (input[[paste0("n_sets",x)]] ==2) {
       dep_milking[(1+input[[paste0("useful_years",x)]]):(input[[paste0("useful_years",x)]] + yr_AGDS_milking)] <-
         vdb(ans[[x]]$cost_milking2, 0,  yr_AGDS_milking, factor=1.5, sequence=TRUE) 
     }
@@ -68,11 +68,12 @@ isolate({
   
   
   ## ------------ Debt Table ------------
-    tbl_milking <- debt_table(ans[[x]]$loan_milking1,input[[paste0("r_milking1",x)]]/100, input[[paste0("n_yr_milking1",x)]], n_years, 1) +
-      + debt_table(ans[[x]]$loan_milking2, input[[paste0("r_milking1",x)]]/100, input[[paste0("n_yr_milking1",x)]], n_years, input[[paste0("useful_years",x)]]+1) * (ans[[x]]$n_sets <- 2)
-    
-  tbl_milking[,1] <- tbl_milking[,1]/2
-
+    tbl_milking <- debt_table(ans[[x]]$loan_milking1,input[[paste0("r_milking1",x)]]/100, input[[paste0("n_yr_milking1",x)]], n_years, 1) 
+  if (ans[[x]]$n_sets == 2) {
+    tbl_milking <- tbl_milking + debt_table(ans[[x]]$loan_milking2, input[[paste0("r_milking1",x)]]/100, input[[paste0("n_yr_milking1",x)]], n_years, input[[paste0("useful_years",x)]]+1) 
+     tbl_milking[,1] <- tbl_milking[,1]/2
+  }
+  
   colnames(tbl_milking) <- lapply(colnames(tbl_milking), function(x) { paste0("milking_",x)}) %>% unlist()
   
   tbl_barn <- debt_table(ans[[x]]$loan_housing, input[[paste0("r_housing",x)]]/100, input[[paste0("n_yr_housing",x)]], n_years, 1)

@@ -104,7 +104,7 @@ partialBudget <- function(x) {
                     h5("Increased Cost of Capital (annuity payment equivalent):"),
                     fluidRow(column(width=8, offset=1, 
                                     helpText(paste("Capital recovery cost of",x, "(dep. & int.)*"))),
-                             column(width=3, uiOutput(paste0("capital_recovery_robot",refProfile(x))))                         
+                             column(width=3, uiOutput(paste0("capital_recovery_milking",refProfile(x))))                         
                     ),
                     fluidRow(column(width=8, offset=1, 
                                     helpText("Capital recovery cost of housing (dep. & int.)*")),
