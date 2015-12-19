@@ -29,9 +29,9 @@ shinyUI(
     div(class="well", style="background-color:#7a0019; color:white;", 
         fluidRow(column(width=8, offset=1, h1("UM Extension Dairy")))),
     navbarPage(
-      "Robotic Milking Systems",
+      "Robotic Milking Systems", id = "Navbar",
       # ---------- Introduction  -----------
-      tabPanel("Introduction",
+      tabPanel("Introduction",  value="Introduction",
                fluidRow(column(width=2),
                         column(width=8,
                                includeMarkdown(file.path("text","introduction.md")), 
@@ -39,7 +39,7 @@ shinyUI(
                         ))
       ),
       # ---------- Data Entry -----------
-      tabPanel("Data Entry", id="data_entry",
+      tabPanel("Data Entry", value="Data_Entry",
                # Need to add "$value" for including source in UI: 
                # otherwise "TRUE" will show up at the end of file
 
@@ -98,7 +98,7 @@ shinyUI(
 #                br(), br()
       ),
       # ---------- Partial Budget Analysis -----------
-      tabPanel("Partial Budget",
+      tabPanel("Partial Budget", value = "Partial_Budget",
 #                conditionalPanel("input.budget==0",
 #                                 div(bsButton("budget","Calculate",disabled = TRUE, icon = icon("ban")),
 #                                     helpText("Please review all tabs in Data Entry."),align="center")
@@ -126,7 +126,7 @@ shinyUI(
                # ) 
       ),
 #       # ---------- Cash Flow Analysis -----------
-#       tabPanel("Cash Flow",
+#       tabPanel("Cash Flow", value = "Cash_Flow", 
 #                conditionalPanel("input.budget==0",
 #                                 div(helpText("Please review all tabs in Data Entry."),align="center")
 #                ),
@@ -136,7 +136,7 @@ shinyUI(
 #                )
 #       ),
 #       # ---------- Additional Analyses -----------
-#       navbarMenu("More",
+#       navbarMenu("More", value = "More", 
 #                  tabPanel("Robustness Checks",
 #                           conditionalPanel("input.budget==0",
 #                                            div(helpText("Please review all tabs in Data Entry."),align="center")
@@ -167,7 +167,7 @@ shinyUI(
 #                           ))
 #       ),
       # ---------- About -----------
-      tabPanel("About",
+      tabPanel("About", value = "About", 
                fluidRow(column(width=1),
                         column(width=10,
                                includeMarkdown(file.path("text","about.md")),

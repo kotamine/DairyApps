@@ -358,115 +358,189 @@ lapply(base_profiles, function(x) {
 # 
 # 
 # 
-# ## ------------ Breakeven Calculations ------------
-# ## Triggered when Partial Budget tab is active, Profile-sepcific tab is active,
-# ##  and it needs to be updated (signaled from a variable updated by calculation_main). 
-#  
-# lapply(base_profiles, function(x) { 
-#   observe({
-#     # Trigger Mechanism 
-#     
-#     
-# isolate({
-#   
-#   n_years <- ans[[x]]$planning_horizon 
-#   
-#   table_breakeven <- matrix(c(c(1:n_years), rep(rep(0,n_years),9)),ncol=10,byrow=FALSE)  %>% data.frame()
-#   
-#   colnames(table_breakeven) <- c("year","increased_expense","capital_cost_minus_downpayment", "cost_downpayment",
-#                                  "increased_revenue","reduced_labor_management","reduced_heat_detection",
-#                                  "reduced_labor","cost_capital_WACC","tax_deduction")
-#   
-#   table_breakeven$increased_expense <- lapply(c(1:n_years), function(t) {
-#     ans[[x]]$inc_exp_total*(1+input$inflation_margin/100)^(t-1)
-#   }) %>% unlist()
-#   
-#   table_breakeven$increased_revenue <- lapply(c(1:n_years), function(t) {
-#     ans[[x]]$inc_rev_total*(1+input$inflation_margin/100)^(t-1)
-#   }) %>% unlist()
-#   
-#   table_breakeven$capital_cost_minus_downpayment <- rep((ans[[x]]$capital_cost_total - ans[[x]]$cost_downpayment),n_years)
-#   
-#   table_breakeven$cost_downpayment <- rep((ans[[x]]$cost_downpayment),n_years)
-#   
-#   table_breakeven$reduced_labor_management <- lapply(c(1:n_years), function(t) {
-#     ans[[x]]$dec_exp_labor_management *(1+input$inflation_labor/100)^(t-1)
-#   }) %>% unlist()
-#   
-#   table_breakeven$reduced_heat_detection <- lapply(c(1:n_years), function(t) {
-#     ans[[x]]$dec_exp_heat_detection *(1+input$inflation_labor/100)^(t-1)
-#   }) %>% unlist()
-#   
-#   table_breakeven$reduced_labor <- lapply(c(1:n_years), function(t) {
-#     ans[[x]]$dec_exp_labor *(1+input$inflation_labor/100)^(t-1)
-#   }) %>% unlist()
-#   
-#   if (ans[[x]]$planning_horizon < n_years) {
-#     for (i in c("increased_expense","increased_revenue","reduced_labor_management",
-#                 "reduced_heat_detection","reduced_labor"))
-#       table_breakeven[[i]][(ans[[x]]$planning_horizon+1):n_years] <- 0 
-#   }
-#   
-#   table_breakeven <- rbind(0, table_breakeven)
-#   
-#   table_breakeven$cost_capital_WACC <- -(ans[[x]]$table_cash_flow$downpayment + ans[[x]]$table_cash_flow$salvage +
-#                                            + ans[[x]]$table_cash_flow$interest + ans[[x]]$table_cash_flow$principal)
-#   
-#   table_breakeven$tax_deduction <- -input$tax_rate/100 * (ans[[x]]$table_cash_flow$depreciation + ans[[x]]$table_cash_flow$interest) 
-#   
-#   
-#   ans[[x]]$npv_interest <- list()
-#   ans[[x]]$annuity_interest <- list()
-#   ans[[x]]$npv_WACC <- list()
-#   ans[[x]]$annuity_WACC <- list()
-#   ans[[x]]$npv_hurdle <- list()
-#   ans[[x]]$annuity_hurdle <- list()
-#   
-#   cnames1 <- colnames(table_breakeven)
-#   lapply(cnames1, function(x) {
-#     
-#     ans[[x]]$npv_interest[[paste0(x)]] <- npv(input$interest/100, table_breakeven[[paste0(x)]][-1]) +
-#       + table_breakeven[[paste0(x)]][1]
-#     
-#     ans[[x]]$npv_WACC[[paste0(x)]] <- npv(ans[[x]]$WACC/100, table_breakeven[[paste0(x)]][-1]) +
-#       + table_breakeven[[paste0(x)]][1]
-#     
-#     ans[[x]]$annuity_interest[[paste0(x)]] <- -pmt(input$interest/100, n_years,ans[[x]]$npv_interest[[paste0(x)]])
-#     ans[[x]]$annuity_WACC[[paste0(x)]] <- -pmt(ans[[x]]$WACC/100, n_years,ans[[x]]$npv_WACC[[paste0(x)]])
-#   })
-#   
-#   ans[[x]]$npv_hurdle[["cost_downpayment"]] <- npv(input$hurdle_rate/100, table_breakeven[["cost_downpayment"]][-1]) +
-#     + table_breakeven[["cost_downpayment"]][1]
-#   ans[[x]]$annuity_hurdle[["cost_downpayment"]] <- -pmt(ans[[x]]$WACC/100, n_years,ans[[x]]$npv_hurdle[["cost_downpayment"]])
-#   
+## ------------ Breakeven Calculations ------------
+## Triggered when Partial Budget tab is active, Profile-sepcific tab is active,
+##  and it needs to be updated (signaled from a variable updated by calculation_main).
+
+lapply(base_profiles, function(x) {
+  observe({
+    # Trigger Mechanism
+    ans[[x]]$net_annual_impact_after_tax
+    need(input$Navbar=="Partial_Budget" & input$partial_budget==x,"NA") %>% validate()
+    
+    browser() 
+    
+isolate({
+
+  n_years <- ans[[x]]$planning_horizon
+
+  table_breakeven <- matrix(c(c(1:n_years), rep(rep(0,n_years),9)),ncol=10,byrow=FALSE)  %>% data.frame()
+
+  colnames(table_breakeven) <- c("year","increased_expense","capital_cost_minus_downpayment", "cost_downpayment",
+                                 "increased_revenue","reduced_labor_management","reduced_heat_detection",
+                                 "reduced_labor","cost_capital_WACC","tax_deduction")
+
+  table_breakeven$increased_expense <- lapply(c(1:n_years), function(t) {
+    ans[[x]]$inc_exp_total*(1+input$inflation_margin/100)^(t-1)
+  }) %>% unlist()
+
+  table_breakeven$increased_revenue <- lapply(c(1:n_years), function(t) {
+    ans[[x]]$inc_rev_total*(1+input$inflation_margin/100)^(t-1)
+  }) %>% unlist()
+
+  table_breakeven$capital_cost_minus_downpayment <- rep((ans[[x]]$capital_cost_total - ans[[x]]$cost_downpayment),n_years)
+
+  table_breakeven$cost_downpayment <- rep((ans[[x]]$cost_downpayment),n_years)
+
+  table_breakeven$reduced_labor_management <- lapply(c(1:n_years), function(t) {
+    ans[[x]]$dec_exp_labor_management *(1+input$inflation_labor/100)^(t-1)
+  }) %>% unlist()
+
+  table_breakeven$reduced_heat_detection <- lapply(c(1:n_years), function(t) {
+    ans[[x]]$dec_exp_heat_detection *(1+input$inflation_labor/100)^(t-1)
+  }) %>% unlist()
+
+  table_breakeven$reduced_labor <- lapply(c(1:n_years), function(t) {
+    ans[[x]]$dec_exp_labor *(1+input$inflation_labor/100)^(t-1)
+  }) %>% unlist()
+
+  if (ans[[x]]$planning_horizon < n_years) {
+    for (i in c("increased_expense","increased_revenue","reduced_labor_management",
+                "reduced_heat_detection","reduced_labor"))
+      table_breakeven[[i]][(ans[[x]]$planning_horizon+1):n_years] <- 0
+  }
+
+  table_breakeven <- rbind(0, table_breakeven)
+
+  table_breakeven$cost_capital_WACC <- -(ans[[x]]$table_cash_flow$downpayment + ans[[x]]$table_cash_flow$salvage +
+                                           + ans[[x]]$table_cash_flow$interest + ans[[x]]$table_cash_flow$principal)
+
+  table_breakeven$tax_deduction <- -input$tax_rate/100 * (ans[[x]]$table_cash_flow$depreciation + ans[[x]]$table_cash_flow$interest)
+
+  ## --- Breakeven wage calcution for before-tax impact is currently suppressed -------
+  # ans[[paste0(x,"_bw")]]$npv_interest <- list()
+  # ans[[paste0(x,"_bw")]]$annuity_interest <- list()
+  ans[[paste0(x,"_bw")]]$npv_WACC <- list()
+  ans[[paste0(x,"_bw")]]$annuity_WACC <- list()
+  ans[[paste0(x,"_bw")]]$npv_hurdle <- list()
+  # ans[[paste0(x,"_bw")]]$annuity_hurdle <- list()
+
+  cnames1 <- colnames(table_breakeven)
+  lapply(cnames1, function(x) {
+
+    # ans[[paste0(x,"_bw")]]$npv_interest[[paste0(x)]] <- npv(input$interest/100, table_breakeven[[paste0(x)]][-1]) +
+    #   + table_breakeven[[paste0(x)]][1]
+
+    ans[[paste0(x,"_bw")]]$npv_WACC[[paste0(x)]] <- npv(ans[[x]]$WACC/100, table_breakeven[[paste0(x)]][-1]) +
+      + table_breakeven[[paste0(x)]][1]
+
+    # ans[[paste0(x,"_bw")]]$annuity_interest[[paste0(x)]] <- -pmt(input$interest/100, n_years,ans[[x]]$npv_interest[[paste0(x)]])
+    ans[[paste0(x,"_bw")]]$annuity_WACC[[paste0(x)]] <- -pmt(ans[[x]]$WACC/100, n_years,ans[[x]]$npv_WACC[[paste0(x)]])
+  })
+
+  # ans[[paste0(x,"_bw")]]$npv_hurdle[["cost_downpayment"]] <- npv(input$hurdle_rate/100, table_breakeven[["cost_downpayment"]][-1]) +
+  #   + table_breakeven[["cost_downpayment"]][1]
+  # ans[[x]]$annuity_hurdle[["cost_downpayment"]] <- -pmt(ans[[x]]$WACC/100, n_years,ans[[x]]$npv_hurdle[["cost_downpayment"]])
+
+
+  # ans[[paste0(x,"_bw")]]$bw_wage_before_tax <- (ans[[x]]$annuity_interest$increased_expense + ans[[x]]$annuity_interest$capital_cost_minus_downpayment +
+  #                             + ans[[x]]$annuity_hurdle$cost_downpayment - ans[[x]]$annuity_interest$increased_revenue +
+  #                             - ans[[x]]$annuity_interest$reduced_labor_management)/
+  #   ((ans[[x]]$annuity_interest$reduced_heat_detection + ans[[x]]$annuity_interest$reduced_labor)/input$labor_rate)
+
+  ans[[paste0(x,"_bw")]]$bw_wage_after_tax <-  ((ans[[x]]$annuity_WACC$increased_expense - ans[[x]]$annuity_WACC$increased_revenue +
+                               - ans[[x]]$annuity_WACC$reduced_labor_management)*(1-input$tax_rate/100)  +
+                              ans[[x]]$annuity_WACC$cost_capital_WACC - ans[[x]]$annuity_WACC$tax_deduction)/
+    ((ans[[x]]$annuity_WACC$reduced_heat_detection + ans[[x]]$annuity_WACC$reduced_labor)*(1-input$tax_rate/100)/input$labor_rate)
+
+  # payment1 <- -ans[[x]]$dec_exp_total/(1 + input$interest/100)
+  payment2 <- -ans[[x]]$dec_exp_total/(1 + ans[[x]]$WACC/100)*(1-input$tax_rate/100)
+
+  # npv1 <- ans[[x]]$npv_interest$increased_expense + ans[[x]]$npv_interest$capital_cost_minus_downpayment +
+  #   + ans[[x]]$npv_hurdle$cost_downpayment - ans[[x]]$npv_interest$increased_revenue + payment1
+
+  npv2 <- (ans[[x]]$npv_WACC$increased_expense  - ans[[x]]$npv_WACC$increased_revenue) *(1-input$tax_rate/100) +
+    + ans[[x]]$npv_WACC$cost_capital_WACC - ans[[x]]$npv_WACC$tax_deduction + payment2
+
+  # ans[[x]]$be_wage_positive_minus_negative <-  (ans[[x]]$negative_total - ans[[x]]$inc_rev_total - ans[[x]]$dec_exp_labor_management)/
+  #   ((ans[[x]]$dec_exp_heat_detection + ans[[x]]$dec_exp_labor )/input$labor_rate)
+
+  # ans[[x]]$bw_wage_inflation_before_tax <- (1 + input$interest/100)/(1 + rate(n_years-1, payment1, npv1)) - 1
+
+  ans[[paste0(x,"_bw")]]$bw_wage_inflation_after_tax <-  (1 + ans[[x]]$WACC/100)/(1 + rate(n_years-1, payment2, npv2)) - 1
+
+})
+})
+
+
+output[[paste0("breakeven_chart",x)]] <- renderGvis({
+    need(!is.null(ans[[paste0(x,"_bw")]]$bw_wage_before_tax),"NA") %>% validate()
+  
+  browser()
+  
+  labor_rate <- ans[[paste0(x,"_bw")]]$bw_wage_after_tax
+  inflation <- ans[[paste0(x,"_bw")]]$bw_wage_inflation_after_tax
+  n_year <- ans[[x]]$planning_horizon  
+  
+  df <- data.frame(Year=c(1:n_year))
+  df$Baseline_projection <- project_inflation(n_year, input$labor_rate, input$inflation_labor/100, round=2)
+  df$Breakeven_wage_shift_today <- project_inflation(n_year,labor_rate, input$inflation_labor/100, round=2)
+  df$Breakeven_wage_shift_future <- project_inflation(n_year, input$labor_rate, inflation, round=2)
+
+  gvisLineChart(df, xvar="Year",
+                yvar=c("Base", "Wage","Wage_Inflation"),
+                options=list(
+                  title=paste("After-tax Breakeven Wage:", refProfileName(x)),
+                  vAxis="{title:'Wage Trajectory ($)'}", 
+                  hAxis="{title:'Year'}"
+                ))
+}) 
+
+})
+
+
 # 
-#   ans[[x]]$bw_wage_before_tax <- (ans[[x]]$annuity_interest$increased_expense + ans[[x]]$annuity_interest$capital_cost_minus_downpayment +
-#                               + ans[[x]]$annuity_hurdle$cost_downpayment - ans[[x]]$annuity_interest$increased_revenue + 
-#                               - ans[[x]]$annuity_interest$reduced_labor_management)/
-#     ((ans[[x]]$annuity_interest$reduced_heat_detection + ans[[x]]$annuity_interest$reduced_labor)/input$labor_rate)
-#   
-#   ans[[x]]$bw_wage_after_tax <-  ((ans[[x]]$annuity_WACC$increased_expense - ans[[x]]$annuity_WACC$increased_revenue + 
-#                                - ans[[x]]$annuity_WACC$reduced_labor_management)*(1-input$tax_rate/100)  + 
-#                               ans[[x]]$annuity_WACC$cost_capital_WACC - ans[[x]]$annuity_WACC$tax_deduction)/
-#     ((ans[[x]]$annuity_WACC$reduced_heat_detection + ans[[x]]$annuity_WACC$reduced_labor)*(1-input$tax_rate/100)/input$labor_rate)
-#   
-#   payment1 <- -ans[[x]]$dec_exp_total/(1 + input$interest/100)
-#   payment2 <- -ans[[x]]$dec_exp_total/(1 + ans[[x]]$WACC/100)*(1-input$tax_rate/100)
-#   
-#   npv1 <- ans[[x]]$npv_interest$increased_expense + ans[[x]]$npv_interest$capital_cost_minus_downpayment +
-#     + ans[[x]]$npv_hurdle$cost_downpayment - ans[[x]]$npv_interest$increased_revenue + payment1
-#   
-#   npv2 <- (ans[[x]]$npv_WACC$increased_expense  - ans[[x]]$npv_WACC$increased_revenue) *(1-input$tax_rate/100) + 
-#     + ans[[x]]$npv_WACC$cost_capital_WACC - ans[[x]]$npv_WACC$tax_deduction + payment2 
-#   
-#   ans[[x]]$be_wage_positive_minus_negative <-  (ans[[x]]$negative_total - ans[[x]]$inc_rev_total - ans[[x]]$dec_exp_labor_management)/ 
-#     ((ans[[x]]$dec_exp_heat_detection + ans[[x]]$dec_exp_labor )/input$labor_rate) 
-#   
-#   ans[[x]]$bw_wage_inflation_before_tax <- (1 + input$interest/100)/(1 + rate(n_years-1, payment1, npv1)) - 1
-#   
-#   ans[[x]]$bw_wage_inflation_after_tax <-  (1 + ans[[x]]$WACC/100)/(1 + rate(n_years-1, payment2, npv2)) - 1
-#   
+# output$breakeven_numbers <- renderUI({
+#   validate(
+#     need(!is.null(ans[[x]]$bw_wage_before_tax),"NA")
+#   )
+#   if (input$breakeven_option=="wage") {
+#     option <- "Wage:"
+#     if (input$NAI=="before tax") {
+#       labor_rate <- ans[[x]]$bw_wage_before_tax
+#     } else {
+#       labor_rate <- ans[[x]]$bw_wage_after_tax
+#     }
+#     be_val <- paste0("$", round(labor_rate, 2))
+#     inflation <-  input$inflation_labor/100
+#   } else {
+#     option <- "Inflation:"
+#     if (input$NAI=="before tax") {
+#       inflation <- ans[[x]]$bw_wage_inflation_before_tax
+#     } else {
+#       inflation <- ans[[x]]$bw_wage_inflation_after_tax
+#     }
+#     be_val <- paste0(round(inflation*100,3),"%")
+#     labor_rate <- input$labor_rate
+#   }
+# 
+#   yr_one <- paste("Year", round(ans[[x]]$housing_years/3), ": ")
+#   yr_two <- paste("Year", round(ans[[x]]$housing_years*(2/3)),": ")
+#   yr_three <- paste("Year", round(ans[[x]]$housing_years),": ")
+#   wage_zero <- labor_rate  %>% formatdollar(2)
+#   wage_one <- (labor_rate * (1 + inflation)^(round(ans[[x]]$housing_years/3)-1))  %>% formatdollar(2)
+#   wage_two <- (labor_rate * (1 + inflation)^(round(ans[[x]]$housing_years*2/3)-1))  %>% formatdollar(2)
+#   wage_three <- (labor_rate * (1 + inflation)^(round(ans[[x]]$housing_years)-1))  %>% formatdollar(2)
+# 
+#   div(class="well well-sm", style= "background-color:	#778899; color:white;",
+#       h4("Breakeven", option, be_val, align="center"),
+#       h5("Year 1: ", wage_zero),
+#       h5(yr_one, wage_one),
+#       h5(yr_two, wage_two),
+#       h5(yr_three, wage_three),
+#       h5("under", robot_or_parlor())
+#   )
 # })
-# })
-# }) 
-#   
+# 
+
+

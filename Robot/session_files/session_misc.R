@@ -31,7 +31,7 @@ observeEvent(input$coeff_reset,{
 
 
 observeEvent(input$dashboard,{
-      updateTabsetPanel(session,"prMilk",input$dashboard)
+       updateTabsetPanel(session,"prMilk",input$dashboard)
        updateTabsetPanel(session,"prLabor",input$dashboard)
        updateTabsetPanel(session,"prFinance",input$dashboard)
        updateTabsetPanel(session,"prMaintenance",input$dashboard)

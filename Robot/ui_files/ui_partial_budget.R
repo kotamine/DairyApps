@@ -245,98 +245,18 @@ shinyjs::hidden(
   )), br(), 
 # -------- Breakeven wage ------- 
 
-#            fluidRow(
-#              column(width=3,offset=9, div(helpText("Breakeven Labor"),align="right"))
-#            ), 
-#            fluidRow(
-#              column(width=1,offset=10, div(helpText("Wage"),
-#                                            align="center")),
-#              column(width=1,offset=0, div(helpText("Inflation"),
-#                                           align="center"))
-#            ), 
-#            hr(),
-#            fluidRow(column(width=7, offset=0, 
-#                            h5("Total positive impacts minus total negative impacts*")),
-#                     column(width=3,  uiOutput("positive_minus_negative")),
-#                     column(width=1,  uiOutput("be_wage_positive_minus_negative")),
-#                     column(width=1,  div(helpText("-"),align="right"))
-#            ), 
-#            fluidRow(column(width=6, offset=1, 
-#                            helpText("Inflation adjustments*")),
-#                     column(width=3, uiOutput("inflation_adjustment"))
-#            ), 
-#            hr(),
-#            fluidRow(column(width=7, offset=0, 
-#                            h5("Net annual impact (before-tax)*")),
-#                     column(width=3,  uiOutput("net_annual_impact_before_tax")),
-#                     column(width=1,  uiOutput("bw_wage_before_tax")),
-#                     column(width=1,  uiOutput("bw_wage_inflation_before_tax"))
-#            ), 
-#            br(),
-#            #   fluidRow(column(width=7, offset=0, 
-#            #                   helpText("Change in revenue minus expense (= before-tax impact plus cost of capital)")),
-#            #            column(width=3, uiOutput("revenue_minus_expense"))
-#            #   ), 
-#            fluidRow(column(width=7, helpText("Taxes and Tax Deductions:"))),
-#            fluidRow(column(width=6, offset=1, 
-#                            helpText("Tax on change in revenue minus expense*")),
-#                     column(width=3, uiOutput("tax_revenue_minus_expense"))
-#            ), 
-#            fluidRow(column(width=6, offset=1, 
-#                            helpText("Tax deduction on interests*")),
-#                     column(width=3,uiOutput("tax_interest"))
-#            ), 
-#            fluidRow(column(width=6, offset=1, 
-#                            helpText("Tax deduction on depreciation*")),
-#                     column(width=3, uiOutput("tax_depreciation"))
-#            ), 
-#            fluidRow(column(width=7, helpText("WACC Adjustments to Annualized Cash Flow Values:"))),
-#            fluidRow(column(width=6, offset=1, 
-#                            helpText("Adjustments with respect to interest rate*")),
-#                     column(width=3,uiOutput("adj_WACC_interest"))
-#            ), 
-#            fluidRow(column(width=6, offset=1, 
-#                            helpText("Adjustments with respect to hurdle rate*")),
-#                     column(width=3, uiOutput("adj_WACC_hurdle"))
-#            ),
-#            hr(),
-#            fluidRow(column(width=7, offset=0, 
-#                            h5("Net annual impact (after-tax)*")),
-#                     column(width=3, uiOutput("net_annual_impact_after_tax")),
-#                     column(width=1,  uiOutput("bw_wage_after_tax")),
-#                     column(width=1,  uiOutput("bw_wage_inflation_after_tax"))
-#            )
-# )),   
-#   fluidRow(
-#     column(width=8,offset=2,
-#            fluidRow(
-#              column(width=3,offset=9, span(helpText("Break-even wage"),
-#                                            align="right"))
-#            ), 
-#            fluidRow(column(width=7, offset=0, 
-#                            h5("Net annual financial impact without salvage")),
-#                     column(width=3, uiOutput("cash_impact_without_salvage")),
-#                     column(width=2,uiOutput("be_wage_without_salvage"))
-#            ), 
-#            br(),
-# #            h5("Robot's salvage value at the end of its useful life:"),
-# #            fluidRow(column(width=6, offset=1, 
-# #                            helpText("Estimated value at end $90,000")),
-# #                     column(width=3, span(helpText("Annualized PV"), align="right"))               
-# #            ),
-#            fluidRow(column(width=6, offset=1, 
-#                            helpText("Estimated salvage value")),
-#                     column(width=3, uiOutput("robot_end_PV"))                       
-#            ),
-#            fluidRow(column(width=7, offset=0, 
-#                            h5("Net annual impact with robot's salvage value")),
-#                     column(width=3, uiOutput("cash_impact_with_salvage")),                                                                          column(width=2,uiOutput("be_wage_with_salvage"))
-#            ), #br(), 
-# #            fluidRow(column(width=7, offset=0, 
-# #                            h5("Net annual impact with inflation, as annualized net present value (NPV)")),
-# #                     column(width=3, uiOutput("impact_with_inflation"))                          
-# #            ),
-
+fluidRow(column(width=8, offset=2,
+                hr(),
+                h5(paste("Breakeven Wage:", refProfile(x))),
+                helpText("Primary benefit of installing Robots is labor saving. "),
+                helpText("We define breakeven wage as a sequence of labor wage rates over the planning horizon   
+                        that makes ", em("After-tax Net Annual Impact"), " zero. We condier two cases of such a wage sequence:",br(), 
+                         "(a) the starting wage rate while keeping the wage inflation fixed", br(), 
+                         "(b) the wage inflation/deflation rate while keeping the starting wage rate fixed. ")
+)),
+fluidRow(column(width=10, offset=1, 
+                htmlOutput(paste0("breakeven_chart",x)) 
+                )), 
   #tags$a(href ="#data_entry",  #"#tab-9037-2",
   ## I haven't been able to set a link to a tab. It seems compliated in Shiny.
   div(id="goData", class="well", style="background-color: gray; color:white;", 
