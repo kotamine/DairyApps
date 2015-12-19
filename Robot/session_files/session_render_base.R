@@ -26,11 +26,6 @@ pb_render_right_0 <- c("NPV","ANPV", "ANPVr",
                        "cost_downpayment", "salvage_milking_PV",
                        "capital_cost_total", 
                        # respond to input$budget_year
-                       "pb_positive_total","pb_negative_total",
-                       "pb_positive_minus_negative",
-                       "pb_inflation_adjustment",
-                       "pb_revenue_minus_expense",
-                       "pb_net_annual_impact_before_tax",
                        "tax_revenue_minus_expense",
                        "tax_interest",
                        "tax_depreciation",
@@ -42,6 +37,16 @@ pb_render_right_0 <- c("NPV","ANPV", "ANPVr",
 pb_render_right_2 <- c("be_wage_positive_minus_negative", "bw_wage_before_tax", "bw_wage_after_tax")
 
 pb_render_right <- list(pb_render_right_0, pb_render_right_2)
+
+
+# These variables are stored in a separate list, e.g., ans[["Robots_pb"]]  etc.   
+# This avoids uncessarily triggering other calculations. 
+pb_separate <- c("pb_positive_total","pb_negative_total",
+                  "pb_positive_minus_negative",
+                  "pb_inflation_adjustment",
+                  "pb_revenue_minus_expense",
+                  "pb_net_annual_impact_before_tax") 
+
 
 rate_render_right_2 <- c("IRR","MIRR","WACC")
 
@@ -87,6 +92,9 @@ lapply(c(1:4), function(r) {
   )
 })
 
+
+
+
 lapply(c(1:2), function(r) {
 lapply(pb_render_right[[r]], function(z) {
   if (r==1) rr <- 0
@@ -127,6 +135,17 @@ lapply(pb_var_to_render_right,
          })
        }
 )
+
+
+lapply(pb_separate, 
+       function(z) { 
+         output[[paste0(z,x)]] <- renderUI({ 
+           ans[[paste0(x,"_pb")]][[paste0(z)]]  %>% 
+             formatdollar() %>% helpText() %>% div(align="right")
+           })
+       }
+)
+
 
 output$DMI_change_copy <- renderUI({
  ans[[x]]$DMI_change  %>% round(3) %>% helpText() 

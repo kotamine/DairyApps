@@ -9,6 +9,14 @@ shinyjs::onclick("customDMI",
                  shinyjs::toggle(id="DMI_inputs", anim = TRUE)
 )
 
+# Show/hide Partial Budget Plots
+shinyjs::onclick("PB_plot_show_1",
+                 shinyjs::toggle(id="id_PB_plot_show_1", anim = TRUE)
+)
+
+shinyjs::onclick("PB_plot_show_2",
+                 shinyjs::toggle(id="id_PB_plot_show_2", anim = TRUE)
+)
 
 observeEvent(input$coeff_reset,{ 
   updateNumericInput(session, "milk_cow_coeff",NULL,value=0.4,min=0,step=0.1)

@@ -90,10 +90,11 @@ isolate({
   
   ## ------------ Cash Flow Table ------------
   
-  table_cash_flow <- matrix(c(c(1:n_years), rep(rep(0,n_years),10)),ncol=11,byrow=FALSE)  %>% data.frame()
+  table_cash_flow <- matrix(c(c(1:n_years), rep(rep(0,n_years),11)),ncol=12,byrow=FALSE)  %>% data.frame()
   colnames(table_cash_flow) <- c("year","revenue_minus_expense", "interest_total","depreciation",
                                  "operating_income", "income_tax", "principal_total",
-                                 "add_back_depr","downpayment", "salvage", "after_tax_cash_flow")
+                                 "add_back_depr","downpayment", "salvage", "after_tax_cash_flow",
+                                 "before_tax_cash_flow")
   
   table_cash_flow$interest_total <-  -table_debt$interest_total
   table_cash_flow$principal_total <-  -table_debt$principal_total
@@ -136,14 +137,16 @@ isolate({
     + table_cash_flow$operating_income + table_cash_flow$income_tax + 
     + table_cash_flow$principal_total + table_cash_flow$add_back_depr
   
+  table_cash_flow$before_tax_cash_flow <- table_cash_flow$downpayment + table_cash_flow$salvage  +
+    + table_cash_flow$principal_total + table_cash_flow$revenue_minus_expense + table_cash_flow$interest_total 
+    
   ans[[x]]$table_cash_flow <- table_cash_flow
   ans[[x]]$table_debt <- table_debt
   ans[[x]]$table_depreciation <- table_depreciation
   
    rate <- ans[[x]]$WACC/100
   
-   browser()
-   
+
   ans[[x]]$NPV <- npv(rate, table_cash_flow$after_tax_cash_flow[-1]) +
     + table_cash_flow$after_tax_cash_flow[1]
   ans[[x]]$ANPV <- -pmt(rate,ans[[x]]$planning_horizon,ans[[x]]$NPV)

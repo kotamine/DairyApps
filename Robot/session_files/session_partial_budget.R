@@ -13,29 +13,56 @@
 # 
 
 
+# test1_val <<- 0
+# 
+# observe({
+#   browser()
+#   num <- input$test1 
+#   # ans[[x]]$something <- 1
+#   isolate({
+#     # ans$abc <- input$test1
+#     # ans[["others"]]$abc <- input$test1
+#     # ans[["Robots"]][["others"]] <- list()
+#     # ans[["Robots"]][["others"]] <- input$test1
+#   }) 
+#   test1_val <<- test1_val + input$test1
+# })
+# 
+# 
+# output$test1_out <- renderUI({
+#   val <- c(test1_val)
+#   input$test1
+#   h5(val)
+# })
+
+
 lapply(base_profiles, function(x) {
+  
+  observeEvent(ans[[x]]$planning_horizon, {
+    updateSliderInput(session, paste0("budget_year",x), "Select budget year",value=1, min=1, max=ans[[x]]$planning_horizon)
+  })  
   
   
 # This needs to respond to change in any data input or change in input[[paste0("budget_year",x)]]
+# Results are stored in a separate list, e.g., ans[["Robots_pb"]]  etc. to avoid triggering other calculations. 
 observe({ 
-  
-  if (is.null(ans[[x]]$positive_total)) {  return() } 
-  ans[[x]]$pb_positive_total <- ans[[x]]$inc_rev_total * (1+input$inflation_margin/100)^(input[[paste0("budget_year",x)]]-1) +
+  browser()
+  # if (is.null(ans[[x]]$positive_total)) {  return() } 
+  ans[[paste0(x,"_pb")]]$pb_positive_total <- ans[[x]]$inc_rev_total * (1+input$inflation_margin/100)^(input[[paste0("budget_year",x)]]-1) +
     + ans[[x]]$dec_exp_total *  (1+input$inflation_labor/100)^(input[[paste0("budget_year",x)]]-1)
-  
-  ans[[x]]$pb_negative_total <- ans[[x]]$inc_exp_total * (1+input$inflation_margin/100)^(input[[paste0("budget_year",x)]]-1) +
+
+  ans[[paste0(x,"_pb")]]$pb_negative_total <- ans[[x]]$inc_exp_total * (1+input$inflation_margin/100)^(input[[paste0("budget_year",x)]]-1) +
     + ans[[x]]$capital_cost_total
-  
-  ans[[x]]$pb_positive_minus_negative <-  ans[[x]]$pb_positive_total - ans[[x]]$pb_negative_total 
- 
-  ans[[x]]$pb_inflation_adjustment <-  - pmt(ans[[x]]$avg_interest/100, ans[[x]]$planning_horizon, npv(ans[[x]]$avg_interest/100, ans[[x]]$table_cash_flow$revenue_minus_expense[-1])) +
-    - (ans[[x]]$pb_positive_total - ans[[x]]$pb_negative_total + ans[[x]]$capital_cost_total)
-  
-  ans[[x]]$pb_net_annual_impact_before_tax <- ans[[x]]$pb_positive_minus_negative + ans[[x]]$pb_inflation_adjustment
-  
+
+  ans[[paste0(x,"_pb")]]$pb_positive_minus_negative <-  ans[[paste0(x,"_pb")]]$pb_positive_total - ans[[paste0(x,"_pb")]]$pb_negative_total
+
+  ans[[paste0(x,"_pb")]]$pb_inflation_adjustment <-  - pmt(ans[[x]]$avg_interest/100, ans[[x]]$planning_horizon, npv(ans[[x]]$avg_interest/100, ans[[x]]$table_cash_flow$revenue_minus_expense[-1])) +
+    - (ans[[paste0(x,"_pb")]]$pb_positive_total - ans[[paste0(x,"_pb")]]$pb_negative_total + ans[[x]]$capital_cost_total)
+
+  ans[[paste0(x,"_pb")]]$pb_net_annual_impact_before_tax <- ans[[paste0(x,"_pb")]]$pb_positive_minus_negative +
+    + ans[[paste0(x,"_pb")]]$pb_inflation_adjustment 
 })
   
-
 
 observe({ 
 
@@ -44,6 +71,7 @@ observe({
   ans[[x]]$inc_exp_total
   ans[[x]]$capital_cost_total
   
+  browser() 
   isolate({
   # if ( is.null(ans[[x]]$planning_horizon) ) {  return() } 
 
@@ -109,7 +137,7 @@ observe({
           + pmt(input$hurdle_rate/100, ans[[x]]$planning_horizon, 
           npv(input$hurdle_rate/100, ans[[x]]$table_cash_flow$downpayment[-1])+ans[[x]]$table_cash_flow$downpayment[1])
   
-  ans[[x]]$net_annual_impact_after_tax <-  ans[[x]]$pb_net_annual_impact_before_tax + ans[[x]]$tax_revenue_minus_expense +
+  ans[[x]]$net_annual_impact_after_tax <-  ans[[x]]$net_annual_impact_before_tax + ans[[x]]$tax_revenue_minus_expense +
     + ans[[x]]$tax_interest + ans[[x]]$tax_depreciation + ans[[x]]$adj_WACC_interest + ans[[x]]$adj_WACC_hurdle
   
   ans[[x]]$tax_deduction_milking <- 
@@ -129,6 +157,117 @@ observe({
 })
 
 
+
+project_inflation <- function(T, value, inflation, round=0) {
+lapply(c(1:T), function(t) { 
+  value * (1+inflation)^(t-1) }) %>% unlist() %>% round(round)
+}
+
+
+# Creating plots for Partial Budget:
+#   "PB_plot_pos_neg_impact"
+#   "PB_plot_before_tax_impact"
+#   "PB_plot_after_tax_impact"
+#   "PB_plot_after_tax_impact_const"
+lapply(base_profiles, function(x) {
+  
+  output[[paste0("PB_plot_pos_neg_impact",x)]] <- renderGvis({
+      need(!is.null(ans[[x]]$net_annual_impact_after_tax),"NA") %>% validate()
+  
+      n_year <- ans[[x]]$planning_horizon 
+      df <- data.frame(Year=c(1:n_year))
+      df$Increased_Revenue_Total <- project_inflation(n_year, ans[[x]]$inc_rev_total, input$inflation_margin/100)
+      df$Decreased_Expense_Total <- project_inflation(n_year, ans[[x]]$dec_exp_total, input$inflation_margin/100)
+      df$Increased_Expense_Total <- project_inflation(n_year, ans[[x]]$inc_exp_total, input$inflation_margin/100)
+      df$Annualized_Capital_Cost <-  rep(round(ans[[x]]$capital_cost_total), n_year)
+      
+      gvisLineChart(df, xvar="Year", 
+                    yvar=c("Increased_Revenue_Total", "Decreased_Expense_Total",
+                           "Increased_Expense_Total","Annualized_Capital_Cost"),
+                    options=list(
+                      title=paste("Partial Budget Components for", refProfileName(x)), 
+                      vAxis="{title:'Cash flows and annualized values ($)'}",
+                      hAxis="{title:'Year', ticks: [5,10,15,20,25,30] }", 
+                       legend="{position: 'right'}" ,
+                       chartArea ='{width: "50%", height: "65%" }' 
+                    ))
+  })
+  
+  
+  output[[paste0("PB_plot_before_tax_impact",x)]] <- renderGvis({
+    need(!is.null(ans[[x]]$net_annual_impact_after_tax),"NA") %>% validate()
+    
+    n_year <- ans[[x]]$planning_horizon 
+    df <- data.frame(Year=c(1:n_year))
+    df$Positive_Minus_Negative <- project_inflation(n_year, ans[[x]]$positive_total-ans[[x]]$inc_exp_total, 
+                                                    input$inflation_margin/100) - round(ans[[x]]$capital_cost_total) 
+    df$Inflation_Adjustments <-   - pmt(ans[[x]]$avg_interest/100, ans[[x]]$planning_horizon, 
+                                        npv(ans[[x]]$avg_interest/100, ans[[x]]$table_cash_flow$revenue_minus_expense[-1])) +
+      - (project_inflation(n_year, ans[[x]]$positive_total, input$inflation_margin/100) +
+         - project_inflation(n_year, ans[[x]]$inc_exp_total, input$inflation_margin/100)) %>% round() 
+    
+    df$Annualized_Before_Tax_Impact <-  rep(round(ans[[x]]$pb_net_annual_impact_before_tax), n_year) 
+    
+    gvisLineChart(df, xvar="Year", 
+                  yvar=c("Positive_Minus_Negative", "Inflation_Adjustments",
+                         "Annualized_Before_Tax_Impact"),
+                  options=list(
+                    title=paste("Definition of Inflation Adjustments:", refProfileName(x)), 
+                    vAxis="{title:'Cash flows and annualized values ($)'}",
+                    hAxis="{title:'Year', ticks: [5,10,15,20,25,30] }", 
+                    legend="{position: 'right'}" ,
+                    chartArea ='{width: "50%", height: "65%" }' 
+                  ))
+  }) 
+  
+  output[[paste0("PB_plot_after_tax_impact",x)]] <- renderGvis({
+    need(!is.null(ans[[x]]$net_annual_impact_after_tax),"NA") %>% validate()
+    
+    n_year <- ans[[x]]$planning_horizon 
+    df <- data.frame(Year=c(0:n_year))
+    df$Before_Tax_Cashflow <-  round(ans[[x]]$table_cash_flow$before_tax_cash_flow)
+    df$Tax_Operating_Income <- round(ans[[x]]$table_cash_flow$operating_income * input$tax_rate/100)
+    df$Deduction_Interest <-  round(-ans[[x]]$table_cash_flow$interest_total * input$tax_rate/100)
+    df$Deduction_Depreciation <- round(-ans[[x]]$table_cash_flow$depreciation * input$tax_rate/100)
+    df$After_Tax_Cashflow <- round(ans[[x]]$table_cash_flow$after_tax_cash_flow)
+    
+    gvisLineChart(df, xvar="Year", 
+                  yvar=c("Before_Tax_Cashflow", "Tax_Operating_Income",
+                         "Deduction_Interest","Deduction_Depreciation","After_Tax_Cashflow"),
+                  options=list(
+                    title=paste("Impact of Tax and Tax Deductions:", refProfileName(x)), 
+                    vAxis="{title:'Cash flows ($)'}",
+                    hAxis="{title:'Year', ticks: [5,10,15,20,25,30] }", 
+                    legend="{position: 'right'}" ,
+                    chartArea ='{width: "50%", height: "65%" }' 
+                  ))
+  })
+  
+  output[[paste0("PB_plot_after_tax_impact_const",x)]] <- renderGvis({
+    need(!is.null(ans[[x]]$net_annual_impact_after_tax),"NA") %>% validate()
+    
+    n_year <- ans[[x]]$planning_horizon 
+    df <- data.frame(Year=c(1:n_year))
+    df$Before_Tax_Cashflow <-  rep(round(ans[[x]]$net_annual_impact_before_tax), n_year)
+    df$Tax_Operating_Income <- rep(round(ans[[x]]$tax_revenue_minus_expense),n_year)
+    df$Deduction_Interest <-   rep(round(ans[[x]]$tax_interest),n_year)
+    df$Deduction_Depreciation <- rep(round(ans[[x]]$tax_depreciation),n_year)
+    df$After_Tax_Cashflow <-  rep(round(ans[[x]]$net_annual_impact_after_tax), n_year)
+    
+    gvisLineChart(df, xvar="Year", 
+                  yvar=c("Before_Tax_Cashflow", "Tax_Operating_Income",
+                         "Deduction_Interest","Deduction_Depreciation","After_Tax_Cashflow"),
+                  options=list(
+                    title=paste("Annualized Cash Flows:", refProfileName(x)), 
+                    vAxis="{title:'Annualized values ($)'}",
+                    hAxis="{title:'Year', ticks: [5,10,15,20,25,30] }", 
+                    legend="{position: 'right'}" ,
+                    chartArea ='{width: "50%", height: "65%" }' 
+                  ))
+  })
+  
+})  
+  
 # 
 # 
 # 

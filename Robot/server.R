@@ -13,66 +13,46 @@ source("global_parameters.R")
 default_data_1 <- read.xlsx("www/default_user_input_data.xlsx", sheetIndex = 1) 
 default_data_2 <- read.xlsx("www/default_user_input_data.xlsx", sheetIndex = 2) 
 
+## Load the default setting values for investment profiles 
+# INSERT CODES HERE
+
 
 base_profiles <- c("Robots","Retrofit","New")
 combo_profiles <- c("RetrofitRobots","RetrofitNew")
 
+refProfileName <-  function(x) {
+  switch(x, 
+         "Robots"="Robots",
+         "Retrofit"="Retrofit Parlors",
+         "New"="New Parlors",
+         "RetrofitRobots"="Retrofit/Robots",
+         "RetrofitNew"="Retrofit/New"
+  )
+}
 
 shinyServer(function(input, output, session) { 
    
    # All calculations results are stored in "ans" as lists for various profiles  
    ans <- reactiveValues() 
-   lapply(base_profiles, function(x) {x <- list()} )
+   
+   ans[['others']] <- list()
+   
+   browser()
 
-# 
-#    lapply(base_profiles, function(x) {
-#    observe({
-#      # Calculations given a profile start here  
-#      herd_increase <- input[[paste0("herd_increase",x)]]
-#      ans[[x]]$herd_size2 <- input$herd_size + herd_increase
-#    })
-#    })
-   
-   
-#    output$herd_size2 <- renderUI({ 
-#      lapply(base_profiles, function(x) h5(ans[[x]]$herd_size2) ) %>% div()
-#    }) 
-   
-   
-#    # Show/hide the second set of robots/parlors 
-#    lapply(base_profiles, function(x) {
-#    observe({
-#      if (input[[paste0("n_sets",x)]]==2) { 
-#        shinyjs::show(paste0(x,2))
-#      } else {
-#        shinyjs::hide(paste0(x,2))
-#      }
-#    })
-#    })
-   
-   
+  # ### Does rv have to be reactiveValue?? 
+  # # Create a list of reactive values 
+  # rv <- reactiveValues(recalculate=0)
+  # 
+  # # Create a list of reactive values for robustness checks
+  # rb <- reactiveValues(c_val=20)
+  # 
+  # # Create a list of reactive values for robots vs parlors
+  # rp <- reactiveValues()
+  # 
+  # # data tables to be downloaded
+  # df <- reactiveValues()
+  
 
-     
-#    output$herd_increase_pr4 <- renderUI({ 
-#      h5(input$herd_increase_pr4) 
-#    }) 
-   
-   
-  ### Does rv have to be reactiveValue?? 
-  # Create a list of reactive values 
-  rv <- reactiveValues(recalculate=0)
-  
-  # Create a list of reactive values for robustness checks
-  rb <- reactiveValues(c_val=20)
-  
-  # Create a list of reactive values for robots vs parlors
-  rp <- reactiveValues()
-  
-  # data tables to be downloaded
-  df <- reactiveValues()
-  
-  browser()
-  
   # ----------- Functions: some of them depend on local variables  -----------
   source("helper.R",local=TRUE)
   

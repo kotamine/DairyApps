@@ -21,7 +21,7 @@ lapply(base_profiles, function(x) {
     
     # Calculations given a profile 
     
-    # browser()
+     browser()
     # making it reactive to the following variables; 
     input$inflation_labor
     input$inflation_margin
@@ -47,7 +47,6 @@ lapply(base_profiles, function(x) {
       (input[[paste0("useful_years",x)]] + input[[paste0("yr_system1",x)]]) *(input[[paste0("n_sets",x)]] == 2) 
     
     ans[[x]]$planning_horizon <- ans[[x]]$n_sets * input[[paste0("useful_years",x)]] + input[[paste0("yr_system1",x)]] 
-    updateSliderInput(session, paste0("budget_year",x), "Select budget year",value=1, min=1, max=ans[[x]]$planning_horizon)
     
     ans[[x]]$salvage_milking_fv1 <- input[[paste0("salvage_milking1",x)]] *
       (1+input$inflation_robot/100)^(input[[paste0("useful_years",x)]] + input[[paste0("yr_system1",x)]])
@@ -208,6 +207,15 @@ lapply(base_profiles, function(x) {
     
     ans[[x]]$negative_total <- ans[[x]]$inc_exp_total + ans[[x]]$capital_cost_total
     
+    # Inflation adjustment for year 1
+    ans[[x]]$inflation_adjustment <-  - pmt(ans[[x]]$avg_interest/100, ans[[x]]$planning_horizon,
+                                            npv(ans[[x]]$avg_interest/100, ans[[x]]$table_cash_flow$revenue_minus_expense[-1])) +
+                                      - (ans[[x]]$positive_total - ans[[x]]$negative_total + ans[[x]]$capital_cost_total)
+    
+    ans[[x]]$net_annual_impact_before_tax <- ans[[x]]$positive_total - ans[[x]]$negative_total + ans[[x]]$inflation_adjustment
+        
+    
+    
     # # This is used for alerting the base-value change in sensitivity and scenario analysis  
     # createAlert(session, "c_input_change", "ref_c_input_change", 
     #             content = "New data inputs. 
@@ -237,13 +245,6 @@ lapply(base_profiles, function(x) {
 })
 
 
-# lapply(base_profiles, function(x) {
-#   positive_total <- reactive({
-#     ans[[x]]$inc_rev_total * (1+input$inflation_margin/100)^(input$budget_year-1) +
-#       + ans[[x]]$dec_exp_total *  (1+input$inflation_labor/100)^(input$budget_year-1)
-#   })
-# })
-# 
 
 
 

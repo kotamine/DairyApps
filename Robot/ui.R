@@ -13,6 +13,8 @@ suppressPackageStartupMessages(library(XLConnect))
 source(file.path("ui_files","ui_functions.R"), local=TRUE)
 source(file.path("ui_files", "ui_partial_budget.R"), local=TRUE)  
 
+
+
 base_profiles <- c("Robots","Retrofit","New")
 combo_profiles <- c("RetrofitRobots","RetrofitNew")
 
@@ -56,14 +58,12 @@ shinyUI(
                                     helpText("This assumes first Retrofit Parlors and then New Parlors."),
                                     helpText("Values are taken from the two profiles.")),
                            tabPanel("Summary",
-                                    helpText("Summary")),
-                          tabPanel("Test",
-                                     uiOutput("herd_size2"), br(), br()
-                                 )
+                                    helpText("Summary"))
                            )
-      # ), 
-#       tabPanel("Test",
-#                uiOutput("herd_increase_pr4")
+       ), 
+      tabPanel("Test",
+               actionButton("test1","test button"),
+               uiOutput("test1_out")
 
 # tabsetPanel("Investment",
 #             tabPanel("Robot",
@@ -119,7 +119,9 @@ shinyUI(
                                                      helpText("Values are taken from the two profiles.")),
                                             tabPanel("Retrofit/New",  value=combo_profiles[2],
                                                      helpText("This assumes first Retrofit Parlors and then New Parlors."),
-                                                     helpText("Values are taken from the two profiles."))
+                                                     helpText("Values are taken from the two profiles.")),
+                                            tabPanel("Summary",
+                                                     helpText("Summary"))
                                 )
                # ) 
       ),
