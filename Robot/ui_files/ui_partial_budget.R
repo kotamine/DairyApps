@@ -1,7 +1,7 @@
 # ---------- Partial Budget Analysis -----------
 
 
-partialBudget <- function(x) {   
+uiPartialBudget <- function(x) {   
   div(
   fluidRow(column(6, offset=3,
                   div(wellPanel(
@@ -124,7 +124,7 @@ partialBudget <- function(x) {
                              column(width=3, uiOutput(paste0("capital_cost_total",refProfile(x))))                         
                     ), br(), 
                     fluidRow(column(width=8, 
-                                    h5("Total negative impacts*")),
+                                    h5("Total negative impacts")),
                              column(width=3,  offset=1, uiOutput(paste0("pb_negative_total",refProfile(x))))                        
                     )
                   ), br() 
@@ -250,9 +250,13 @@ fluidRow(column(width=8, offset=2,
                 h5(paste("Breakeven Wage:", refProfile(x))),
                 helpText("Primary benefit of installing Robots is labor saving. "),
                 helpText("We define breakeven wage as a sequence of labor wage rates over the planning horizon   
-                        that makes ", em("After-tax Net Annual Impact"), " zero. We condier two cases of such a wage sequence:",br(), 
-                         "(a) the starting wage rate while keeping the wage inflation fixed", br(), 
-                         "(b) the wage inflation/deflation rate while keeping the starting wage rate fixed. ")
+                        that makes ", em("After-tax Net Annual Impact"), " zero. We condier two cases of such a wage sequence:"), 
+                fluidRow(column(8, helpText("(a) the starting wage rate while keeping the wage inflation fixed:")),
+                         column(4, uiOutput(paste0("bw_wage_after_tax",refProfile(x))))
+                         ),br(), 
+                fluidRow(column(8, helpText( "(b) the wage inflation/deflation rate while keeping the starting wage rate fixed: ")),
+                         column(4, uiOutput(paste0("bw_wage_inflation_after_tax",refProfile(x))))
+                         ) 
 )),
 fluidRow(column(width=10, offset=1, 
                 htmlOutput(paste0("breakeven_chart",x)) 

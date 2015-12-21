@@ -422,3 +422,176 @@ f <- function() {
 f()
 ls()
 
+
+
+
+
+
+computeSquares <- function(n,messUpVisibility) {
+  # pre-allocate v
+  # (doesn't actually help!)
+  v <- 1:n
+  if(messUpVisibility) {
+    vLast <- v
+  }
+  vv <- 0
+  # print details of v
+  .Internal(inspect(v))
+  for(i in 1:n) {
+    v[[i]] <- i^2
+    if(messUpVisibility) {
+      vLast <- vv
+      vLast2 <- v
+    }
+    # print details of v
+    .Internal(inspect(v))
+  }
+  v
+}
+
+computeSquares(5,TRUE)
+
+
+power <- function(exponent) {
+  function(x) {
+    x ^ exponent 
+    }
+}
+
+square <- power(2)
+square(3)
+cube <- power(3)
+cube(3)
+
+
+new_counter <- function() {
+  i <- 0
+  function() {
+    i <<- i + 1
+    i
+  } 
+}
+counter_one <- new_counter()
+counter_two <- new_counter()
+
+counter_one()
+counter_one()
+counter_two()
+
+
+
+
+
+
+x <- 1:10
+funs <- list(
+  sum = sum,
+  mean = mean,
+  median = median
+)
+lapply(funs, function(f) f(x, na.rm = TRUE))
+
+
+
+midpoint <- function(f, a, b) {
+  (b - a) * f((a + b) / 2)
+}
+
+trapezoid <- function(f, a, b) {
+  (b - a) / 2 * (f(a) + f(b))
+}
+
+newton_cotes <- function(coef, open = FALSE) {
+  n <- length(coef) + open
+  function(f, a, b) {
+    pos <- function(i) a + i * (b - a) / n
+    points <- pos(seq.int(0, length(coef) - 1))
+    (b - a) / sum(coef) * sum(f(points) * coef)
+  }
+}
+
+
+composite <- function(f, a, b, n = 10, rule) {
+  points <- seq(a, b, length = n + 1)
+  area <- 0
+  for (i in seq_len(n)) {
+    area <- area + rule(f, points[i], points[i + 1])
+  }
+  area
+}
+
+
+boole <- newton_cotes(c(7, 32, 12, 32, 7))
+milne <- newton_cotes(c(2, -1, 2), open = TRUE)
+
+composite(sin, 0, pi, n = 10, rule = milne)
+rule <- c(midpoint, trapezoid, boole, milne)
+lapply(rule, function(loc_rule) composite(sin, 0, pi, n = 10, rule = loc_rule))
+
+
+# rlt <- data.frame(matrix(NA,ncol=4,nrow=1))
+# rlt[] <- lapply(rule, function(loc_rule) composite(sin, 0, pi, n = 10, rule = loc_rule))
+
+
+where <- function(f, x) {
+  vapply(x, f, logical(1))
+}
+
+
+poisson_nll <- function(x) {
+  n <- length(x)
+  sum_x <- sum(x)
+  function(lambda) {
+    n * lambda - sum_x * log(lambda) # + terms not involving lambda
+  }
+}
+
+
+failwith <- function(default = NULL, f, quiet = FALSE) {
+  force(f)
+  function(...) {
+    out <- default
+    try(out <- f(...), silent = quiet)
+    out
+  }
+}
+
+# If any model fails, all models fail to fit:
+models <- lapply(datasets, glm, formula = y ~ x1 + x2 * x3)
+# If a model fails, it will get a NULL value
+models <- lapply(datasets, failwith(NULL, glm),
+                 formula = y ~ x1 + x2 * x3)
+
+# remove failed models (NULLs) with compact
+ok_models <- compact(models)
+# extract the datasets corresponding to failed models
+failed_data <- datasets[vapply(models, is.null, logical(1))]
+
+
+
+and <- function(f1, f2) {
+  force(f1); force(f2)
+  function(...) {
+    f1(...) && f2(...)
+  }
+}
+
+or <- function(f1, f2) {
+  force(f1); force(f2)
+  function(...) {
+    f1(...) || f2(...)
+  }
+}
+
+not <- function(f) {
+  force(f)
+  function(...) {
+    !f(...)
+  }
+}
+
+Filter(or(is.character, is.factor), iris)
+Filter(not(is.numeric), iris)
+
+
+

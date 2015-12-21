@@ -1,55 +1,38 @@
 # ----- Dashboard -----
-fluidRow(
+
+uiDashboard <- function(x) { 
+div( 
+  fluidRow(
   column(4,
          fluidRow(
+           h5("Results"),
            column(6,
-                  uiOutput("IOFC"),
-                  radioButtons("IOFC",NULL,choices=c("per cow","per cwt"), selected="per cwt")),
+                  uiOutput(paste0("IOFC",refProfile(x))),
+                  radioButtons(paste0("IOFC",NULL,choices=c("per cow","per cwt"), selected="per cwt")),
            column(6,
-                  uiOutput("NAI"),
-                  radioButtons("NAI",NULL,
-                               choices=c("before tax",
-                                         "after tax"),
-                               selected="after tax")) 
+                  uiOutput(paste0("NAI",refProfile(x)))),
+                  radioButtons(paste0("NAI",NULL, choices=c("before tax","after tax"),selected="after tax")) 
          ),
-         fluidRow(
-           conditionalPanel("input.dash_option!='chart'",
-                            column(6,
-                                   div(uiOutput("breakeven"),align="center"),
-                                   radioButtons("breakeven_option",NULL,
-                                                choices=c("wage",
-                                                          "wage inflation"),
-                                                selected="wage")),
-                            column(6,
-                                   div( uiOutput("cashflow"), align="center")
-                            )
-           ),
-           conditionalPanel("input.dash_option=='chart'",
-                            tabsetPanel(
-                              tabPanel("Cash Flow",
-                                       htmlOutput("cashflow2")),
-                              tabPanel("Breakeven Wage",
-                                       htmlOutput("breakeven2"))
-                            ) 
-           ),
-           br(), div( radioButtons("dash_option",NULL, inline=TRUE,
-                                   choices=c("chart",
-                                             "numbers"),
-                                   selected="chart"), align="center")
+          htmlOutput(paste0("cashflow_chart",refProfile(x)))
          )),
   column(8,
          div(fluidRow(
+           h5("Components"),
            column(4,
-                  plotOutput("plot1", height = 200),
-                  uiOutput("milk_feed")),
+                  plotOutput(paste0("plot1",refProfile(x)), height = 200),
+                  uiOutput(paste0("milk_feed",refProfile(x)))),
            column(4,
-                  plotOutput("plot2", height = 200),
-                  uiOutput("labor_repair")),
+                  plotOutput(paste0("plot2",refProfile(x)), height = 200),
+                  uiOutput(paste0("labor_repair",refProfile(x)))),
            column(4,
-                  plotOutput("plot3", height = 200),
-                  uiOutput("captial_cost"))
+                  plotOutput(paste0("plot3",refProfile(x)), height = 200),
+                  uiOutput(paste0("captial_cost",refProfile(x))))
          ),
-         fluidRow(column(6,uiOutput("misc")),
-                  column(6,uiOutput("inflation")))
+         fluidRow(column(6,uiOutput(paste0("misc",refProfile(x)))),
+                  column(6,uiOutput(paste0("inflation",refProfile(x))))
          ), align="center")
+  )
+) 
 )
+} 
+

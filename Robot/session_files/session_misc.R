@@ -18,6 +18,16 @@ shinyjs::onclick("PB_plot_show_2",
                  shinyjs::toggle(id="id_PB_plot_show_2", anim = TRUE)
 )
 
+# Show/hide Cash Flow formula
+shinyjs::onclick("CF_formula_show_1",
+                 shinyjs::toggle(id="id_CF_formula_show_1", anim = TRUE)
+)
+
+shinyjs::onclick("CF_formula_show_2",
+                 shinyjs::toggle(id="id_CF_formula_show_2", anim = TRUE)
+)
+
+
 observeEvent(input$coeff_reset,{ 
   updateNumericInput(session, "milk_cow_coeff",NULL,value=0.4,min=0,step=0.1)
   updateNumericInput(session, "milk_fat",NULL,value=3.65,min=0,step=0.2)
