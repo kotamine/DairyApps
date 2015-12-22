@@ -223,15 +223,15 @@ lapply(base_profiles, function(x) {
   
 output[[paste0("IOFC",x)]] <- renderUI({
   if (input$IOFC=="per cow") {
-    dash_IOFC(ans[[paste0(x,"_da")]]$IOFC, ans[[paste0(x,"_da")]]$IOFC2, basis=input$IOFC)
+    dash_IOFC(ans[[paste0(x,"_da")]]$IOFC, ans[[paste0(x,"_da")]]$IOFC2, basis=input$IOFC, x)
   } else {
-    dash_IOFC(ans[[paste0(x,"_da")]]$IOFC_cwt, ans[[paste0(x,"_da")]]$IOFC2_cwt, basis=input$IOFC)
+    dash_IOFC(ans[[paste0(x,"_da")]]$IOFC_cwt, ans[[paste0(x,"_da")]]$IOFC2_cwt, basis=input$IOFC, x)
   }
 })  
 
 
 output[[paste0("NAI",x)]] <- renderUI({ 
-  dash_NAI(ans[[paste0(x,"_da")]]$NAI,cutoff=0)
+  dash_NAI(ans[[paste0(x,"_da")]]$NAI, x,cutoff=0)
 }) 
 
 output[[paste0("milk_feed",x)]] <- renderUI({
@@ -276,17 +276,17 @@ output[[paste0("inflation",x)]] <- renderUI({
 
 output[[paste0("plot1",x)]] <- renderPlot({ 
   dash_plot1(ans[[paste0(x,"_da")]]$feed_current,ans[[paste0(x,"_da")]]$feed_robot,
-             ans[[paste0(x,"_da")]]$milk_current,ans[[paste0(x,"_da")]]$milk_robot)
+             ans[[paste0(x,"_da")]]$milk_current,ans[[paste0(x,"_da")]]$milk_robot, x)
 })
 
 output[[paste0("plot2",x)]]<- renderPlot({
   dash_plot2(ans[[paste0(x)]]$inc_exp_repair,ans[[paste0(x,"_da")]]$labor_current,
-             ans[[paste0(x,"_da")]]$labor_robot) 
+             ans[[paste0(x,"_da")]]$labor_robot, x) 
 })
 
 output[[paste0("plot3",x)]] <- renderPlot({  
   dash_plot3(ans[[paste0(x,"_da")]]$capital_recovery_robot2,ans[[paste0(x,"_da")]]$capital_recovery_housing2,
-             ans[[paste0(x)]]$cost_downpayment, ans[[x]]$salvage_milking_PV)  
+             ans[[paste0(x)]]$cost_downpayment, ans[[x]]$salvage_milking_PV, x)  
 })
 
 output[[paste0("cashflow_small_chart",x)]] <- renderGvis({

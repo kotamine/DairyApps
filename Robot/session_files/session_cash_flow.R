@@ -14,7 +14,7 @@
 
 
 ## ------ Prepares cash flow, debt, and depreciation tables -------
-isolate({
+
   
    # browser()
   
@@ -164,5 +164,5 @@ isolate({
   ans[[x]]$ROI <-  ans[[x]]$NPV/ (ans[[x]]$total_investment + ans[[x]]$cost_milking2/(1+rate)^
                                     (input[[paste0("useful_years",x)]] + input[[paste0("yr_system1",x)]]))
   
-})
+
 

@@ -32,9 +32,10 @@ refProfileName <-  function(x) {
 
 shinyServer(function(input, output, session) { 
    
-   # All calculations results are stored in "ans" as lists for various profiles  
+  # All calculations results are stored in "ans" as lists for various profiles  
+  # This helps reactive rending of many variables
    ans <- reactiveValues() 
-   
+
    browser()
 
 

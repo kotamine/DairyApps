@@ -186,7 +186,7 @@ debt_table <- function(loan, interest_rate, loan_period,
 
 # ----- dashboard features -----
 
-dash_IOFC <- function(IOFC, IOFC2, basis,
+dash_IOFC <- function(IOFC, IOFC2, basis, x, 
                       cutoffs=NULL,
                       difference=NULL) {
   validate( 
@@ -229,8 +229,8 @@ dash_IOFC <- function(IOFC, IOFC2, basis,
 
 
 
-dash_NAI <- function(NAI,cutoff=0, difference=NULL) {
-  
+dash_NAI <- function(NAI, x,cutoff=0, difference=NULL) {
+  browser()
   validate( 
     need(!is.na(NAI), 
          "NA")
@@ -258,7 +258,7 @@ dash_NAI <- function(NAI,cutoff=0, difference=NULL) {
 
 
 
-dash_plot1 <- function(feed_current,feed_robot,milk_current,milk_robot) { 
+dash_plot1 <- function(feed_current,feed_robot,milk_current,milk_robot, x) { 
   
   validate( 
     need(!(is.na(feed_current) | is.na(feed_robot) | 
@@ -296,7 +296,7 @@ dash_plot1 <- function(feed_current,feed_robot,milk_current,milk_robot) {
     )
 }
 
-dash_plot2 <- function(inc_exp_repair,labor_current,labor_robot) {
+dash_plot2 <- function(inc_exp_repair,labor_current,labor_robot, x) {
   
   validate( 
     need(!(is.na(inc_exp_repair) | is.na(labor_current) | 
@@ -336,19 +336,19 @@ dash_plot2 <- function(inc_exp_repair,labor_current,labor_robot) {
 }
 
 dash_plot3 <- function(inc_exp_capital_recovery,capital_recovery_housing,
-                       cost_downpayment, robot_end_PV) { 
+                       cost_downpayment, milking_end_PV, x) { 
   
   validate( 
     need(!(is.na(inc_exp_capital_recovery) | is.na(capital_recovery_housing) | 
-             is.na(cost_downpayment) | is.na(robot_end_PV)), 
+             is.na(cost_downpayment) | is.na(milking_end_PV)), 
          "NA")
   )
   
-  a <- data.frame("vars"=c("capital_robot","capital_housing","cost_downpayment", "robot_end_PV"), 
+  a <- data.frame("vars"=c("capital_robot","capital_housing","cost_downpayment", "milking_end_PV"), 
                   "values"=c(inc_exp_capital_recovery,capital_recovery_housing,
-                             cost_downpayment, robot_end_PV)/1000,
+                             cost_downpayment, -milking_end_PV)/1000,
                   "values_shadow"=c(inc_exp_capital_recovery,capital_recovery_housing,
-                                    cost_downpayment, robot_end_PV)/1000,
+                                    cost_downpayment, -milking_end_PV)/1000,
                   "type"= c(1,1,1,1))  
   
   a$label <- apply(cbind(a$values),2,round,0)
@@ -363,7 +363,7 @@ dash_plot3 <- function(inc_exp_capital_recovery,capital_recovery_housing,
               vjust=0.5, hjust=1.2, color="white", position = position_dodge(0.9), size=5) +
     theme_minimal() + 
     scale_x_discrete( 
-      limits=c("robot_end_PV","cost_downpayment", "capital_housing","capital_robot"),   
+      limits=c("milking_end_PV","cost_downpayment", "capital_housing","capital_robot"),   
       labels=c(paste(refProfileName(x),"\n Salvage Value"), "Downpayment \n Capital Cost", 
                "Housing \n Capital Cost",paste(refProfileName(x),"\n Capital Cost"))    
     ) + 

@@ -32,16 +32,54 @@
     browser()
     
     input$NAI
-    ans[[x]]$net_annual_impact_after_tax
+    need(length(ans[[x]]$net_annual_impact_before_tax)>0, "NA") %>% validate()
     
     isolate({
+      
+      
+      # cost of cash flows for interest payments (evaluated at separate instests for milking and housing)
+      ans[[x]]$interest_at_interest <-  pmt(input[[paste0("r_milking1",x)]]/100, ans[[x]]$planning_horizon,
+                                            npv(input[[paste0("r_milking1",x)]]/100, ans[[x]]$table_debt$milking_interest)) +
+        + pmt(input[[paste0("r_housing",x)]]/100, ans[[x]]$planning_horizon,
+              npv(input[[paste0("r_housing",x)]]/100, ans[[x]]$table_debt$barn_interest))
+      
+      ans[[x]]$tax_interest <-  -input$tax_rate/100 * ans[[x]]$interest_at_interest
+      
+      
+      ans[[x]]$principal_at_interest <-  pmt(input[[paste0("r_milking1",x)]]/100, ans[[x]]$planning_horizon,
+                                             npv(input[[paste0("r_milking1",x)]]/100, ans[[x]]$table_debt$milking_principal)) +
+        + pmt(input[[paste0("r_housing",x)]]/100, ans[[x]]$planning_horizon,
+              npv(input[[paste0("r_housing",x)]]/100, ans[[x]]$table_debt$barn_principal))
+      
+      
+      # cost of depreciation (evaluated at separate instests for milking and housing)
+      ans[[x]]$depreciation_at_interest <-
+        (pmt(input[[paste0("r_milking1",x)]]/100, ans[[x]]$planning_horizon,
+             npv(input[[paste0("r_milking1",x)]]/100, ans[[x]]$table_depreciation$depreciation_milking_system)) +
+           + pmt(input[[paste0("r_housing",x)]]/100, ans[[x]]$planning_horizon,
+                 npv(input[[paste0("r_housing",x)]]/100, ans[[x]]$table_depreciation$depreciation_housing)))
+      
+      ans[[x]]$tax_depreciation <- -input$tax_rate/100 * ans[[x]]$depreciation_at_interest
+      
+      ans[[x]]$tax_deduction_milking <-
+        -input$tax_rate/100 *(pmt(ans[[x]]$avg_interest/100, ans[[x]]$planning_horizon,
+                                  npv(ans[[x]]$avg_interest/100, ans[[x]]$table_depreciation$depreciation_robot))
+                              +  pmt(ans[[x]]$avg_interest/100, ans[[x]]$planning_horizon,
+                                     npv(ans[[x]]$avg_interest/100, ans[[x]]$table_debt$robot_interest)))
+      
+      ans[[x]]$tax_deduction_housing <-
+        -input$tax_rate/100 *(pmt(ans[[x]]$avg_interest/100, ans[[x]]$planning_horizon,
+                                  npv(ans[[x]]$avg_interest/100, ans[[x]]$table_depreciation$depreciation_housing))
+                              +  pmt(ans[[x]]$avg_interest/100, ans[[x]]$planning_horizon,
+                                     npv(ans[[x]]$avg_interest/100, ans[[x]]$table_debt$barn_interest)))
+      
       
       tax_factor <- (1-(input$NAI=="after tax")*input$tax_rate/100)
       
       if (input$NAI=="before tax") {
         ans[[paste0(x,"_da")]]$NAI <- ans[[x]]$net_annual_impact_before_tax
       } else {
-        ans[[paste0(x,"_da")]]$NAI <- ans[[x]]$net_annual_impact_after_tax
+        ans[[paste0(x,"_da")]]$NAI <- ans[[x]]$ANPV 
       }
       
       ans[[paste0(x,"_da")]]$IOFC <- (input$milk_cow_day * input$price_milk/100 - ans[[x]]$DMI_day * input$cost_DM )*330 * tax_factor  
@@ -90,6 +128,7 @@
       
       ans[[paste0(x,"_da")]]$misc <- ans[[paste0(x,"_da")]]$NAI - (ans[[paste0(x,"_da")]]$milk_feed + 
                             + ans[[paste0(x,"_da")]]$labor_repair + ans[[paste0(x,"_da")]]$capital + ans[[paste0(x,"_da")]]$inflation) 
+      
       
       ans[[paste0(x,"_da")]]$capital_recovery_robot2 <- ans[[x]]$capital_recovery_milking +
         - (input$NAI=="after tax")*ans[[x]]$tax_deduction_milking

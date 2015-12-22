@@ -127,9 +127,6 @@ div(
                             fluidRow(column(width=8, helpText("Milking & chore labor rate per hour (%)")),
                                      column(width=4, numericInput("inflation_labor",NULL,value=1.5,step=0.25))
                             ),
-#                             fluidRow(column(width=8, helpText("Interest rate required on the overall investment (%)")),
-#                                      column(width=4,  numericInput("interest",NULL,value=4.0,min=0.0,step=0.1))
-#                             ),
                             fluidRow(column(width=8, helpText("Hurdle rate for equity (%)")),   
                                      column(width=4, numericInput("hurdle_rate",NULL,value=4, min=0, step=.1))
                             ),

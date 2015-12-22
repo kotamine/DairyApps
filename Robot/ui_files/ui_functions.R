@@ -52,12 +52,20 @@ changeVariablesCapital<- function(x) {
                           column(width=4, numericInput(paste0("n_robot",refProfile(x)),NULL,value=2,min=0,step=1))
                  ),
                  fluidRow(column(width=8, helpText("Total investment for", x, "alone ($)")),
-                          column(width=4, uiOutput(paste0("cost_milking",refProfile(x))))
-                 )) 
+                          column(width=4, uiOutput(paste0("cost_milking1",refProfile(x))))
+                 ),  
+                 shinyjs::hidden(numericInput(paste0("cost_parlors",refProfile(x)),
+                                              NULL,value=180000,min=50000,step=10000)))       
                } else {
+                 div(shinyjs::hidden(numericInput(paste0("cost_robot",refProfile(x)),
+                                                                           NULL,value=180000,min=50000,step=10000)
+                 ),   
+                 shinyjs::hidden(numericInput(paste0("n_robot",refProfile(x)),NULL,value=2,min=0,step=1)
+                 ),  
                  fluidRow(column(width=8, helpText(paste("Cost for", x, "($)"))),
                           column(width=4, numericInput(paste0("cost_parlors",refProfile(x)),
                                                        NULL,value=180000,min=50000,step=10000))
+                 )
                  )
                }
              }),
