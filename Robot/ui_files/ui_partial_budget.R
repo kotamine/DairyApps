@@ -247,20 +247,23 @@ shinyjs::hidden(
 
 fluidRow(column(width=8, offset=2,
                 hr(),
-                h5(paste("Breakeven Wage:", refProfile(x))),
-                helpText("Primary benefit of installing Robots is labor saving. "),
+                h5(paste("Breakeven Wage:", x)),
+                helpText("The primary benefit of installing Robots is labor saving, and its
+                         importance depends on wage rate. Here, we ask under what wage rate it is sensible to invest in", x, ".",
+                         "If investing in", x, "brings labor saving, a higher wage rate than the breakeven wage 
+                         implies increased profits, while a lower wage rate implies decreased profits."),
                 helpText("We define breakeven wage as a sequence of labor wage rates over the planning horizon   
                         that makes ", em("After-tax Net Annual Impact"), " zero. We condier two cases of such a wage sequence:"), 
-                fluidRow(column(8, helpText("(a) the starting wage rate while keeping the wage inflation fixed:")),
-                         column(4, uiOutput(paste0("bw_wage_after_tax",refProfile(x))))
+                fluidRow(column(9,offset=1, helpText("(a) The starting wage rate while keeping the wage inflation fixed:")),
+                         column(2, uiOutput(paste0("bw_wage_after_tax",refProfile(x))))
                          ),br(), 
-                fluidRow(column(8, helpText( "(b) the wage inflation/deflation rate while keeping the starting wage rate fixed: ")),
-                         column(4, uiOutput(paste0("bw_wage_inflation_after_tax",refProfile(x))))
+                fluidRow(column(9,offset=1, helpText( "(b) The wage inflation/deflation rate while keeping the starting wage rate fixed: ")),
+                         column(2, uiOutput(paste0("bw_wage_inflation_after_tax",refProfile(x))))
                          ) 
 )),
 fluidRow(column(width=10, offset=1, 
                 htmlOutput(paste0("breakeven_chart",x)) 
-                )), 
+                )), br(), br(), 
   #tags$a(href ="#data_entry",  #"#tab-9037-2",
   ## I haven't been able to set a link to a tab. It seems compliated in Shiny.
   div(id="goData", class="well", style="background-color: gray; color:white;", 

@@ -595,3 +595,11 @@ Filter(not(is.numeric), iris)
 
 
 
+abc <- list()
+for (a in c(1:3)) {
+  
+}
+
+
+
+

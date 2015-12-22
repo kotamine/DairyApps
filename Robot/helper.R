@@ -12,6 +12,10 @@ my_add_row <- function(A,a) {
   data.frame(A)
 }
 
+round_pct <- function(x, digits=2) { 
+  paste0(round(x,digits),"%")
+} 
+
 
 formatcomma <- function(x, digits=NULL, dollar=FALSE) {
   if (length(x)==0) { return(NA) }
@@ -183,7 +187,7 @@ debt_table <- function(loan, interest_rate, loan_period,
 # ----- dashboard features -----
 
 dash_IOFC <- function(IOFC, IOFC2, basis,
-                      milk_cow_day, milk_change, cutoffs=NULL,
+                      cutoffs=NULL,
                       difference=NULL) {
   validate( 
     need(!(is.na(IOFC) | is.na(IOFC2)), 
@@ -214,7 +218,7 @@ dash_IOFC <- function(IOFC, IOFC2, basis,
   if (is.null(difference)) {
     div(class="well", style=style,  align="center",
         diff  %>% formatdollar2(digit) %>% strong() %>% h3(),
-        h5(IOFC_unit), h5("under", robot_or_parlor()))
+        h5(IOFC_unit), h5("under", refProfileName(x)))
   } 
   else {
     div(class="well", style=style,  align="center",
@@ -243,7 +247,7 @@ dash_NAI <- function(NAI,cutoff=0, difference=NULL) {
     div(class="well", style=style, align="center", 
         NAI %>% formatdollar2() %>% strong() %>% h3(),
         h5("Net Impact ($/year)"),
-        h5("under", robot_or_parlor()))
+        h5("under", refProfileName(x)))
   }  
   else {
     div(class="well", style=style, align="center",
@@ -274,7 +278,7 @@ dash_plot1 <- function(feed_current,feed_robot,milk_current,milk_robot) {
     #   ggtitle("Milk vs Feed")+ 
     geom_text(aes(label=label, ymax=max(values)*1.1), 
               vjust=0.5, hjust=1.2, color="white", position = position_dodge(0.9), size=5) +
-    scale_fill_brewer(palette="Paired", breaks=c(1,0), labels=c(robot_or_parlor(),"Current")) +
+    scale_fill_brewer(palette="Paired", breaks=c(1,0), labels=c(refProfileName(x),"Current")) +
     theme_minimal() +
     scale_x_discrete(
       limits=c("feed","milk"),   
@@ -313,7 +317,7 @@ dash_plot2 <- function(inc_exp_repair,labor_current,labor_robot) {
     #   ggtitle("Labor vs Repair") + 
     geom_text(aes(label=label, ymax=max(values)*1.1), 
               vjust=0.5, hjust=1.2, color="white", position = position_dodge(0.9), size=5) +
-    scale_fill_brewer(palette="Reds", breaks=c(1,0), labels=c(robot_or_parlor(),"Current")) +
+    scale_fill_brewer(palette="Reds", breaks=c(1,0), labels=c(refProfileName(x),"Current")) +
     theme_minimal() +
     scale_x_discrete(
       limits=c( "repair", "labor"),   
@@ -360,8 +364,8 @@ dash_plot3 <- function(inc_exp_capital_recovery,capital_recovery_housing,
     theme_minimal() + 
     scale_x_discrete( 
       limits=c("robot_end_PV","cost_downpayment", "capital_housing","capital_robot"),   
-      labels=c(paste(robot_or_parlor(),"\n Salvage Value"), "Downpayment \n Capital Cost", 
-               "Housing \n Capital Cost",paste(robot_or_parlor(),"\n Capital Cost"))    
+      labels=c(paste(refProfileName(x),"\n Salvage Value"), "Downpayment \n Capital Cost", 
+               "Housing \n Capital Cost",paste(refProfileName(x),"\n Capital Cost"))    
     ) + 
     theme(
       axis.title.x=element_blank(), 

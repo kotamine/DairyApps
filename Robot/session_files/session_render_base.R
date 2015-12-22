@@ -4,7 +4,7 @@
 
 
 
-var_to_render_0 <- c("herd_size2", "cost_milking","cost_housing","total_investment_cow",
+var_to_render_0 <- c("herd_size2", "cost_milking1","cost_housing","total_investment_cow",
                      "total_investment", "planning_horizon",
                      "increased_insurance", "anticipated_hours_milking","milk_lb_alt_day",
                      "yr_milking2",  "loan_housing",
@@ -28,7 +28,7 @@ pb_render_right_0 <- c("NPV","ANPV", "ANPVr",
                        "tax_revenue_minus_expense",
                        "tax_interest",
                        "tax_depreciation",
-                       "net_annual_impact_after_tax",
+                       # "net_annual_impact_after_tax",
                        "cost_downpayment",
                        "adj_WACC_interest",
                        "adj_WACC_hurdle")
@@ -38,8 +38,9 @@ pb_render_right_0 <- c("NPV","ANPV", "ANPVr",
 pb_separate <- c("pb_positive_total","pb_negative_total",
                   "pb_positive_minus_negative",
                   "pb_inflation_adjustment",
-                  "pb_revenue_minus_expense",
-                  "pb_net_annual_impact_before_tax") 
+                  "pb_revenue_minus_expense" #,
+                  # "pb_net_annual_impact_before_tax"
+                 ) 
 
 rate_render_right_2 <- c("IRR","MIRR","WACC","ROI")
 
@@ -69,31 +70,17 @@ names(inflation) <- pb_var_to_render_right
 
 
 
-"CF_invest_housing"
-"CF_loan_housing"
-"CF_r_housing"
-"CF_down_housing"
-"CF_hr_housing"
+CF_var_stem <- c("CF_cost", "CF_loan", "CF_down", "CF_r", "CF_hr")
+CF_var_ending <- c("housing","milking1","milking2")
 
-"yr_milking2",  "loan_housing",
-"loan_milking1","loan_milking2", 
-"copy_cost_housing", "copy_cost_milking1", "copy_cost_milking2", 
-"copy_salvage_milking1","copy_salvage_milking2",
+CF_vars <- lapply(CF_var_stem, function(stem) {
+  lapply(CF_var_ending, function(ending) {
+  paste0(stem,"_",ending) 
+  })
+}) %>% unlist()
 
 
-lapply(CF_var_dollar, 
-       function(z) { 
-         output[[paste0(z,x)]] <- renderUI({ 
-           ans[[x]][[paste0(z)]] %>% formatcomma(0,dollar=TRUE) %>% helpText()  })
-       }
-)
 
-
-"CF_WACC_formula"
-
-"CF_NPV_formula"
-"CF_annuity_formula"
-"CF_ROI"
 
 
 ## ---- producing rendering functions ----
@@ -125,15 +112,7 @@ lapply(pb_render_right_0, function(z) {
 lapply(rate_render_right_2, function(z) {
   output[[paste0(z,x)]] <- renderUI({
       need(!is.null(ans[[x]][[paste0(z)]]), "NA") %>% validate()
-    ans[[x]][[paste0(z)]] %>% round(2) %>% helpText() %>% div(align="right")
-  })
-})
-
-lapply(percent_render_right_3, function(z) {
-  output[[paste0(z,x)]] <- renderUI({
-      need(!is.null(ans[[x]][[paste0(z)]]), "NA") %>% validate()
-    a <- (ans[[x]][[paste0(z,x)]]*100) %>% round(3)
-    paste0(a,"%") %>% helpText() %>% div(align="right")
+    ans[[x]][[paste0(z)]] %>% round_pct(2) %>% helpText() %>% div(align="right")
   })
 })
 
@@ -164,14 +143,62 @@ lapply(pb_separate,
 
 lapply(c(1:3), function(r) {
   lapply(bw_render_right[[r]], function(z) {
+    if (r==3) {
     output[[paste0(z,x)]] <- renderUI({
       need(!is.null(ans[[paste0(x,"_bw")]][[paste0(z)]]), "NA") %>% validate()
       a <- (ans[[paste0(x,"_bw")]][[paste0(z)]]*100) %>% round(r)
       paste0(a,"%") %>% helpText() %>% div(align="right")
     })
+    } else {
+      output[[paste0(z,x)]] <- renderUI({
+        need(!is.null(ans[[paste0(x,"_bw")]][[paste0(z)]]), "NA") %>% validate()
+        a <- (ans[[paste0(x,"_bw")]][[paste0(z)]]) %>% round(r)
+        paste0("$",a) %>% helpText() %>% div(align="right")
+    })
+    }
   })
 })
+  
+  # Cash Flow
+  CF_render <- function(fun,...) {
+    function(z) {
+      output[[paste0(z,x)]] <- renderUI({
+        ans[[x]][[paste0(sub("CF_","copy_",z))]] %>% fun(...) %>% 
+          helpText() %>% div(align="right")
+      })
+    }
+  }
 
+  lapply(CF_vars, function(z) {
+    if (grep("CF_r",z) %>% length() >0 | grep("CF_hr",z) %>% length() >0) {
+      CF_render(round_pct,3)(z)
+    } else {
+      CF_render(formatcomma,dollar=TRUE)(z)
+    }
+  })
+
+
+  # output[["CF_WACC_formula",x]] <- renderUI({
+  #   formula_txt <-  paste("'WACC = (housing_loans / total_investment) * housing_interest +' , br(),
+  #                          '(milking_system_loans / total_investment) * milking_interest +', br(),
+  #                          '(downpayments / total_investment) * hurdle_rate', br(), ",
+  #                          "'= (housing_loans * housing_interest +' , br(),
+  #                          'milking_system_loans * milking_interest +' , br(),
+  #                          'downpayments * hurdle_rate ) / total_investment)'")
+  # 
+  #   formula_num <- paste("=", paste0("( $",ans[[x]][["loan_housing"]]), "*", paste0(input[[paste0("r_housing",x)]],"% +"),
+  #                        paste0("$",ans[[x]][["loan_milking1"]]), "*", paste0(input[[paste0("r_milking1",x)]],"% +"),
+  #                        paste0("$",ans[[x]][["loan_milking1"]]), "*", paste0(input$hurdle_rate,"% ) /  "),
+  #                        paste0("$", ans[[x]][["total_investment"]]), "=", paste0(ans[[x]]$WACC,"%"))
+  # 
+  #   helpText(formula_txt, formula_num)
+  # })
+
+
+  # "CF_NPV_formula"
+  # "CF_annuity_formula"
+  # "CF_ROI"
+  
 
 output$DMI_change_copy <- renderUI({
  ans[[x]]$DMI_change  %>% round(3) %>% helpText() 
@@ -212,7 +239,7 @@ output[[paste0("milk_feed",x)]] <- renderUI({
   
   div(class="well well-sm", style= "background-color: #1569C7; color:white;", 
       ans[[paste0(x,"_da")]]$milk_feed %>% formatdollar2() %>% strong() %>% h4(),
-      h5("Milk Income - Feed Cost"), h5("under", robot_or_parlor()))
+      h5("Milk Income - Feed Cost"), h5("under", refProfileName(x)))
 })  
 
 output[[paste0("labor_repair",x)]] <- renderUI({
@@ -220,7 +247,7 @@ output[[paste0("labor_repair",x)]] <- renderUI({
   
   div(class="well well-sm", style= "background-color: #FF926F; color:white;", 
       ans[[paste0(x,"_da")]]$labor_repair %>% formatdollar2() %>% strong() %>% h4(),
-      h5("Labor + Repair Cost"),  h5("under", robot_or_parlor()))
+      h5("Labor + Repair Cost"),  h5("under", refProfileName(x)))
 })  
 
 output[[paste0("captial_cost",x)]] <- renderUI({
@@ -228,7 +255,7 @@ output[[paste0("captial_cost",x)]] <- renderUI({
   
   div(class="well well-sm", style= "background-color: #64E986; color:white;", 
       (ans[[paste0(x,"_da")]]$capital) %>% formatdollar2() %>% strong() %>% h4(),
-      h5("Cost of Capital"),   h5("under", robot_or_parlor()))
+      h5("Cost of Capital"),   h5("under", refProfileName(x)))
 })  
 
 output[[paste0("misc",x)]] <- renderUI({
@@ -236,7 +263,7 @@ output[[paste0("misc",x)]] <- renderUI({
   
   div(class="well well-sm", style= "background-color: #EDDA74; color:white;", 
       ans[[paste0(x,"_da")]]$misc %>% formatdollar2() %>% strong %>% h4(), 
-      h5("Others"),  h5("under", robot_or_parlor()))
+      h5("Others"),  h5("under", refProfileName(x)))
 }) 
 
 output[[paste0("inflation",x)]] <- renderUI({
@@ -244,7 +271,7 @@ output[[paste0("inflation",x)]] <- renderUI({
 
   div(class="well well-sm", style= "background-color: #7A5DC7; color:white;", 
       ans[[paste0(x,"_da")]]$inflation %>% formatdollar2() %>% strong %>% h4(), 
-      h5("Inflation Adjustments"),  h5("under", robot_or_parlor()))
+      h5("Inflation Adjustments"),  h5("under", refProfileName(x)))
 })  
 
 output[[paste0("plot1",x)]] <- renderPlot({ 
@@ -253,26 +280,26 @@ output[[paste0("plot1",x)]] <- renderPlot({
 })
 
 output[[paste0("plot2",x)]]<- renderPlot({
-  dash_plot2(ans[[paste0(x,"_da")]]$inc_exp_repair,ans[[paste0(x,"_da")]]$labor_current,
+  dash_plot2(ans[[paste0(x)]]$inc_exp_repair,ans[[paste0(x,"_da")]]$labor_current,
              ans[[paste0(x,"_da")]]$labor_robot) 
 })
 
 output[[paste0("plot3",x)]] <- renderPlot({  
   dash_plot3(ans[[paste0(x,"_da")]]$capital_recovery_robot2,ans[[paste0(x,"_da")]]$capital_recovery_housing2,
-             ans[[paste0(x,"_da")]]$cost_downpayment, ans[[paste0(x,"_da")]]$robot_end_PV)  
+             ans[[paste0(x)]]$cost_downpayment, ans[[x]]$salvage_milking_PV)  
 })
 
-output[[paste0("cashflow_chart",x)]] <- renderGvis({
+output[[paste0("cashflow_small_chart",x)]] <- renderGvis({
   if (length(ans[[x]][["table_cash_flow"]])==0) return()
   tbl <- round(ans[[x]][["table_cash_flow"]])
   n_year1 <- ans[[x]]$planning_horizon + 1
   df <- data.frame(Year=c(1:n_year1))
   if (input$NAI=="before tax") {
     tax_status <- "Before-tax"
-    df$Cash_flow <- ans[[x]][["table_cash_flow"]]$before_tax_cash_flow 
+    df$Cash_flow <- ans[[x]][["table_cash_flow"]]$before_tax_cash_flow %>% round()
   } else {
     tax_status <- "After-tax"
-    df$Cash_flow <- ans[[x]][["table_cash_flow"]]$after_tax_cash_flow
+    df$Cash_flow <- ans[[x]][["table_cash_flow"]]$after_tax_cash_flow %>% round()
   }
   gvisAreaChart(df, xvar="Year", 
                 yvar=c("Cash_flow"),
@@ -428,7 +455,7 @@ output[[paste0("table_cash_flow",x)]] <- DT::renderDataTable({
                      'Operating Income', 'Income Tax','Principal Payments','Adding Back Depreciation',
                      'Down-payments','Salvage Values','After-tax Cashflow','Before-tax Cashflow')
   L <- length(tbl[,1])
-  df$table_cash_flow <- tbl
+
   DT::datatable(tbl, 
                 # colnames = c('Year', 'Robot', 'Housing', 'Total'), 
                 rownames = FALSE,
@@ -464,7 +491,6 @@ output[[paste0("table_debt",x)]] <- DT::renderDataTable({
                      'Housing Payment Year','Housing Interest', 'Housing Principal',
                      'Interest Total', 'Principal Total') 
   L <- length(tbl[,1])
-  df$table_debt <- tbl
   DT::datatable(tbl, 
                 # colnames = c('Year', 'Robot', 'Housing', 'Total'), 
                 rownames = FALSE,
@@ -490,7 +516,6 @@ output[[paste0("table_depreciation",x)]] <- DT::renderDataTable({
   
   colnames(tbl) <- c('Year', milk_sys, 'Housing', 'Total')
   L <- length(tbl[,1])
-  df$table_depreciation <- tbl
   
   DT::datatable(tbl, 
                 # colnames = c('Year', 'Robot', 'Housing', 'Total'), 
@@ -514,17 +539,17 @@ output[[paste0("cashflow_chart",x)]] <- renderGvis({
   tbl$Year <- tbl$year
   tbl$Operating_Income <- tbl$operating_income
   tbl$Cashflow <- tbl$after_tax_cash_flow 
-#   gvisLineChart(tbl, xvar="Year",  
-#                 yvar=c("Cashflow","Operating_Income"),
-#                 options=list(title="Before-tax Operating Income & After-tax Cash Flow", 
-#                              vAxis=paste("{title:'Net Annual Impact under", robot_or_parlor()," ($)'}"),
-#                              hAxis="{title:'Year'}",
-#                              legend="bottom" #,
-#                              # width=800, height=400
-#                 ))
+  # gvisLineChart(tbl, xvar="Year",
+  #               yvar=c("Cashflow","Operating_Income"),
+  #               options=list(title="Before-tax Operating Income & After-tax Cash Flow",
+  #                            vAxis=paste("{title:'Net Annual Impact under", robot_or_parlor()," ($)'}"),
+  #                            hAxis="{title:'Year'}",
+  #                            legend="bottom" #,
+  #                            # width=800, height=400
+  #               ))
         gvisAreaChart(tbl, xvar="Year", 
                          yvar=c("Cashflow","Operating_Income"),
-                         options=list(isStacked=TRUE,
+                         options=list( #isStacked=TRUE,
                                       title="Before-tax Operating Income & After-tax Cash Flow", 
                                       vAxis="{title:'Net Annual Impact under Robot ($)'}",
                                       hAxis="{title:'Year'}",

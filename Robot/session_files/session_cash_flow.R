@@ -35,7 +35,7 @@ isolate({
   ## if Accelerated depreciation method is used 
   if (input$dep_method=="d1") {
     # setting salvage = 0 for total depreciation 
-    dep_milking[1:yr_AGDS_milking] <- vdb(ans[[x]]$cost_milking, 0,
+    dep_milking[1:yr_AGDS_milking] <- vdb(ans[[x]]$cost_milking1, 0,
                                       yr_AGDS_milking, factor=1.5, sequence=TRUE) 
     if (input[[paste0("n_sets",x)]] ==2) {
       dep_milking[(1+input[[paste0("useful_years",x)]]):(input[[paste0("useful_years",x)]] + yr_AGDS_milking)] <-
@@ -47,7 +47,7 @@ isolate({
   } else {
     
     ## if Straight line depreciation method is used 
-    dep_milking[1:yr_SLD_milking] <- (ans[[x]]$cost_milkingt - 0)/yr_SLD_milking
+    dep_milking[1:yr_SLD_milking] <- (ans[[x]]$cost_milking1 - 0)/yr_SLD_milking
     if (input[[paste0("n_sets",x)]] >=2) {
       dep_milking[(1+input[[paste0("useful_years",x)]]):(input[[paste0("useful_years",x)]] + yr_SLD_milking)] <- 
         (ans[[x]]$cost_milking2 - 0)/yr_SLD_milking

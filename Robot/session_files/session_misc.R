@@ -27,7 +27,6 @@ shinyjs::onclick("CF_formula_show_2",
                  shinyjs::toggle(id="id_CF_formula_show_2", anim = TRUE)
 )
 
-
 observeEvent(input$coeff_reset,{ 
   updateNumericInput(session, "milk_cow_coeff",NULL,value=0.4,min=0,step=0.1)
   updateNumericInput(session, "milk_fat",NULL,value=3.65,min=0,step=0.2)
@@ -40,53 +39,94 @@ observeEvent(input$coeff_reset,{
 }) 
 
 
-observeEvent(input$dashboard,{
-       updateTabsetPanel(session,"prMilk",input$dashboard)
-       updateTabsetPanel(session,"prLabor",input$dashboard)
-       updateTabsetPanel(session,"prFinance",input$dashboard)
-       updateTabsetPanel(session,"prMaintenance",input$dashboard)
-       updateTabsetPanel(session,"prCapital",input$dashboard)
-     })
-  
-     observeEvent(input$prCapital,{
-     updateTabsetPanel(session,"prLabor",input$prCapital)
-     updateTabsetPanel(session,"prMilk",input$prCapital)
-     updateTabsetPanel(session,"prFinance",input$prCapital)
-     updateTabsetPanel(session,"prMaintenance",input$prCapital)
-     updateTabsetPanel(session,"dashboard",input$prCapital)
-   })
+# Make profile choice equivalent across various tabs 
+list_tabs <- c("dashboard","prMilk", "prLabor","prFinance","prMaintenance","prCapital")
 
-      observeEvent(input$prLabor,{
-     updateTabsetPanel(session,"prCapital",input$prLabor)
-     updateTabsetPanel(session,"prMilk",input$prlabor)
-     updateTabsetPanel(session,"prFinance",input$prlabor)
-     updateTabsetPanel(session,"prMaintenance",input$prlabor)
-     updateTabsetPanel(session,"dashboard",input$prLabor)
-   })
+lapply(list_tabs, function(z) {
+  observeEvent(input[[paste(z)]], {
+    lapply(list_tabs, function(w) {
+      if (z!=w)  updateTabsetPanel(session, paste(w), input[[paste(z)]])
+    })
+  })
+})
 
-    observeEvent(input$prMilk,{
-     updateTabsetPanel(session,"prCapital",input$prMilk)
-     updateTabsetPanel(session,"prLabor",input$prMilk)
-     updateTabsetPanel(session,"prFinance",input$prMilk)
-     updateTabsetPanel(session,"prMaintenance",input$prMilk)
-     updateTabsetPanel(session,"dashboard",input$prMilk)
-   })
+# observeEvent(input$dashboard,{
+#        updateTabsetPanel(session,"prMilk",input$dashboard)
+#        updateTabsetPanel(session,"prLabor",input$dashboard)
+#        updateTabsetPanel(session,"prFinance",input$dashboard)
+#        updateTabsetPanel(session,"prMaintenance",input$dashboard)
+#        updateTabsetPanel(session,"prCapital",input$dashboard)
+#      })
+#   
+#      observeEvent(input$prCapital,{
+#      updateTabsetPanel(session,"prLabor",input$prCapital)
+#      updateTabsetPanel(session,"prMilk",input$prCapital)
+#      updateTabsetPanel(session,"prFinance",input$prCapital)
+#      updateTabsetPanel(session,"prMaintenance",input$prCapital)
+#      updateTabsetPanel(session,"dashboard",input$prCapital)
+#    })
+# 
+#       observeEvent(input$prLabor,{
+#      updateTabsetPanel(session,"prCapital",input$prLabor)
+#      updateTabsetPanel(session,"prMilk",input$prlabor)
+#      updateTabsetPanel(session,"prFinance",input$prlabor)
+#      updateTabsetPanel(session,"prMaintenance",input$prlabor)
+#      updateTabsetPanel(session,"dashboard",input$prLabor)
+#    })
+# 
+#     observeEvent(input$prMilk,{
+#      updateTabsetPanel(session,"prCapital",input$prMilk)
+#      updateTabsetPanel(session,"prLabor",input$prMilk)
+#      updateTabsetPanel(session,"prFinance",input$prMilk)
+#      updateTabsetPanel(session,"prMaintenance",input$prMilk)
+#      updateTabsetPanel(session,"dashboard",input$prMilk)
+#    })
+#    
+#    observeEvent(input$prFinance,{
+#      updateTabsetPanel(session,"prCapital",input$prFinance)
+#      updateTabsetPanel(session,"prLabor",input$prFinance)
+#      updateTabsetPanel(session,"prMilk",input$prFinance)
+#      updateTabsetPanel(session,"prMaintenance",input$prFinance)
+#      updateTabsetPanel(session,"dashboard",input$prFinance)
+#    })
+#    
+#    observeEvent(input$prMaintenance,{
+#      updateTabsetPanel(session,"prCapital",input$prMaintenance)
+#      updateTabsetPanel(session,"prLabor",input$prMaintenance)
+#      updateTabsetPanel(session,"prFinance",input$prMaintenance)
+#      updateTabsetPanel(session,"prMilk",input$prMaintenance)
+#      updateTabsetPanel(session,"dashboard",input$prMaintenance)
+#    })
+#    
    
-   observeEvent(input$prFinance,{
-     updateTabsetPanel(session,"prCapital",input$prFinance)
-     updateTabsetPanel(session,"prLabor",input$prFinance)
-     updateTabsetPanel(session,"prMilk",input$prFinance)
-     updateTabsetPanel(session,"prMaintenance",input$prFinance)
-     updateTabsetPanel(session,"dashboard",input$prFinance)
-   })
+
+# Make IOFC and NAI choices equivalent across various profiles 
+list_profiles <- c("Robots","Retrofit","New")
+
+lapply(list_profiles, function(z) {
+  observeEvent(input[[paste(z)]], {
+    lapply(list_profiles, function(w) {
+      updateRadioButtons(session, "IOFC",NULL,
+                         choices=c("per cow","per cwt"), selected=input[[paste0("IOFC",z)]])
+      updateRadioButtons(session, "NAI",NULL,
+                         choices=c("before tax", "after tax"), selected=input[[paste0("NAI",z)]])
+      if (z!=w)  {
+        updateRadioButtons(session, paste0("IOFC",w),NULL,
+                                    choices=c("per cow","per cwt"), selected=input[[paste0("IOFC",z)]])
+        updateRadioButtons(session, paste0("NAI",w),NULL,
+                           choices=c("before tax", "after tax"), selected=input[[paste0("NAI",z)]])
+      }
+      })
+  })
+})
+
+   # observeEvent(input$IOFCRobots, {
+   #   updateRadioButtons(session, "IOFC",NULL,choices=c("per cow","per cwt"), selected=input$IOFCRobots)
+   #   updateRadioButtons(session, "IOFCRetrofit",NULL,choices=c("per cow","per cwt"), selected=input$IOFCRobots)
+   #   updateRadioButtons(session, "IOFCNew",NULL,choices=c("per cow","per cwt"), selected=input$IOFCRobots)
+   # })
    
-   observeEvent(input$prMaintenance,{
-     updateTabsetPanel(session,"prCapital",input$prMaintenance)
-     updateTabsetPanel(session,"prLabor",input$prMaintenance)
-     updateTabsetPanel(session,"prFinance",input$prMaintenance)
-     updateTabsetPanel(session,"prMilk",input$prMaintenance)
-     updateTabsetPanel(session,"dashboard",input$prMaintenance)
-   })
+   
 
 # The following provides the default value for additional_labor and additional_cost when hidden from the user
 # updateNumericInput(session, "additional_labor",NULL,value=450,step=50,min=0)

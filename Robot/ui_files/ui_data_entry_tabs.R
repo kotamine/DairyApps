@@ -163,7 +163,7 @@ div(
                 ), 
                tabPanel("Maintenance", value="Maintenance",
                         fluidRow(column(width=10, offset=1,
-                                        tabsetPanel(id="prMaintenace", 
+                                        tabsetPanel(id="prMaintenance", 
                                                     tabPanel("Robots", value=base_profiles[1],
                                                              changeVariablesMaintenace("Robots")),
                                                     tabPanel("Retrofit Parlors", value=base_profiles[2],

@@ -35,23 +35,8 @@ shinyServer(function(input, output, session) {
    # All calculations results are stored in "ans" as lists for various profiles  
    ans <- reactiveValues() 
    
-   ans[['others']] <- list()
-   
    browser()
 
-  # ### Does rv have to be reactiveValue?? 
-  # # Create a list of reactive values 
-  # rv <- reactiveValues(recalculate=0)
-  # 
-  # # Create a list of reactive values for robustness checks
-  # rb <- reactiveValues(c_val=20)
-  # 
-  # # Create a list of reactive values for robots vs parlors
-  # rp <- reactiveValues()
-  # 
-  # # data tables to be downloaded
-  # df <- reactiveValues()
-  
 
   # ----------- Functions: some of them depend on local variables  -----------
   source("helper.R",local=TRUE)
@@ -61,15 +46,15 @@ shinyServer(function(input, output, session) {
   
   # ----------- Main Calculations for Partial Budget and Cash Flow Analyses -----------
   source(file.path("session_files","session_calculations_main.R"), local=TRUE)
-  
+
   source(file.path("session_files","session_partial_budget.R"), local=TRUE)
-  
+
+  # source(file.path("session_files","session_dashboard.R"), local=TRUE)
+   
   source(file.path("session_files","session_render_base.R"), local=TRUE)
   
 
-#   # ----------- Robots vs Parlors Analysis -----------
-#   source(file.path("session_files","session_robot_parlor.R"), local=TRUE)
-#   
+
 #   
 #   # ----------- Sensitivity Analysis -----------
 #   source(file.path("session_files","session_sensitivity.R"), local=TRUE)
