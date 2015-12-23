@@ -601,5 +601,21 @@ for (a in c(1:3)) {
 }
 
 
+list_1 <- list()
+gen_list <- function(list_name) {
+  function(var_name, n) {
+    list_1[[paste0(list_name,"_",var_name)]] <<- c(1:n)
+  }
+}
+
+oper_1 <- gen_list("list_1")
+oper_2 <- gen_list("list_2")
+
+oper_1("var_a", 5)
+oper_1("var_b", 7)
+list_1
+
+
+
 
 
