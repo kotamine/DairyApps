@@ -5,7 +5,8 @@ lapply(base_profiles, function(x) {
   observe(priority=100, {
     
     browser()
-    # Calculations given a profile 
+    # Calculations given a profile x
+    
     
     # Make this reactive to all data inputs; 
     lapply(list_inputs_shared, function(z) input[[paste(z)]])
@@ -259,25 +260,7 @@ lapply(base_profiles, function(x) {
 #                 content = "New data inputs. 
 #                 Press ``Calculate'' to updated the results.",
 #                 append = FALSE) 
-#     
-#     createAlert(session, "s_input_change", "ref_s_input_change", 
-#                 content = "New data inputs. 
-#                 Press ``Calculate'' to updated the results.",
-#                 append = FALSE) 
-#     
-#     createAlert(session, "c_toggle", "ref_c_toggle", 
-#                 content = "Change sensitivity items to refresh the results.",
-#                 append = FALSE) 
-#     
-#     createAlert(session, "s_toggle", "ref_s_toggle", 
-#                 content = "Change scenarios to refresh the results.",
-#                 append = FALSE)
-#     
-#     createAlert(session, "p_input_change", "ref_p_input_change", 
-#                 content = "New data inputs. 
-#                 Press ``Calculate'' to updated the results.",
-#                 append = FALSE) 
-#     }) 
+
     
   })  
 })

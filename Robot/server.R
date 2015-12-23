@@ -58,11 +58,9 @@ shinyServer(function(input, output, session) {
   
   source(file.path("session_files","session_render_base.R"), local=TRUE)
   
+  # ----------- Sensitivity Analysis -----------
+  source(file.path("session_files","session_sensitivity.R"), local=TRUE)
   
-
-#   
-#   # ----------- Sensitivity Analysis -----------
-#   source(file.path("session_files","session_sensitivity.R"), local=TRUE)
 #   
 #   # ----------- Scenario Analysis -----------
 #   source(file.path("session_files","session_scenarios.R"), local=TRUE)  

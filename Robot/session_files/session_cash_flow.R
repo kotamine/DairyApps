@@ -1,18 +1,4 @@
 
-# The following inputs are replaced by profile-specific variables. 
-# e.g. input$herd_increaseRobots, input$herd_increaseRetrofit, input$herd_increaseNew
-#   c("herd_increase", "repair","insurance_rate","hr_sv_milking", 
-#     "anticipated_hours_heat","increase_rc_mgt",
-#     "decrease_lab_mgt", "milk_change","scc_change","software",
-#     "pellets","cost_pellets","change_turnover","change_electricity",
-#     "change_water", "change_chemical",
-#     "cost_housing_cow",
-#     "down_housing", "down_milking1", "down_milking2",
-#     "salvage_housing", "salvage_milking1", 
-#     "planning_horizon", "cost_parlors", "cost_robot", "useful_years", "n_robot")
-# 
-
-
 ## ------ Prepares cash flow, debt, and depreciation tables -------
 
   

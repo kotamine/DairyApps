@@ -594,11 +594,25 @@ Filter(or(is.character, is.factor), iris)
 Filter(not(is.numeric), iris)
 
 
-
-abc <- list()
-for (a in c(1:3)) {
-  
+poisson_nll <- function(x) {
+  n <- length(x)
+  sum_x <- sum(x)
+  function(lambda) {
+    # browser()
+    # It encloses information of x as "n" and "sum_x", avoiding computing n and sum_x in every iteration 
+    n * lambda - sum_x * log(lambda) # + terms not involving lambda
+  }
 }
+
+x1 <- c(41, 30, 31, 38, 29, 24, 30, 29, 31, 38)
+x2 <- c(6, 4, 7, 3, 3, 7, 5, 2, 2, 7, 5, 4, 12, 6, 9)
+nll1 <- poisson_nll(x1)
+nll2 <- poisson_nll(x2)
+
+optimise(nll1, c(0, 100))$minimum
+optimise(nll2, c(0, 100))$minimum
+
+
 
 
 list_1 <- list()

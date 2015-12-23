@@ -29,15 +29,28 @@ formatcomma <- function(x, digits=NULL, dollar=FALSE) {
 } 
 
 formatdollar <- function(x,digit=0) {
-  #if (is.na(x)) { return(NA) }
   if (length(x)==0) { return(NA) }
-  #if (is.null(x)) { return(NA) }
   if (x>=0) {
     paste0("$",x %>% round(digit) %>% formatcomma()) 
   } else {
     paste0("-$",-x %>% round(digit) %>% formatcomma()) 
   }
 }
+
+gen_formatdollar <- function(digit=0) {
+  function(x) {
+    if (length(x)==0) { return(NA) }
+    if (x>=0) { 
+      paste0("$",x %>% round(digit) %>% formatcomma()) 
+    }  else {
+      paste0("-$",-x %>% round(digit) %>% formatcomma())
+    }
+  }
+}
+
+formatdollar_2d <- gen_formatdollar(2)
+# formatdollar_2d(-12.345)
+
 
 formatdollar2 <- function(x,digit=0) {
   if (is.na(x)) { return(NA) }

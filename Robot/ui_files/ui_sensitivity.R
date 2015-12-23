@@ -1,6 +1,11 @@
 
-uiSensitivity <- function(x) {
-div(
+uiVarX <- function(str, x) paste0(str, refProfile(x))
+
+uiSensitivity <- function(x) { 
+div( 
+  fluidRow(column(1), 
+    lapply(c(1:5), function(i) { column(2, htmlOutput(uiVarX(paste0("sensitivity_vars",i),x)))})
+  ), 
   fluidRow(
     column(
       width=10, offset=1, 
@@ -33,6 +38,6 @@ div(
         ))
     )),br(),br() 
 )
-}
+} 
 
 

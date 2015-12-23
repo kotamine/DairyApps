@@ -1,17 +1,4 @@
 
-# The following inputs are replaced by profile-specific variables. 
-# e.g. input$herd_increaseRobots, input$herd_increaseRetrofit, input$herd_increaseNew
-#   c("herd_increase", "repair","insurance_rate","hr_sv_milking", 
-#     "anticipated_hours_heat","increase_rc_mgt",
-#     "decrease_lab_mgt", "milk_change","scc_change","software",
-#     "pellets","cost_pellets","change_turnover","change_electricity",
-#     "change_water", "change_chemical",
-#     "cost_housing_cow",
-#     "down_housing", "down_milking1", "down_milking2",
-#     "salvage_housing", "salvage_milking1", 
-#     "planning_horizon", "cost_parlors", "cost_robot", "useful_years", "n_robot")
-# 
-
 
 lapply(base_profiles, function(x) {
   
@@ -20,10 +7,9 @@ lapply(base_profiles, function(x) {
   })  
   
   
-# This needs to respond to change in any data input (via ans[[x]]$net_annual_impact_before_tax)
-# or change in input[[paste0("budget_year",x)]]
+# Create some of the Partial Budget items that change with input[[paste0("budget_year",x)]]. 
 # Results are stored in a separate list, e.g., ans[["Robots_pb"]]  etc. to avoid triggering other calculations. 
-#observe({ 
+
 output[[paste0("pb_net_annual_impact_before_tax",x)]] <- renderUI({
   browser()
   
@@ -51,49 +37,18 @@ output[[paste0("pb_net_annual_impact_before_tax",x)]] <- renderUI({
 
 
 # Create tax and WACC adjustment calculations  -----------
-# observe({ 
 
 output[[paste0("net_annual_impact_after_tax",x)]] <- renderUI({  
   
   browser() 
-  ans[[x]]$net_annual_impact_before_tax
-  # ans[[x]]$inc_rev_total
-  # ans[[x]]$dec_exp_total
-  # ans[[x]]$inc_exp_total
-  # ans[[x]]$capital_cost_total
+  
   need(length(ans[[x]]$net_annual_impact_before_tax)>0, "NA") %>% validate()
   
   isolate({
-    # if ( is.null(ans[[x]]$planning_horizon) ) {  return() } 
-ans[[x]]$tax_revenue_minus_expense <-  input$tax_rate/100 *
-  pmt(ans[[x]]$avg_interest/100, ans[[x]]$planning_horizon,
+
+    ans[[x]]$tax_revenue_minus_expense <-  input$tax_rate/100 *
+       pmt(ans[[x]]$avg_interest/100, ans[[x]]$planning_horizon,
       npv(ans[[x]]$avg_interest/100, ans[[x]]$table_cash_flow$revenue_minus_expense[-1]))
-
-# # cost of cash flows for interest payments (evaluated at separate instests for milking and housing)
-# ans[[x]]$interest_at_interest <-  pmt(input[[paste0("r_milking1",x)]]/100, ans[[x]]$planning_horizon,
-#                                       npv(input[[paste0("r_milking1",x)]]/100, ans[[x]]$table_debt$milking_interest)) +
-#   + pmt(input[[paste0("r_housing",x)]]/100, ans[[x]]$planning_horizon,
-#         npv(input[[paste0("r_housing",x)]]/100, ans[[x]]$table_debt$barn_interest))
-# 
-# ans[[x]]$tax_interest <-  -input$tax_rate/100 * ans[[x]]$interest_at_interest
-# 
-# 
-# ans[[x]]$principal_at_interest <-  pmt(input[[paste0("r_milking1",x)]]/100, ans[[x]]$planning_horizon,
-#                                        npv(input[[paste0("r_milking1",x)]]/100, ans[[x]]$table_debt$milking_principal)) +
-#   + pmt(input[[paste0("r_housing",x)]]/100, ans[[x]]$planning_horizon,
-#         npv(input[[paste0("r_housing",x)]]/100, ans[[x]]$table_debt$barn_principal))
-# 
-# 
-# # cost of depreciation (evaluated at separate instests for milking and housing)
-# ans[[x]]$depreciation_at_interest <-
-#   (pmt(input[[paste0("r_milking1",x)]]/100, ans[[x]]$planning_horizon,
-#        npv(input[[paste0("r_milking1",x)]]/100, ans[[x]]$table_depreciation$depreciation_milking_system)) +
-#      + pmt(input[[paste0("r_housing",x)]]/100, ans[[x]]$planning_horizon,
-#            npv(input[[paste0("r_housing",x)]]/100, ans[[x]]$table_depreciation$depreciation_housing)))
-# 
-# ans[[x]]$tax_depreciation <- -input$tax_rate/100 * ans[[x]]$depreciation_at_interest
-
-
 
 # axillary functions for  ans[[x]]$adj_WACC_interest
 
@@ -131,18 +86,6 @@ ans[[x]]$adj_WACC_hurdle <- -pmt(ans[[x]]$WACC/100, ans[[x]]$planning_horizon,
 ans[[x]]$net_annual_impact_after_tax <-  ans[[x]]$net_annual_impact_before_tax + ans[[x]]$tax_revenue_minus_expense +
   + ans[[x]]$tax_interest + ans[[x]]$tax_depreciation + ans[[x]]$adj_WACC_interest + ans[[x]]$adj_WACC_hurdle
 
-# ans[[x]]$tax_deduction_milking <-
-#   -input$tax_rate/100 *(pmt(ans[[x]]$avg_interest/100, ans[[x]]$planning_horizon,
-#                             npv(ans[[x]]$avg_interest/100, ans[[x]]$table_depreciation$depreciation_robot))
-#                         +  pmt(ans[[x]]$avg_interest/100, ans[[x]]$planning_horizon,
-#                                npv(ans[[x]]$avg_interest/100, ans[[x]]$table_debt$robot_interest)))
-# 
-# ans[[x]]$tax_deduction_housing <-
-#   -input$tax_rate/100 *(pmt(ans[[x]]$avg_interest/100, ans[[x]]$planning_horizon,
-#                             npv(ans[[x]]$avg_interest/100, ans[[x]]$table_depreciation$depreciation_housing))
-#                         +  pmt(ans[[x]]$avg_interest/100, ans[[x]]$planning_horizon,
-#                                npv(ans[[x]]$avg_interest/100, ans[[x]]$table_debt$barn_interest)))
-
   ans[[x]]$net_annual_impact_after_tax %>% formatdollar() %>% helpText() %>% div(align="right")
 })
 })
@@ -150,7 +93,8 @@ ans[[x]]$net_annual_impact_after_tax <-  ans[[x]]$net_annual_impact_before_tax +
 })
 
 
-# Creat plots for Partial Budget:
+## ------------ Partial Budget show/hide details ------------
+# Create plots for Partial Budget:
 #   "PB_plot_pos_neg_impact"
 #   "PB_plot_before_tax_impact"
 #   "PB_plot_after_tax_impact"
@@ -395,60 +339,4 @@ isolate({
   })   
 }) 
 })
-
-
-# output[[paste0("breakeven_chart",x)]] <- renderGvis({
-#   browser()
-#   
-#   
-#     need(!is.null(ans[[paste0(x,"_bw")]]$bw_wage_before_tax),"NA") %>% validate()
-# })
-
-
-# 
-# output$breakeven_numbers <- renderUI({
-#   validate(
-#     need(!is.null(ans[[x]]$bw_wage_before_tax),"NA")
-#   )
-#   if (input$breakeven_option=="wage") {
-#     option <- "Wage:"
-#     if (input$NAI=="before tax") {
-#       labor_rate <- ans[[x]]$bw_wage_before_tax
-#     } else {
-#       labor_rate <- ans[[x]]$bw_wage_after_tax
-#     }
-#     be_val <- paste0("$", round(labor_rate, 2))
-#     inflation <-  input$inflation_labor/100
-#   } else {
-#     option <- "Inflation:"
-#     if (input$NAI=="before tax") {
-#       inflation <- ans[[x]]$bw_wage_inflation_before_tax
-#     } else {
-#       inflation <- ans[[x]]$bw_wage_inflation_after_tax
-#     }
-#     be_val <- paste0(round(inflation*100,3),"%")
-#     labor_rate <- input$labor_rate
-#   }
-# 
-#   yr_one <- paste("Year", round(ans[[x]]$housing_years/3), ": ")
-#   yr_two <- paste("Year", round(ans[[x]]$housing_years*(2/3)),": ")
-#   yr_three <- paste("Year", round(ans[[x]]$housing_years),": ")
-#   wage_zero <- labor_rate  %>% formatdollar(2)
-#   wage_one <- (labor_rate * (1 + inflation)^(round(ans[[x]]$housing_years/3)-1))  %>% formatdollar(2)
-#   wage_two <- (labor_rate * (1 + inflation)^(round(ans[[x]]$housing_years*2/3)-1))  %>% formatdollar(2)
-#   wage_three <- (labor_rate * (1 + inflation)^(round(ans[[x]]$housing_years)-1))  %>% formatdollar(2)
-# 
-#   div(class="well well-sm", style= "background-color:	#778899; color:white;",
-#       h4("Breakeven", option, be_val, align="center"),
-#       h5("Year 1: ", wage_zero),
-#       h5(yr_one, wage_one),
-#       h5(yr_two, wage_two),
-#       h5(yr_three, wage_three),
-#       h5("under", robot_or_parlor())
-#   )
-# })
-# 
-
-
-
 
