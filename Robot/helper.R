@@ -230,7 +230,6 @@ dash_IOFC <- function(IOFC, IOFC2, basis, x,
 
 
 dash_NAI <- function(NAI, x,cutoff=0, difference=NULL) {
-  browser()
   validate( 
     need(!is.na(NAI), 
          "NA")

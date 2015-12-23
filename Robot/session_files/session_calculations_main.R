@@ -1,20 +1,5 @@
 
 
-# The following inputs are replaced by profile-specific variables. 
-# e.g. input$herd_increaseRobots, input$herd_increaseRetrofit, input$herd_increaseNew
-#   c("herd_increase", "repair","insurance_rate","hr_sv_milking", 
-#     "anticipated_hours_heat","increase_rc_mgt",
-#     "decrease_lab_mgt", "milk_change","scc_change","software",
-#     "pellets","cost_pellets","change_turnover","change_electricity",
-#     "change_water", "change_chemical",
-#     "cost_housing_cow",
-#     "down_housing", "down_milking1", "down_milking2",
-#     "n_yr_housing", "n_yr_milking1","n_yr_milking2" ,
-#     "salvage_housing", "salvage_milking1", 
-#     "planning_horizon", "cost_parlors", "cost_robot", "useful_years", "n_robot")
-#     
-
-
 
 lapply(base_profiles, function(x) {
   observe(priority=100, {
@@ -231,8 +216,41 @@ lapply(base_profiles, function(x) {
     ans[[x]]$net_annual_impact_before_tax <- ans[[x]]$positive_total - ans[[x]]$negative_total + ans[[x]]$inflation_adjustment
     
     
+    # cost of cash flows for interest payments (evaluated at separate instests for milking and housing)
+    ans[[x]]$interest_at_interest <-  pmt(input[[paste0("r_milking1",x)]]/100, ans[[x]]$planning_horizon,
+                                          npv(input[[paste0("r_milking1",x)]]/100, ans[[x]]$table_debt$milking_interest)) +
+      + pmt(input[[paste0("r_housing",x)]]/100, ans[[x]]$planning_horizon,
+            npv(input[[paste0("r_housing",x)]]/100, ans[[x]]$table_debt$barn_interest))
     
-    source(file.path("session_files", "session_dashboard.R"), local=TRUE)  # Calculates cash flow tables
+    ans[[x]]$tax_interest <-  -input$tax_rate/100 * ans[[x]]$interest_at_interest
+    
+    
+    ans[[x]]$principal_at_interest <-  pmt(input[[paste0("r_milking1",x)]]/100, ans[[x]]$planning_horizon,
+                                           npv(input[[paste0("r_milking1",x)]]/100, ans[[x]]$table_debt$milking_principal)) +
+      + pmt(input[[paste0("r_housing",x)]]/100, ans[[x]]$planning_horizon,
+            npv(input[[paste0("r_housing",x)]]/100, ans[[x]]$table_debt$barn_principal))
+    
+    # Calculations used in Parital Budget and Cash Flow 
+    # cost of depreciation (evaluated at separate instests for milking and housing)
+    ans[[x]]$depreciation_at_interest <-
+      (pmt(input[[paste0("r_milking1",x)]]/100, ans[[x]]$planning_horizon,
+           npv(input[[paste0("r_milking1",x)]]/100, ans[[x]]$table_depreciation$depreciation_milking_system)) +
+         + pmt(input[[paste0("r_housing",x)]]/100, ans[[x]]$planning_horizon,
+               npv(input[[paste0("r_housing",x)]]/100, ans[[x]]$table_depreciation$depreciation_housing)))
+    
+    ans[[x]]$tax_depreciation <- -input$tax_rate/100 * ans[[x]]$depreciation_at_interest
+    
+    ans[[x]]$tax_deduction_milking <-
+      -input$tax_rate/100 *(pmt(ans[[x]]$avg_interest/100, ans[[x]]$planning_horizon,
+                                npv(ans[[x]]$avg_interest/100, ans[[x]]$table_depreciation$depreciation_robot))
+                            +  pmt(ans[[x]]$avg_interest/100, ans[[x]]$planning_horizon,
+                                   npv(ans[[x]]$avg_interest/100, ans[[x]]$table_debt$robot_interest)))
+    
+    ans[[x]]$tax_deduction_housing <-
+      -input$tax_rate/100 *(pmt(ans[[x]]$avg_interest/100, ans[[x]]$planning_horizon,
+                                npv(ans[[x]]$avg_interest/100, ans[[x]]$table_depreciation$depreciation_housing))
+                            +  pmt(ans[[x]]$avg_interest/100, ans[[x]]$planning_horizon,
+                                   npv(ans[[x]]$avg_interest/100, ans[[x]]$table_debt$barn_interest)))
     
     })
     

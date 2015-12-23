@@ -161,8 +161,7 @@
   # MIRR is probably not appropriate
   ans[[x]]$MIRR <- mirr(table_cash_flow$after_tax_cash_flow, input$interest/100, input$interest/100) * 100
   
-  ans[[x]]$ROI <-  ans[[x]]$NPV/ (ans[[x]]$total_investment + ans[[x]]$cost_milking2/(1+rate)^
-                                    (input[[paste0("useful_years",x)]] + input[[paste0("yr_system1",x)]]))
+  ans[[x]]$ROI <-  ans[[x]]$NPV/ (ans[[x]]$total_investment + ans[[x]]$cost_milking2) * 100
   
 
 

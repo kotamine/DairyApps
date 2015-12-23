@@ -14,6 +14,7 @@ source(file.path("ui_files","ui_functions.R"), local=TRUE)
 source(file.path("ui_files", "ui_partial_budget.R"), local=TRUE)  # Contains functions
 source(file.path("ui_files", "ui_cash_flow.R"), local=TRUE)  # Contains functions
 source(file.path("ui_files", "ui_dashboard.R"), local=TRUE)  # Contains functions
+source(file.path("ui_files", "ui_sensitivity.R"), local=TRUE)  # Contains functions
 
 
 base_profiles <- c("Robots","Retrofit","New")
@@ -52,41 +53,11 @@ shinyUI(
                            tabPanel("Retrofit Parlors", value=base_profiles[2],
                                     uiDashboard("Retrofit Parlors")),
                            tabPanel("New Parlors", value=base_profiles[3],
-                                    uiDashboard("New Parlors")),
-                           tabPanel("Retrofit/Robots",  value=combo_profiles[1],
-                                    helpText("This assumes first Retrofit Parlors and then Robots."),
-                                    helpText("Values are taken from the two profiles.")),
-                           tabPanel("Retrofit/New",  value=combo_profiles[2],
-                                    helpText("This assumes first Retrofit Parlors and then New Parlors."),
-                                    helpText("Values are taken from the two profiles.")),
-                           tabPanel("Summary",
-                                    helpText("Summary"))
+                                    uiDashboard("New Parlors"))
                            ),
                shinyjs::hidden(radioButtons("IOFC",NULL,choices=c("per cow","per cwt"), selected="per cwt")),
                shinyjs::hidden(radioButtons("NAI",NULL, choices=c("before tax", "after tax"), selected="after tax"))
        ), 
-      # tabPanel("Test",
-      #          actionButton("test1","test button"),
-      #          uiOutput("test1_out")
-
-# tabsetPanel("Investment",
-#             tabPanel("Robot",
-#                      investmentVariables1("Robot")),
-#             tabPanel("Parlor",
-#                      investmentVariables1("Parlor"))
-# )
-
-#                conditionalPanel("input.budget>0",
-#                                 # ---------- Dashboard ----------
-#                                 source(file.path("ui_files", "ui_dashboard.R"), local=TRUE)$value,    
-# 
-#                                 # ---------- Robustness ----------
-#                                 source(file.path("ui_files", "ui_robustness.R"), local=TRUE)$value,    
-#                                 
-#                                 #---------- Dashboard for Sensitivity and Scenarios ---------- 
-#                                 source(file.path("ui_files", "ui_dashboard_robustness.R"), local=TRUE)$value
-#                                 
-#                ),
 #                # --------- Data Table ---------
 #                br(), br(),
 #                hr(),
@@ -103,53 +74,45 @@ shinyUI(
       # ),
       # ---------- Partial Budget Analysis -----------
       tabPanel("Partial Budget", value = "Partial_Budget",
-#                conditionalPanel("input.budget==0",
-#                                 div(bsButton("budget","Calculate",disabled = TRUE, icon = icon("ban")),
-#                                     helpText("Please review all tabs in Data Entry."),align="center")
-#                ),
-               # conditionalPanel("input.budget>0",
-                                fluidRow(column(6, offset=3,
-                                                  h4("Partial Budget Analysis",align="center")
-                                                )),
-                                tabsetPanel(id="partial_budget",
-                                            tabPanel("Robots", value=base_profiles[1],
-                                                     uiPartialBudget("Robots")),
-                                            tabPanel("Retrofit Parlors", value=base_profiles[2],
-                                                     uiPartialBudget("Retrofit Parlors")),
-                                            tabPanel("New Parlors", value=base_profiles[3],
-                                                     uiPartialBudget("New Parlors")),
-                                            tabPanel("Retrofit/Robots",  value=combo_profiles[1],
-                                                     helpText("This assumes first Retrofit Parlors and then Robots."),
-                                                     helpText("Values are taken from the two profiles.")),
-                                            tabPanel("Retrofit/New",  value=combo_profiles[2],
-                                                     helpText("This assumes first Retrofit Parlors and then New Parlors."),
-                                                     helpText("Values are taken from the two profiles.")),
-                                            tabPanel("Summary",
-                                                     helpText("Summary"))
-                                )
-               # ) 
+
+                fluidRow(column(6, offset=3,
+                                  h3("Partial Budget Analysis",align="center")
+                                )),
+                tabsetPanel(id="partial_budget",
+                            tabPanel("Robots", value=base_profiles[1],
+                                     uiPartialBudget("Robots")),
+                            tabPanel("Retrofit Parlors", value=base_profiles[2],
+                                     uiPartialBudget("Retrofit Parlors")),
+                            tabPanel("New Parlors", value=base_profiles[3],
+                                     uiPartialBudget("New Parlors"))
+                )
+               
       ),
       # ---------- Cash Flow Analysis -----------
       tabPanel("Cash Flow", value = "Cash_Flow",
-                fluidRow(column(6, offset=3,
-                                h4("Cash Flow Analysis",align="center")
-                )),
+                h3("Cash Flow Analysis",align="center"),
                 tabsetPanel(id="cash_flow",
                             tabPanel("Robots", value=base_profiles[1],
                                      uiCashFlow("Robots")),
                             tabPanel("Retrofit Parlors", value=base_profiles[2],
                                      uiCashFlow("Retrofit Parlors")),
                             tabPanel("New Parlors", value=base_profiles[3],
-                                     uiCashFlow("New Parlors")),
-                            tabPanel("Retrofit/Robots",  value=combo_profiles[1],
-                                     helpText("This assumes first Retrofit Parlors and then Robots."),
-                                     helpText("Values are taken from the two profiles.")),
-                            tabPanel("Retrofit/New",  value=combo_profiles[2],
-                                     helpText("This assumes first Retrofit Parlors and then New Parlors."),
-                                     helpText("Values are taken from the two profiles.")),
-                            tabPanel("Summary",
-                                     helpText("Summary"))
+                                     uiCashFlow("New Parlors"))
                 )
+      ),
+      tabPanel("Summary", value="Summary",
+               source(file.path("ui_files","ui_summary.R"), local=TRUE)$value
+               ),
+      tabPanel("Sensitivity", value="Sensitivity",
+               h3("Sensitivity Analysis",align="center"),
+               tabsetPanel(id="sensitivity",
+                           tabPanel("Robots", value=base_profiles[1],
+                                    uiSensitivity("Robots")),
+                           tabPanel("Retrofit Parlors", value=base_profiles[2],
+                                    uiSensitivity("Retrofit Parlors")),
+                           tabPanel("New Parlors", value=base_profiles[3],
+                                    uiSensitivity("New Parlors"))
+               )
       ),
 #       # ---------- Additional Analyses -----------
 #       navbarMenu("More", value = "More", 

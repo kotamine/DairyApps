@@ -1,20 +1,7 @@
 
 # ----- Date Entry Tabs ------
 div( 
-#   fluidRow(
-#     column(width=8, offset=2,
-#            fluidRow(
-#              column(width=6, offset=3,
-#                     conditionalPanel('input.robot_parlor=="ON"',
-#                                      h4("Data Entry", align="center"),
-#                                      div(class="well", style="background-color:#4863A0; color:white;", 
-#                                          selectInput("profile_choice","Select Investment Profile", 
-#                                                      selected="Robots",
-#                                                      choices=c("Barn Only","Retrofit Parlors","New Parlors","Robots")))
-#                     )
-#              ))
-#     )),  
-  navlistPanel("Baseline",  id="navlistPanel",
+  navlistPanel("Current Operation",  id="navlistPanel",
                ## ---------------  Baseline --------------- 
                tabPanel("Operation", value="Operation",
                         #                         herdsize, milk output, average scc, 
@@ -147,13 +134,13 @@ div(
                                      tabPanel("Retrofit Parlors", value=base_profiles[2],
                                               changeVariablesCapital("Retrofit Parlors")),
                                      tabPanel("New Parlors", value=base_profiles[3],
-                                              changeVariablesCapital("New Parlors")),
-                                     tabPanel("Retrofit/Robots",  value=combo_profiles[1],
-                                              helpText("* This assumes first Retrofit Parlors and then New Parlors."),
-                                              helpText("* Values are taken from the two profiles.")),
-                                     tabPanel("Retrofit/New",  value=combo_profiles[2],
-                                              helpText("* This assumes first Retrofit Parlors and then New Parlors."),
-                                              helpText("* Values are taken from the two profiles."))
+                                              changeVariablesCapital("New Parlors"))
+                                     # tabPanel("Retrofit/Robots",  value=combo_profiles[1],
+                                     #          helpText("* This assumes first Retrofit Parlors and then New Parlors."),
+                                     #          helpText("* Values are taken from the two profiles.")),
+                                     # tabPanel("Retrofit/New",  value=combo_profiles[2],
+                                     #          helpText("* This assumes first Retrofit Parlors and then New Parlors."),
+                                     #          helpText("* Values are taken from the two profiles."))
                         )
                         )),
                         icon=icon("gears")
@@ -166,13 +153,13 @@ div(
                                                     tabPanel("Retrofit Parlors", value=base_profiles[2],
                                                              changeVariablesMaintenace("Retrofit Parlors")),
                                                     tabPanel("New Parlors", value=base_profiles[3],
-                                                             changeVariablesMaintenace("New Parlors")),
-                                                    tabPanel("Retrofit/Robots",  value=combo_profiles[1],
-                                                             helpText("* This assumes first Retrofit Parlors and then New Parlors."),
-                                                             helpText("* Values are taken from the two profiles.")),
-                                                    tabPanel("Retrofit/New",  value=combo_profiles[2],
-                                                             helpText("* This assumes first Retrofit Parlors and then New Parlors."),
-                                                             helpText("* Values are taken from the two profiles."))
+                                                             changeVariablesMaintenace("New Parlors"))
+                                                    # tabPanel("Retrofit/Robots",  value=combo_profiles[1],
+                                                    #          helpText("* This assumes first Retrofit Parlors and then New Parlors."),
+                                                    #          helpText("* Values are taken from the two profiles.")),
+                                                    # tabPanel("Retrofit/New",  value=combo_profiles[2],
+                                                    #          helpText("* This assumes first Retrofit Parlors and then New Parlors."),
+                                                    #          helpText("* Values are taken from the two profiles."))
                                         )
                         )),
                         icon=icon("wrench")
@@ -187,13 +174,13 @@ div(
                                      tabPanel("Retrofit Parlors", value=base_profiles[2],
                                               changeVariablesMilkfeed("Retrofit Parlors")),
                                      tabPanel("New Parlors", value=base_profiles[3],
-                                              changeVariablesMilkfeed("New Parlors")),
-                                    tabPanel("Retrofit/Robots",  value=combo_profiles[1],
-                                             helpText("* This assumes first Retrofit Parlors and then New Parlors."),
-                                             helpText("* Values are taken from the two profiles.")),
-                                    tabPanel("Retrofit/New",  value=combo_profiles[2],
-                                             helpText("* This assumes first Retrofit Parlors and then New Parlors."),
-                                             helpText("* Values are taken from the two profiles."))
+                                              changeVariablesMilkfeed("New Parlors"))
+                                    # tabPanel("Retrofit/Robots",  value=combo_profiles[1],
+                                    #          helpText("* This assumes first Retrofit Parlors and then New Parlors."),
+                                    #          helpText("* Values are taken from the two profiles.")),
+                                    # tabPanel("Retrofit/New",  value=combo_profiles[2],
+                                    #          helpText("* This assumes first Retrofit Parlors and then New Parlors."),
+                                    #          helpText("* Values are taken from the two profiles."))
                         )
                           )),
                         icon=icon("truck")
@@ -206,13 +193,13 @@ div(
                                           tabPanel("Retrofit Parlors", value=base_profiles[2],
                                                    changeVariablesLaborenergy("Retrofit Parlors")),
                                           tabPanel("New Parlors", value=base_profiles[3],
-                                                   changeVariablesLaborenergy("New Parlors")),
-                                          tabPanel("Retrofit/Robots",  value=combo_profiles[1],
-                                                   helpText("* This assumes first Retrofit Parlors and then New Parlors."),
-                                                   helpText("* Values are taken from the two profiles.")),
-                                          tabPanel("Retrofit/New",  value=combo_profiles[2],
-                                                   helpText("* This assumes first Retrofit Parlors and then New Parlors."),
-                                                   helpText("* Values are taken from the two profiles."))
+                                                   changeVariablesLaborenergy("New Parlors"))
+                                          # tabPanel("Retrofit/Robots",  value=combo_profiles[1],
+                                          #          helpText("* This assumes first Retrofit Parlors and then New Parlors."),
+                                          #          helpText("* Values are taken from the two profiles.")),
+                                          # tabPanel("Retrofit/New",  value=combo_profiles[2],
+                                          #          helpText("* This assumes first Retrofit Parlors and then New Parlors."),
+                                          #          helpText("* Values are taken from the two profiles."))
                               )
               )),
               icon=icon("male")
@@ -225,19 +212,19 @@ div(
                                           tabPanel("Retrofit Parlors", value=base_profiles[2],
                                                    changeVariablesFinance("Retrofit Parlors")),
                                           tabPanel("New Parlors", value=base_profiles[3],
-                                                   changeVariablesFinance("New Parlors")),
-                                          tabPanel("Retrofit/Robots",   value=combo_profiles[1],
-                                                   changeVariablesCombo("Retrofit/Robots","Retrofit Parlors","Robots"),
-                                                   helpText("* This assumes first Retrofit Parlors and then New Parlors."),
-                                                   helpText("* The second set of Parlors are excluded from the calculation."),
-                                                   helpText("* The rest of the values are taken from the two profiles.")
-                                                   ),
-                                          tabPanel("Retrofit/New",    value=combo_profiles[2],
-                                                   changeVariablesCombo("Retrofit/New","Retrofit Parlors","New Parlors"),
-                                                   helpText("* This assumes first Retrofit Parlors and then New Parlors."),
-                                                   helpText("* The second set of Parlors are excluded from the calculation."),
-                                                   helpText("* The rest of the values are taken from the two profiles.")
-                                          )
+                                                   changeVariablesFinance("New Parlors"))
+                                          # tabPanel("Retrofit/Robots",   value=combo_profiles[1],
+                                          #          changeVariablesCombo("Retrofit/Robots","Retrofit Parlors","Robots"),
+                                          #          helpText("* This assumes first Retrofit Parlors and then New Parlors."),
+                                          #          helpText("* The second set of Parlors are excluded from the calculation."),
+                                          #          helpText("* The rest of the values are taken from the two profiles.")
+                                          #          ),
+                                          # tabPanel("Retrofit/New",    value=combo_profiles[2],
+                                          #          changeVariablesCombo("Retrofit/New","Retrofit Parlors","New Parlors"),
+                                          #          helpText("* This assumes first Retrofit Parlors and then New Parlors."),
+                                          #          helpText("* The second set of Parlors are excluded from the calculation."),
+                                          #          helpText("* The rest of the values are taken from the two profiles.")
+                                          # )
                               )
               )),
                icon=icon("bank")

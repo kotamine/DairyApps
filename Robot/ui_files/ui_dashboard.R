@@ -4,7 +4,7 @@ uiDashboard <- function(x) {
 div(  
   fluidRow(
   column(4,
-         h4("Results",align="center"),
+         h3("Results",align="center"),
          fluidRow(
            column(6,
                   uiOutput(paste0("IOFC",refProfile(x))),
@@ -17,11 +17,11 @@ div(
                                choices=c("before tax","after tax"),selected="after tax")
                   )
            ),
-          htmlOutput(paste0("cashflow_small_chart",refProfile(x)))
+          div(htmlOutput(paste0("cashflow_small_chart",refProfile(x))), align="center")
          ),
   column(8,
          div(
-           h4("Components",align="center"),
+           h3("Components",align="center"),
            fluidRow(
            column(4,
                   plotOutput(paste0("plot1",refProfile(x)), height = 200),
@@ -37,7 +37,7 @@ div(
                   column(6,uiOutput(paste0("inflation",refProfile(x))))
          ),
         align="center")
-  ))
+  )), br(), br()
 ) 
 }  
 

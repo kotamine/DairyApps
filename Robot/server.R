@@ -18,7 +18,7 @@ default_data_2 <- read.xlsx("www/default_user_input_data.xlsx", sheetIndex = 2)
 
 
 base_profiles <- c("Robots","Retrofit","New")
-combo_profiles <- c("RetrofitRobots","RetrofitNew")
+# combo_profiles <- c("RetrofitRobots","RetrofitNew")
 
 refProfileName <-  function(x) {
   switch(x, 
@@ -34,9 +34,11 @@ shinyServer(function(input, output, session) {
    
   # All calculations results are stored in "ans" as lists for various profiles  
   # This helps reactive rending of many variables
-   ans <- reactiveValues() 
-
-   browser()
+  
+  ans <- reactiveValues()  # profile specific answers 
+  sum <- reactiveValues()  # summery
+  
+  browser()
 
 
   # ----------- Functions: some of them depend on local variables  -----------
@@ -45,16 +47,18 @@ shinyServer(function(input, output, session) {
   # ----------- Miselleneous tasks -----------
   source(file.path("session_files","session_misc.R"), local=TRUE)
   
-  # ----------- Main Calculations for Partial Budget and Cash Flow Analyses -----------
+  # ----------- Calculations for Partial Budget and Cash Flow Analyses -----------
   source(file.path("session_files","session_calculations_main.R"), local=TRUE)
 
   source(file.path("session_files","session_partial_budget.R"), local=TRUE)
 
-  # source(file.path("session_files","session_dashboard.R"), local=TRUE)
+  source(file.path("session_files","session_dashboard.R"), local=TRUE)
    
+  source(file.path("session_files","session_summary.R"), local=TRUE)
+  
   source(file.path("session_files","session_render_base.R"), local=TRUE)
   
-
+  
 
 #   
 #   # ----------- Sensitivity Analysis -----------

@@ -178,26 +178,75 @@ lapply(c(1:3), function(r) {
   })
 
 
-  # output[["CF_WACC_formula",x]] <- renderUI({
-  #   formula_txt <-  paste("'WACC = (housing_loans / total_investment) * housing_interest +' , br(),
-  #                          '(milking_system_loans / total_investment) * milking_interest +', br(),
-  #                          '(downpayments / total_investment) * hurdle_rate', br(), ",
-  #                          "'= (housing_loans * housing_interest +' , br(),
-  #                          'milking_system_loans * milking_interest +' , br(),
-  #                          'downpayments * hurdle_rate ) / total_investment)'")
-  # 
-  #   formula_num <- paste("=", paste0("( $",ans[[x]][["loan_housing"]]), "*", paste0(input[[paste0("r_housing",x)]],"% +"),
-  #                        paste0("$",ans[[x]][["loan_milking1"]]), "*", paste0(input[[paste0("r_milking1",x)]],"% +"),
-  #                        paste0("$",ans[[x]][["loan_milking1"]]), "*", paste0(input$hurdle_rate,"% ) /  "),
-  #                        paste0("$", ans[[x]][["total_investment"]]), "=", paste0(ans[[x]]$WACC,"%"))
-  # 
-  #   helpText(formula_txt, formula_num)
-  # })
+  output[[paste0("CF_WACC_formula",x)]] <- renderUI({
+    add_space1 <- "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp"
+    add_space2 <- "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp"
+    
+    div( 
+      helpText("WACC is the weighted average of the interest rates for housing and milking system loans and the 
+                            hurdle rate (opportunity cost) assumed for downpayments. 
+               The weights are the amount of loans and downpayments. 
+               *The investment for the second set of milking system is currently excluded from the WACC calculation."),
+      
+      helpText("WACC = (housing_loans / total_investment) * housing_interest ", br(), 
+               HTML(add_space1), "+ (milking_system_loans / total_investment) * milking_system_interest ", br(), 
+               HTML(add_space1), '+ (downpayments / total_investment) * hurdle_rate', br(), 
+               HTML(add_space2), '= (housing_loans * housing_interest ' , br(),
+               HTML(add_space1), '+ milking_system_loans * milking_system_interest ' , br(),
+               HTML(add_space1), '+ downpayments * hurdle_rate ) / total_investment'), 
 
+    helpText(HTML(add_space2), "= (", ans[[x]][["loan_housing"]] %>% formatcomma(dollar=TRUE), "*", 
+             input[[paste0("r_housing",x)]] %>% round_pct(2), "+", 
+             ans[[x]][["loan_milking1"]] %>% formatcomma(dollar=TRUE), "*",
+             input[[paste0("r_milking1",x)]] %>% round_pct(2), "+", 
+             ans[[x]][["loan_milking1"]]  %>% formatcomma(dollar=TRUE), "*", 
+             input$hurdle_rate %>% round_pct(2),") / ",
+             ans[[x]][["total_investment"]] %>% formatcomma(dollar=TRUE), br(),
+             HTML(add_space2), "=", ans[[x]]$WACC %>% round_pct(2))
+    )
+  }) 
 
-  # "CF_NPV_formula"
-  # "CF_annuity_formula"
-  # "CF_ROI"
+  output[[paste0("CF_NPV_formula",x)]] <- renderUI({ 
+    add_space1 <- "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp"
+    add_space2 <- "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp"
+    NPV <- ans[[x]]$NPV %>% formatcomma(0, dollar=TRUE)
+    CF <- lapply(ans[[x]]$table_cash_flow$after_tax_cash_flow, formatcomma, 0, dollar=TRUE) %>% unlist() 
+    CF_T <- length(CF)
+    WACC <- (ans[[x]]$WACC/100) %>% round(4)
+    WACC1 <- lapply(c(1:CF_T), function(a) paste0(" / (1+", WACC,")^",a-1))
+    WACC1[1] <- "+ "
+    CF_PV <- lapply(c(1:CF_T), function(a) paste(CF[a],WACC1[a])) %>% unlist()
+    div(
+      helpText("NPV is a sum of discounted cash flows. 
+               Here we calculate NPV of your after-tax cash flows (CFs) discounted at your WACC over the course of 
+               your investment horizon (T)."), 
+      helpText("NPV= CF_year0 + CF_year1/(1+WACC) + CF_year2/(1+WACC)^2", br(),
+               HTML(add_space1), "+ ... + CF_yearT/(1+WACC)^T"),
+      helpText(HTML(add_space2),"=", CF_PV[1], CF_PV[2], CF_PV[3], br(),
+               HTML(add_space1), "+ ... +", CF_PV[CF_T], br(),
+               HTML(add_space2),"=", NPV), br(),
+      helpText("Net annual impact (after-tax) is Annualized NPV, obtained by converting NPV into an annuity.
+               This represents the value of investment in the form of constant income stream 
+               over your investment horizon. Such an annuity possesses the value to NPV;"),
+      helpText("annuity + annuity/(1+WACC) + annuity/(1+WACC)^2 + ... + annuity/(1+WACC)^T", br(),
+        HTML(add_space2),"= CF_year0 + CF_year1/(1+WACC) + CF_year2/(1+WACC)^2", br(),
+        HTML(add_space1), "+ ... + CF_yearT/(1+WACC)^T"),
+      helpText("implying that"),
+      helpText("annuity = NPV / {1 + (1+WACC) + (1+WACC)^2 + ... + (1+WACC)^T}",br(),
+               HTML(add_space2), HTML("&nbsp;&nbsp;&nbsp;&nbsp"),"=", ans[[x]]$ANPV %>% formatcomma(0, dollar=TRUE)), br(),
+      
+      helpText("ROI is simply the NPV divided by the total investment;"),
+      helpText("ROI = NPV/ (initial investment for housing and milking system  +  any additional investment)", br(),
+               HTML(add_space2),"= ",  NPV, "/ (",ans[[x]]$total_investment %>% formatcomma(0, dollar=TRUE), "+",
+               ans[[x]]$cost_milking2 %>% formatcomma(0, dollar=TRUE) ,")", br(),
+               HTML(add_space2),"= ",  ans[[x]]$ROI %>% round_pct(2))
+    )
+  })
+  
+
+  output[[paste0("CF_ROI",x)]] <- renderUI({ 
+    
+  })
   
 
 output$DMI_change_copy <- renderUI({
@@ -223,69 +272,71 @@ lapply(base_profiles, function(x) {
   
 output[[paste0("IOFC",x)]] <- renderUI({
   if (input$IOFC=="per cow") {
-    dash_IOFC(ans[[paste0(x,"_da")]]$IOFC, ans[[paste0(x,"_da")]]$IOFC2, basis=input$IOFC, x)
+    dash_IOFC(ans[[paste0(x,"_da")]]()[[input$NAI]]$IOFC, 
+              ans[[paste0(x,"_da")]]()[[input$NAI]]$IOFC2, basis=input$IOFC, x)
   } else {
-    dash_IOFC(ans[[paste0(x,"_da")]]$IOFC_cwt, ans[[paste0(x,"_da")]]$IOFC2_cwt, basis=input$IOFC, x)
+    dash_IOFC(ans[[paste0(x,"_da")]]()[[input$NAI]]$IOFC_cwt,
+              ans[[paste0(x,"_da")]]()[[input$NAI]]$IOFC2_cwt, basis=input$IOFC, x)
   }
 })  
 
 
-output[[paste0("NAI",x)]] <- renderUI({ 
-  dash_NAI(ans[[paste0(x,"_da")]]$NAI, x,cutoff=0)
-}) 
+output[[paste0("NAI",x)]] <- renderUI({
+  dash_NAI(ans[[paste0(x,"_da")]]()[[input$NAI]]$NAI, x,cutoff=0)
+})
 
 output[[paste0("milk_feed",x)]] <- renderUI({
-    need(!is.null(ans[[paste0(x,"_da")]]$milk_feed),"NA") %>% validate()
+    need(!is.null(ans[[paste0(x,"_da")]]()[[input$NAI]]$milk_feed),"NA") %>% validate()
   
   div(class="well well-sm", style= "background-color: #1569C7; color:white;", 
-      ans[[paste0(x,"_da")]]$milk_feed %>% formatdollar2() %>% strong() %>% h4(),
+      ans[[paste0(x,"_da")]]()[[input$NAI]]$milk_feed %>% formatdollar2() %>% strong() %>% h4(),
       h5("Milk Income - Feed Cost"), h5("under", refProfileName(x)))
 })  
 
 output[[paste0("labor_repair",x)]] <- renderUI({
-    need(!is.null(ans[[paste0(x,"_da")]]$labor_repair ),"NA")  %>% validate()
+    need(!is.null(ans[[paste0(x,"_da")]]()[[input$NAI]]$labor_repair ),"NA")  %>% validate()
   
   div(class="well well-sm", style= "background-color: #FF926F; color:white;", 
-      ans[[paste0(x,"_da")]]$labor_repair %>% formatdollar2() %>% strong() %>% h4(),
+      ans[[paste0(x,"_da")]]()[[input$NAI]]$labor_repair %>% formatdollar2() %>% strong() %>% h4(),
       h5("Labor + Repair Cost"),  h5("under", refProfileName(x)))
 })  
 
 output[[paste0("captial_cost",x)]] <- renderUI({
-    need(!is.null(ans[[paste0(x,"_da")]]$capital),"NA") %>% validate()
+    need(!is.null(ans[[paste0(x,"_da")]]()[[input$NAI]]$capital),"NA") %>% validate()
   
   div(class="well well-sm", style= "background-color: #64E986; color:white;", 
-      (ans[[paste0(x,"_da")]]$capital) %>% formatdollar2() %>% strong() %>% h4(),
+      (ans[[paste0(x,"_da")]]()[[input$NAI]]$capital) %>% formatdollar2() %>% strong() %>% h4(),
       h5("Cost of Capital"),   h5("under", refProfileName(x)))
 })  
 
 output[[paste0("misc",x)]] <- renderUI({
-    need(!is.null(ans[[paste0(x,"_da")]]$misc ),"NA") %>% validate()
+    need(!is.null(ans[[paste0(x,"_da")]]()[[input$NAI]]$misc ),"NA") %>% validate()
   
   div(class="well well-sm", style= "background-color: #EDDA74; color:white;", 
-      ans[[paste0(x,"_da")]]$misc %>% formatdollar2() %>% strong %>% h4(), 
+      ans[[paste0(x,"_da")]]()[[input$NAI]]$misc %>% formatdollar2() %>% strong %>% h4(), 
       h5("Others"),  h5("under", refProfileName(x)))
 }) 
 
 output[[paste0("inflation",x)]] <- renderUI({
-    need(!is.null(ans[[paste0(x,"_da")]]$inflation ),"NA") %>% validate()
+    need(!is.null(ans[[paste0(x,"_da")]]()[[input$NAI]]$inflation ),"NA") %>% validate()
 
   div(class="well well-sm", style= "background-color: #7A5DC7; color:white;", 
-      ans[[paste0(x,"_da")]]$inflation %>% formatdollar2() %>% strong %>% h4(), 
+      ans[[paste0(x,"_da")]]()[[input$NAI]]$inflation %>% formatdollar2() %>% strong %>% h4(), 
       h5("Inflation Adjustments"),  h5("under", refProfileName(x)))
 })  
 
 output[[paste0("plot1",x)]] <- renderPlot({ 
-  dash_plot1(ans[[paste0(x,"_da")]]$feed_current,ans[[paste0(x,"_da")]]$feed_robot,
-             ans[[paste0(x,"_da")]]$milk_current,ans[[paste0(x,"_da")]]$milk_robot, x)
+  dash_plot1(ans[[paste0(x,"_da")]]()[[input$NAI]]$feed_current,ans[[paste0(x,"_da")]]()[[input$NAI]]$feed_robot,
+             ans[[paste0(x,"_da")]]()[[input$NAI]]$milk_current,ans[[paste0(x,"_da")]]()[[input$NAI]]$milk_robot, x)
 })
 
 output[[paste0("plot2",x)]]<- renderPlot({
-  dash_plot2(ans[[paste0(x)]]$inc_exp_repair,ans[[paste0(x,"_da")]]$labor_current,
-             ans[[paste0(x,"_da")]]$labor_robot, x) 
+  dash_plot2(ans[[paste0(x)]]$inc_exp_repair,ans[[paste0(x,"_da")]]()[[input$NAI]]$labor_current,
+             ans[[paste0(x,"_da")]]()[[input$NAI]]$labor_robot, x) 
 })
 
 output[[paste0("plot3",x)]] <- renderPlot({  
-  dash_plot3(ans[[paste0(x,"_da")]]$capital_recovery_robot2,ans[[paste0(x,"_da")]]$capital_recovery_housing2,
+  dash_plot3(ans[[paste0(x,"_da")]]()[[input$NAI]]$capital_recovery_robot2,ans[[paste0(x,"_da")]]()[[input$NAI]]$capital_recovery_housing2,
              ans[[paste0(x)]]$cost_downpayment, ans[[x]]$salvage_milking_PV, x)  
 })
 
@@ -312,116 +363,6 @@ output[[paste0("cashflow_small_chart",x)]] <- renderGvis({
 })
 
 })
-
-
-# 
-# output$cashflow <- renderUI({
-#   validate(
-#     need(!is.null(ans[[x]]$table_cash_flow ),"NA")
-#   )
-#   min <- min(ans[[x]]$table_cash_flow$after_tax_cash_flow) %>% formatdollar2() 
-#   avg <- mean(ans[[x]]$table_cash_flow$after_tax_cash_flow) %>% formatdollar2() 
-#   max <- max(ans[[x]]$table_cash_flow$after_tax_cash_flow) %>% formatdollar2() 
-#   sd <- sd(ans[[x]]$table_cash_flow$after_tax_cash_flow) %>% formatdollar()
-#   pos <- paste0(round(sum(ans[[x]]$table_cash_flow$after_tax_cash_flow>0)/ans[[x]]$housing_years*100),"%")
-#   
-#   div(class="well well-sm", style= "background-color: 	#778899; color:white;", 
-#       h4("Cash Flow", align="center"),
-#       h5("Min:", min), 
-#       h5("Avg:", avg),
-#       h5("Max:", max),
-#       h5("S.D.:", sd),
-#       h5(pos, "stays positive"),
-#       h5("under", robot_or_parlor())
-#   )
-# }) 
-# 
-# 
-# 
-
-
-
-# 
-# 
-# output$breakeven2 <- renderGvis({
-#   validate(
-#     need(!is.null(ans[[x]]$bw_wage_before_tax),"NA")
-#   )
-#   if (input$NAI=="before tax") { 
-#     labor_rate <- ans[[x]]$bw_wage_before_tax
-#     inflation <- ans[[x]]$bw_wage_inflation_before_tax
-#     tax <- "(Before Tax)"
-#   } else {
-#     labor_rate <- ans[[x]]$bw_wage_after_tax 
-#     inflation <- ans[[x]]$bw_wage_inflation_after_tax
-#     tax <- "(After Tax)"
-#   }
-#   
-#   df <- data.frame(Year=c(1:ans[[x]]$housing_years))
-#   df$Base <- lapply(c(1:ans[[x]]$housing_years), function(t) { 
-#     input$labor_rate * (1 + input$inflation_labor/100)^(t-1)
-#   }) %>% unlist() %>% round(2)
-#   df$Wage <- lapply(c(1:ans[[x]]$housing_years), function(t) { 
-#     labor_rate * (1 + input$inflation_labor/100)^(t-1)
-#   }) %>% unlist() %>% round(2)
-#   df$Wage_Inflation <- lapply(c(1:ans[[x]]$housing_years), function(t) { 
-#     input$labor_rate * (1 + inflation)^(t-1)
-#   }) %>% unlist() %>% round(2)
-#   
-#   gvisLineChart(df, xvar="Year", 
-#                 yvar=c("Base", "Wage","Wage_Inflation"),
-#                 options=list(
-#                   title=paste("Breakeven Wage for",robot_or_parlor(),tax), 
-#                   vAxis="{title:'Wage Trajectory ($)'}",
-#                   hAxis="{title:'Year'}",
-#                   legend="bottom"
-#                 ))
-# })
-# 
-# output$breakeven <- renderUI({ 
-#   validate(
-#     need(!is.null(ans[[x]]$bw_wage_before_tax),"NA")
-#   )
-#   if (input$breakeven_option=="wage") {
-#     option <- "Wage:"
-#     if (input$NAI=="before tax") { 
-#       labor_rate <- ans[[x]]$bw_wage_before_tax
-#     } else {
-#       labor_rate <- ans[[x]]$bw_wage_after_tax
-#     }
-#     be_val <- paste0("$", round(labor_rate, 2))
-#     inflation <-  input$inflation_labor/100
-#   } else {
-#     option <- "Inflation:"
-#     if (input$NAI=="before tax") { 
-#       inflation <- ans[[x]]$bw_wage_inflation_before_tax
-#     } else {
-#       inflation <- ans[[x]]$bw_wage_inflation_after_tax
-#     }
-#     be_val <- paste0(round(inflation*100,3),"%") 
-#     labor_rate <- input$labor_rate
-#   }
-#   
-#   yr_one <- paste("Year", round(ans[[x]]$housing_years/3), ": ")
-#   yr_two <- paste("Year", round(ans[[x]]$housing_years*(2/3)),": ")
-#   yr_three <- paste("Year", round(ans[[x]]$housing_years),": ")
-#   wage_zero <- labor_rate  %>% formatdollar(2)
-#   wage_one <- (labor_rate * (1 + inflation)^(round(ans[[x]]$housing_years/3)-1))  %>% formatdollar(2)
-#   wage_two <- (labor_rate * (1 + inflation)^(round(ans[[x]]$housing_years*2/3)-1))  %>% formatdollar(2)
-#   wage_three <- (labor_rate * (1 + inflation)^(round(ans[[x]]$housing_years)-1))  %>% formatdollar(2)
-#   
-#   div(class="well well-sm", style= "background-color:	#778899; color:white;", 
-#       h4("Breakeven", option, be_val, align="center"),
-#       h5("Year 1: ", wage_zero),
-#       h5(yr_one, wage_one),
-#       h5(yr_two, wage_two),
-#       h5(yr_three, wage_three),
-#       h5("under", robot_or_parlor())
-#   )
-# }) 
-# 
-
-
 
 
 
@@ -539,21 +480,15 @@ output[[paste0("cashflow_chart",x)]] <- renderGvis({
   tbl$Year <- tbl$year
   tbl$Operating_Income <- tbl$operating_income
   tbl$Cashflow <- tbl$after_tax_cash_flow 
-  # gvisLineChart(tbl, xvar="Year",
-  #               yvar=c("Cashflow","Operating_Income"),
-  #               options=list(title="Before-tax Operating Income & After-tax Cash Flow",
-  #                            vAxis=paste("{title:'Net Annual Impact under", robot_or_parlor()," ($)'}"),
-  #                            hAxis="{title:'Year'}",
-  #                            legend="bottom" #,
-  #                            # width=800, height=400
-  #               ))
+  
         gvisAreaChart(tbl, xvar="Year", 
                          yvar=c("Cashflow","Operating_Income"),
-                         options=list( #isStacked=TRUE,
+                         options=list( 
                                       title="Before-tax Operating Income & After-tax Cash Flow", 
                                       vAxis="{title:'Net Annual Impact under Robot ($)'}",
                                       hAxis="{title:'Year'}",
-                                      legend="bottom" #,
+                                      legend="bottom",
+                                      chartArea ='{width: "50%", height: "65%" }' 
                                       # width=800, height=400
                                         ))
 })
@@ -561,43 +496,7 @@ output[[paste0("cashflow_chart",x)]] <- renderGvis({
 
 })
 
-# 
-# ## --- Robots vs Parlors ---
-# 
-# output$copy_profile_choice1 <- renderUI({ 
-#   div(h4("Selected Investment Profile:"), 
-#       h4(input$profile_choice), align="center")
-# }) 
-# 
-# output$copy_profile_choice2 <- renderUI({
-#   div(h4("Selected Investment Profile:"), 
-#       h4(input$profile_choice), align="center")
-# }) 
-# 
-# observeEvent(input$profile_choice, {
-#   updateSelectInput(session,"copy_profile_choice1",  selected=input$profile_choice,
-#                     choices=c("Barn Only","Retrofit Parlors","New Parlors","Robots"))
-#   
-#   updateSelectInput(session,"copy_profile_choice2",  selected=input$profile_choice,
-#                     choices=c("Barn Only","Retrofit Parlors","New Parlors","Robots"))
-# })
-# 
-# observeEvent(input$copy_profile_choice1, {
-#   updateSelectInput(session,"profile_choice",  selected=input$copy_profile_choice1,
-#                     choices=c("Barn Only","Retrofit Parlors","New Parlors","Robots"))
-#   
-#   updateSelectInput(session,"copy_profile_choice2",  selected=input$copy_profile_choice1,
-#                     choices=c("Barn Only","Retrofit Parlors","New Parlors","Robots"))
-# })
-# 
-# 
-# observeEvent(input$copy_profile_choice2, {
-#   updateSelectInput(session,"copy_profile_choice1",  selected=input$copy_profile_choice2,
-#                     choices=c("Barn Only","Retrofit Parlors","New Parlors","Robots"))
-#   
-#   updateSelectInput(session,"profile_choice",  selected=input$copy_profile_choice2,
-#                     choices=c("Barn Only","Retrofit Parlors","New Parlors","Robots"))
-# })
+
 
 # 
 # # ----------- Robustness tables ---------

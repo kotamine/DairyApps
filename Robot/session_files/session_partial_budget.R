@@ -20,12 +20,15 @@ lapply(base_profiles, function(x) {
   })  
   
   
-# This needs to respond to change in any data input or change in input[[paste0("budget_year",x)]]
+# This needs to respond to change in any data input (via ans[[x]]$net_annual_impact_before_tax)
+# or change in input[[paste0("budget_year",x)]]
 # Results are stored in a separate list, e.g., ans[["Robots_pb"]]  etc. to avoid triggering other calculations. 
 #observe({ 
 output[[paste0("pb_net_annual_impact_before_tax",x)]] <- renderUI({
   browser()
-  # if (is.null(ans[[x]]$positive_total)) {  return() } 
+  
+  input[[paste0("budget_year",x)]] 
+  need(length(ans[[x]]$net_annual_impact_before_tax)>0, "NA") %>% validate()
   
   isolate({
   ans[[paste0(x,"_pb")]]$pb_positive_total <- ans[[x]]$inc_rev_total * (1+input$inflation_margin/100)^(input[[paste0("budget_year",x)]]-1) +
@@ -42,6 +45,7 @@ output[[paste0("pb_net_annual_impact_before_tax",x)]] <- renderUI({
   ans[[paste0(x,"_pb")]]$pb_net_annual_impact_before_tax <- ans[[paste0(x,"_pb")]]$pb_positive_minus_negative +
     + ans[[paste0(x,"_pb")]]$pb_inflation_adjustment 
   })
+  
   ans[[paste0(x,"_pb")]]$pb_net_annual_impact_before_tax  %>% formatdollar() %>% helpText() %>% div(align="right")
 })
 
@@ -51,12 +55,14 @@ output[[paste0("pb_net_annual_impact_before_tax",x)]] <- renderUI({
 
 output[[paste0("net_annual_impact_after_tax",x)]] <- renderUI({  
   
-  ans[[x]]$inc_rev_total
-  ans[[x]]$dec_exp_total
-  ans[[x]]$inc_exp_total
-  ans[[x]]$capital_cost_total
-  
   browser() 
+  ans[[x]]$net_annual_impact_before_tax
+  # ans[[x]]$inc_rev_total
+  # ans[[x]]$dec_exp_total
+  # ans[[x]]$inc_exp_total
+  # ans[[x]]$capital_cost_total
+  need(length(ans[[x]]$net_annual_impact_before_tax)>0, "NA") %>% validate()
+  
   isolate({
     # if ( is.null(ans[[x]]$planning_horizon) ) {  return() } 
 ans[[x]]$tax_revenue_minus_expense <-  input$tax_rate/100 *
@@ -93,7 +99,7 @@ ans[[x]]$tax_revenue_minus_expense <-  input$tax_rate/100 *
 
 ans[[x]]$adj_depr <- -pmt(ans[[x]]$WACC/100, ans[[x]]$planning_horizon,
                           npv(ans[[x]]$WACC/100, ans[[x]]$table_cash_flow$depreciation[-1])) +
-  - ans[[x]]$depreciation_at_interest
+   - ans[[x]]$depreciation_at_interest
 
 ans[[x]]$adj_salvage <- -pmt(ans[[x]]$WACC/100, ans[[x]]$planning_horizon,
                              npv(ans[[x]]$WACC/100, ans[[x]]$table_cash_flow$salvage[-1])) +

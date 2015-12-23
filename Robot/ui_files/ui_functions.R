@@ -303,35 +303,35 @@ changeVariablesFinance<- function(x) {
 
 
 
-
-
-changeVariablesCombo <- function(x, x1, x2) {
-  #       Combination profle choices: timing of investment for switching and the delayed portion of the investment in housing.   
-  div( 
-    tabPanel("Finance", 
-             div(style="background-color: #4863A0; color:white;",
-                 fluidRow(column(width=6,  h5(strong("Item"), align="center")),
-                          column(width=2,  h5(strong("Housing"), align="center")),
-                          column(width=2,  h5(strong(paste(x1)), align="center")),
-                          column(width=2,  h5(strong(paste(x2)), align="center"))
-                 )), br(),  
-             fluidRow(column(width=6,  helpText("Year of investment")),
-                      column(width=2,  helpText("0")),
-                      column(width=2,  numericInput(paste0("yr_system1",refProfile(x)),NULL,value=0,min=0,step=1)),
-                      column(width=2,  numericInput(paste0("yr_system2",refProfile(x)),NULL,value=5,min=0,step=1))
-             ), 
-             fluidRow(column(width=6,  helpText("Investment amount at the time of investement ($)")),
-                      column(width=2,  uiOutput(paste0("copy_cost_housing",refProfile(x)))),
-                      column(width=2,  uiOutput(paste0("copy_cost_milking1",refProfile(x)))),
-                      column(width=2,  uiOutput(paste0("copy_cost_milking2",refProfile(x))))
-             ),
-             div(id=paste0(refProfile(x),"delay",1),
-                 fluidRow(column(width=6,  helpText(paste("Delayed portion of the investment till", x2," ($)"))),
-                          column(width=2,  numericInput(paste0("delay_housing1",refProfile(x)),NULL,value=0, min=0,step=20000)),
-                          column(width=2,  helpText("-",align="center")),
-                          column(width=2,  helpText("-",align="center"))
-                 ))
-    )
-    )
-}
-
+# --------------------- Unused ------------------- 
+# 
+# changeVariablesCombo <- function(x, x1, x2) {
+#   #       Combination profle choices: timing of investment for switching and the delayed portion of the investment in housing.   
+#   div( 
+#     tabPanel("Finance", 
+#              div(style="background-color: #4863A0; color:white;",
+#                  fluidRow(column(width=6,  h5(strong("Item"), align="center")),
+#                           column(width=2,  h5(strong("Housing"), align="center")),
+#                           column(width=2,  h5(strong(paste(x1)), align="center")),
+#                           column(width=2,  h5(strong(paste(x2)), align="center"))
+#                  )), br(),  
+#              fluidRow(column(width=6,  helpText("Year of investment")),
+#                       column(width=2,  helpText("0")),
+#                       column(width=2,  numericInput(paste0("yr_system1",refProfile(x)),NULL,value=0,min=0,step=1)),
+#                       column(width=2,  numericInput(paste0("yr_system2",refProfile(x)),NULL,value=5,min=0,step=1))
+#              ), 
+#              fluidRow(column(width=6,  helpText("Investment amount at the time of investement ($)")),
+#                       column(width=2,  uiOutput(paste0("copy_cost_housing",refProfile(x)))),
+#                       column(width=2,  uiOutput(paste0("copy_cost_milking1",refProfile(x)))),
+#                       column(width=2,  uiOutput(paste0("copy_cost_milking2",refProfile(x))))
+#              ),
+#              div(id=paste0(refProfile(x),"delay",1),
+#                  fluidRow(column(width=6,  helpText(paste("Delayed portion of the investment till", x2," ($)"))),
+#                           column(width=2,  numericInput(paste0("delay_housing1",refProfile(x)),NULL,value=0, min=0,step=20000)),
+#                           column(width=2,  helpText("-",align="center")),
+#                           column(width=2,  helpText("-",align="center"))
+#                  ))
+#     )
+#     )
+# }
+# 
