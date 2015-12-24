@@ -11,8 +11,7 @@ lapply(base_profiles, function(x) {
 # Results are stored in a separate list, e.g., ans[["Robots_pb"]]  etc. to avoid triggering other calculations. 
 
 output[[paste0("pb_net_annual_impact_before_tax",x)]] <- renderUI({
-  browser()
-  
+
   input[[paste0("budget_year",x)]] 
   need(length(ans[[x]]$net_annual_impact_before_tax)>0, "NA") %>% validate()
   
@@ -39,8 +38,6 @@ output[[paste0("pb_net_annual_impact_before_tax",x)]] <- renderUI({
 # Create tax and WACC adjustment calculations  -----------
 
 output[[paste0("net_annual_impact_after_tax",x)]] <- renderUI({  
-  
-  browser() 
   
   need(length(ans[[x]]$net_annual_impact_before_tax)>0, "NA") %>% validate()
   

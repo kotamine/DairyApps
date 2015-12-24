@@ -1,70 +1,230 @@
 
 
-#  
-# inputvar_format <- function(var, format, unit, ...) {
-#   do.call(format, list(input[[var]], ...)) %>% paste(unit)
-# }
 
-# 
-# gen_sensitivity_vars <- function(i, x, varname, var0, var1, slider_ini) {
-#   output[[paste0("sensitivity_vars",i,x)]] <- renderUI({
-#     browser()
-#     
-#     input[[var]]
-#     input[[paste0("sensitivity_slider",i)]]
-#     
-#     div( helpText(varname), 
-#          helpText("From:", var0), 
-#          helpText("To:", var1), 
-#          sliderInput(paste0("sensitivity_slider",i),NULL,min=-50, max=50, step=10, value = slider_ini), 
-#          actionButton(paste0("sensitivity_action",i), "Details")
-#     )  
-#   })
-# }
 
 sensitivity_labels <- c("Change in Milk Output","Milking/Chore Labor Wage", "Inflation: Robot/Parlor",
-                           "Inflation: IOFC Margin","Inflation: Labor Wage")
+                        "Inflation: IOFC Margin","Inflation: Labor Wage")
 sensitivity_format <- c("formatcomma", "formatdollar_2d", "round_pct", "round_pct", "round_pct")
 sensitivity_unit <- c("lb", "", "", "", "")
 sensitivity_slider_ini <- c(20, 20, 20, -20, 20) 
 
-lapply(base_profiles, function(x) { 
+lapply(base_profiles, function(x) {  
   
-sensitivity_vars <- c(paste0("milk_change",x),"labor_rate", "inflation_robot","inflation_margin","inflation_labor")
-
-lapply(seq_along(sensitivity_vars), function(i) {
-  output[[paste0("sensitivity_vars",i,x)]] <- renderUI({
+  sensitivity_vars <- c(paste0("milk_change",x),"labor_rate", "inflation_robot","inflation_margin","inflation_labor")
+  
+  lapply(seq_along(sensitivity_vars), function(i) {
     
-    browser()
+    # Create sensitivity variable info and control 
+    output[[paste0("sensitivity_vars",i,x)]] <- renderUI({
+      
+      var <- input[[sensitivity_vars[i]]]
+      input[[paste0("sensitivity_slider",i)]]
+#       shinyjs:: disable(paste0("sensitivity_slider",i))
+      
+      var0 <- do.call(sensitivity_format[i], list(var)) %>% paste(sensitivity_unit[i])
+      var1 <- do.call(sensitivity_format[i], list(var * (1 + input[[paste0("sensitivity_slider",i)]]/100))) %>% 
+        paste(sensitivity_unit[i])
+      if (is.null(input[[paste0("sensitivity_slider",i)]])) {
+        value <- sensitivity_slider_ini[i]
+      } else {
+        value <- input[[paste0("sensitivity_slider",i)]]
+      }
+      
+      div(
+        div(style="background-color:white; color:#4863A0;",
+            h5(sensitivity_labels[i], align="center")), 
+        helpText("Base:", var0, align="center"), 
+        helpText("New :", var1, align="center"), 
+        sliderInput(paste0("sensitivity_slider",i), "% Change",min=-200, max=200, step=20, value = value), 
+        div(actionButton(paste0("sensitivity_action",i), "Details"), align="center") 
+      )  
+    }) 
     
-    var <- input[[sensitivity_vars[i]]]
-    input[[paste0("sensitivity_slider",i)]]
+    observeEvent(input[[paste0("sensitivity_slider",i)]], priority=10, {
+      shinyjs:: disable(paste0("sensitivity_slider",i))
+    })
     
-    var0 <- do.call(sensitivity_format[i], list(var)) %>% paste(sensitivity_unit[i])
-    var1 <- do.call(sensitivity_format[i], list(var * (1 + input[[paste0("sensitivity_slider",i)]]/100))) %>% 
-      paste(sensitivity_unit[i])
-    if (is.null(input[[paste0("sensitivity_slider",i)]])) {
-      value <- sensitivity_slider_ini[i]
-    } else {
-     value <- input[[paste0("sensitivity_slider",i)]]
-    }
+    ans[[paste0(x,"_se_calc",i)]] <- reactive({ 
+      
+      need(length(ans[[x]]$net_annual_impact_before_tax)>0 &&
+             length(input[[paste0("sensitivity_slider",i)]])>0, "NA") %>% validate()
+      input[[paste0("sensitivity_slider",i)]] 
+      
+      isolate({
+        X <- paste0(x,"_se",i)
+        factor <- input[[paste0("sensitivity_slider",i)]]/100     
+        ans[[X]] <- list()
+        ans[[X]]$milk_change  <- input[[paste0("milk_change",x)]] * (1 + (i==1) * factor)
+        ans[[X]]$labor_rate  <- input$labor_rate * (1 + (i==2) * factor)
+        ans[[X]]$inflation_robot  <- input$inflation_robot * (1 + (i==3) * factor)
+        ans[[X]]$inflation_margin <- input$inflation_margin * (1 + (i==4) * factor)
+        ans[[X]]$inflation_labor  <- input$inflation_labor * (1 + (i==5) * factor)
+        
+        source(file.path("session_files", "session_calculation_steps.R"), local=TRUE)  # Calculates main results
+        
+        on.exit(shinyjs:: enable(paste0("sensitivity_slider",i)))
+      }) 
+    }) 
+
     
-    div( div(style="background-color:gray; color:white;",
-             h5(sensitivity_labels[i], align="center")), 
-         helpText("From:", var0, align="right"), 
-         helpText("To:", var1, align="right"), 
-         sliderInput(paste0("sensitivity_slider",i), "% Change",min=-50, max=50, step=10, value = value), 
-         div(actionButton(paste0("sensitivity_action",i), "Details"), align=center) 
-    )  
-  }) 
-})
+  #  ------ Dashboard  -----------
 
-# var0_list <- Map(inputvar_format, sensitivity_vars, sensitivity_format, sensitivity_unit) %>% unlist()
-# var1_list <- Map(inputvar_format, sensitivity_vars, sensitivity_format, sensitivity_unit) %>% unlist()
+    X <- paste0(x,"_se",i)
+    source(file.path("session_files", "session_dashboard.R"), local=TRUE)  # Calculates dashboard items
+      
+  })
+  
+  # ------------- Summary ------------
+  # similar to operations in session_summary.R but defined for each profile x 
 
-# Map(gen_sensitivity_vars, seq_along(sensitivity_vars), x, sensitivity_vars, sensitivity_varlabels, 
-#     var0_list, var1_list, sensitivity_slider_ini)
+  lapply(c('before_tax','after_tax'), function(loc_NAI) {
+    sum[[paste0("sensitivity_table_",loc_NAI,x)]] <- reactive({ 
 
+        mat <- nulls(length(summary_table_vars), length(sensitivity_labels))
+        rownames(mat) <- summary_table_varnames
+        colnames(mat) <- sensitivity_labels
+        loc_NAI_split <- sub("_"," ",loc_NAI)
+        
+        for (j in seq_along(sensitivity_vars)) {
+          for (i in seq_along(summary_table_vars)) {
+            X <- paste0(x,"_se",j)
+            ans[[paste0(x,"_se_calc",j)]]()
+
+            mat[i,j] <- ans[[paste0(X,"_da")]]()[[loc_NAI_split]][[summary_table_vars[i]]]
+          }
+        }
+        
+        mat %>% data.frame()
+        
+      })
+    
+    output[[paste0("sensitivity_table_",loc_NAI,x)]] <- DT::renderDataTable({
+
+      tbl <- sum[[paste0("sensitivity_table_",loc_NAI,x)]]()
+      need(length(tbl) > 0, "NA") %>% validate()
+      
+      tbl[7:8,] <- tbl[7:8,]*100
+      tbl <- round(tbl)
+      tbl[7:8,] <- tbl[7:8,]/100
+      
+      colnames(tbl) <- sensitivity_labels
+      
+      DT::datatable(tbl,
+                    options = list(
+                      scrollX = TRUE,
+                      pageLength = 8,
+                      bLengthChange =FALSE,
+                      searching = FALSE
+                    )) %>%
+        formatCurrency(colnames(tbl))
+    })
+  })
+
+  
+  lapply(c('operating_income','after_tax_cash_flow'), function(loc_var) {
+    sum[[paste0("sensitivity_table_",loc_var,x)]]  <- reactive({
+      
+      need(length(ans[[paste0(x,"_se",1)]])>0,"NA") %>% validate()
+      
+      n_years_max <- ans[[paste0(x,"_se",1)]]$planning_horizon + 1
+      for (i in 2:length(sensitivity_vars)) {
+        n_years_max <- max(n_years_max, (ans[[paste0(x,"_se",i)]]$planning_horizon + 1))
+      }
+      
+      mat <- nulls(n_years_max, length(sensitivity_vars))
+      colnames(mat) <- sensitivity_labels
+      
+      for (j in seq_along(sensitivity_vars)) {
+        X <- paste0(x,"_se",j)
+        tmp_zero <- rep(0, n_years_max - (ans[[X]]$planning_horizon + 1))
+        mat[,j] <- c(ans[[X]]$table_cash_flow[[paste(loc_var)]], tmp_zero) %>% round()
+      }
+      
+      mat <- cbind(Year=c(0:(n_years_max-1)), mat)
+      mat %>% data.frame()
+    })
+    
+    
+    output[[paste0("sensitivity_table_",loc_var,x)]]  <- DT::renderDataTable({ 
+      tbl <- sum[[paste0("sensitivity_table_",loc_var,x)]]()
+      need(length(tbl) > 0, "NA") %>% validate()
+     
+      colnames(tbl) <- c("Year", sensitivity_labels)
+      
+      L <- length(tbl$Year)
+      DT::datatable(tbl,
+                    rownames = FALSE,
+                    options = list(
+                      scrollX = TRUE,
+                      pageLength = L,
+                      bLengthChange =FALSE,
+                      searching = FALSE)) %>%
+        formatCurrency(colnames(tbl)[-1])
+    })
+
+  })
+  
+  output[[paste0("sensitivity_impacts",x)]] <- renderGvis({ 
+
+      need(length(sum[[paste0("sensitivity_table_after_tax",x)]]()) > 0, "NA") %>% validate()
+       
+      tbl <- data.frame( 
+        sen_vars=c("Baseline", sensitivity_labels), 
+        before.tax=lapply(as.numeric(
+          c(sum[["table_before_tax"]]()[refProfileName(x)][1,],
+          sum[[paste0("sensitivity_table_before_tax",x)]]()[1,])), round) %>% unlist(),
+        after.tax =lapply(as.numeric(as.numeric(
+          c(sum[["table_after_tax"]]()[refProfileName(x)][1,],
+            sum[[paste0("sensitivity_table_after_tax",x)]]()[1,]))), round) %>% unlist()
+      ) 
+      
+      gvisColumnChart(tbl, xvar="sen_vars",
+                      yvar=c("before.tax","after.tax"),
+                      options=list( #title="Net Annual Impact ($)",
+                        # titleTextStyle="{fontSize:16}",
+                        legend="top")
+      )
+    })
+  
+  output[[paste0("sensitivity_operating_income_chart",x)]] <- renderGvis({
+    tbl <- sum[[paste0("sensitivity_table_operating_income",x)]]()
+    need(length(tbl) > 0, "NA") %>% validate()
+    
+    colnames(tbl) <- lapply(colnames(tbl), 
+                            function(str) gsub("[.]*$|[.]*(?=[.])","",str, perl = TRUE)) %>% unlist()
+    varnames <- colnames(tbl)[-1]
+    gvisLineChart(tbl, xvar="Year",
+                  yvar= varnames,
+                  options=list(
+                    title="Before-tax Operating Income",
+                    vAxis="{title:'Net Annual Impact ($)'}",
+                    hAxis="{title:'Year'}",
+                    chartArea ='{width: "50%", height: "65%" }',
+                    width=800, height=400
+                  ))
+  })
+  
+  output[[paste0("sensitivity_cashflow_chart",x)]] <- renderGvis({
+    tbl <- sum[[paste0("sensitivity_table_after_tax_cash_flow",x)]]()
+    need(length(tbl) > 0, "NA") %>% validate()
+    
+    colnames(tbl) <- lapply(colnames(tbl),
+                            function(str) gsub("[.]*$|[.]*(?=[.])","",str, perl = TRUE)) %>% unlist()
+    varnames <- colnames(tbl)[-1]
+    
+    gvisLineChart(tbl, xvar="Year",
+                  yvar= varnames,
+                  options=list(
+                    title="After-tax Cash Flow",
+                    vAxis="{title:'Net Annual Impact ($)'}",
+                    hAxis="{title:'Year'}",
+                    chartArea ='{width: "50%", height: "65%" }',
+                    width=800, height=400
+                  )
+                  ) 
+  })
+  
+  
 })
 
 

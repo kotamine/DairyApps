@@ -27,7 +27,7 @@ div(
       ),
       tabPanel("Cash Flow",
                DT::dataTableOutput("summary_table_after_tax_cash_flow")
-      ))
+      ),selected="After Tax")
   )),br(),br()
 )
 

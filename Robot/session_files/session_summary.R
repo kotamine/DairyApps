@@ -39,8 +39,8 @@ lapply(c('operating_income','after_tax_cash_flow'), function(loc_var) {
     mat <- nulls(n_years_max, length(base_profiles))
     colnames(mat) <- lapply(base_profiles, refProfileName) %>% unlist()
     
-    tmp_zero <- rep(0, n_years_max - (ans[[base_profiles[1]]]$planning_horizon + 1))
     for (j in seq_along(base_profiles)) {
+      tmp_zero <- rep(0, n_years_max - (ans[[base_profiles[j]]]$planning_horizon + 1))
       mat[,j] <- c(ans[[base_profiles[j]]]$table_cash_flow[[paste(loc_var)]], tmp_zero) %>% round()
     }
     
@@ -51,7 +51,6 @@ lapply(c('operating_income','after_tax_cash_flow'), function(loc_var) {
 
 
 output$summary_table_before_tax <- DT::renderDataTable({
-  browser()
   tbl <- sum[["table_before_tax"]]()
   need(length(tbl) > 0, "NA") %>% validate()
   

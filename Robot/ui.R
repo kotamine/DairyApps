@@ -40,6 +40,9 @@ shinyUI(
                                br(),br()
                         ))
       ),
+      tabPanel("Test",
+              htmlOutput("test1")
+      ),
       # ---------- Data Entry -----------
       tabPanel("Data Entry", value="Data_Entry",
                # Need to add "$value" for including source in UI: 

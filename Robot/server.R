@@ -52,8 +52,6 @@ shinyServer(function(input, output, session) {
 
   source(file.path("session_files","session_partial_budget.R"), local=TRUE)
 
-  source(file.path("session_files","session_dashboard.R"), local=TRUE)
-   
   source(file.path("session_files","session_summary.R"), local=TRUE)
   
   source(file.path("session_files","session_render_base.R"), local=TRUE)
