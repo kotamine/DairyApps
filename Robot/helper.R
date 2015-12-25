@@ -52,7 +52,7 @@ formatdollar_2d <- gen_formatdollar(2)
 # formatdollar_2d(-12.345)
 
 
-formatdollar2 <- function(x,digit=0) {
+formatdollar2 <- function(x,digit=0) { # add +/- sign
   if (is.na(x)) { return(NA) }
   if (is.null(x)) { return(NA) }
   if (x>=0) {
@@ -62,13 +62,13 @@ formatdollar2 <- function(x,digit=0) {
   }
 }
 
-formatdollar2b <- function(x,digit=0) {
+formatdollar2b <- function(x,digit=0) { # add parenthesis 
   if (is.na(x)) { return(NA) }
   if (is.null(x)) { return(NA) }
   if (x>=0) {
-    paste0("( +$",x %>% round(digit) %>% formatcomma()," )") 
+    paste0("(+$",x %>% round(digit) %>% formatcomma(),")") 
   } else {
-    paste0("( -$",-x %>% round(digit) %>% formatcomma()," )") 
+    paste0("(-$",-x %>% round(digit) %>% formatcomma(),")") 
   }
 }
 
@@ -236,6 +236,7 @@ dash_IOFC <- function(IOFC, IOFC2, basis, x,
   else {
     div(class="well", style=style,  align="center",
         diff  %>% formatdollar2(digit) %>% strong() %>% h3(),
+        h5(IOFC_unit),
         difference %>% formatdollar2b(digit) %>% strong() %>% h4())
   }
 }
@@ -264,6 +265,7 @@ dash_NAI <- function(NAI, x,cutoff=0, difference=NULL) {
   else {
     div(class="well", style=style, align="center",
         NAI %>% formatdollar2() %>% strong() %>% h3(),
+        h5("Net Impact ($/year)"),
         difference %>% formatdollar2b() %>% strong() %>% h4())
   }
 }

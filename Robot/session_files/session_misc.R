@@ -9,23 +9,25 @@ shinyjs::onclick("customDMI",
                  shinyjs::toggle(id="DMI_inputs", anim = TRUE)
 )
 
-# Show/hide Partial Budget Plots
-shinyjs::onclick("PB_plot_show_1",
-                 shinyjs::toggle(id="id_PB_plot_show_1", anim = TRUE)
-)
-
-shinyjs::onclick("PB_plot_show_2",
-                 shinyjs::toggle(id="id_PB_plot_show_2", anim = TRUE)
-)
-
-# Show/hide Cash Flow formula
-shinyjs::onclick("CF_formula_show_1",
-                 shinyjs::toggle(id="id_CF_formula_show_1", anim = TRUE)
-)
-
-shinyjs::onclick("CF_formula_show_2",
-                 shinyjs::toggle(id="id_CF_formula_show_2", anim = TRUE)
-)
+lapply(base_profiles, function(x) {
+  # Show/hide Partial Budget Plots
+  shinyjs::onclick(paste0("PB_plot_show_1",x),
+                   shinyjs::toggle(id=paste0("id_PB_plot_show_1",x), anim = TRUE)
+  )
+  
+  shinyjs::onclick(paste0("PB_plot_show_2",x),
+                   shinyjs::toggle(id=paste0("id_PB_plot_show_2",x), anim = TRUE)
+  )
+  
+  # Show/hide Cash Flow formula
+  shinyjs::onclick(paste0("CF_formula_show_1",x),
+                   shinyjs::toggle(id=paste0("id_CF_formula_show_1",x), anim = TRUE)
+  )
+  
+  shinyjs::onclick(paste0("CF_formula_show_2",x),
+                   shinyjs::toggle(id=paste0("id_CF_formula_show_2",x), anim = TRUE)
+  )
+})
 
 observeEvent(input$coeff_reset,{ 
   updateNumericInput(session, "milk_cow_coeff",NULL,value=0.4,min=0,step=0.1)
@@ -40,7 +42,8 @@ observeEvent(input$coeff_reset,{
 
 
 # Make profile choice equivalent across various tabs 
-list_tabs <- c("dashboard","prMilk", "prLabor","prFinance","prMaintenance","prCapital")
+list_tabs <- c("dashboard","prMilk", "prLabor","prFinance","prMaintenance","prCapital",
+               "partial_budget","cash_flow","sensitivity")
 
 lapply(list_tabs, function(z) {
   observeEvent(input[[paste(z)]], {
@@ -52,24 +55,7 @@ lapply(list_tabs, function(z) {
 
 
 # Make IOFC and NAI choices equivalent across various profiles 
-list_profiles <- c("Robots","Retrofit","New")
-
-# lapply(list_profiles, function(z) {
-#   observeEvent(input[[paste0("IOFC",z)]], {
-#     lapply(list_profiles, function(w) {
-#       updateRadioButtons(session, "IOFC",NULL,
-#                          choices=c("per cow","per cwt"), selected=input[[paste0("IOFC",z)]])
-#       updateRadioButtons(session, "NAI",NULL,
-#                          choices=c("before tax", "after tax"), selected=input[[paste0("NAI",z)]])
-#       if (z!=w)  {
-#         updateRadioButtons(session, paste0("IOFC",w),NULL,
-#                                     choices=c("per cow","per cwt"), selected=input[[paste0("IOFC",z)]])
-#         updateRadioButtons(session, paste0("NAI",w),NULL,
-#                            choices=c("before tax", "after tax"), selected=input[[paste0("NAI",z)]])
-#       }
-#       })
-#   })
-# })
+list_profiles <- c(base_profiles,base_profiles_se)
 
 my_update_dashboard <- function(var, choices) {
 lapply(list_profiles, function(z) {
@@ -89,17 +75,10 @@ lapply(list_profiles, function(z) {
 my_update_dashboard("IOFC", c("per cow","per cwt"))
 my_update_dashboard("NAI", c("before tax", "after tax"))
 
- # c("IOFC","NAI"), list(c("per cow","per cwt"), c("before tax", "after tax")))
 
 
 
 
-   # observeEvent(input$IOFCRobots, {
-   #   updateRadioButtons(session, "IOFC",NULL,choices=c("per cow","per cwt"), selected=input$IOFCRobots)
-   #   updateRadioButtons(session, "IOFCRetrofit",NULL,choices=c("per cow","per cwt"), selected=input$IOFCRobots)
-   #   updateRadioButtons(session, "IOFCNew",NULL,choices=c("per cow","per cwt"), selected=input$IOFCRobots)
-   # })
-   
    
 
 # The following provides the default value for additional_labor and additional_cost when hidden from the user
@@ -128,17 +107,6 @@ my_update_dashboard("NAI", c("before tax", "after tax"))
 
 
 
-
-# # Show/hide Robots vs Parlors summary tables 
-# shinyjs::onclick("tableProfile",
-#                  shinyjs::toggle(id="tableProfileSummary", anim = TRUE)
-# )
-# 
-# # Show/hide Robots vs Parlors profile explanations
-# shinyjs::onclick("readProfile",
-#                  shinyjs::toggle(id="ref_readProfile", anim = TRUE)
-# )
-# 
 
 # ## download cashflow, debt, depreciation tables
 # output$dl_button_cash_flow <- renderUI({

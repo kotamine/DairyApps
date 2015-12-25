@@ -10,6 +10,8 @@ suppressPackageStartupMessages(library(xlsx))
 suppressPackageStartupMessages(library(XLConnect))
 
 source("global_parameters.R")
+source(file.path("ui_files", "ui_dashboard.R"), local=TRUE)  # Contains functions
+
 default_data_1 <- read.xlsx("www/default_user_input_data.xlsx", sheetIndex = 1) 
 default_data_2 <- read.xlsx("www/default_user_input_data.xlsx", sheetIndex = 2) 
 
@@ -18,16 +20,17 @@ default_data_2 <- read.xlsx("www/default_user_input_data.xlsx", sheetIndex = 2)
 
 
 base_profiles <- c("Robots","Retrofit","New")
+base_profiles_se <- c(outer(base_profiles, paste0("_se",c(1:5)),FUN=paste,sep="")) # update the number 5
 # combo_profiles <- c("RetrofitRobots","RetrofitNew")
 
 refProfileName <-  function(x) {
-  switch(x, 
-         "Robots"="Robots",
-         "Retrofit"="Retrofit Parlors",
-         "New"="New Parlors",
-         "RetrofitRobots"="Retrofit/Robots",
-         "RetrofitNew"="Retrofit/New"
-  )
+  if (grepl("_se", x)) {  # TRUE/FALSE for sensitivity analysis
+    x <- gsub("_se\\d+","",x)
+    } 
+    switch(x, 
+           "Robots"="Robots",
+           "Retrofit"="Retrofit Parlors",
+           "New"="New Parlors")
 }
 
 shinyServer(function(input, output, session) { 
@@ -57,7 +60,7 @@ shinyServer(function(input, output, session) {
   source(file.path("session_files","session_render_base.R"), local=TRUE)
   
   # ----------- Sensitivity Analysis -----------
-  source(file.path("session_files","session_sensitivity.R"), local=TRUE)
+   source(file.path("session_files","session_sensitivity.R"), local=TRUE)
   
 #   
 #   # ----------- Scenario Analysis -----------

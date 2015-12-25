@@ -15,44 +15,48 @@ lapply(base_profiles, function(x) {
   lapply(seq_along(sensitivity_vars), function(i) {
     
     # Create sensitivity variable info and control 
-    output[[paste0("sensitivity_vars",i,x)]] <- renderUI({
+    output[[paste0("sensitivity_vars",x,i)]] <- renderUI({
       
       var <- input[[sensitivity_vars[i]]]
-      input[[paste0("sensitivity_slider",i)]]
-#       shinyjs:: disable(paste0("sensitivity_slider",i))
-      
-      var0 <- do.call(sensitivity_format[i], list(var)) %>% paste(sensitivity_unit[i])
-      var1 <- do.call(sensitivity_format[i], list(var * (1 + input[[paste0("sensitivity_slider",i)]]/100))) %>% 
+      input[[paste0("sensitivity_slider",x,i)]]
+
+      val0 <- do.call(sensitivity_format[i], list(var)) %>% paste(sensitivity_unit[i])
+      val1 <- do.call(sensitivity_format[i], list(var * (1 + input[[paste0("sensitivity_slider",x,i)]]/100))) %>% 
         paste(sensitivity_unit[i])
-      if (is.null(input[[paste0("sensitivity_slider",i)]])) {
+      ans[[paste0(x,"_se",i)]]$val0 <- val0
+      ans[[paste0(x,"_se",i)]]$val1 <- val1
+      
+      if (is.null(input[[paste0("sensitivity_slider",x,i)]])) {
         value <- sensitivity_slider_ini[i]
       } else {
-        value <- input[[paste0("sensitivity_slider",i)]]
+        value <- input[[paste0("sensitivity_slider",x,i)]]
       }
       
       div(
         div(style="background-color:white; color:#4863A0;",
             h5(sensitivity_labels[i], align="center")), 
-        helpText("Base:", var0, align="center"), 
-        helpText("New :", var1, align="center"), 
-        sliderInput(paste0("sensitivity_slider",i), "% Change",min=-200, max=200, step=20, value = value), 
-        div(actionButton(paste0("sensitivity_action",i), "Details"), align="center") 
+        helpText("Base:", val0, align="center"), 
+        helpText("New :", val1, align="center"), 
+        sliderInput(paste0("sensitivity_slider",x,i), "% Change",min=-200, max=200, step=20, value = value), 
+        div(actionButton(paste0("sensitivity_action",x,i), "Details"), align="center") 
       )  
     }) 
     
-    observeEvent(input[[paste0("sensitivity_slider",i)]], priority=10, {
-      shinyjs:: disable(paste0("sensitivity_slider",i))
+    observeEvent(input[[paste0("sensitivity_slider",x,i)]], priority=1000, {
+      shinyjs:: disable(paste0("sensitivity_slider",x,i))
     })
     
+
+    # Calculate results for a given profile and sensitivity variable  
     ans[[paste0(x,"_se_calc",i)]] <- reactive({ 
       
       need(length(ans[[x]]$net_annual_impact_before_tax)>0 &&
-             length(input[[paste0("sensitivity_slider",i)]])>0, "NA") %>% validate()
+             length(input[[paste0("sensitivity_slider",x,i)]])>0, "NA") %>% validate()
       input[[paste0("sensitivity_slider",i)]] 
       
       isolate({
         X <- paste0(x,"_se",i)
-        factor <- input[[paste0("sensitivity_slider",i)]]/100     
+        factor <- input[[paste0("sensitivity_slider",x,i)]]/100     
         ans[[X]] <- list()
         ans[[X]]$milk_change  <- input[[paste0("milk_change",x)]] * (1 + (i==1) * factor)
         ans[[X]]$labor_rate  <- input$labor_rate * (1 + (i==2) * factor)
@@ -62,7 +66,7 @@ lapply(base_profiles, function(x) {
         
         source(file.path("session_files", "session_calculation_steps.R"), local=TRUE)  # Calculates main results
         
-        on.exit(shinyjs:: enable(paste0("sensitivity_slider",i)))
+        on.exit(shinyjs:: enable(paste0("sensitivity_slider",x,i)))
       }) 
     }) 
 
@@ -72,8 +76,32 @@ lapply(base_profiles, function(x) {
     X <- paste0(x,"_se",i)
     source(file.path("session_files", "session_dashboard.R"), local=TRUE)  # Calculates dashboard items
       
+    # Update the selected variable in the "Details" 
+    observeEvent(input[[paste0("sensitivity_action",x,i)]], {
+      shinyjs::show(id=paste0("sensitivity_details",x), anim=TRUE)
+      ans[[paste0(x,"_se_details")]] <- i
+    }) 
+    
   })
   
+  shinyjs::onclick(paste0("sensitivity_details_close",x),
+                   shinyjs::hide(id=paste0("sensitivity_details",x), anim=TRUE)
+  )
+  
+  # Show dashboard in "Details"
+  output[[paste0("sensitivity_dashboard",x)]] <- renderUI({
+
+    i <- ans[[paste0(x,"_se_details")]]
+    X <- paste0(x,"_se",i)
+    need(length(ans[[paste0(x,"_da_","after_tax")]]$NAI)>0,"Please first see Data Entry tab.") %>% validate()
+    div( 
+      div(style="background-color:white; color:#4863A0;",
+     h4(paste0(sensitivity_labels[i],","),  "Change by", input[[paste0("sensitivity_slider",x,i)]],"%", 
+        "(Base:",ans[[X]]$val0, "  ->  New:",ans[[X]]$val1, ")", align="center")), 
+     uiDashboard(X)
+    ) 
+  }) 
+   
   # ------------- Summary ------------
   # similar to operations in session_summary.R but defined for each profile x 
 
@@ -124,7 +152,7 @@ lapply(base_profiles, function(x) {
   lapply(c('operating_income','after_tax_cash_flow'), function(loc_var) {
     sum[[paste0("sensitivity_table_",loc_var,x)]]  <- reactive({
       
-      need(length(ans[[paste0(x,"_se",1)]])>0,"NA") %>% validate()
+      need(length(ans[[paste0(x,"_se",2)]]$table_cash_flow)>0,"NA") %>% validate()
       
       n_years_max <- ans[[paste0(x,"_se",1)]]$planning_horizon + 1
       for (i in 2:length(sensitivity_vars)) {
@@ -167,14 +195,16 @@ lapply(base_profiles, function(x) {
   output[[paste0("sensitivity_impacts",x)]] <- renderGvis({ 
 
       need(length(sum[[paste0("sensitivity_table_after_tax",x)]]()) > 0, "NA") %>% validate()
+      
+     base_name <- gsub(" ",".",refProfileName(x))
        
       tbl <- data.frame( 
         sen_vars=c("Baseline", sensitivity_labels), 
         before.tax=lapply(as.numeric(
-          c(sum[["table_before_tax"]]()[refProfileName(x)][1,],
+          c(sum[["table_before_tax"]]()[base_name][1,],
           sum[[paste0("sensitivity_table_before_tax",x)]]()[1,])), round) %>% unlist(),
         after.tax =lapply(as.numeric(as.numeric(
-          c(sum[["table_after_tax"]]()[refProfileName(x)][1,],
+          c(sum[["table_after_tax"]]()[base_name][1,],
             sum[[paste0("sensitivity_table_after_tax",x)]]()[1,]))), round) %>% unlist()
       ) 
       
@@ -205,6 +235,7 @@ lapply(base_profiles, function(x) {
   })
   
   output[[paste0("sensitivity_cashflow_chart",x)]] <- renderGvis({
+  
     tbl <- sum[[paste0("sensitivity_table_after_tax_cash_flow",x)]]()
     need(length(tbl) > 0, "NA") %>% validate()
     

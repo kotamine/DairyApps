@@ -9,17 +9,24 @@ suppressPackageStartupMessages(library(dplyr))
 suppressPackageStartupMessages(library(xlsx))
 suppressPackageStartupMessages(library(XLConnect))
 
-
-source(file.path("ui_files","ui_functions.R"), local=TRUE)
-source(file.path("ui_files", "ui_partial_budget.R"), local=TRUE)  # Contains functions
-source(file.path("ui_files", "ui_cash_flow.R"), local=TRUE)  # Contains functions
-source(file.path("ui_files", "ui_dashboard.R"), local=TRUE)  # Contains functions
-source(file.path("ui_files", "ui_sensitivity.R"), local=TRUE)  # Contains functions
+# Load files that contain functions
+source(file.path("ui_files","ui_data_entry_functions.R"), local=TRUE)
+source(file.path("ui_files", "ui_partial_budget.R"), local=TRUE)  
+source(file.path("ui_files", "ui_cash_flow.R"), local=TRUE)  
+source(file.path("ui_files", "ui_dashboard.R"), local=TRUE) 
+source(file.path("ui_files", "ui_sensitivity.R"), local=TRUE)  
 
 
 base_profiles <- c("Robots","Retrofit","New")
-combo_profiles <- c("RetrofitRobots","RetrofitNew")
+# combo_profiles <- c("RetrofitRobots","RetrofitNew")
 
+refProfileName <-  function(x) {
+  switch(x, 
+         "Robots"="Robots",
+         "Retrofit"="Retrofit Parlors",
+         "New"="New Parlors"
+  )
+}
 
 shinyUI(  
   fluidPage(
@@ -40,9 +47,6 @@ shinyUI(
                                br(),br()
                         ))
       ),
-      tabPanel("Test",
-              htmlOutput("test1")
-      ),
       # ---------- Data Entry -----------
       tabPanel("Data Entry", value="Data_Entry",
                # Need to add "$value" for including source in UI: 
@@ -50,13 +54,18 @@ shinyUI(
 
                source(file.path("ui_files","ui_data_entry_tabs.R"), local=TRUE)$value,
                
-               tabsetPanel(id="dashboard",
+               tabsetPanel(id="dashboard", 
+#                            The following does not work for some reason..
+#                            lapply(base_profiles, function(profile) {
+#                              tabPanel(refProfileName(profile), value=profile,
+#                                       uiDashboard(profile))
+#                            }) 
                            tabPanel("Robots", value=base_profiles[1],
-                                    uiDashboard("Robots")),
+                                    uiDashboard(base_profiles[1])),
                            tabPanel("Retrofit Parlors", value=base_profiles[2],
-                                    uiDashboard("Retrofit Parlors")),
+                                    uiDashboard(base_profiles[2])),
                            tabPanel("New Parlors", value=base_profiles[3],
-                                    uiDashboard("New Parlors"))
+                                    uiDashboard(base_profiles[3]))
                            ),
                shinyjs::hidden(radioButtons("IOFC",NULL,choices=c("per cow","per cwt"), selected="per cwt")),
                shinyjs::hidden(radioButtons("NAI",NULL, choices=c("before tax", "after tax"), selected="after tax"))
@@ -83,11 +92,11 @@ shinyUI(
                                 )),
                 tabsetPanel(id="partial_budget",
                             tabPanel("Robots", value=base_profiles[1],
-                                     uiPartialBudget("Robots")),
+                                     uiPartialBudget(base_profiles[1])),
                             tabPanel("Retrofit Parlors", value=base_profiles[2],
-                                     uiPartialBudget("Retrofit Parlors")),
+                                     uiPartialBudget(base_profiles[2])),
                             tabPanel("New Parlors", value=base_profiles[3],
-                                     uiPartialBudget("New Parlors"))
+                                     uiPartialBudget(base_profiles[3]))
                 )
                
       ),
@@ -96,25 +105,27 @@ shinyUI(
                 h3("Cash Flow Analysis",align="center"),
                 tabsetPanel(id="cash_flow",
                             tabPanel("Robots", value=base_profiles[1],
-                                     uiCashFlow("Robots")),
+                                     uiCashFlow(base_profiles[1])),
                             tabPanel("Retrofit Parlors", value=base_profiles[2],
-                                     uiCashFlow("Retrofit Parlors")),
+                                     uiCashFlow(base_profiles[2])),
                             tabPanel("New Parlors", value=base_profiles[3],
-                                     uiCashFlow("New Parlors"))
+                                     uiCashFlow(base_profiles[3]))
                 )
       ),
+      # ---------- Summary  -----------
       tabPanel("Summary", value="Summary",
                source(file.path("ui_files","ui_summary.R"), local=TRUE)$value
                ),
+      # ---------- Sensitivity Analysis -----------
       tabPanel("Sensitivity", value="Sensitivity",
                h3("Sensitivity Analysis",align="center"),
                tabsetPanel(id="sensitivity",
                            tabPanel("Robots", value=base_profiles[1],
-                                    uiSensitivity("Robots")),
+                                    uiSensitivity(base_profiles[1])),
                            tabPanel("Retrofit Parlors", value=base_profiles[2],
-                                    uiSensitivity("Retrofit Parlors")),
+                                    uiSensitivity(base_profiles[2])),
                            tabPanel("New Parlors", value=base_profiles[3],
-                                    uiSensitivity("New Parlors"))
+                                    uiSensitivity(base_profiles[3]))
                )
       ),
 #       # ---------- Additional Analyses -----------
@@ -138,15 +149,6 @@ shinyUI(
 #                                                                             includeMarkdown(file.path("text","scenario.md")))
 #                                            ))
 #                           )),
-#                  
-#                  tabPanel("Robots vs Parlors",
-#                           conditionalPanel("input.budget==0",
-#                                            div(helpText("Please review all tabs in Data Entry."),align="center")
-#                           ),
-#                           conditionalPanel("input.budget>0",
-#                                            source(file.path("ui_files", "ui_robot_parlor.R"), local=TRUE)$value  
-#                                            
-#                           ))
 #       ),
       # ---------- About -----------
       tabPanel("About", value = "About", 

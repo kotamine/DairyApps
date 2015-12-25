@@ -171,6 +171,7 @@ ans[[X]]$avg_interest <-  (ans[[X]]$loan_housing * input[[paste0("r_housing",x)]
   (ans[[X]]$loan_housing + ans[[X]]$loan_milking1)  
 
 
+
 source(file.path("session_files", "session_cash_flow.R"), local=TRUE)  # Calculates cash flow tables
 
 

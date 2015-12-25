@@ -268,82 +268,175 @@ output$rep_milk_change <- renderUI({
 
 
 ## ------------ Dashboard ------------
-lapply(base_profiles, function(x) { 
+lapply(c(base_profiles,base_profiles_se), function(x) { 
+  
+  sensitivity <- grepl("_se", x)  # TRUE/FALSE for sensitivity analysis
   
 output[[paste0("IOFC",x)]] <- renderUI({
+  if (sensitivity) {
+    if (input$IOFC=="per cow") {
+      difference <- ans[[paste0(x,"_da")]]()[[input$NAI]]$did_IOFC
+    } else  {           
+      difference <- ans[[paste0(x,"_da")]]()[[input$NAI]]$did_IOFC_cwt
+    }
+  } else {
+    difference <- NULL
+  }
+    
   if (input$IOFC=="per cow") {
     dash_IOFC(ans[[paste0(x,"_da")]]()[[input$NAI]]$IOFC, 
-              ans[[paste0(x,"_da")]]()[[input$NAI]]$IOFC2, basis=input$IOFC, x)
+              ans[[paste0(x,"_da")]]()[[input$NAI]]$IOFC2, basis=input$IOFC, 
+              x, difference=difference)
   } else {
     dash_IOFC(ans[[paste0(x,"_da")]]()[[input$NAI]]$IOFC_cwt,
-              ans[[paste0(x,"_da")]]()[[input$NAI]]$IOFC2_cwt, basis=input$IOFC, x)
+              ans[[paste0(x,"_da")]]()[[input$NAI]]$IOFC2_cwt, basis=input$IOFC, 
+              x, difference=difference)
   }
 })  
 
 
 output[[paste0("NAI",x)]] <- renderUI({
-  dash_NAI(ans[[paste0(x,"_da")]]()[[input$NAI]]$NAI, x,cutoff=0)
+  if (sensitivity) {
+     difference <-ans[[paste0(x,"_da")]]()[[input$NAI]]$diff_NAI
+  } else {
+     difference <-NULL
+  }
+  dash_NAI(ans[[paste0(x,"_da")]]()[[input$NAI]]$NAI, x,cutoff=0, difference=difference)
 })
 
-output[[paste0("milk_feed",x)]] <- renderUI({
-    need(!is.null(ans[[paste0(x,"_da")]]()[[input$NAI]]$milk_feed),"NA") %>% validate()
+dashboard_items <- c("milk_feed","labor_repair","capital","misc","inflation")
+dashboard_colors <- c("#1569C7", "#FF926F", "#64E986", "#EDDA74", "#7A5DC7")
+dashboard_labels <- c("Milk Income - Feed Cost", "Labor + Repair Cost", "Cost of Capital",
+                      "Others", "Inflation Adjustments")
+    
+lapply(dashboard_items, function(item) {
   
-  div(class="well well-sm", style= "background-color: #1569C7; color:white;", 
-      ans[[paste0(x,"_da")]]()[[input$NAI]]$milk_feed %>% formatdollar2() %>% strong() %>% h4(),
-      h5("Milk Income - Feed Cost"), h5("under", refProfileName(x)))
-})  
-
-output[[paste0("labor_repair",x)]] <- renderUI({
-    need(!is.null(ans[[paste0(x,"_da")]]()[[input$NAI]]$labor_repair ),"NA")  %>% validate()
+  output[[paste0(item,x)]] <- renderUI({
+    need(!is.null(ans[[paste0(x,"_da")]]()[[input$NAI]][[item]]),"NA") %>% validate()
+    
+    loc <- which(dashboard_items==item)
+    
+    if (sensitivity) {
+      difference <- ans[[paste0(x,"_da")]]()[[input$NAI]][[paste0("diff_",item)]] %>% formatdollar2b()
+    } else {
+      difference <- paste("under", refProfileName(x))
+    }
+    
+    div(class="well well-sm", 
+        style= paste0("background-color: ", dashboard_colors[loc], "; color:white;"), 
+        ans[[paste0(x,"_da")]]()[[input$NAI]][[item]] %>% formatdollar2() %>% strong() %>% h4(), 
+        h5(dashboard_labels[loc]), h5(difference)) 
+  })  
   
-  div(class="well well-sm", style= "background-color: #FF926F; color:white;", 
-      ans[[paste0(x,"_da")]]()[[input$NAI]]$labor_repair %>% formatdollar2() %>% strong() %>% h4(),
-      h5("Labor + Repair Cost"),  h5("under", refProfileName(x)))
-})  
-
-output[[paste0("captial_cost",x)]] <- renderUI({
-    need(!is.null(ans[[paste0(x,"_da")]]()[[input$NAI]]$capital),"NA") %>% validate()
-  
-  div(class="well well-sm", style= "background-color: #64E986; color:white;", 
-      (ans[[paste0(x,"_da")]]()[[input$NAI]]$capital) %>% formatdollar2() %>% strong() %>% h4(),
-      h5("Cost of Capital"),   h5("under", refProfileName(x)))
-})  
-
-output[[paste0("misc",x)]] <- renderUI({
-    need(!is.null(ans[[paste0(x,"_da")]]()[[input$NAI]]$misc ),"NA") %>% validate()
-  
-  div(class="well well-sm", style= "background-color: #EDDA74; color:white;", 
-      ans[[paste0(x,"_da")]]()[[input$NAI]]$misc %>% formatdollar2() %>% strong %>% h4(), 
-      h5("Others"),  h5("under", refProfileName(x)))
-}) 
-
-output[[paste0("inflation",x)]] <- renderUI({
-    need(!is.null(ans[[paste0(x,"_da")]]()[[input$NAI]]$inflation ),"NA") %>% validate()
-
-  div(class="well well-sm", style= "background-color: #7A5DC7; color:white;", 
-      ans[[paste0(x,"_da")]]()[[input$NAI]]$inflation %>% formatdollar2() %>% strong %>% h4(), 
-      h5("Inflation Adjustments"),  h5("under", refProfileName(x)))
-})  
-
-output[[paste0("plot1",x)]] <- renderPlot({ 
-  dash_plot1(ans[[paste0(x,"_da")]]()[[input$NAI]]$feed_current,ans[[paste0(x,"_da")]]()[[input$NAI]]$feed_robot,
-             ans[[paste0(x,"_da")]]()[[input$NAI]]$milk_current,ans[[paste0(x,"_da")]]()[[input$NAI]]$milk_robot, x)
 })
 
-output[[paste0("plot2",x)]]<- renderPlot({
-  dash_plot2(ans[[paste0(x)]]$inc_exp_repair,ans[[paste0(x,"_da")]]()[[input$NAI]]$labor_current,
-             ans[[paste0(x,"_da")]]()[[input$NAI]]$labor_robot, x) 
+
+# output[[paste0("plot1",x)]] <- renderPlot({ 
+#   dash_plot1(ans[[paste0(x,"_da")]]()[[input$NAI]]$feed_current,ans[[paste0(x,"_da")]]()[[input$NAI]]$feed_robot,
+#              ans[[paste0(x,"_da")]]()[[input$NAI]]$milk_current,ans[[paste0(x,"_da")]]()[[input$NAI]]$milk_robot, x)
+# })
+
+
+
+output[[paste0("plot1",x)]] <- renderGvis({ 
+
+  tbl <- data.frame(
+    varnames=c("Milk","Feed"),
+    Robot=(c(ans[[paste0(x,"_da")]]()[[input$NAI]]$milk_robot,
+            ans[[paste0(x,"_da")]]()[[input$NAI]]$feed_robot)/1000) %>% round,
+    color1=rep("#356AE8",2),
+    Current=(c(ans[[paste0(x,"_da")]]()[[input$NAI]]$milk_current, 
+              ans[[paste0(x,"_da")]]()[[input$NAI]]$feed_current)/1000) %>% round,
+    color2=rep("#99CEFF",2)
+  )
+  colnames(tbl)[2] <- gsub(" ","",refProfileName(x))
+  
+  names(tbl)<-c("varnames",
+                colnames(tbl)[2],paste0(colnames(tbl)[2],".style"),
+                "Current","Current.style")
+  
+  
+  gvisBarChart(tbl, xvar=colnames(tbl)[1],
+                  yvar=colnames(tbl)[-1],
+                  options=list(title="Milk - Feed",
+                    titleTextStyle="{fontSize:12}",
+                    legend="none",
+                    vAxis="{fontSize:12}", 
+                    hAxis="{title:'$1,000'}",
+                    chartArea ='{width: "50%", height: "50%" }')
+  )
 })
 
-output[[paste0("plot3",x)]] <- renderPlot({  
-  dash_plot3(ans[[paste0(x,"_da")]]()[[input$NAI]]$capital_recovery_robot2,ans[[paste0(x,"_da")]]()[[input$NAI]]$capital_recovery_housing2,
-             ans[[paste0(x)]]$cost_downpayment, ans[[x]]$salvage_milking_PV, x)  
+
+# output[[paste0("plot2",x)]]<- renderPlot({
+#   dash_plot2(ans[[paste0(x)]]$inc_exp_repair,ans[[paste0(x,"_da")]]()[[input$NAI]]$labor_current,
+#              ans[[paste0(x,"_da")]]()[[input$NAI]]$labor_robot, x) 
+# })
+
+output[[paste0("plot2",x)]] <- renderGvis({ 
+  
+  tbl <- data.frame(
+    varnames=c("Labor","Repair"),
+    Robot=(c(ans[[paste0(x,"_da")]]()[[input$NAI]]$labor_robot,
+             ans[[paste0(x)]]$inc_exp_repair)/1000) %>% round,
+    color1=rep("#FF7F50",2),
+    Current=(c(ans[[paste0(x,"_da")]]()[[input$NAI]]$labor_current, 
+               0)/1000) %>% round,
+    color2=rep("#FFBB8C",2)
+  )
+  colnames(tbl)[2] <- gsub(" ","",refProfileName(x))
+  
+  names(tbl)<-c("varnames",
+                colnames(tbl)[2],paste0(colnames(tbl)[2],".style"),
+                "Current","Current.style")
+  
+  gvisBarChart(tbl, xvar=colnames(tbl)[1],
+               yvar=colnames(tbl)[-1],
+               options=list(title="Labor + Repair",
+                            titleTextStyle="{fontSize:12}",
+                            legend="none",
+                            vAxis="{fontSize:12}", 
+                            hAxis="{title:'$1,000'}",
+                            chartArea ='{width: "50%", height: "50%"}')
+  )
+})
+
+# output[[paste0("plot3",x)]] <- renderPlot({  
+#   dash_plot3(ans[[paste0(x,"_da")]]()[[input$NAI]]$capital_recovery_robot2,
+#              ans[[paste0(x,"_da")]]()[[input$NAI]]$capital_recovery_housing2,
+#              ans[[paste0(x)]]$cost_downpayment, ans[[x]]$salvage_milking_PV, x)  
+# })
+
+output[[paste0("plot3",x)]] <- renderGvis({ 
+  tbl <- data.frame(
+    varnames=c(refProfileName(x),"Housing","Downpayment","Salvage"),
+    Robot=(c(ans[[paste0(x,"_da")]]()[[input$NAI]]$capital_recovery_robot2, 
+           ans[[paste0(x,"_da")]]()[[input$NAI]]$capital_recovery_housing2, 
+           ans[[paste0(x)]]$cost_downpayment, 
+           -ans[[x]]$salvage_milking_PV)/1000) %>% round, 
+    color1=rep("#64E986",4)  
+  )   
+  colnames(tbl)[2] <- gsub(" ","",refProfileName(x))
+    
+  names(tbl)<-c("varnames",
+                colnames(tbl)[2],paste0(colnames(tbl)[2],".style"))
+  
+  gvisBarChart(tbl, xvar=colnames(tbl)[1],
+               yvar=colnames(tbl)[-1],
+               options=list(title="Capital Cost",
+                            titleTextStyle="{fontSize:12}",
+                            legend="none",
+                            vAxis="{fontSize:12}", 
+                            hAxis="{title:'$1,000'}",
+                            chartArea ='{width: "50%", height: "50%" }')
+  )
 })
 
 output[[paste0("cashflow_small_chart",x)]] <- renderGvis({
   if (length(ans[[x]][["table_cash_flow"]])==0) return()
   tbl <- round(ans[[x]][["table_cash_flow"]])
   n_year1 <- ans[[x]]$planning_horizon + 1
+  
   df <- data.frame(Year=c(1:n_year1))
   if (input$NAI=="before tax") {
     tax_status <- "Before-tax"
@@ -359,7 +452,8 @@ output[[paste0("cashflow_small_chart",x)]] <- renderGvis({
                   vAxis= paste("{title:'Impact under", refProfileName(x), "($)'}"),
                   hAxis="{title:'Year'}",
                   legend="none"
-                ))
+                )
+                )
 })
 
 })

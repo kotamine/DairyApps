@@ -3,6 +3,37 @@
 library(ggplot2)
 library(scales)
 
+tbl <- data.frame( 
+  varnames=c("Milk","Feed"),
+  Robot=c(200,
+          150) %>% round,
+  color1=rep("#2B60DE",2),
+  Current=c(180, 
+           130)  %>% round,
+  color2=rep("#99CEFF",2)
+) 
+names(tbl)<-c("varnames","Robot","Robot.style","Current","Current.style")
+
+gvisBarChart(tbl, xvar=colnames(tbl)[1],
+             yvar=colnames(tbl)[-1] #,
+#              options=list( #title="Net Annual Impact ($)",
+#                # titleTextStyle="{fontSize:16}",
+#                legend="none")
+) %>% plot()
+
+tbl2 <- data.frame( 
+  varnames=c("Milk","Feed"),
+  Robot=c(200,150,80, 100) %>% round,
+  color1=rep("#2B60DE",4)
+) 
+names(tbl2)<-c("varnames","Robot","Robot.style")
+
+gvisBarChart(tbl2, xvar=colnames(tbl2)[1],
+             yvar=colnames(tbl2)[-1], #,
+                          options=list(
+                            legend="none")
+) %>% plot()
+
 
 a <- data.frame("vars"=c("v1","v1","v2", "v2"), "values"=c(1.2,2.1,1.4,1.8),"type"= c(0,1,0,1)) 
 

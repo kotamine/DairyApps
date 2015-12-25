@@ -1,15 +1,5 @@
 
 
-# refProfile <-  function(x) {
-#   switch(x, 
-#          "Robots"=base_profiles[1],
-#          "Retrofit Parlors"=base_profiles[2],
-#          "New Parlors"=base_profiles[3],
-#          "Retrofit/Robots"=combo_profiles[1],
-#          "Retrofit/New"=combo_profiles[2]
-#   )
-# }
-
 changeVariablesCapital<- function(x) {   
   # capital: herd increase, (total herd size), robot/parlor investment unit cost,  unit, (robot/parlor total), 
   # related housing changes per cow,(related housing total),  (total investment), (total investement per cow) 

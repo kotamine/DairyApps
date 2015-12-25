@@ -76,6 +76,29 @@
       ans[[paste0(X,"_da_",loc_NAI)]]$capital_recovery_housing2 <- ans[[X]]$capital_recovery_housing +
         - (loc_NAI=="after_tax")*ans[[X]]$tax_deduction_housing
       
+      
+      if (grepl("_se", X)) {  # TRUE/FALSE for sensitivity analysis
+        
+        dashboard_items_all <- c("NAI","IOFC","IOFC2", "IOFC_cwt", "IOFC2_cwt", 
+                                 "milk_feed","labor_repair","capital","misc","inflation")
+        
+        lapply(dashboard_items_all, function(item) {
+          # Take a difference between X (sensitivity) and x (baseline)
+          ans[[paste0(X,"_da_",loc_NAI)]][[paste0("diff_",item)]] <- 
+              ans[[paste0(X,"_da_",loc_NAI)]][[item]] - ans[[paste0(x,"_da_",loc_NAI)]][[item]]
+#             print(item)
+#             print(ans[[paste0(X,"_da_",loc_NAI)]][[item]])
+#             print(ans[[paste0(x,"_da_",loc_NAI)]]) 
+#             print(ans[[paste0(x,"_da_",loc_NAI)]][[item]])
+        })
+
+        ans[[paste0(X,"_da_",loc_NAI)]]$did_IOFC <-  
+          ans[[paste0(X,"_da_",loc_NAI)]]$diff_IOFC2 -  ans[[paste0(X,"_da_",loc_NAI)]]$diff_IOFC
+        
+        ans[[paste0(X,"_da_",loc_NAI)]]$did_IOFC_cwt <-  
+          ans[[paste0(X,"_da_",loc_NAI)]]$diff_IOFC2_cwt -  ans[[paste0(X,"_da_",loc_NAI)]]$diff_IOFC_cwt
+
+      }
      })
     })
      list("before tax"=ans[[paste0(X,"_da_before_tax")]], "after tax"=ans[[paste0(X,"_da_after_tax")]])

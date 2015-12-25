@@ -134,10 +134,10 @@ lapply(base_profiles, function(x) {
     df <- data.frame(Year=c(1:n_year))
     df$Positive_Minus_Negative <- project_inflation(n_year, ans[[x]]$positive_total-ans[[x]]$inc_exp_total, 
                                                     input$inflation_margin/100) - round(ans[[x]]$capital_cost_total) 
-    df$Inflation_Adjustments <-   - pmt(ans[[x]]$avg_interest/100, ans[[x]]$planning_horizon, 
+    df$Inflation_Adjustments <-   (- pmt(ans[[x]]$avg_interest/100, ans[[x]]$planning_horizon, 
                                         npv(ans[[x]]$avg_interest/100, ans[[x]]$table_cash_flow$revenue_minus_expense[-1])) +
       - (project_inflation(n_year, ans[[x]]$positive_total, input$inflation_margin/100) +
-         - project_inflation(n_year, ans[[x]]$inc_exp_total, input$inflation_margin/100)) %>% round() 
+         - project_inflation(n_year, ans[[x]]$inc_exp_total, input$inflation_margin/100))) %>% round() 
     
     df$Annualized_Before_Tax_Impact <-  rep(round(ans[[paste0(x,"_pb")]]$pb_net_annual_impact_before_tax), n_year) 
     
