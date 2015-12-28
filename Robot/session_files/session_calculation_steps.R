@@ -82,35 +82,8 @@ ans[[X]]$loan_housing <- ans[[X]]$cost_housing - input[[paste0("down_housing",x)
 ans[[X]]$loan_milking1 <- ans[[X]]$cost_milking1 - input[[paste0("down_milking1",x)]]  
 +input[[paste0("delay_housing1",x)]]
 ans[[X]]$loan_milking2 <- ans[[X]]$cost_milking2 - input[[paste0("down_milking2",x)]] 
-
-
 ans[[X]]$yr_sustem2 <- input[[paste0("useful_years",x)]]
-ans[[X]]$copy_salvage_milking1 <- input[[paste0("salvage_milking1",x)]]*
-  (1+ans[[X]]$inflation_robot/100)^(1+input[[paste0("yr_system1",x)]]) 
-ans[[X]]$copy_salvage_milking2 <- ans[[X]]$salvage_milking_fv1
 
-
-# Create copies of input$vars for Cash Flow tab etc.
-var_stem <- c("copy_r", "copy_down", "copy_hr", "copy_loan", "copy_cost")
-var_ending <- c("housing","milking1","milking2")
-
-vars <- lapply(var_stem, function(stem) {
-  lapply(var_ending, function(ending) {
-    paste0(stem,"_",ending)
-  })
-}) %>% unlist()
-
-lapply(vars, function(z) {
-  if (grep("copy_r",z) %>% length() >0 | grep("copy_down",z) %>% length() >0) {
-    # Assume interest rate for the second set of Milking system is the same as for the first set
-    if (z=="copy_r_milking2")  ans[[X]]$copy_r_milking2 <- input[[paste0("r_milking1",x)]]
-    else ans[[X]][[paste0(z)]] <- input[[paste0(sub("copy_","",z),x)]]
-  }
-  if (grep("copy_hr",z) %>% length() >0)  ans[[X]][[paste0(z)]] <- input$hurdle_rate
-  if (grep("copy_loan",z) %>% length() >0 | grep("copy_cost",z) %>% length() >0) {
-    ans[[X]][[paste0(z)]] <- ans[[X]][[sub("copy_","",z)]]
-  } 
-})
 
 # Positive Impacts (year 1)
 ans[[X]]$inc_rev_herd_size <- ans[[X]]$milk_day_cow_alt * 330 *
@@ -204,6 +177,35 @@ ans[[X]]$inflation_adjustment <-  - pmt(ans[[X]]$avg_interest/100, ans[[X]]$plan
 ans[[X]]$net_annual_impact_before_tax <- ans[[X]]$positive_total - ans[[X]]$negative_total + ans[[X]]$inflation_adjustment
 
 
+if (calc_type == "full") { # skip some calculations that are not needed for some use
+
+  # Create copies of input$vars for Cash Flow tab etc.
+  ans[[X]]$copy_salvage_milking1 <- input[[paste0("salvage_milking1",x)]]*
+    (1+ans[[X]]$inflation_robot/100)^(1+input[[paste0("yr_system1",x)]]) 
+  ans[[X]]$copy_salvage_milking2 <- ans[[X]]$salvage_milking_fv1
+  
+  var_stem <- c("copy_r", "copy_down", "copy_hr", "copy_loan", "copy_cost")
+  var_ending <- c("housing","milking1","milking2")
+  
+  vars <- lapply(var_stem, function(stem) {
+    lapply(var_ending, function(ending) {
+      paste0(stem,"_",ending)
+    })
+  }) %>% unlist()
+  
+  lapply(vars, function(z) {
+    if (grep("copy_r",z) %>% length() >0 | grep("copy_down",z) %>% length() >0) {
+      # Assume interest rate for the second set of Milking system is the same as for the first set
+      if (z=="copy_r_milking2")  ans[[X]]$copy_r_milking2 <- input[[paste0("r_milking1",x)]]
+      else ans[[X]][[paste0(z)]] <- input[[paste0(sub("copy_","",z),x)]]
+    }
+    if (grep("copy_hr",z) %>% length() >0)  ans[[X]][[paste0(z)]] <- input$hurdle_rate
+    if (grep("copy_loan",z) %>% length() >0 | grep("copy_cost",z) %>% length() >0) {
+      ans[[X]][[paste0(z)]] <- ans[[X]][[sub("copy_","",z)]]
+    } 
+  })
+  
+  
 # cost of cash flows for interest payments (evaluated at separate instests for milking and housing)
 ans[[X]]$interest_at_interest <-  pmt(input[[paste0("r_milking1",x)]]/100, ans[[X]]$planning_horizon,
                                       npv(input[[paste0("r_milking1",x)]]/100, ans[[X]]$table_debt$milking_interest)) +
@@ -240,4 +242,6 @@ ans[[X]]$tax_deduction_housing <-
                         +  pmt(ans[[X]]$avg_interest/100, ans[[X]]$planning_horizon,
                                npv(ans[[X]]$avg_interest/100, ans[[X]]$table_debt$barn_interest)))
 
+
+}
 

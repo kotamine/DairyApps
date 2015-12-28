@@ -10,7 +10,8 @@ sensitivity_slider_ini <- c(20, 20, 20, -20, 20)
 
 lapply(base_profiles, function(x) {  
   
-  sensitivity_vars <- c(paste0("milk_change",x),"labor_rate", "inflation_robot","inflation_margin","inflation_labor")
+  sensitivity_vars <- c(paste0("milk_change",x),"labor_rate", "inflation_robot",
+                        "inflation_margin","inflation_labor")
   
   lapply(seq_along(sensitivity_vars), function(i) {
     
@@ -100,7 +101,84 @@ lapply(base_profiles, function(x) {
         "(Base:",ans[[X]]$val0, "  ->  New:",ans[[X]]$val1, ")", align="center")), 
      uiDashboard(X)
     ) 
-  }) 
+    
+  })
+  
+    # Create a Plot that shows at various percentage changes
+    observeEvent(input[[paste0("sensitivity_plot_button",x)]], {
+      
+      shinyjs:: disable(paste0("sensitivity_plot_button",x))
+      shinyjs:: show(paste0("sensitivity_plot_message",x))
+      
+      change_vars <- c(c(-5:-1),c(1:5))*2/10 * input[[paste0("sensitivity_range",x)]] 
+      
+      calc_type <- "short"
+      table_sensitivity_plot_before_tax <- nulls(length(change_vars),length(sensitivity_vars))
+      table_sensitivity_plot_after_tax <- nulls(length(change_vars),length(sensitivity_vars))
+      
+      lapply(seq_along(sensitivity_vars), function(i) {
+          
+        X <- paste0(x,"_se_all") # Serves as a temporary storage  
+          
+      for (n in seq_along(change_vars)) {
+          
+          factor <- change_vars[n]/100     
+          ans[[X]] <- list()
+          ans[[X]]$milk_change  <- input[[paste0("milk_change",x)]] * (1 + (i==1) * factor)
+          ans[[X]]$labor_rate  <- input$labor_rate * (1 + (i==2) * factor)
+          ans[[X]]$inflation_robot  <- input$inflation_robot * (1 + (i==3) * factor)
+          ans[[X]]$inflation_margin <- input$inflation_margin * (1 + (i==4) * factor)
+          ans[[X]]$inflation_labor  <- input$inflation_labor * (1 + (i==5) * factor)
+          
+          source(file.path("session_files", "session_calculation_steps.R"), local=TRUE)  # Calculates main results
+        
+          table_sensitivity_plot_before_tax[n,i] <<- ans[[X]]$net_annual_impact_before_tax
+          table_sensitivity_plot_after_tax[n,i]  <<- ans[[X]]$ANPV
+          }
+        })
+         
+      table_sensitivity_plot_before_tax <- cbind(change_vars,table_sensitivity_plot_before_tax)
+      table_sensitivity_plot_after_tax <- cbind(change_vars,table_sensitivity_plot_after_tax)
+      colnames(table_sensitivity_plot_before_tax) <- c("Percentage Change",sensitivity_labels)
+      colnames(table_sensitivity_plot_after_tax) <- c("Percentage Change",sensitivity_labels)
+      
+        ans[[paste0(x,"_se")]]$table_sensitivity_plot <-
+          list(before_tax= table_sensitivity_plot_before_tax %>% round() %>% data.frame(), 
+               after_tax = table_sensitivity_plot_after_tax  %>% round() %>% data.frame())
+        
+    })
+    
+    
+    output[[paste0("sensitivity_plot",x)]] <- renderGvis({
+      tbl <- ans[[paste0(x,"_se")]]$table_sensitivity_plot
+      need(length(tbl)>0 & input[[paste0("sensitivity_plot_button",x)]]>0, "") %>% validate() 
+      
+      on.exit({
+        shinyjs:: enable(paste0("sensitivity_plot_button",x))
+        shinyjs:: hide(paste0("sensitivity_plot_message",x))
+      })
+      
+      if (input[[paste0("sensitivity_plot_NAI",x)]]=="before tax") {
+        tbl2 <- tbl$before_tax 
+      } else {
+        tbl2 <- tbl$after_tax 
+      }
+      
+      colnames(tbl2) <- lapply(colnames(tbl2), 
+                              function(str) gsub("[.]*$|[.]*(?=[.])","",str, perl = TRUE)) %>% unlist()
+      
+      gvisLineChart(tbl2, xvar=colnames(tbl2)[1],  
+                    yvar=colnames(tbl2)[-1], 
+                    options=list(title="Sensitivity over a selected range",
+                                 vAxis=paste("{title:'Net Annual Impact ", 
+                                             input[[paste0("sensitivity_plot_NAI",x)]]," ($)'}"),
+                                 hAxis="{title:'% Change'}", 
+                                 chartArea ='{width: "50%", height: "65%" }'
+                                 # width=800, height=400
+                                 )
+                    )
+    })  
+    
    
   # ------------- Summary ------------
   # similar to operations in session_summary.R but defined for each profile x 

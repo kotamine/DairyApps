@@ -46,8 +46,24 @@ div(
         tabPanel("Cash Flow",
                  DT::dataTableOutput(paste0("sensitivity_table_after_tax_cash_flow",x)) 
         ), selected="After Tax")
-    )),br(),br() 
-)
-} 
+    )),br(),
+  fluidRow(column(width=10, offset=1,   
+                  h4("Plot over a Range:"),
+                  fluidRow(
+                    column(6, numericInput(paste0("sensitivity_range",x),"Select a Range",
+                                           min=50, max=300, step=50, value=200)), 
+                    column(3, bsButton(paste0("sensitivity_plot_button",x),"Plot", style="primary")),
+                  column(3, radioButtons(paste0("sensitivity_plot_NAI",x), NULL, 
+                                         choices=c("before tax", "after tax"),
+                                         selected=c("after tax")))),
+                  shinyjs::hidden(div(id=paste0("sensitivity_plot_message",x),
+                                      h4("Calculating..."), align="center")),
+                  tags$style(type='text/css', paste0("#sensitivity_plot_button",x,
+                                                     "  { width:100%; margin-top: 25px;}"))
+  )), 
+  htmlOutput(paste0("sensitivity_plot",x)),
+  br(), br(),br()
+) 
+}   
 
 

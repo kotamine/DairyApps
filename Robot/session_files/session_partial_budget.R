@@ -132,14 +132,14 @@ lapply(base_profiles, function(x) {
     
     n_year <- ans[[x]]$planning_horizon 
     df <- data.frame(Year=c(1:n_year))
-    df$Positive_Minus_Negative <- project_inflation(n_year, ans[[x]]$positive_total-ans[[x]]$inc_exp_total, 
-                                                    input$inflation_margin/100) - round(ans[[x]]$capital_cost_total) 
-    df$Inflation_Adjustments <-   (- pmt(ans[[x]]$avg_interest/100, ans[[x]]$planning_horizon, 
-                                        npv(ans[[x]]$avg_interest/100, ans[[x]]$table_cash_flow$revenue_minus_expense[-1])) +
-      - (project_inflation(n_year, ans[[x]]$positive_total, input$inflation_margin/100) +
-         - project_inflation(n_year, ans[[x]]$inc_exp_total, input$inflation_margin/100))) %>% round() 
+    df$Positive_Minus_Negative <- project_inflation(n_year, ans[[x]]$inc_rev_total - ans[[x]]$inc_exp_total,
+                                                   input$inflation_margin/100) +
+      + project_inflation(n_year, ans[[x]]$dec_exp_total, input$inflation_labor/100)  -
+      + round(ans[[x]]$capital_cost_total)
     
     df$Annualized_Before_Tax_Impact <-  rep(round(ans[[paste0(x,"_pb")]]$pb_net_annual_impact_before_tax), n_year) 
+    
+    df$Inflation_Adjustments <- (df$Annualized_Before_Tax_Impact - df$Positive_Minus_Negative)  %>% round() 
     
     gvisLineChart(df, xvar="Year", 
                   yvar=c("Positive_Minus_Negative", "Inflation_Adjustments",
@@ -208,8 +208,6 @@ lapply(base_profiles, function(x) {
 
 lapply(base_profiles, function(x) {
   output[[paste0("breakeven_chart",x)]] <- renderGvis({
-    
-    browser() 
     
     # Trigger Mechanism
     ans[[x]]$net_annual_impact_after_tax

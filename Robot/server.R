@@ -40,10 +40,11 @@ shinyServer(function(input, output, session) {
   
   ans <- reactiveValues()  # profile specific answers 
   sum <- reactiveValues()  # summery
-  
+  calc_type <- "full"
   browser()
 
 
+  
   # ----------- Functions: some of them depend on local variables  -----------
   source("helper.R",local=TRUE)
   
