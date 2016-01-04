@@ -67,23 +67,24 @@ shinyUI(
                            tabPanel("New Parlors", value=base_profiles[3],
                                     uiDashboard(base_profiles[3]))
                            ),
-               shinyjs::hidden(radioButtons("IOFC",NULL,choices=c("per cow","per cwt"), selected="per cwt")),
-               shinyjs::hidden(radioButtons("NAI",NULL, choices=c("before tax", "after tax"), selected="after tax"))
-       ), 
-#                # --------- Data Table ---------
-#                br(), br(),
-#                hr(),
-#                fluidRow(column(2, offset=1,
-#                                actionButton("defalut_data","Default Input-Data")),
-#                         column(3,
-#                                downloadButton("data_download","Download Input-Data")),
-#                         column(3, 
-#                                # fileInput() is passessed from the server
-#                                uiOutput('resettableInput'),
-#                                bsAlert("upload_alert")),   
-#                         column(2, actionButton("remove", "Remove Input-Data"))),
-#                br(), br()
-      # ),
+               shinyjs::hidden(radioButtons("IOFC",NULL,choices=c("per cow","per cwt"), 
+                                            selected="per cwt")),
+               shinyjs::hidden(radioButtons("NAI",NULL, choices=c("before tax", "after tax"), 
+                                            selected="after tax")),
+               # --------- Data Table ---------
+               br(), br(),
+               hr(),
+               fluidRow(column(2, offset=1,
+                               actionButton("default_data","Default Input-Data")),
+                        column(3,
+                               downloadButton("data_download","Download Input-Data")),
+                        column(3, 
+                               # fileInput() is passessed from the server
+                               uiOutput('resettableInput'),
+                               bsAlert("upload_alert")),   
+                        column(2, actionButton("remove", "Remove Input-Data"))),
+               br(), br()
+      ),
       # ---------- Partial Budget Analysis -----------
       tabPanel("Partial Budget", value = "Partial_Budget",
 

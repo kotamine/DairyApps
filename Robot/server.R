@@ -38,9 +38,11 @@ shinyServer(function(input, output, session) {
   # All calculations results are stored in "ans" as lists for various profiles  
   # This helps reactive rending of many variables
   
-  ans <- reactiveValues()  # profile specific answers 
-  sum <- reactiveValues()  # summery
-  calc_type <- "full"
+  ans <- reactiveValues()  # profile specific answers/calculation results 
+  sum <- reactiveValues()  # summery of results across profiles
+  user_data <- reactiveValues() # uploaded (or default) user data
+    
+  calc_type <- "full"  # Set default calculation type
   browser()
 
 
@@ -69,17 +71,17 @@ shinyServer(function(input, output, session) {
 #   
 #   
   
-#   # --- User Data Storage ---
-#   # There is no offical method to remove an uploaded file. 
-#   # The following provides a "fix" by initializing fileInput(). 
-#   # http://stackoverflow.com/questions/17352086/how-can-i-update-a-shiny-fileinput-object
-#   output$resettableInput <- renderUI({
-#     input$remove
-#     closeAlert(session, "ref_upload_alert")
-#     
-#     fileInput("data_upload", "Upload Input-Data File",
-#               accept=c(".xlsx", "application/vnd.ms-excel"))
-#   })
+  # --- User Data Storage ---
+  # There is no offical method to remove an uploaded file. 
+  # The following provides a "fix" by initializing fileInput(). 
+  # http://stackoverflow.com/questions/17352086/how-can-i-update-a-shiny-fileinput-object
+  output$resettableInput <- renderUI({
+    input$remove
+    closeAlert(session, "ref_upload_alert")
+    
+    fileInput("data_upload", "Upload Input-Data File",
+              accept=c(".xlsx", "application/vnd.ms-excel"))
+  })
   
 }) 
 

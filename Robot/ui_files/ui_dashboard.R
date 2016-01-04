@@ -20,10 +20,10 @@ div(
                                choices=c("before tax","after tax"),selected="after tax")
                   )
            ),
-         lapply(x, function(x1) { 
-           if (!grepl("_se", x))  htmlOutput(paste0("cashflow_small_chart",x1))  
-             })  
-         ),  
+         lapply(x, function(x1) {  
+           if (!grepl("_se", x))  div(htmlOutput(paste0("cashflow_small_chart",x1)), align="center")
+             })   
+         ),   
   column(8,
          div(
            h3("Components",align="center"),
