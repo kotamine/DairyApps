@@ -2,7 +2,7 @@
 
 if (x=="Robots") {
   ans[[X]]$cost_milking1 <- input[[paste0("n_robot",x)]] * input[[paste0("cost_robot",x)]]
-  ans[[X]]$repair_total <- input[[paste0("repair",x)]]* input[[paste0("n_robot",x)]]
+  ans[[X]]$repair_total <- input[[paste0("n_robot",x)]] * input[[paste0("repair",x)]]
 } else {
   ans[[X]]$cost_milking1 <- input[[paste0("cost_parlors",x)]]
   ans[[X]]$repair_total <-  input[[paste0("repair",x)]]

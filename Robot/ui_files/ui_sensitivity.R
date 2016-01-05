@@ -9,6 +9,9 @@ div(
   fluidRow(column(1), 
     lapply(c(1:5), function(i) { column(2, htmlOutput(paste0("sensitivity_vars",x,i)))})
   ), 
+  fluidRow(column(1), 
+           lapply(c(6:10), function(i) { column(2, htmlOutput(paste0("sensitivity_vars",x,i)))})
+  ), 
   shinyjs::hidden(
     div(id = paste0("sensitivity_details",x),
         hr(),
@@ -22,15 +25,18 @@ div(
     column(
       width=10, offset=1, 
       h4("Net Annual Impact:"))),
-      div(htmlOutput(paste0("sensitivity_impacts",x)),align="center"),
+      div(htmlOutput(paste0("sensitivity_impacts1",x)),
+          htmlOutput(paste0("sensitivity_impacts2",x)), align="center"),
   fluidRow(column(width=10, offset=1, h4("Cash Flow:"))),
        div(
         tabsetPanel(
           tabPanel("Operating Income",
-                   htmlOutput(paste0("sensitivity_operating_income_chart",x))
+                   htmlOutput(paste0("sensitivity_operating_income_chart1",x)),
+                   htmlOutput(paste0("sensitivity_operating_income_chart2",x))
                    ),
           tabPanel("Cashflow",
-                   htmlOutput(paste0("sensitivity_cashflow_chart",x))
+                   htmlOutput(paste0("sensitivity_cashflow_chart1",x)),
+                   htmlOutput(paste0("sensitivity_cashflow_chart2",x))
                    ),
           selected="Cashflow"),
          align="center"),
@@ -53,18 +59,19 @@ div(
   fluidRow(column(width=10, offset=1,   
                   h4("Plot over a Range:"),
                   fluidRow(
-                    column(6, numericInput(paste0("sensitivity_range",x),"Select a Range",
-                                           min=50, max=300, step=50, value=200)), 
-                    column(3, bsButton(paste0("sensitivity_plot_button",x),"Plot", style="primary")),
+#                     column(6, numericInput(paste0("sensitivity_range",x),"Select a Range",
+#                                            min=50, max=100, step=50, value=100)), 
+                    column(3, offset=3, bsButton(paste0("sensitivity_plot_button",x),"Plot", style="primary")),
                   column(3, radioButtons(paste0("sensitivity_plot_NAI",x), NULL, 
                                          choices=c("before tax", "after tax"),
-                                         selected=c("after tax")))),
+                                         selected=c("after tax"), inline=TRUE))),
                   shinyjs::hidden(div(id=paste0("sensitivity_plot_message",x),
                                       h4("Calculating..."), align="center")),
                   tags$style(type='text/css', paste0("#sensitivity_plot_button",x,
                                                      "  { width:100%; margin-top: 25px;}"))
   )), 
-  htmlOutput(paste0("sensitivity_plot",x)),
+  htmlOutput(paste0("sensitivity_plot1",x)),
+  htmlOutput(paste0("sensitivity_plot2",x)),
   br(), br(),br()
 ) 
 }   

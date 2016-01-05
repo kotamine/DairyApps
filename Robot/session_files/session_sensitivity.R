@@ -2,17 +2,34 @@
 
 
 
-sensitivity_labels <- c("Change in Milk Output","Milking/Chore Labor Wage", "Inflation: Robot/Parlor",
+
+
+
+# 
+# sensitivity_labels <- c("Change in Milk Output","Milking/Chore Labor Wage", "Inflation: Robot/Parlor",
+#                         "Inflation: IOFC Margin","Inflation: Labor Wage")
+sensitivity_labels <- c("Change in Milk Output","Milking/Chore Labor Wage", "Cost: housing per cow",
+                        "Cost: Robot/Parlor", "Lifespan: Robot/Parlor",
+                        "Interest: housing","Interest: Robot/Parlor", "Inflation: Robot/Parlor",
                         "Inflation: IOFC Margin","Inflation: Labor Wage")
-sensitivity_format <- c("formatcomma", "formatdollar_2d", "round_pct", "round_pct", "round_pct")
-sensitivity_unit <- c("lb", "", "", "", "")
-sensitivity_slider_ini <- c(20, 20, 20, -20, 20) 
+# sensitivity_format <- c("formatcomma", "formatdollar_2d", "round_pct", "round_pct", "round_pct")
+# sensitivity_unit <- c("lb", "", "", "", "")
+sensitivity_format <- c("formatcomma", "formatdollar_2d","formatdollar","formatdollar","formatcomma",
+                        "round_pct", "round_pct","round_pct", "round_pct", "round_pct")
+sensitivity_unit <- c("lb", "", "", "", "years", "", "", "", "", "")
+sensitivity_slider_ini <- c(-40, 40, 40, 40, -40, 40, 40, 40, -40, 40) 
 
 lapply(base_profiles, function(x) {  
   
-  sensitivity_vars <- c(paste0("milk_change",x),"labor_rate", "inflation_robot",
-                        "inflation_margin","inflation_labor")
-  
+#   sensitivity_vars <- c(paste0("milk_change",x),"labor_rate", "inflation_robot",
+#                         "inflation_margin","inflation_labor")
+    sensitivity_vars <- c(paste0("milk_change",x),"labor_rate", paste0("cost_housing_cow",x), 
+                        paste0("cost_robot",x), paste0("useful_years",x),
+                        paste0("r_housing",x), paste0("r_milking1",x), "inflation_robot",
+                        "inflation_margin","inflation_labor") 
+    if (x!="Robots")  sensitivity_vars[4] <- paste0("cost_parlors",x)
+   
+
   lapply(seq_along(sensitivity_vars), function(i) {
     
     # Create sensitivity variable info and control 
@@ -110,7 +127,7 @@ lapply(base_profiles, function(x) {
       shinyjs:: disable(paste0("sensitivity_plot_button",x))
       shinyjs:: show(paste0("sensitivity_plot_message",x))
       
-      change_vars <- c(c(-5:-1),c(1:5))*2/10 * input[[paste0("sensitivity_range",x)]] 
+      change_vars <- c(c(-5:-1),c(1:5))*2/10 * 100  #input[[paste0("sensitivity_range",x)]] 
       
       calc_type <- "short"
       table_sensitivity_plot_before_tax <- nulls(length(change_vars),length(sensitivity_vars))
@@ -148,6 +165,7 @@ lapply(base_profiles, function(x) {
         
     })
     
+    lapply(c(1:2), function(j) { })
     
     output[[paste0("sensitivity_plot",x)]] <- renderGvis({
       tbl <- ans[[paste0(x,"_se")]]$table_sensitivity_plot
