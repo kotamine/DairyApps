@@ -12,11 +12,13 @@ suppressPackageStartupMessages(library(XLConnect))
 source("global_parameters.R")
 source(file.path("ui_files", "ui_dashboard.R"), local=TRUE)  # Contains functions
 
-default_data_1 <- read.xlsx("www/default_user_input_data.xlsx", sheetIndex = 1) 
-default_data_2 <- read.xlsx("www/default_user_input_data.xlsx", sheetIndex = 2) 
+ 
+common_variables_min_step <- read.xlsx("www/user_input_data_min_step.xlsx", sheetIndex = 1) 
+profile_specific_variables_min_step <- read.xlsx("www/user_input_data_min_step.xlsx", sheetIndex = 2) 
 
 ## Load the default setting values for investment profiles 
-# INSERT CODES HERE
+default_common_case_1 <- myRead.xlsx("www/user_input_data_case_1.xlsx", sheetIndex = 1) 
+default_profile_specific_case_1 <- myRead.xlsx("www/user_input_data_case_1.xlsx", sheetIndex = 2)
 
 
 base_profiles <- c("Robots","Retrofit","New")

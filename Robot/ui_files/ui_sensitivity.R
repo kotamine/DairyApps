@@ -2,6 +2,9 @@
 
 uiSensitivity <- function(x) {   
 div(    
+  fluidRow(column(6, offset=3,
+                  div(wellPanel(h4(paste(refProfileName(x))),align="center"))
+  )),
   fluidRow(column(10, offset=1, h4("Sensitivity to:"))),   
   fluidRow(column(1), 
     lapply(c(1:5), function(i) { column(2, htmlOutput(paste0("sensitivity_vars",x,i)))})

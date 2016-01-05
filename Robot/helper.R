@@ -81,6 +81,8 @@ df_null <- function(colnames) {
   empty_table
 }
 
+
+
 # --- Common Excel Financial Functions  ---
 # \url{http://cvs.moodle.org/contrib/patches/question_calculated_extended/calculated/packages/financial/financial_class.php?view=co}
 # @author Enrique Garcia M. \email{egarcia@@egm.as}

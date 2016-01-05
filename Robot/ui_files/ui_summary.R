@@ -1,5 +1,4 @@
 div(      
-  h3("Summary",align="center"),
   fluidRow(
     column(
       width=10, offset=1, 

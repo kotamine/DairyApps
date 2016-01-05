@@ -2,12 +2,21 @@
 ## ------ Prepares cash flow, debt, and depreciation tables -------
 
   
-   # browser()
+    # browser()
   
   ## ------------ Depreciation Table ------------
-  yr_AGDS_milking <- 7
-  yr_SLD_milking <- 10
-  
+  # Depreciation length depends on dep method and the useful number of years of Robots/Palors
+  if (input[[paste0("useful_years",x)]] < 7) {
+    yr_AGDS_milking <- input[[paste0("useful_years",x)]]
+  } else { 
+    yr_AGDS_milking <- 7 
+  }
+  if (input[[paste0("useful_years",x)]] < 10) {
+    yr_SLD_milking <- input[[paste0("useful_years",x)]]
+  } else {
+    yr_SLD_milking <- 10
+  }
+
   yr_AGDS_housing <- 10
   yr_SLD_housing <- 15
   
@@ -28,7 +37,7 @@
         vdb(ans[[X]]$cost_milking2, 0,  yr_AGDS_milking, factor=1.5, sequence=TRUE) 
     }
 
-    dep_housing [1:yr_AGDS_housing] <- vdb(ans[[X]]$cost_housing, 0,
+    dep_housing[1:yr_AGDS_housing] <- vdb(ans[[X]]$cost_housing, 0,
                                            yr_AGDS_housing, factor=1.5, sequence=TRUE) 
   } else {
     
@@ -112,12 +121,12 @@
   
   # downpayments and salvage values
   table_cash_flow$downpayment[1] <- -(input[[paste0("down_milking1",x)]] + input[[paste0("down_housing",x)]])
-  if (x=="Robots") {
+  if (ans[[X]]$n_sets == 2) {
     table_cash_flow$downpayment[(1 + input[[paste0("useful_years",x)]])] <-   -  input[[paste0("down_milking2",x)]]
     table_cash_flow$salvage[(1 + input[[paste0("useful_years",x)]])] <-  ans[[X]]$salvage_milking_fv1 
     table_cash_flow$salvage[(1 + 2*input[[paste0("useful_years",x)]])] <- ans[[X]]$salvage_milking_fv2 + ans[[X]]$salvage_housing_fv
   } else {
-    table_cash_flow$salvage[(1 + input[[paste0("splanning_horizon",x)]])] <-  ans[[X]]$salvage_milking_fv1 + ans[[X]]$salvage_housing_fv
+    table_cash_flow$salvage[(1 + n_years)] <-  ans[[X]]$salvage_milking_fv1 + ans[[X]]$salvage_housing_fv
   }
   table_cash_flow$after_tax_cash_flow <- table_cash_flow$downpayment + table_cash_flow$salvage  +
     + table_cash_flow$operating_income + table_cash_flow$income_tax + 

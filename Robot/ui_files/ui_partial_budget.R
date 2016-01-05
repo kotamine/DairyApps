@@ -263,13 +263,13 @@ fluidRow(column(width=8, offset=2,
 )),
 fluidRow(column(width=10, offset=1, 
                 htmlOutput(paste0("breakeven_chart",x)) 
-                )), br(), br(), 
-  #tags$a(href ="#data_entry",  #"#tab-9037-2",
-  ## I haven't been able to set a link to a tab. It seems compliated in Shiny.
-  div(id="goData", class="well", style="background-color: gray; color:white;", 
-      align="center", 
-      h4("See interactive dashboard under the Data Entry tab")
-  ), 
-  br(),br() 
+                )), br(), br() 
+  # #tags$a(href ="#data_entry",  #"#tab-9037-2",
+  # ## I haven't been able to set a link to a tab. It seems compliated in Shiny.
+  # div(id="goData", class="well", style="background-color: gray; color:white;", 
+  #     align="center", 
+  #     h4("See interactive dashboard under the Data Entry tab")
+  # ), 
+  # br(),br() 
 )   
 } 

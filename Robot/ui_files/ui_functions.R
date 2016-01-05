@@ -202,9 +202,6 @@ changeVariablesLaborenergy<- function(x) {
              fluidRow(column(width=8, helpText("Anticipated hours of milking & chore labor (hours/day)")),
                       column(width=4, uiOutput(paste0("anticipated_hours_milking",x)))
              ),
-             fluidRow(column(width=8, helpText("Current hours of heat detection (hours/day)")),
-                      column(width=4, numericInput(paste0("hr_heat_detection",x),NULL,value=0.65,min=0,step=.05))
-             ),
              fluidRow(column(width=8, helpText("Anticipated hours of heat detection (hours/day)")),
                       column(width=4, numericInput(paste0("anticipated_hours_heat",x),
                                                    NULL,value=0.25,min=0,step=0.05))
@@ -251,7 +248,8 @@ changeVariablesFinance<- function(x) {
                       column(width=2,  div(id=paste0(x,2), uiOutput(paste0("copy_cost_milking2",x))))
              ), 
              div(id=paste0(x,"delay",1),
-             fluidRow(column(width=6,  helpText(paste("Delayed portion of the investment till", refProfileName(x),"($)"))),
+             fluidRow(column(width=6,  helpText(paste("Delayed portion of the investment till", refProfileName(x),
+                                                      " installation ($)"))),
                       column(width=2,  numericInput(paste0("delay_housing1",x),NULL,value=0, min=0,step=20000)),
                       column(width=2,  helpText("-",align="center")),
                       column(width=2,  div(id=paste0(x,2),  helpText("-",align="center")))
@@ -291,7 +289,7 @@ changeVariablesFinance<- function(x) {
                       column(width=2,  div(id=paste0(x,2), 
                                            numericInput(paste0("n_yr_milking2",x),NULL,value=12, min=0, step=1)))
              ),  
-             fluidRow(column(width=6,  helpText("Salvage value at the time of purchase ($)")),
+             fluidRow(column(width=6,  helpText("Salvage value at the time of sales ($)")),
                       column(width=2,  helpText("0")),
                       column(width=2,  uiOutput(paste0("copy_salvage_milking1",x))),
                       column(width=2,  div(id=paste0(x,2), 

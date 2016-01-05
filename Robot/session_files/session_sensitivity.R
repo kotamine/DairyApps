@@ -98,7 +98,7 @@ lapply(base_profiles, function(x) {
     div( 
       div(style="background-color:white; color:#4863A0;",
      h4(paste0(sensitivity_labels[i],","),  "Change by", input[[paste0("sensitivity_slider",x,i)]],"%", 
-        "(Base:",ans[[X]]$val0, "  ->  New:",ans[[X]]$val1, ")", align="center")), 
+        "(Base:",ans[[X]]$val0, "  to  New:",ans[[X]]$val1, ")", align="center")), 
      uiDashboard(X)
     ) 
     

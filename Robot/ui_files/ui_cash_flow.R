@@ -78,8 +78,7 @@ uiCashFlow <- function(x) {
     br(),
     fluidRow(
       column(width=10,offset=1,
-             htmlOutput(paste0("cashflow_chart",refProfileName(x))), br(),
-             div(uiOutput(paste0("dl_button_cash_flow",x)),align="center"),
+             htmlOutput(paste0("cashflow_chart",x)), br(), br(),
              tabsetPanel(
                tabPanel("Cash Flow",
                         DT::dataTableOutput(paste0("table_cash_flow",x))
@@ -92,6 +91,8 @@ uiCashFlow <- function(x) {
                )
              )
       )),
+    br(),
+    div(downloadButton(paste0("download_table_cash_flow",x)),align="center"),
     br(),br()
   )
 }  

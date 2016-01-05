@@ -469,7 +469,6 @@ output[[paste0("download_table_cash_flow",x)]] <- downloadHandler(
   #   content = function(file) {
   #     write.csv(df$table_cash_flow, file)
   #   }
-  
   filename = paste0("cash_flow_",x,"_milking_system.xlsx"), 
   content = function(file) { 
     wb <- XLConnect::loadWorkbook(file, create = TRUE)

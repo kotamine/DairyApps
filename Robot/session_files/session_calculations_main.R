@@ -5,6 +5,8 @@ lapply(base_profiles, function(x) {
   
   observe(priority=100, {
     
+    # browser()
+    
     # Calculations given a profile x
   
     # Make this reactive to all data inputs; 

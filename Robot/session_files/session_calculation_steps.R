@@ -77,10 +77,10 @@ ans[[X]]$adj_milk_cow_day2 <- ans[[X]]$milk_day_cow_alt * input$milk_cow_coeff +
 # Cash Flow items to render in Data Entry
 ans[[X]]$salvage_housing_fv <- 0  # Currently salvage value of housing is set at zero
 
-ans[[X]]$loan_housing <- ans[[X]]$cost_housing - input[[paste0("down_housing",x)]] 
--input[[paste0("delay_housing1",x)]]
-ans[[X]]$loan_milking1 <- ans[[X]]$cost_milking1 - input[[paste0("down_milking1",x)]]  
-+input[[paste0("delay_housing1",x)]]
+ans[[X]]$loan_housing <- ans[[X]]$cost_housing - input[[paste0("down_housing",x)]] +
+  -input[[paste0("delay_housing1",x)]]
+ans[[X]]$loan_milking1 <- ans[[X]]$cost_milking1 - input[[paste0("down_milking1",x)]]  +
+  +input[[paste0("delay_housing1",x)]]
 ans[[X]]$loan_milking2 <- ans[[X]]$cost_milking2 - input[[paste0("down_milking2",x)]] 
 ans[[X]]$yr_sustem2 <- input[[paste0("useful_years",x)]]
 
