@@ -16,19 +16,31 @@ output[[paste0("pb_net_annual_impact_before_tax",x)]] <- renderUI({
   need(length(ans[[x]]$net_annual_impact_before_tax)>0, "NA") %>% validate()
   
   isolate({
-  ans[[paste0(x,"_pb")]]$pb_positive_total <- ans[[x]]$inc_rev_total * (1+input$inflation_margin/100)^(input[[paste0("budget_year",x)]]-1) +
-    + ans[[x]]$dec_exp_total *  (1+input$inflation_labor/100)^(input[[paste0("budget_year",x)]]-1)
+    if (input[[paste0("yr_system1",x)]]>0) { # Use delayed investment revenue or expense when appricable 
+      x_pb <- paste0(x,"_delay")
+    } else {
+      x_pb <- x
+    }
+    
+  ans[[paste0(x,"_pb")]]$pb_positive_total <- 
+    ans[[x_pb]]$inc_rev_total * (1+input$inflation_margin/100)^(input[[paste0("budget_year",x)]]-1) +
+    + ans[[x_pb]]$dec_exp_total *  (1+input$inflation_labor/100)^(input[[paste0("budget_year",x)]]-1)
 
-  ans[[paste0(x,"_pb")]]$pb_negative_total <- ans[[x]]$inc_exp_total * (1+input$inflation_margin/100)^(input[[paste0("budget_year",x)]]-1) +
+  ans[[paste0(x,"_pb")]]$pb_negative_total <- 
+    ans[[x_pb]]$inc_exp_total * (1+input$inflation_margin/100)^(input[[paste0("budget_year",x)]]-1) +
     + ans[[x]]$capital_cost_total
 
-  ans[[paste0(x,"_pb")]]$pb_positive_minus_negative <-  ans[[paste0(x,"_pb")]]$pb_positive_total - ans[[paste0(x,"_pb")]]$pb_negative_total
+  ans[[paste0(x,"_pb")]]$pb_positive_minus_negative <-  
+    ans[[paste0(x,"_pb")]]$pb_positive_total - ans[[paste0(x,"_pb")]]$pb_negative_total
 
-  ans[[paste0(x,"_pb")]]$pb_inflation_adjustment <-  - pmt(ans[[x]]$avg_interest/100, ans[[x]]$planning_horizon, npv(ans[[x]]$avg_interest/100, ans[[x]]$table_cash_flow$revenue_minus_expense[-1])) +
+  ans[[paste0(x,"_pb")]]$pb_inflation_adjustment <-  
+    - pmt(ans[[x]]$avg_interest/100, ans[[x]]$planning_horizon, npv(ans[[x]]$avg_interest/100, 
+                                                                    ans[[x_pb]]$table_cash_flow$revenue_minus_expense[-1])) +
     - (ans[[paste0(x,"_pb")]]$pb_positive_total - ans[[paste0(x,"_pb")]]$pb_negative_total + ans[[x]]$capital_cost_total)
 
   ans[[paste0(x,"_pb")]]$pb_net_annual_impact_before_tax <- ans[[paste0(x,"_pb")]]$pb_positive_minus_negative +
     + ans[[paste0(x,"_pb")]]$pb_inflation_adjustment 
+
   })
   
   ans[[paste0(x,"_pb")]]$pb_net_annual_impact_before_tax  %>% formatdollar() %>% helpText() %>% div(align="right")

@@ -125,7 +125,12 @@ lapply(pb_var_to_render_right,
            } else {
              i_factor <- 1
            } 
-           (ans[[x]][[paste0(z)]] * i_factor) %>% 
+           if (input[[paste0("yr_system1",x)]]>0) { # Use delayed investment revenue or expense when appricable 
+             x_pb <- paste0(x,"_delay")
+           } else {
+             x_pb <- x
+           }
+           (ans[[x_pb]][[paste0(z)]] * i_factor) %>% 
              formatdollar() %>% helpText() %>% div(align="right")
          })
        }

@@ -255,17 +255,29 @@ changeVariablesFinance<- function(x) {
                       column(width=2,  numericInput(paste0("delay_housing1",x),NULL,value=0, min=0,step=50000)),
                       column(width=2,  helpText("-",align="center")),
                       column(width=2,  div(id=paste0(x,2,4),  helpText("-",align="center")))
+             ),
+             fluidRow(column(width=6,  helpText(paste("Portion of anticipated milk increase installed 
+                                                      with initial housing investment (%)"))),
+                      column(width=2,  numericInput(paste0("delay_milk_increase",x),NULL,value=0, min=0,step=10, max=100)),
+                      column(width=2,  helpText("-",align="center")),
+                      column(width=2,  div(id=paste0(x,2,5),  helpText("-",align="center")))
+             ),
+             fluidRow(column(width=6,  helpText(paste("Portion of anticipated labor saving installed 
+                                                      with initial housing investment (%)"))),
+                      column(width=2,  numericInput(paste0("delay_labor_saving",x),NULL,value=0, min=0,step=10, max=100)),
+                      column(width=2,  helpText("-",align="center")),
+                      column(width=2,  div(id=paste0(x,2,6),  helpText("-",align="center")))
              )), 
              fluidRow(column(width=6,  helpText("Down payment ($)")),
                       column(width=2,  numericInput(paste0("down_housing",x),NULL,value=100000, min=0,step=20000)),
                       column(width=2,  numericInput(paste0("down_milking1",x),NULL,value=0, min=0,step=20000)),
-                      column(width=2,  div(id=paste0(x,2,5), 
+                      column(width=2,  div(id=paste0(x,2,7), 
                                            numericInput(paste0("down_milking2",x),NULL,value=50000, min=0, step=20000)))
              ),              
              fluidRow(column(width=6,  helpText("Loan amount ($)")),
                       column(width=2,   uiOutput(paste0("loan_housing",x))),
                       column(width=2,   uiOutput(paste0("loan_milking1",x))),
-                      column(width=2,  div(id=paste0(x,2,6), 
+                      column(width=2,  div(id=paste0(x,2,8), 
                                            uiOutput(paste0("loan_milking2",x))))
              ),     
              fluidRow(column(width=6,  helpText("Interest rate (%)")),
@@ -273,7 +285,7 @@ changeVariablesFinance<- function(x) {
                                                     NULL,value=4, min=0, step=.25)),
                       column(width=2,  numericInput(paste0("r_milking1",x),
                                                     NULL,value=4, min=0, step=.25)),
-                      column(width=2,  div(id=paste0(x,2,7), 
+                      column(width=2,  div(id=paste0(x,2,9), 
                                            uiOutput(paste0("r_milking2",x))))
              ),     
              #              shinyjs::hidden( 
@@ -288,13 +300,13 @@ changeVariablesFinance<- function(x) {
              fluidRow(column(width=6,  helpText("Loan period (years)")),
                       column(width=2,  numericInput(paste0("n_yr_housing",x),NULL,value=24, min=0, step=1)),
                       column(width=2,  numericInput(paste0("n_yr_milking1",x),NULL,value=12, min=0, step=1)),
-                      column(width=2,  div(id=paste0(x,2,8), 
+                      column(width=2,  div(id=paste0(x,2,10), 
                                            numericInput(paste0("n_yr_milking2",x),NULL,value=12, min=0, step=1)))
              ),  
              fluidRow(column(width=6,  helpText("Salvage value at the time of purchase ($)")),
                       column(width=2,  helpText("0")),
                       column(width=2,  uiOutput(paste0("copy_salvage_milking1",x))),
-                      column(width=2,  div(id=paste0(x,2,9), 
+                      column(width=2,  div(id=paste0(x,2,11), 
                                            uiOutput(paste0("copy_salvage_milking2",x))))
              )
     )

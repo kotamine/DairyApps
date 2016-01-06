@@ -44,8 +44,8 @@
       ans[[paste0(X,"_da_",loc_NAI)]]$labor_current <-  (input$hr_heat_detection + input$hours_milking) * 
         input$labor_rate*365 * tax_factor   
       
-      ans[[paste0(X,"_da_",loc_NAI)]]$labor_robot <- ((input[[paste0("anticipated_hours_heat",x)]] + ans[[X]]$anticipated_hours_milking) *
-                                 input$labor_rate*365 +
+      ans[[paste0(X,"_da_",loc_NAI)]]$labor_robot <- ((input[[paste0("anticipated_hours_heat",x)]] +
+                                                         + ans[[X]]$anticipated_hours_milking) * input$labor_rate*365 +
                                  + (input[[paste0("increase_rc_mgt",x)]] - input[[paste0("decrease_lab_mgt",x)]]) *
                                  input$labor_rate_rc_mgt *365 +
                                  + input[[paste0("additional_labor",x)]] * input[[paste0("herd_increase",x)]]) * tax_factor   
@@ -69,7 +69,10 @@
       
       ans[[paste0(X,"_da_",loc_NAI)]]$misc <- ans[[paste0(X,"_da_",loc_NAI)]]$NAI - (ans[[paste0(X,"_da_",loc_NAI)]]$milk_feed + 
                             + ans[[paste0(X,"_da_",loc_NAI)]]$labor_repair + ans[[paste0(X,"_da_",loc_NAI)]]$capital + ans[[paste0(X,"_da_",loc_NAI)]]$inflation) 
-      
+      # Under delayed investment, componets in the dashboard do not correspond to the actual revenues and expenses of year 1
+      # (during the delay period only with initial housing investment). While they are psedo projections, they are 
+      # more informative than the year 1 values in showing how the forthcoming changes impact the operation. 
+      # All the discrepancy between the year 1 values and the pseudo projections is accounted for in "misc".     
       
       ans[[paste0(X,"_da_",loc_NAI)]]$capital_recovery_robot2 <- ans[[X]]$capital_recovery_milking +
         - (loc_NAI=="after_tax")*ans[[X]]$tax_deduction_milking

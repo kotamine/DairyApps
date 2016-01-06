@@ -15,9 +15,11 @@ lapply(base_profiles, function(x) {
   # Show/hide Second set of Robot or Parlors
   observe({
      if (input[[paste0("n_sets",x)]]=="2") { 
-      for (i in c(1:15)) shinyjs::show(paste0(x,2,i)) 
+      for (i in c(1:11)) shinyjs::show(paste0(x,2,i)) # Located in ui_data_entry_functions
+      for (i in c(1:6))  shinyjs::show(paste0(x,"_CF",2,i)) # Located in ui_cash_flow
     } else {
-      for (i in c(1:15)) shinyjs::hide(paste0(x,2,i)) 
+      for (i in c(1:11))  shinyjs::hide(paste0(x,2,i))
+      for (i in c(1:6))   shinyjs::hide(paste0(x,"_CF",2,i))
     }
   })
   

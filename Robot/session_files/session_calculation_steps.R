@@ -67,8 +67,6 @@ ans[[X]]$DMI_projected <-  ans[[X]]$stage_lactation *
 
 ans[[X]]$DMI_change <- ans[[X]]$DMI_projected - ans[[X]]$DMI_day
 
-ans[[X]]$adj_milk_cow_day2 <- ans[[X]]$milk_day_cow_alt * input$milk_cow_coeff + 
-  + ans[[X]]$milk_day_cow_alt  * input$milk_fat/100 * input$milk_fat_coeff 
 
 
 # Cash Flow items to render in Data Entry
@@ -140,8 +138,13 @@ ans[[X]]$avg_interest <-  (ans[[X]]$loan_housing * ans[[X]]$r_housing +
   (ans[[X]]$loan_housing + ans[[X]]$loan_milking1)  
 
 
+# Calculate revenues and expenses during a delayed investment period   
+if (input[[paste0("yr_system1",x)]]>0) {
+  source(file.path("session_files", "session_calculation_delay.R"), local=TRUE)  # Calculates cash flow tables
+}
 
-source(file.path("session_files", "session_cash_flow.R"), local=TRUE)  # Calculates cash flow tables
+# Calculate cash flow tables
+source(file.path("session_files", "session_cash_flow.R"), local=TRUE)  
 
 
 ans[[X]]$capital_recovery_milking <-  -pmt(ans[[X]]$r_milking1/100, ans[[X]]$planning_horizon,
@@ -155,7 +158,7 @@ ans[[X]]$capital_recovery_housing  <- -pmt(ans[[X]]$r_housing/100, ans[[X]]$plan
 ans[[X]]$salvage_milking_PV <-   pmt(ans[[X]]$r_milking1/100, ans[[X]]$planning_horizon,
                                      npv(ans[[X]]$r_milking1/100,
                                          ans[[X]]$table_cash_flow$salvage[-1]))
-# This will be shown as negative cost
+# The salvage value will be shown as negative cost
 
 ans[[X]]$cost_downpayment <-  pmt(input$hurdle_rate/100, ans[[X]]$planning_horizon,  npv(input$hurdle_rate/100,
                                                                                          ans[[X]]$table_cash_flow$downpayment[-1]) + ans[[X]]$table_cash_flow$downpayment[1])
@@ -241,4 +244,3 @@ ans[[X]]$tax_deduction_housing <-
 
 
 }
-

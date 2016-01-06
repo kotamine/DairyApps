@@ -107,6 +107,15 @@
     table_cash_flow$revenue_minus_expense[(ans[[X]]$planning_horizon+1):n_years] <- 0 
   }
   
+  if (input[[paste0("yr_system1",x)]]>0) { # Rev minus Expense under delayed investment
+    table_cash_flow$revenue_minus_expense[1: input[[paste0("yr_system1",x)]]] <- 
+      lapply(c(1:input[[paste0("yr_system1",x)]]), function(t) {
+      (ans[[paste0(X,"_delay")]]$inc_rev_total - ans[[paste0(X,"_delay")]]$inc_exp_total)*
+                                                        (1+ans[[X]]$inflation_margin/100)^(t-1) +
+      + ans[[paste0(X,"_delay")]]$dec_exp_total * (1+ans[[X]]$inflation_labor/100)^(t-1)
+      })
+  } 
+  
   table_cash_flow$operating_income <- table_cash_flow$revenue_minus_expense + table_cash_flow$interest_total +
     + table_cash_flow$depreciation
   
