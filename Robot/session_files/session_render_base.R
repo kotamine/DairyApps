@@ -7,7 +7,7 @@
 var_to_render_0 <- c("herd_size2", "cost_milking1","cost_housing","total_investment_cow",
                      "total_investment", "planning_horizon",
                      "increased_insurance", "anticipated_hours_milking","milk_lb_alt_day",
-                     "yr_milking2",  "loan_housing",
+                     "yr_milking2",  "loan_housing", "milk_day_cow_alt",
                      "loan_milking1","loan_milking2", 
                      "copy_cost_housing", "copy_cost_milking1", "copy_cost_milking2", 
                      "copy_salvage_milking1","copy_salvage_milking2",
@@ -15,7 +15,7 @@ var_to_render_0 <- c("herd_size2", "cost_milking1","cost_housing","total_investm
                      "copy_milking_years", "copy_n_robot", "copy_cost_robot")
 var_to_render_1 <- c()
 var_to_render_2 <- c("r_milking2","adj_milk_cow_day")
-var_to_render_3 <- c("DMI_change","DMI_day","DMI_projected") 
+var_to_render_3 <- c("DMI_change","DMI_day","DMI_projected","copy_DMI_projected") 
 var_to_render_4 <- c("stage_lactation")
 
 var_to_render <- list(var_to_render_1, var_to_render_2, var_to_render_3, var_to_render_4)  
@@ -214,7 +214,7 @@ lapply(c(1:3), function(r) {
     CF_T <- length(CF)
     WACC <- (ans[[x]]$WACC/100) %>% round(4)
     WACC1 <- lapply(c(1:CF_T), function(a) paste0(" / (1+", WACC,")^",a-1))
-    WACC1[1] <- "+ "
+    WACC1[1] <- ""
     CF_PV <- lapply(c(1:CF_T), function(a) paste(CF[a],WACC1[a])) %>% unlist()
     div(
       helpText("NPV is a sum of discounted cash flows. 
@@ -222,7 +222,7 @@ lapply(c(1:3), function(r) {
                your investment horizon (T)."), 
       helpText("NPV= CF_year0 + CF_year1/(1+WACC) + CF_year2/(1+WACC)^2", br(),
                HTML(add_space1), "+ ... + CF_yearT/(1+WACC)^T"),
-      helpText(HTML(add_space2),"=", CF_PV[1], CF_PV[2], CF_PV[3], br(),
+      helpText(HTML(add_space2),"=", CF_PV[1],"+", CF_PV[2],"+", CF_PV[3], br(),
                HTML(add_space1), "+ ... +", CF_PV[CF_T], br(),
                HTML(add_space2),"=", NPV), br(),
       helpText("Net annual impact (after-tax) is Annualized NPV, obtained by converting NPV into an annuity.
@@ -231,8 +231,8 @@ lapply(c(1:3), function(r) {
       helpText("annuity + annuity/(1+WACC) + annuity/(1+WACC)^2 + ... + annuity/(1+WACC)^T", br(),
         HTML(add_space2),"= CF_year0 + CF_year1/(1+WACC) + CF_year2/(1+WACC)^2", br(),
         HTML(add_space1), "+ ... + CF_yearT/(1+WACC)^T"),
-      helpText("implying that"),
-      helpText("annuity = NPV / {1 + (1+WACC) + (1+WACC)^2 + ... + (1+WACC)^T}",br(),
+      helpText("This implies; "),
+      helpText("annuity = NPV / (1 + (1+WACC) + (1+WACC)^2 + ... + (1+WACC)^T)",br(),
                HTML(add_space2), HTML("&nbsp;&nbsp;&nbsp;&nbsp"),"=", ans[[x]]$ANPV %>% formatcomma(0, dollar=TRUE)), br(),
       
       helpText("ROI is simply the NPV divided by the total investment;"),
@@ -581,8 +581,8 @@ output[[paste0("cashflow_chart",x)]] <- renderGvis({
                                       vAxis="{title:'Net Annual Impact under Robot ($)'}",
                                       hAxis="{title:'Year'}",
                                       legend="bottom",
-                                      chartArea ='{width: "50%", height: "65%" }' 
-                                      # width=800, height=400
+                                      chartArea ='{width: "50%", height: "65%" }',
+                                      width=800, height=400
                                         ))
 })
 

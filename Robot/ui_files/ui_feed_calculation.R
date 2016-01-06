@@ -45,7 +45,7 @@ shinyjs::hidden(
       ),
       fluidRow(column(width=6, 
                               helpText("Projected DMI per day with robots")),
-               column(width=3, uiOutput(paste0("DMI_projected","Robots")))
+               column(width=3, uiOutput(paste0("copy_DMI_projected","Robots")))
       ),
       fluidRow(column(width=3, offset=9,
                       span(actionButton("coeff_reset","reset"),align="center"))

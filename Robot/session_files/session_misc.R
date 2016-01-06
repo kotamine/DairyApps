@@ -4,12 +4,32 @@ s_empty_table <- df_null(s_colnames)
 p_empty_table <- df_null(p_colnames) 
 
 
+
 # Show/hide DMI calculations 
 shinyjs::onclick("customDMI",
                  shinyjs::toggle(id="DMI_inputs", anim = TRUE)
 )
 
 lapply(base_profiles, function(x) {
+  
+  # Show/hide Second set of Robot or Parlors
+  observe({
+     if (input[[paste0("n_sets",x)]]=="2") { 
+      for (i in c(1:15)) shinyjs::show(paste0(x,2,i)) 
+    } else {
+      for (i in c(1:15)) shinyjs::hide(paste0(x,2,i)) 
+    }
+  })
+  
+  # Show/hide delayed investment 
+  observeEvent(input[[paste0("yr_system1",x)]], {
+        if (input[[paste0("yr_system1",x)]]>0) {
+          shinyjs::show(paste0(x,"delay",1))
+        } else {
+          shinyjs::hide(paste0(x,"delay",1))
+        }
+  })  
+  
   # Show/hide Partial Budget Plots
   shinyjs::onclick(paste0("PB_plot_show_1",x),
                    shinyjs::toggle(id=paste0("id_PB_plot_show_1",x), anim = TRUE)

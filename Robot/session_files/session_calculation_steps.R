@@ -1,10 +1,10 @@
 
 
 if (x=="Robots") {
-  ans[[X]]$cost_milking1 <- input[[paste0("n_robot",x)]] * input[[paste0("cost_robot",x)]]
+  ans[[X]]$cost_milking1 <- input[[paste0("n_robot",x)]] * ans[[X]]$cost_robot
   ans[[X]]$repair_total <- input[[paste0("n_robot",x)]] * input[[paste0("repair",x)]]
 } else {
-  ans[[X]]$cost_milking1 <- input[[paste0("cost_parlors",x)]]
+  ans[[X]]$cost_milking1 <- ans[[X]]$cost_parlors
   ans[[X]]$repair_total <-  input[[paste0("repair",x)]]
 }
 
@@ -15,27 +15,29 @@ if ( input[[paste0("n_sets",x)]]=="2") {
 }
 
 ans[[X]]$cost_milking2 <-  ans[[X]]$cost_milking1*(1+ans[[X]]$inflation_robot/100)^
-  (input[[paste0("useful_years",x)]] + input[[paste0("yr_system1",x)]]) *(input[[paste0("n_sets",x)]] == 2) 
+  (ans[[X]]$useful_years+ input[[paste0("yr_system1",x)]]) *(input[[paste0("n_sets",x)]] == 2) 
 
-ans[[X]]$planning_horizon <- ans[[X]]$n_sets * input[[paste0("useful_years",x)]] + input[[paste0("yr_system1",x)]] 
+ans[[X]]$planning_horizon <- ans[[X]]$n_sets * max(ans[[X]]$useful_years, 
+                                                   input[[paste0("n_yr_milking1",x)]])+ input[[paste0("yr_system1",x)]]
+                                 
 
 ans[[X]]$salvage_milking_fv1 <- input[[paste0("salvage_milking1",x)]] *
-  (1+ans[[X]]$inflation_robot/100)^(input[[paste0("useful_years",x)]] + input[[paste0("yr_system1",x)]])
+  (1+ans[[X]]$inflation_robot/100)^(ans[[X]]$useful_years+ input[[paste0("yr_system1",x)]])
 
 ans[[X]]$salvage_milking_fv2 <- input[[paste0("salvage_milking1",x)]] * 
-  (1+ans[[X]]$inflation_robot/100)^(input[[paste0("useful_years",x)]]*2+ input[[paste0("yr_system1",x)]]) *
+  (1+ans[[X]]$inflation_robot/100)^(ans[[X]]$useful_years*2+ input[[paste0("yr_system1",x)]]) *
   (input[[paste0("n_sets",x)]] >=2)
 
-ans[[X]]$yr_system2 <- input[[paste0("useful_years",x)]] + input[[paste0("yr_system1",x)]]
+ans[[X]]$yr_system2 <- ans[[X]]$useful_years+ input[[paste0("yr_system1",x)]]
 
-ans[[X]]$r_milking2 <- input[[paste0("r_milking1",x)]]
+ans[[X]]$r_milking2 <- ans[[X]]$r_milking1
 
 # Partial Budget Calculations: Data Entry side calculations
 ans[[X]]$herd_size2 <- input$herd_size + input[[paste0("herd_increase",x)]]
 
-ans[[X]]$cost_housing <- input[[paste0("cost_housing_cow",x)]] * ans[[X]]$herd_size2
+ans[[X]]$cost_housing <-ans[[X]]$cost_housing_cow* ans[[X]]$herd_size2
 
-ans[[X]]$total_investment_cow <-  input[[paste0("cost_housing_cow",x)]] + ans[[X]]$cost_milking1/ans[[X]]$herd_size2
+ans[[X]]$total_investment_cow <- ans[[X]]$cost_housing_cow+ ans[[X]]$cost_milking1/ans[[X]]$herd_size2
 
 ans[[X]]$total_investment <- ans[[X]]$total_investment_cow  * ans[[X]]$herd_size2
 
@@ -55,20 +57,15 @@ ans[[X]]$adj_milk_cow_day2 <- ans[[X]]$milk_day_cow_alt * input$milk_cow_coeff +
 
 ans[[X]]$stage_lactation <- 1 - exp( input$lactation_coeff1 * (input$lcatation_week + input$lactation_coeff2)) 
 
+ans[[X]]$DMI_day <-  ans[[X]]$stage_lactation * 
+  (ans[[X]]$adj_milk_cow_day/conv_factor * input$adj_milk_cow_coeff + 
+     +  input$body_weight_coeff1* (input$body_weight/conv_factor)^input$body_weight_coeff2) * conv_factor
 
-ans[[X]]$DMI_day <-  ans[[X]]$stage_lactation * (ans[[X]]$adj_milk_cow_day/conv_factor * input$adj_milk_cow_coeff + 
-                                                   +  input$body_weight_coeff1* (input$body_weight/conv_factor)^input$body_weight_coeff2) * conv_factor
-
-if (x=="Robots") {
-  ans[[X]]$DMI_projected <-  ans[[X]]$stage_lactation *
+ans[[X]]$DMI_projected <-  ans[[X]]$stage_lactation *
     (ans[[X]]$adj_milk_cow_day2/conv_factor * input$adj_milk_cow_coeff + 
        +  input$body_weight_coeff1* (input$body_weight/conv_factor)^input$body_weight_coeff2) * conv_factor
-} else {
-  ans[[X]]$DMI_projected <- ans[[X]]$DMI_day
-}
 
 ans[[X]]$DMI_change <- ans[[X]]$DMI_projected - ans[[X]]$DMI_day
-
 
 ans[[X]]$adj_milk_cow_day2 <- ans[[X]]$milk_day_cow_alt * input$milk_cow_coeff + 
   + ans[[X]]$milk_day_cow_alt  * input$milk_fat/100 * input$milk_fat_coeff 
@@ -82,8 +79,7 @@ ans[[X]]$loan_housing <- ans[[X]]$cost_housing - input[[paste0("down_housing",x)
 ans[[X]]$loan_milking1 <- ans[[X]]$cost_milking1 - input[[paste0("down_milking1",x)]]  +
   +input[[paste0("delay_housing1",x)]]
 ans[[X]]$loan_milking2 <- ans[[X]]$cost_milking2 - input[[paste0("down_milking2",x)]] 
-ans[[X]]$yr_sustem2 <- input[[paste0("useful_years",x)]]
-
+ans[[X]]$yr_sustem2 <- ans[[X]]$useful_years
 
 # Positive Impacts (year 1)
 ans[[X]]$inc_rev_herd_size <- ans[[X]]$milk_day_cow_alt * 330 *
@@ -135,12 +131,12 @@ ans[[X]]$inc_exp_total <- ans[[X]]$inc_exp_herd_increase + ans[[X]]$inc_exp_repa
 
 
 ans[[X]]$WACC <- ((input[[paste0("down_housing",x)]] +input[[paste0("down_milking1",x)]]) * input$hurdle_rate +
-                    + (ans[[X]]$loan_housing * input[[paste0("r_housing",x)]] +
-                         + ans[[X]]$loan_milking1 * input[[paste0("r_milking1",x)]])*
+                    + (ans[[X]]$loan_housing * ans[[X]]$r_housing +
+                         + ans[[X]]$loan_milking1 * ans[[X]]$r_milking1)*
                     (1-input$tax_rate/100))/(ans[[X]]$cost_housing + ans[[X]]$cost_milking1)  
 
-ans[[X]]$avg_interest <-  (ans[[X]]$loan_housing * input[[paste0("r_housing",x)]] + 
-                             + ans[[X]]$loan_milking1 * input[[paste0("r_milking1",x)]])/
+ans[[X]]$avg_interest <-  (ans[[X]]$loan_housing * ans[[X]]$r_housing + 
+                             + ans[[X]]$loan_milking1 * ans[[X]]$r_milking1)/
   (ans[[X]]$loan_housing + ans[[X]]$loan_milking1)  
 
 
@@ -148,16 +144,16 @@ ans[[X]]$avg_interest <-  (ans[[X]]$loan_housing * input[[paste0("r_housing",x)]
 source(file.path("session_files", "session_cash_flow.R"), local=TRUE)  # Calculates cash flow tables
 
 
-ans[[X]]$capital_recovery_milking <-  -pmt(input[[paste0("r_milking1",x)]]/100, ans[[X]]$planning_horizon,
-                                           npv(input[[paste0("r_milking1",x)]]/100,
+ans[[X]]$capital_recovery_milking <-  -pmt(ans[[X]]$r_milking1/100, ans[[X]]$planning_horizon,
+                                           npv(ans[[X]]$r_milking1/100,
                                                ans[[X]]$table_debt$milking_interest+ans[[X]]$table_debt$milking_principal))
 
-ans[[X]]$capital_recovery_housing  <- -pmt(input[[paste0("r_housing",x)]]/100, ans[[X]]$planning_horizon,
-                                           npv(input[[paste0("r_housing",x)]]/100,
+ans[[X]]$capital_recovery_housing  <- -pmt(ans[[X]]$r_housing/100, ans[[X]]$planning_horizon,
+                                           npv(ans[[X]]$r_housing/100,
                                                ans[[X]]$table_debt$barn_interest+ans[[X]]$table_debt$barn_principal))
 
-ans[[X]]$salvage_milking_PV <-   pmt(input[[paste0("r_milking1",x)]]/100, ans[[X]]$planning_horizon,
-                                     npv(input[[paste0("r_milking1",x)]]/100,
+ans[[X]]$salvage_milking_PV <-   pmt(ans[[X]]$r_milking1/100, ans[[X]]$planning_horizon,
+                                     npv(ans[[X]]$r_milking1/100,
                                          ans[[X]]$table_cash_flow$salvage[-1]))
 # This will be shown as negative cost
 
@@ -183,6 +179,7 @@ if (calc_type == "full") { # skip some calculations that are not needed for some
   ans[[X]]$copy_salvage_milking1 <- input[[paste0("salvage_milking1",x)]]*
     (1+ans[[X]]$inflation_robot/100)^(1+input[[paste0("yr_system1",x)]]) 
   ans[[X]]$copy_salvage_milking2 <- ans[[X]]$salvage_milking_fv1
+  ans[[X]]$copy_DMI_projected <-   ans[[X]]$DMI_projected
   
   var_stem <- c("copy_r", "copy_down", "copy_hr", "copy_loan", "copy_cost")
   var_ending <- c("housing","milking1","milking2")
@@ -196,7 +193,7 @@ if (calc_type == "full") { # skip some calculations that are not needed for some
   lapply(vars, function(z) {
     if (grep("copy_r",z) %>% length() >0 | grep("copy_down",z) %>% length() >0) {
       # Assume interest rate for the second set of Milking system is the same as for the first set
-      if (z=="copy_r_milking2")  ans[[X]]$copy_r_milking2 <- input[[paste0("r_milking1",x)]]
+      if (z=="copy_r_milking2")  ans[[X]]$copy_r_milking2 <- ans[[X]]$r_milking1
       else ans[[X]][[paste0(z)]] <- input[[paste0(sub("copy_","",z),x)]]
     }
     if (grep("copy_hr",z) %>% length() >0)  ans[[X]][[paste0(z)]] <- input$hurdle_rate
@@ -207,26 +204,26 @@ if (calc_type == "full") { # skip some calculations that are not needed for some
   
   
 # cost of cash flows for interest payments (evaluated at separate instests for milking and housing)
-ans[[X]]$interest_at_interest <-  pmt(input[[paste0("r_milking1",x)]]/100, ans[[X]]$planning_horizon,
-                                      npv(input[[paste0("r_milking1",x)]]/100, ans[[X]]$table_debt$milking_interest)) +
-  + pmt(input[[paste0("r_housing",x)]]/100, ans[[X]]$planning_horizon,
-        npv(input[[paste0("r_housing",x)]]/100, ans[[X]]$table_debt$barn_interest))
+ans[[X]]$interest_at_interest <-  pmt(ans[[X]]$r_milking1/100, ans[[X]]$planning_horizon,
+                                      npv(ans[[X]]$r_milking1/100, ans[[X]]$table_debt$milking_interest)) +
+  + pmt(ans[[X]]$r_housing/100, ans[[X]]$planning_horizon,
+        npv(ans[[X]]$r_housing/100, ans[[X]]$table_debt$barn_interest))
 
 ans[[X]]$tax_interest <-  -input$tax_rate/100 * ans[[X]]$interest_at_interest
 
 
-ans[[X]]$principal_at_interest <-  pmt(input[[paste0("r_milking1",x)]]/100, ans[[X]]$planning_horizon,
-                                       npv(input[[paste0("r_milking1",x)]]/100, ans[[X]]$table_debt$milking_principal)) +
-  + pmt(input[[paste0("r_housing",x)]]/100, ans[[X]]$planning_horizon,
-        npv(input[[paste0("r_housing",x)]]/100, ans[[X]]$table_debt$barn_principal))
+ans[[X]]$principal_at_interest <-  pmt(ans[[X]]$r_milking1/100, ans[[X]]$planning_horizon,
+                                       npv(ans[[X]]$r_milking1/100, ans[[X]]$table_debt$milking_principal)) +
+  + pmt(ans[[X]]$r_housing/100, ans[[X]]$planning_horizon,
+        npv(ans[[X]]$r_housing/100, ans[[X]]$table_debt$barn_principal))
 
 # Calculations used in Parital Budget and Cash Flow 
 # cost of depreciation (evaluated at separate instests for milking and housing)
 ans[[X]]$depreciation_at_interest <-
-  (pmt(input[[paste0("r_milking1",x)]]/100, ans[[X]]$planning_horizon,
-       npv(input[[paste0("r_milking1",x)]]/100, ans[[X]]$table_depreciation$depreciation_milking_system)) +
-     + pmt(input[[paste0("r_housing",x)]]/100, ans[[X]]$planning_horizon,
-           npv(input[[paste0("r_housing",x)]]/100, ans[[X]]$table_depreciation$depreciation_housing)))
+  (pmt(ans[[X]]$r_milking1/100, ans[[X]]$planning_horizon,
+       npv(ans[[X]]$r_milking1/100, ans[[X]]$table_depreciation$depreciation_milking_system)) +
+     + pmt(ans[[X]]$r_housing/100, ans[[X]]$planning_horizon,
+           npv(ans[[X]]$r_housing/100, ans[[X]]$table_depreciation$depreciation_housing)))
 
 ans[[X]]$tax_depreciation <- -input$tax_rate/100 * ans[[X]]$depreciation_at_interest
 

@@ -13,7 +13,7 @@ Created using [Shiny](http://shiny.rstudio.com/) by [Rstudio](https://www.rstudi
 Source code for this online tool is found [here](https://github.com/kotamine/shiny/tree/master/Robot). 
 
 
-### Contacts (Tentative) 
+### Contacts
 ---
 Kota Minegishi <br/>
 Dairy Analytics, Assistant Professor  <br/>

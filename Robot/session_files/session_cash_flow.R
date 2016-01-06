@@ -2,28 +2,26 @@
 ## ------ Prepares cash flow, debt, and depreciation tables -------
 
   
-    # browser()
-  
   ## ------------ Depreciation Table ------------
   # Depreciation length depends on dep method and the useful number of years of Robots/Palors
-  if (input[[paste0("useful_years",x)]] < 7) {
-    yr_AGDS_milking <- input[[paste0("useful_years",x)]]
+  
+  if (ans[[X]]$useful_years< 7) {
+    yr_AGDS_milking <- max(ans[[X]]$useful_years,1)
   } else { 
     yr_AGDS_milking <- 7 
   }
-  if (input[[paste0("useful_years",x)]] < 10) {
-    yr_SLD_milking <- input[[paste0("useful_years",x)]]
+  if (ans[[X]]$useful_years< 10) {
+    yr_SLD_milking <- max(ans[[X]]$useful_years,1)
   } else {
     yr_SLD_milking <- 10
   }
-
+    
   yr_AGDS_housing <- 10
   yr_SLD_housing <- 15
   
   n_years <- max(ans[[X]]$planning_horizon, 
                  yr_AGDS_housing*(input$dep_method=="d1"), 
                  yr_SLD_housing*(input$dep_method=="d2"))  
-  
   
   dep_milking <- rep(0,n_years); dep_housing  <- rep(0,n_years)
   
@@ -33,7 +31,7 @@
     dep_milking[1:yr_AGDS_milking] <- vdb(ans[[X]]$cost_milking1, 0,
                                       yr_AGDS_milking, factor=1.5, sequence=TRUE) 
     if (input[[paste0("n_sets",x)]] ==2) {
-      dep_milking[(1+input[[paste0("useful_years",x)]]):(input[[paste0("useful_years",x)]] + yr_AGDS_milking)] <-
+      dep_milking[(ans[[X]]$useful_years+1):(ans[[X]]$useful_years+ yr_AGDS_milking)] <-
         vdb(ans[[X]]$cost_milking2, 0,  yr_AGDS_milking, factor=1.5, sequence=TRUE) 
     }
 
@@ -43,8 +41,8 @@
     
     ## if Straight line depreciation method is used 
     dep_milking[1:yr_SLD_milking] <- (ans[[X]]$cost_milking1 - 0)/yr_SLD_milking
-    if (input[[paste0("n_sets",x)]] >=2) {
-      dep_milking[(1+input[[paste0("useful_years",x)]]):(input[[paste0("useful_years",x)]] + yr_SLD_milking)] <- 
+    if (input[[paste0("n_sets",x)]] ==2) {
+      dep_milking[(1+ans[[X]]$useful_years):(ans[[X]]$useful_years+ yr_SLD_milking)] <- 
         (ans[[X]]$cost_milking2 - 0)/yr_SLD_milking
     }
     
@@ -52,30 +50,28 @@
   }
   
   # add back salvage at the end
-    dep_milking[input[[paste0("useful_years",x)]]] <-  -ans[[X]]$salvage_milking_fv1 
+    dep_milking[ans[[X]]$useful_years] <-  -ans[[X]]$salvage_milking_fv1 
     if (input[[paste0("n_sets",x)]] >=2) {
-    dep_milking[(2*input[[paste0("useful_years",x)]])] <-  -ans[[X]]$salvage_milking_fv2
-  } 
-  dep_milking <- c(rep(0,input[[paste0("yr_system1",x)]]),dep_milking)
+      dep_milking[(2*ans[[X]]$useful_years)] <-  -ans[[X]]$salvage_milking_fv2
+    } 
+
   table_depreciation <- cbind(c(1:n_years),dep_milking,dep_housing) %>% data.frame() 
   colnames(table_depreciation) <- c("year","depreciation_milking_system","depreciation_housing")
   table_depreciation$total <- table_depreciation$depreciation_milking + table_depreciation$depreciation_housing 
   
   
   ## ------------ Debt Table ------------
-    tbl_milking <- debt_table(ans[[X]]$loan_milking1,input[[paste0("r_milking1",x)]]/100, input[[paste0("n_yr_milking1",x)]], n_years, 1) 
+    tbl_milking <- debt_table(ans[[X]]$loan_milking1,ans[[X]]$r_milking1/100, input[[paste0("n_yr_milking1",x)]], n_years, 1) 
   if (ans[[X]]$n_sets == 2) {
-    tbl_milking <- tbl_milking + debt_table(ans[[X]]$loan_milking2, input[[paste0("r_milking1",x)]]/100, input[[paste0("n_yr_milking1",x)]], n_years, input[[paste0("useful_years",x)]]+1) 
+    tbl_milking <- tbl_milking + debt_table(ans[[X]]$loan_milking2, ans[[X]]$r_milking1/100, input[[paste0("n_yr_milking1",x)]], n_years, ans[[X]]$useful_years+1) 
      tbl_milking[,1] <- tbl_milking[,1]/2
   }
   
   colnames(tbl_milking) <- lapply(colnames(tbl_milking), function(x) { paste0("milking_",x)}) %>% unlist()
   
-  tbl_barn <- debt_table(ans[[X]]$loan_housing, input[[paste0("r_housing",x)]]/100, input[[paste0("n_yr_housing",x)]], n_years, 1)
+  tbl_barn <- debt_table(ans[[X]]$loan_housing, ans[[X]]$r_housing/100, input[[paste0("n_yr_housing",x)]], n_years, 1)
   colnames(tbl_barn) <- lapply(colnames(tbl_barn), function(x) { paste0("barn_",x)}) %>% unlist()
   
-  tbl_milking <- c(rep(0,input[[paste0("yr_system1",x)]]),tbl_milking)
-
   table_debt <- cbind(tbl_milking, tbl_barn[,c(-1)])
   colnames(table_debt) <- c("year",colnames(table_debt)[c(-1)])
   table_debt$interest_total <- table_debt$milking_interest + table_debt$barn_interest 
@@ -122,9 +118,9 @@
   # downpayments and salvage values
   table_cash_flow$downpayment[1] <- -(input[[paste0("down_milking1",x)]] + input[[paste0("down_housing",x)]])
   if (ans[[X]]$n_sets == 2) {
-    table_cash_flow$downpayment[(1 + input[[paste0("useful_years",x)]])] <-   -  input[[paste0("down_milking2",x)]]
-    table_cash_flow$salvage[(1 + input[[paste0("useful_years",x)]])] <-  ans[[X]]$salvage_milking_fv1 
-    table_cash_flow$salvage[(1 + 2*input[[paste0("useful_years",x)]])] <- ans[[X]]$salvage_milking_fv2 + ans[[X]]$salvage_housing_fv
+    table_cash_flow$downpayment[(1 + ans[[X]]$useful_years)] <-   -  input[[paste0("down_milking2",x)]]
+    table_cash_flow$salvage[(1 + ans[[X]]$useful_years)] <-  ans[[X]]$salvage_milking_fv1 
+    table_cash_flow$salvage[(1 + 2*ans[[X]]$useful_years)] <- ans[[X]]$salvage_milking_fv2 + ans[[X]]$salvage_housing_fv
   } else {
     table_cash_flow$salvage[(1 + n_years)] <-  ans[[X]]$salvage_milking_fv1 + ans[[X]]$salvage_housing_fv
   }

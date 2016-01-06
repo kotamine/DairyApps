@@ -86,10 +86,6 @@
           # Take a difference between X (sensitivity) and x (baseline)
           ans[[paste0(X,"_da_",loc_NAI)]][[paste0("diff_",item)]] <- 
               ans[[paste0(X,"_da_",loc_NAI)]][[item]] - ans[[paste0(x,"_da_",loc_NAI)]][[item]]
-#             print(item)
-#             print(ans[[paste0(X,"_da_",loc_NAI)]][[item]])
-#             print(ans[[paste0(x,"_da_",loc_NAI)]]) 
-#             print(ans[[paste0(x,"_da_",loc_NAI)]][[item]])
         })
 
         ans[[paste0(X,"_da_",loc_NAI)]]$did_IOFC <-  

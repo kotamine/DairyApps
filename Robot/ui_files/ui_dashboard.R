@@ -1,10 +1,13 @@
 # ----- Dashboard -----
 
-uiDashboard <- function(x) {  
-div(  
-  fluidRow(column(6, offset=3,
-                  div(class="well well-sm", h4(paste(refProfileName(x))),align="center")
-  )),
+uiDashboard <- function(x) {   
+div(    
+  lapply(x, function(x1) {  
+  if (!grepl("_se",x)) {
+    fluidRow(column(6, offset=3,
+                  div(class="well well-sm", h4(paste(refProfileName(x))),align="center")))
+  } 
+  }), 
   fluidRow( 
   column(4, 
          h3("Results",align="center"),

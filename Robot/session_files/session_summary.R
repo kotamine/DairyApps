@@ -72,7 +72,7 @@ output$summary_table_before_tax <- DT::renderDataTable({
 output$summary_table_after_tax <- DT::renderDataTable({
   tbl <- sum[["table_after_tax"]]()
   need(length(tbl) > 0, "NA") %>% validate()
-  
+
   tbl[7:8,] <- tbl[7:8,]*100
   tbl <- round(tbl)
   tbl[7:8,] <- tbl[7:8,]/100

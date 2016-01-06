@@ -19,33 +19,33 @@ uiCashFlow <- function(x) {
                    fluidRow(column(6, h5("Item")),
                             column(2, h5("Housing")),
                             column(2, h5(refProfileName(x),1)),
-                            column(2, h5(refProfileName(x),2))
+                            column(2, div(id=paste0(x,2,10),h5(refProfileName(x),2)))
                    )
                    ),
                    fluidRow(column(6, helpText("Investment")),
                             column(2, uiOutput(paste0("CF_cost_housing",x))),
                             column(2, uiOutput(paste0("CF_cost_milking1",x))),
-                            column(2, uiOutput(paste0("CF_cost_milking2",x)))
+                            column(2, div(id=paste0(x,2,11),uiOutput(paste0("CF_cost_milking2",x))))
                    ),
                    fluidRow(column(6, helpText("Loan")),
                             column(2, uiOutput(paste0("CF_loan_housing",x))),
                             column(2, uiOutput(paste0("CF_loan_milking1",x))),
-                            column(2, uiOutput(paste0("CF_loan_milking2",x)))
+                            column(2, div(id=paste0(x,2,12),uiOutput(paste0("CF_loan_milking2",x))))
                    ),
                    fluidRow(column(6, helpText("Interest rate for the loan")),
                             column(2, uiOutput(paste0("CF_r_housing",x))),
                             column(2, uiOutput(paste0("CF_r_milking1",x))),
-                            column(2, uiOutput(paste0("CF_r_milking2",x)))
+                            column(2, div(id=paste0(x,2,13),uiOutput(paste0("CF_r_milking2",x))))
                    ),
                    fluidRow(column(6, helpText("Downpayment")),
                             column(2, uiOutput(paste0("CF_down_housing",x))),
                             column(2, uiOutput(paste0("CF_down_milking1",x))),
-                            column(2, uiOutput(paste0("CF_down_milking2",x)))
+                            column(2, div(id=paste0(x,2,14),uiOutput(paste0("CF_down_milking2",x))))
                    ),
                    fluidRow(column(6, helpText("Hurdle rate for the downpayment")),
                             column(2, uiOutput(paste0("CF_hr_housing",x))),
                             column(2, uiOutput(paste0("CF_hr_milking1",x))),
-                            column(2, uiOutput(paste0("CF_hr_milking2",x)))
+                            column(2, div(id=paste0(x,2,15),uiOutput(paste0("CF_hr_milking2",x))))
                    ),
                    uiOutput(paste0("CF_WACC_formula",x)),
                    hr()

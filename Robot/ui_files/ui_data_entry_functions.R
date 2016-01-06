@@ -138,6 +138,9 @@ changeVariablesMilkfeed<- function(x) {
                  div(fluidRow(column(width=8, helpText("Projected milk output throgh Robots (lbs/robot/day)")),
                               column(width=4, uiOutput(paste0("milk_lb_alt_day",x1)))
                  ), 
+                 fluidRow(column(width=8, helpText("Projected DMI per day with robots")),
+                          column(width=4, uiOutput(paste0("DMI_projected",x)))
+                 ),
                  fluidRow(column(width=8, helpText("Projected change in dry matter intake (DMI) per day (lbs DM/day)")),
                           column(width=4, uiOutput(paste0("DMI_change",x)))
                  ), 
@@ -148,19 +151,25 @@ changeVariablesMilkfeed<- function(x) {
                           column(width=4, numericInput(paste0("cost_pellets",x),NULL,value=20,min=0,step=2))
                  )) 
                } else {
-                 fluidRow(column(width=8, helpText("Projected milk output (lbs/cow/day)")),
-                          column(width=4, uiOutput(paste0("milk_alt_day", x)))
-                 )   
-                  shinyjs::hidden( 
+                 div(fluidRow(column(width=8, helpText("Projected milk output (lbs/cow/day)")),
+                          column(width=4, uiOutput(paste0("milk_day_cow_alt", x)))
+                 ),   
+                 fluidRow(column(width=8, helpText("Projected DMI per day with", refProfileName(x))),
+                          column(width=4, uiOutput(paste0("DMI_projected",x)))
+                 ),     
+                 fluidRow(column(width=8, helpText("Projected change in dry matter intake (DMI) per day (lbs DM/day)")),
+                          column(width=4, uiOutput(paste0("DMI_change",x)))
+                 ), 
+                 shinyjs::hidden( 
                    fluidRow(column(width=8, helpText("Pellets fed in robot booth (lb/cow/day)")),
                           column(width=4, numericInput(paste0("pellets",x),NULL,value=0,min=0,step=1))
                     ), 
                     fluidRow(column(width=8, helpText("Extra cost for pellets fed in robot booth ($/ton)")),
                           column(width=4, numericInput(paste0("cost_pellets",x),NULL,value=0,min=0,step=2))
                     )
-                )  
-               }  
-             }),    
+                ))   
+               }   
+             }),     
              fluidRow(column(width=8, helpText("Estimated percent change in SCC (%)")),
                       column(width=4, numericInput(paste0("scc_change",x),NULL,value=-5, min=-100, step=0.25))
              ),
@@ -228,34 +237,35 @@ changeVariablesFinance<- function(x) {
                  fluidRow(column(width=6,  h5(strong("Item"), align="center")),
                           column(width=2,  h5(strong("Housing"), align="center")),
                           column(width=2,  h5(strong(paste(refProfileName(x), "1")), align="center")),
-                          column(width=2,  div(id=paste0(x,2),h5(strong(paste(refProfileName(x), "2")), align="center")))
+                          column(width=2,  div(id=paste0(x,2,1),h5(strong(paste(refProfileName(x), "2")), align="center")))
                  )), br(),  
              fluidRow(column(width=6,  helpText("Year of investment")),
                       column(width=2,  helpText("0")),
-                      column(width=2,  numericInput(paste0("yr_system1",x),NULL,value=0,min=0,step=1)),
-                      column(width=2,  div(id=paste0(x,2),uiOutput(paste0("yr_system2",x))))
+                      column(width=2,  numericInput(paste0("yr_system1",x),NULL,value=0,min=0,max=5,step=1)),
+                      column(width=2,  div(id=paste0(x,2,2),uiOutput(paste0("yr_system2",x))))
              ), 
              fluidRow(column(width=6,  helpText("Investment amount at the time of investement ($)")),
                       column(width=2,  uiOutput(paste0("copy_cost_housing",x))),
                       column(width=2,  uiOutput(paste0("copy_cost_milking1",x))),
-                      column(width=2,  div(id=paste0(x,2), uiOutput(paste0("copy_cost_milking2",x))))
+                      column(width=2,  div(id=paste0(x,2,3), uiOutput(paste0("copy_cost_milking2",x))))
              ), 
              div(id=paste0(x,"delay",1),
-             fluidRow(column(width=6,  helpText(paste("Delayed portion of the investment till", refProfileName(x),"($)"))),
-                      column(width=2,  numericInput(paste0("delay_housing1",x),NULL,value=0, min=0,step=20000)),
+             fluidRow(column(width=6,  helpText(paste("Delayed portion of the investment till", 
+                                                      refProfileName(x)," installment ($)"))),
+                      column(width=2,  numericInput(paste0("delay_housing1",x),NULL,value=0, min=0,step=50000)),
                       column(width=2,  helpText("-",align="center")),
-                      column(width=2,  div(id=paste0(x,2),  helpText("-",align="center")))
+                      column(width=2,  div(id=paste0(x,2,4),  helpText("-",align="center")))
              )), 
              fluidRow(column(width=6,  helpText("Down payment ($)")),
                       column(width=2,  numericInput(paste0("down_housing",x),NULL,value=100000, min=0,step=20000)),
                       column(width=2,  numericInput(paste0("down_milking1",x),NULL,value=0, min=0,step=20000)),
-                      column(width=2,  div(id=paste0(x,2), 
+                      column(width=2,  div(id=paste0(x,2,5), 
                                            numericInput(paste0("down_milking2",x),NULL,value=50000, min=0, step=20000)))
              ),              
              fluidRow(column(width=6,  helpText("Loan amount ($)")),
                       column(width=2,   uiOutput(paste0("loan_housing",x))),
                       column(width=2,   uiOutput(paste0("loan_milking1",x))),
-                      column(width=2,  div(id=paste0(x,2), 
+                      column(width=2,  div(id=paste0(x,2,6), 
                                            uiOutput(paste0("loan_milking2",x))))
              ),     
              fluidRow(column(width=6,  helpText("Interest rate (%)")),
@@ -263,7 +273,7 @@ changeVariablesFinance<- function(x) {
                                                     NULL,value=4, min=0, step=.25)),
                       column(width=2,  numericInput(paste0("r_milking1",x),
                                                     NULL,value=4, min=0, step=.25)),
-                      column(width=2,  div(id=paste0(x,2), 
+                      column(width=2,  div(id=paste0(x,2,7), 
                                            uiOutput(paste0("r_milking2",x))))
              ),     
              #              shinyjs::hidden( 
@@ -278,13 +288,13 @@ changeVariablesFinance<- function(x) {
              fluidRow(column(width=6,  helpText("Loan period (years)")),
                       column(width=2,  numericInput(paste0("n_yr_housing",x),NULL,value=24, min=0, step=1)),
                       column(width=2,  numericInput(paste0("n_yr_milking1",x),NULL,value=12, min=0, step=1)),
-                      column(width=2,  div(id=paste0(x,2), 
+                      column(width=2,  div(id=paste0(x,2,8), 
                                            numericInput(paste0("n_yr_milking2",x),NULL,value=12, min=0, step=1)))
              ),  
              fluidRow(column(width=6,  helpText("Salvage value at the time of purchase ($)")),
                       column(width=2,  helpText("0")),
                       column(width=2,  uiOutput(paste0("copy_salvage_milking1",x))),
-                      column(width=2,  div(id=paste0(x,2), 
+                      column(width=2,  div(id=paste0(x,2,9), 
                                            uiOutput(paste0("copy_salvage_milking2",x))))
              )
     )

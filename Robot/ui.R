@@ -10,7 +10,7 @@ suppressPackageStartupMessages(library(xlsx))
 suppressPackageStartupMessages(library(XLConnect))
 
 # Load files that contain functions
-source(file.path("ui_files","ui_data_entry_functions.R"), local=TRUE)
+source(file.path("ui_files", "ui_data_entry_functions.R"), local=TRUE)
 source(file.path("ui_files", "ui_partial_budget.R"), local=TRUE)  
 source(file.path("ui_files", "ui_cash_flow.R"), local=TRUE)  
 source(file.path("ui_files", "ui_dashboard.R"), local=TRUE) 
@@ -74,7 +74,8 @@ shinyUI(
                                 shinyjs::hidden(radioButtons("NAI",NULL, choices=c("before tax", "after tax"), 
                                                              selected="after tax")),
                                 br(), 
-                                div(radioButtons("calculation_switch","Calculation Switch",choices=c("OFF","ON"), inline=TRUE),align="center"),
+                                div(radioButtons("calculation_switch","Calculation Switch",
+                                                 choices=c("OFF","ON"), inline=TRUE),align="center"),
                                 # --------- Data Table ---------
                                 br(),
                                 hr(),
@@ -93,10 +94,12 @@ shinyUI(
                conditionalPanel("input.case1==0",
                                 fluidRow(
                                   column(8, offset=2,
-                                         h4("Please select a case that best describes your operation. Each cases is designed to load 
-                                            an appropriate set of user-input values for your starting point."),
-                                         helpText("[case descriptions here]"),
-                                         bsButton("case1","Case 1", style="primary") 
+                                         h4("Please select a case that best describes your operation."),
+                                         helpText("The case will load 
+                                            an appropriate set of starting values for your user-data inputs."),
+                                         br(),
+                                         includeMarkdown(file.path("text","cases.md")),
+                                         div(bsButton("case1","Select Case 1", style="primary"),align="center")
                                   )
                                 )
                )

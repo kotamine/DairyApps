@@ -125,7 +125,7 @@ div(
                             )),
                         icon=icon("money")),
                ## --------------- Profile-specific Inpiuts  --------------- 
-               "Change w/ Investment",
+               "Change with Investment",
                 tabPanel("Capital", value="Capital",
                          fluidRow(column(width=10, offset=1,
                          tabsetPanel(id="prCapital", 

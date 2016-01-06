@@ -22,7 +22,7 @@ default_profile_specific_case_1 <- myRead.xlsx("www/user_input_data_case_1.xlsx"
 
 
 base_profiles <- c("Robots","Retrofit","New")
-base_profiles_se <- c(outer(base_profiles, paste0("_se",c(1:5)),FUN=paste,sep="")) # update the number 5
+base_profiles_se <- c(outer(base_profiles, paste0("_se",c(1:10)),FUN=paste,sep="")) # update the number 5
 # combo_profiles <- c("RetrofitRobots","RetrofitNew")
 
 refProfileName <-  function(x) {
@@ -45,8 +45,6 @@ shinyServer(function(input, output, session) {
   user_data <- reactiveValues() # uploaded (or default) user data
     
   calc_type <- "full"  # Set default calculation type
-  browser()
-
 
   
   # ----------- Functions: some of them depend on local variables  -----------

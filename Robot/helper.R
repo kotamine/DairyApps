@@ -151,14 +151,20 @@ impt <- function(rate, per, nper, pv, fv=0, type=0) {
 vdb <- function(cost, salvage, nper, start_per=1, end_per=1, factor=2, switch=TRUE, sequence=FALSE) {
   v <- c(); vsum <- c(); 
   s0 <- (cost-salvage)/nper;  s <- s0
-  tmp <- cost * factor/nper
-  v[1] <- (tmp>s) * tmp + (tmp<=s) * s 
-  vsum <- v[1]; 
-  for (t in 2:nper) {
-    s <-  (cost - vsum[t-1] - salvage)/(nper - t + 1)
-    tmp <-  (cost - vsum[t-1]) * factor/nper
-    v[t] <- switch * ((tmp>s) * tmp + (tmp<=s) * s ) + (!switch) * tmp
-    vsum[t] <- vsum[t-1] + v[t]
+  if (nper<= 0) { 
+    return(NA) 
+    } else if (nper<=1) {
+    v <- s0 
+  } else {  
+    tmp <- cost * factor/nper
+    v[1] <- (tmp>s) * tmp + (tmp<=s) * s 
+    vsum <- v[1]; 
+    for (t in 2:nper) {
+      s <-  (cost - vsum[t-1] - salvage)/(nper - t + 1)
+      tmp <-  (cost - vsum[t-1]) * factor/nper
+      v[t] <- switch * ((tmp>s) * tmp + (tmp<=s) * s ) + (!switch) * tmp
+      vsum[t] <- vsum[t-1] + v[t]
+    }
   }
   if (!sequence)  { 
     return(sum(v[start_per:end_per])) 
@@ -176,6 +182,7 @@ debt_table <- function(loan, interest_rate, loan_period,
   loan_period <- round(loan_period,0)
   n_period <- round(n_period,0)
   starting_year <- round(starting_year,0)
+  if (interest_rate < 1e-9) interest_rate <- 1e-9
   
   pmt <- -pmt(interest_rate, loan_period, loan)
   interest <- impt(interest_rate, 1, loan_period, loan)
@@ -187,9 +194,9 @@ debt_table <- function(loan, interest_rate, loan_period,
   df$yr_pmt[starting_year:ending_year] <- c(1:loan_period)
   
   df$interest <-  (df$yr_pmt >0) *
-    (-1) * impt(interest_rate, df$yr_pmt, loan_period, loan) 
+    (-1) * impt(interest_rate, df$yr_pmt, loan_period, loan) %>% round(2)
   
-  df$principal <- (df$yr_pmt >0) * (pmt - df$interest) 
+  df$principal <- (df$yr_pmt >0) * (pmt - df$interest)  %>% round(2)
   
   return(df)
 }
