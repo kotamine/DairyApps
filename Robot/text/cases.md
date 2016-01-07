@@ -1,5 +1,5 @@
 
-#### Case 1: Tie-stall with Hired Labor 
+#### Case 1: Tie-stall Barn with Hired Labor 
 
 some explanation...
 

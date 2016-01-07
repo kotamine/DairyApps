@@ -17,9 +17,11 @@ if ( input[[paste0("n_sets",x)]]=="2") {
 ans[[X]]$cost_milking2 <-  ans[[X]]$cost_milking1*(1+ans[[X]]$inflation_robot/100)^
   (ans[[X]]$useful_years+ input[[paste0("yr_system1",x)]]) *(input[[paste0("n_sets",x)]] == 2) 
 
+ans[[X]]$milking_horizon <- ans[[X]]$n_sets * max(ans[[X]]$useful_years)+ input[[paste0("yr_system1",x)]]
+
 ans[[X]]$planning_horizon <- ans[[X]]$n_sets * max(ans[[X]]$useful_years, 
                                                    input[[paste0("n_yr_milking1",x)]])+ input[[paste0("yr_system1",x)]]
-                                 
+
 
 ans[[X]]$salvage_milking_fv1 <- input[[paste0("salvage_milking1",x)]] *
   (1+ans[[X]]$inflation_robot/100)^(ans[[X]]$useful_years+ input[[paste0("yr_system1",x)]])
@@ -62,8 +64,8 @@ ans[[X]]$DMI_day <-  ans[[X]]$stage_lactation *
      +  input$body_weight_coeff1* (input$body_weight/conv_factor)^input$body_weight_coeff2) * conv_factor
 
 ans[[X]]$DMI_projected <-  ans[[X]]$stage_lactation *
-    (ans[[X]]$adj_milk_cow_day2/conv_factor * input$adj_milk_cow_coeff + 
-       +  input$body_weight_coeff1* (input$body_weight/conv_factor)^input$body_weight_coeff2) * conv_factor
+  (ans[[X]]$adj_milk_cow_day2/conv_factor * input$adj_milk_cow_coeff + 
+     +  input$body_weight_coeff1* (input$body_weight/conv_factor)^input$body_weight_coeff2) * conv_factor
 
 ans[[X]]$DMI_change <- ans[[X]]$DMI_projected - ans[[X]]$DMI_day
 
@@ -141,7 +143,9 @@ ans[[X]]$avg_interest <-  (ans[[X]]$loan_housing * ans[[X]]$r_housing +
 # Calculate revenues and expenses during a delayed investment period   
 if (input[[paste0("yr_system1",x)]]>0) {
   source(file.path("session_files", "session_calculation_delay.R"), local=TRUE)  # Calculates cash flow tables
-}
+} else {
+  ans[[paste0(X,"_delay")]] <- list()
+} 
 
 # Calculate cash flow tables
 source(file.path("session_files", "session_cash_flow.R"), local=TRUE)  
@@ -177,7 +181,7 @@ ans[[X]]$net_annual_impact_before_tax <- ans[[X]]$positive_total - ans[[X]]$nega
 
 
 if (calc_type == "full") { # skip some calculations that are not needed for some use
-
+  
   # Create copies of input$vars for Cash Flow tab etc.
   ans[[X]]$copy_salvage_milking1 <- input[[paste0("salvage_milking1",x)]]*
     (1+ans[[X]]$inflation_robot/100)^(1+input[[paste0("yr_system1",x)]]) 
@@ -206,41 +210,41 @@ if (calc_type == "full") { # skip some calculations that are not needed for some
   })
   
   
-# cost of cash flows for interest payments (evaluated at separate instests for milking and housing)
-ans[[X]]$interest_at_interest <-  pmt(ans[[X]]$r_milking1/100, ans[[X]]$planning_horizon,
-                                      npv(ans[[X]]$r_milking1/100, ans[[X]]$table_debt$milking_interest)) +
-  + pmt(ans[[X]]$r_housing/100, ans[[X]]$planning_horizon,
-        npv(ans[[X]]$r_housing/100, ans[[X]]$table_debt$barn_interest))
-
-ans[[X]]$tax_interest <-  -input$tax_rate/100 * ans[[X]]$interest_at_interest
-
-
-ans[[X]]$principal_at_interest <-  pmt(ans[[X]]$r_milking1/100, ans[[X]]$planning_horizon,
-                                       npv(ans[[X]]$r_milking1/100, ans[[X]]$table_debt$milking_principal)) +
-  + pmt(ans[[X]]$r_housing/100, ans[[X]]$planning_horizon,
-        npv(ans[[X]]$r_housing/100, ans[[X]]$table_debt$barn_principal))
-
-# Calculations used in Parital Budget and Cash Flow 
-# cost of depreciation (evaluated at separate instests for milking and housing)
-ans[[X]]$depreciation_at_interest <-
-  (pmt(ans[[X]]$r_milking1/100, ans[[X]]$planning_horizon,
-       npv(ans[[X]]$r_milking1/100, ans[[X]]$table_depreciation$depreciation_milking_system)) +
-     + pmt(ans[[X]]$r_housing/100, ans[[X]]$planning_horizon,
-           npv(ans[[X]]$r_housing/100, ans[[X]]$table_depreciation$depreciation_housing)))
-
-ans[[X]]$tax_depreciation <- -input$tax_rate/100 * ans[[X]]$depreciation_at_interest
-
-ans[[X]]$tax_deduction_milking <-
-  -input$tax_rate/100 *(pmt(ans[[X]]$avg_interest/100, ans[[X]]$planning_horizon,
-                            npv(ans[[X]]$avg_interest/100, ans[[X]]$table_depreciation$depreciation_robot))
-                        +  pmt(ans[[X]]$avg_interest/100, ans[[X]]$planning_horizon,
-                               npv(ans[[X]]$avg_interest/100, ans[[X]]$table_debt$robot_interest)))
-
-ans[[X]]$tax_deduction_housing <-
-  -input$tax_rate/100 *(pmt(ans[[X]]$avg_interest/100, ans[[X]]$planning_horizon,
-                            npv(ans[[X]]$avg_interest/100, ans[[X]]$table_depreciation$depreciation_housing))
-                        +  pmt(ans[[X]]$avg_interest/100, ans[[X]]$planning_horizon,
-                               npv(ans[[X]]$avg_interest/100, ans[[X]]$table_debt$barn_interest)))
-
-
+  # cost of cash flows for interest payments (evaluated at separate instests for milking and housing)
+  ans[[X]]$interest_at_interest <-  pmt(ans[[X]]$r_milking1/100, ans[[X]]$planning_horizon,
+                                        npv(ans[[X]]$r_milking1/100, ans[[X]]$table_debt$milking_interest)) +
+    + pmt(ans[[X]]$r_housing/100, ans[[X]]$planning_horizon,
+          npv(ans[[X]]$r_housing/100, ans[[X]]$table_debt$barn_interest))
+  
+  ans[[X]]$tax_interest <-  -input$tax_rate/100 * ans[[X]]$interest_at_interest
+  
+  
+  ans[[X]]$principal_at_interest <-  pmt(ans[[X]]$r_milking1/100, ans[[X]]$planning_horizon,
+                                         npv(ans[[X]]$r_milking1/100, ans[[X]]$table_debt$milking_principal)) +
+    + pmt(ans[[X]]$r_housing/100, ans[[X]]$planning_horizon,
+          npv(ans[[X]]$r_housing/100, ans[[X]]$table_debt$barn_principal))
+  
+  # Calculations used in Parital Budget and Cash Flow 
+  # cost of depreciation (evaluated at separate instests for milking and housing)
+  ans[[X]]$depreciation_at_interest <-
+    (pmt(ans[[X]]$r_milking1/100, ans[[X]]$planning_horizon,
+         npv(ans[[X]]$r_milking1/100, ans[[X]]$table_depreciation$depreciation_milking_system)) +
+       + pmt(ans[[X]]$r_housing/100, ans[[X]]$planning_horizon,
+             npv(ans[[X]]$r_housing/100, ans[[X]]$table_depreciation$depreciation_housing)))
+  
+  ans[[X]]$tax_depreciation <- -input$tax_rate/100 * ans[[X]]$depreciation_at_interest
+  
+  ans[[X]]$tax_deduction_milking <-
+    -input$tax_rate/100 *(pmt(ans[[X]]$avg_interest/100, ans[[X]]$planning_horizon,
+                              npv(ans[[X]]$avg_interest/100, ans[[X]]$table_depreciation$depreciation_milking_system))
+                          +  pmt(ans[[X]]$avg_interest/100, ans[[X]]$planning_horizon,
+                                 npv(ans[[X]]$avg_interest/100, ans[[X]]$table_debt$milking_interest)))
+  
+  ans[[X]]$tax_deduction_housing <-
+    -input$tax_rate/100 *(pmt(ans[[X]]$avg_interest/100, ans[[X]]$planning_horizon,
+                              npv(ans[[X]]$avg_interest/100, ans[[X]]$table_depreciation$depreciation_housing))
+                          +  pmt(ans[[X]]$avg_interest/100, ans[[X]]$planning_horizon,
+                                 npv(ans[[X]]$avg_interest/100, ans[[X]]$table_debt$barn_interest)))
+  
+  
 }

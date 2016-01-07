@@ -8,12 +8,12 @@ lapply(base_profiles, function(x) {
     # browser()
     
     # Calculations given a profile x
-  
+    
     # Make this reactive to all data inputs; 
     lapply(list_inputs_shared, function(z) input[[paste(z)]])
     lapply(list_inputs_profile, function(z) input[[paste0(z,x)]])
     if (x=="Robots") lapply(list_inputs_feed, function(z) input[[paste(z)]])
-
+    
     isolate({
       X <- x  # Capital X != x will be used for sensitivity analysis etc.
       
@@ -34,13 +34,6 @@ lapply(base_profiles, function(x) {
       source(file.path("session_files", "session_calculation_steps.R"), local=TRUE)  # Calculates main results
       
     }) 
-    
-#     # This is used for alerting the base-value change in sensitivity and scenario analysis  
-#     createAlert(session, "c_input_change", "ref_c_input_change", 
-#                 content = "New data inputs. 
-#                 Press ``Calculate'' to updated the results.",
-#                 append = FALSE) 
-
     
   })  
 })

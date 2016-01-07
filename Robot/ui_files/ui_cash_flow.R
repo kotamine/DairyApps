@@ -16,11 +16,11 @@ uiCashFlow <- function(x) {
                div(id = paste0("id_CF_formula_show_1",x),
                    hr(),
                    div(style="background-color:gray; color:white;",
-                   fluidRow(column(6, h5("Item")),
-                            column(2, h5("Housing")),
-                            column(2, h5(refProfileName(x),1)),
-                            column(2, div(id=paste0(x,"_CF",2,1),h5(refProfileName(x),2)))
-                   )
+                       fluidRow(column(6, h5("Item")),
+                                column(2, h5("Housing")),
+                                column(2, h5(refProfileName(x),1)),
+                                column(2, div(id=paste0(x,"_CF",2,1),h5(refProfileName(x),2)))
+                       )
                    ),
                    fluidRow(column(6, helpText("Investment")),
                             column(2, uiOutput(paste0("CF_cost_housing",x))),

@@ -12,6 +12,8 @@
 # The code below comes from a subset of session_calculation_steps.R
 # Part unnecessary to change may be commented instead of being deleted 
 
+
+
 ans[[paste0(X,"_delay")]]$milk_change <- ans[[X]]$milk_change * input[[paste0("delay_milk_increase",x)]]/100
 ans[[paste0(X,"_delay")]]$hr_sv_milking <- input[[paste0("hr_sv_milking",x)]] * input[[paste0("delay_labor_saving",x)]]/100
 
@@ -22,14 +24,13 @@ ans[[paste0(X,"_delay")]]$change_electricity <- 0
 ans[[paste0(X,"_delay")]]$change_chemical <- 0 
 ans[[paste0(X,"_delay")]]$software <- 0
 
-browser()
 
 if (x=="Robots") {
-# ans[[X]]$cost_milking1 <- input[[paste0("n_robot",x)]] * ans[[X]]$cost_robot
-  ans[[X]]$repair_total <- input[[paste0("n_robot",x)]] * ans[[paste0(X,"_delay")]]$repair
+  # ans[[X]]$cost_milking1 <- input[[paste0("n_robot",x)]] * ans[[X]]$cost_robot
+  ans[[paste0(X,"_delay")]]$repair_total <- input[[paste0("n_robot",x)]] * ans[[paste0(X,"_delay")]]$repair
 } else {
-#   ans[[X]]$cost_milking1 <- ans[[X]]$cost_parlors
-  ans[[X]]$repair_total <-  ans[[paste0(X,"_delay")]]$repair
+  #   ans[[X]]$cost_milking1 <- ans[[X]]$cost_parlors
+  ans[[paste0(X,"_delay")]]$repair_total <-  ans[[paste0(X,"_delay")]]$repair
 }
 
 # if ( input[[paste0("n_sets",x)]]=="2") {
@@ -40,6 +41,8 @@ if (x=="Robots") {
 
 # ans[[X]]$cost_milking2 <-  ans[[X]]$cost_milking1*(1+ans[[X]]$inflation_robot/100)^
 #   (ans[[X]]$useful_years+ input[[paste0("yr_system1",x)]]) *(input[[paste0("n_sets",x)]] == 2) 
+# 
+# ans[[X]]$milking_horizon <- ans[[X]]$n_sets * max(ans[[X]]$useful_years)+ input[[paste0("yr_system1",x)]]
 # 
 # ans[[X]]$planning_horizon <- ans[[X]]$n_sets * max(ans[[X]]$useful_years, 
 #                                                    input[[paste0("n_yr_milking1",x)]])+ input[[paste0("yr_system1",x)]]
@@ -127,7 +130,7 @@ ans[[paste0(X,"_delay")]]$dec_exp_labor <- ans[[paste0(X,"_delay")]]$hr_sv_milki
 ans[[paste0(X,"_delay")]]$dec_exp_labor_management <- input[[paste0("decrease_lab_mgt",x)]] * input$labor_rate_rc_mgt * 365
 
 ans[[paste0(X,"_delay")]]$dec_exp_total <- ans[[paste0(X,"_delay")]]$dec_exp_heat_detection  +
-+ ans[[paste0(X,"_delay")]]$dec_exp_labor + ans[[paste0(X,"_delay")]]$dec_exp_labor_management
+  + ans[[paste0(X,"_delay")]]$dec_exp_labor + ans[[paste0(X,"_delay")]]$dec_exp_labor_management
 
 ans[[paste0(X,"_delay")]]$positive_total <- ans[[paste0(X,"_delay")]]$inc_rev_total +  ans[[paste0(X,"_delay")]]$dec_exp_total
 
@@ -147,11 +150,11 @@ ans[[paste0(X,"_delay")]]$inc_exp_pellet <- input[[paste0("cost_pellets",x)]] *
 ans[[paste0(X,"_delay")]]$inc_exp_replacement <- input$cost_heifer * input[[paste0("change_turnover",x)]]/100 * ans[[X]]$herd_size2
 
 ans[[paste0(X,"_delay")]]$inc_exp_utilities <- (ans[[paste0(X,"_delay")]]$change_electricity + ans[[paste0(X,"_delay")]]$change_water +
-                                 + ans[[paste0(X,"_delay")]]$change_chemical)* ans[[X]]$herd_size2 
+                                                  + ans[[paste0(X,"_delay")]]$change_chemical)* ans[[X]]$herd_size2 
 
 ans[[paste0(X,"_delay")]]$inc_exp_record_management <- input[[paste0("increase_rc_mgt",x)]] * input$labor_rate_rc_mgt * 365
 
-ans[[paste0(X,"_delay")]]$inc_exp_total <- ans[[X]]$inc_exp_herd_increase + ans[[paste0(X,"_delay")]]$inc_exp_repair +
+ans[[paste0(X,"_delay")]]$inc_exp_total <- ans[[paste0(X,"_delay")]]$inc_exp_herd_increase + ans[[paste0(X,"_delay")]]$inc_exp_repair +
   + ans[[paste0(X,"_delay")]]$inc_exp_feed + ans[[paste0(X,"_delay")]]$inc_exp_pellet +
   + ans[[paste0(X,"_delay")]]$inc_exp_replacement +  ans[[paste0(X,"_delay")]]$inc_exp_utilities +
   + ans[[paste0(X,"_delay")]]$inc_exp_record_management  

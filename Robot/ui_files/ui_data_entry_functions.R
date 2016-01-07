@@ -19,14 +19,14 @@ changeVariablesCapital<- function(x) {
                       numericInput(paste0("herd_increase",x),NULL,value=0,step=10))
              ), 
              conditionalPanel(paste0("input.herd_increase",x,">0"),
-             fluidRow(column(width=8, helpText("Additional labor expense with herd expansion ($/cow)")),
-                      column(width=4,  numericInput(paste0("additional_labor",x),
-                                                    NULL,value=450,step=50,min=0))
-             ), 
-             fluidRow(column(width=8, helpText("Other expense with herd expansion ($/cow)")),
-                      column(width=4,  numericInput(paste0("additional_cost",x),
-                                                    NULL,value=200,step=50,min=0))
-             )),
+                              fluidRow(column(width=8, helpText("Additional labor expense with herd expansion ($/cow)")),
+                                       column(width=4,  numericInput(paste0("additional_labor",x),
+                                                                     NULL,value=450,step=50,min=0))
+                              ), 
+                              fluidRow(column(width=8, helpText("Other expense with herd expansion ($/cow)")),
+                                       column(width=4,  numericInput(paste0("additional_cost",x),
+                                                                     NULL,value=200,step=50,min=0))
+                              )),
              
              fluidRow(column(width=8, 
                              helpText("Projected milking herd size (cows)")),
@@ -35,8 +35,8 @@ changeVariablesCapital<- function(x) {
              lapply(x, function(x1) { 
                if(x1==base_profiles[1]) {
                  div(fluidRow(column(width=8, helpText(paste("Unit cost for", x, "($)"))),
-                          column(width=4, numericInput(paste0("cost_robot",x),
-                                                       NULL,value=180000,min=50000,step=10000))
+                              column(width=4, numericInput(paste0("cost_robot",x),
+                                                           NULL,value=180000,min=50000,step=10000))
                  ),
                  fluidRow(column(width=8, helpText(paste("Number of", refProfileName(x),"(units)"))),
                           column(width=4, numericInput(paste0("n_robot",x),NULL,value=2,min=0,step=1))
@@ -48,7 +48,7 @@ changeVariablesCapital<- function(x) {
                                               NULL,value=180000,min=50000,step=10000)))       
                } else {
                  div(shinyjs::hidden(numericInput(paste0("cost_robot",x),
-                                                                           NULL,value=180000,min=50000,step=10000)
+                                                  NULL,value=180000,min=50000,step=10000)
                  ),   
                  shinyjs::hidden(numericInput(paste0("n_robot",x),NULL,value=2,min=0,step=1)
                  ),  
@@ -152,7 +152,7 @@ changeVariablesMilkfeed<- function(x) {
                  )) 
                } else {
                  div(fluidRow(column(width=8, helpText("Projected milk output (lbs/cow/day)")),
-                          column(width=4, uiOutput(paste0("milk_day_cow_alt", x)))
+                              column(width=4, uiOutput(paste0("milk_day_cow_alt", x)))
                  ),   
                  fluidRow(column(width=8, helpText("Projected DMI per day with", refProfileName(x))),
                           column(width=4, uiOutput(paste0("DMI_projected",x)))
@@ -162,12 +162,12 @@ changeVariablesMilkfeed<- function(x) {
                  ), 
                  shinyjs::hidden( 
                    fluidRow(column(width=8, helpText("Pellets fed in robot booth (lb/cow/day)")),
-                          column(width=4, numericInput(paste0("pellets",x),NULL,value=0,min=0,step=1))
-                    ), 
-                    fluidRow(column(width=8, helpText("Extra cost for pellets fed in robot booth ($/ton)")),
-                          column(width=4, numericInput(paste0("cost_pellets",x),NULL,value=0,min=0,step=2))
-                    )
-                ))   
+                            column(width=4, numericInput(paste0("pellets",x),NULL,value=0,min=0,step=1))
+                   ), 
+                   fluidRow(column(width=8, helpText("Extra cost for pellets fed in robot booth ($/ton)")),
+                            column(width=4, numericInput(paste0("cost_pellets",x),NULL,value=0,min=0,step=2))
+                   )
+                 ))   
                }   
              }),     
              fluidRow(column(width=8, helpText("Estimated percent change in SCC (%)")),
@@ -200,9 +200,6 @@ changeVariablesLaborenergy<- function(x) {
              ),
              fluidRow(column(width=8, helpText("Anticipated hours of milking & chore labor (hours/day)")),
                       column(width=4, uiOutput(paste0("anticipated_hours_milking",x)))
-             ),
-             fluidRow(column(width=8, helpText("Current hours of heat detection (hours/day)")),
-                      column(width=4, numericInput(paste0("hr_heat_detection",x),NULL,value=0.65,min=0,step=.05))
              ),
              fluidRow(column(width=8, helpText("Anticipated hours of heat detection (hours/day)")),
                       column(width=4, numericInput(paste0("anticipated_hours_heat",x),
@@ -250,24 +247,24 @@ changeVariablesFinance<- function(x) {
                       column(width=2,  div(id=paste0(x,2,3), uiOutput(paste0("copy_cost_milking2",x))))
              ), 
              div(id=paste0(x,"delay",1),
-             fluidRow(column(width=6,  helpText(paste("Delayed portion of the investment till", 
-                                                      refProfileName(x)," installment ($)"))),
-                      column(width=2,  numericInput(paste0("delay_housing1",x),NULL,value=0, min=0,step=50000)),
-                      column(width=2,  helpText("-",align="center")),
-                      column(width=2,  div(id=paste0(x,2,4),  helpText("-",align="center")))
-             ),
-             fluidRow(column(width=6,  helpText(paste("Portion of anticipated milk increase installed 
-                                                      with initial housing investment (%)"))),
-                      column(width=2,  numericInput(paste0("delay_milk_increase",x),NULL,value=0, min=0,step=10, max=100)),
-                      column(width=2,  helpText("-",align="center")),
-                      column(width=2,  div(id=paste0(x,2,5),  helpText("-",align="center")))
-             ),
-             fluidRow(column(width=6,  helpText(paste("Portion of anticipated labor saving installed 
-                                                      with initial housing investment (%)"))),
-                      column(width=2,  numericInput(paste0("delay_labor_saving",x),NULL,value=0, min=0,step=10, max=100)),
-                      column(width=2,  helpText("-",align="center")),
-                      column(width=2,  div(id=paste0(x,2,6),  helpText("-",align="center")))
-             )), 
+                 fluidRow(column(width=6,  helpText(paste("Delayed amount of the investment till", 
+                                                          refProfileName(x)," installment ($)"))),
+                          column(width=2,  numericInput(paste0("delay_housing1",x),NULL,value=0, min=0,step=50000)),
+                          column(width=2,  helpText("-",align="center")),
+                          column(width=2,  div(id=paste0(x,2,4),  helpText("-",align="center")))
+                 ),
+                 fluidRow(column(width=6,  helpText(paste("Portion of anticipated milk increase installed 
+                                                      with the initial housing investment (%)"))),
+                          column(width=2,  numericInput(paste0("delay_milk_increase",x),NULL,value=0, min=0,step=10, max=100)),
+                          column(width=2,  helpText("-",align="center")),
+                          column(width=2,  div(id=paste0(x,2,5),  helpText("-",align="center")))
+                 ),
+                 fluidRow(column(width=6,  helpText(paste("Portion of anticipated labor saving installed 
+                                                      with the initial housing investment (%)"))),
+                          column(width=2,  numericInput(paste0("delay_labor_saving",x),NULL,value=0, min=0,step=10, max=100)),
+                          column(width=2,  helpText("-",align="center")),
+                          column(width=2,  div(id=paste0(x,2,6),  helpText("-",align="center")))
+                 )), 
              fluidRow(column(width=6,  helpText("Down payment ($)")),
                       column(width=2,  numericInput(paste0("down_housing",x),NULL,value=100000, min=0,step=20000)),
                       column(width=2,  numericInput(paste0("down_milking1",x),NULL,value=0, min=0,step=20000)),

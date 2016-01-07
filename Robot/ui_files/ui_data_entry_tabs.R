@@ -15,17 +15,17 @@ div(
                           column(
                             width=10, offset=1, 
                             div(style="background-color:#4863A0; color:white;",
-                                          fluidRow(column(width=8, 
-                                                          h5(strong("Item"),align="center")),
-                                                   column(width=4, h5(strong("User Data"), 
-                                                                      align="center"))
-                                          )
-                                ), br(),
+                                fluidRow(column(width=8, 
+                                                h5(strong("Item"),align="center")),
+                                         column(width=4, h5(strong("User Data"), 
+                                                            align="center"))
+                                )
+                            ), br(),
                             fluidRow(column(width=8, 
                                             helpText("Current herd size (milking & dry animals)")),
                                      column(width=4, 
                                             numericInput("herd_size",NULL,value=120,min=30,step=10))
-                                     ),
+                            ),
                             fluidRow(column(width=8, 
                                             helpText("Milk per cow per day, past year (lbs/cow/day)")),
                                      column(width=4, 
@@ -35,18 +35,18 @@ div(
                                             helpText("Current annual bulk tank average SCC (SCC/ml)")),
                                      column(width=4, 
                                             numericInput("scc_average",NULL,value=240000,min=0,step=10000))
-                                     ), 
+                            ), 
                             fluidRow(column(width=8, helpText("Current hours of milking & chore labor (hours/day)")),
                                      column(width=4, numericInput("hours_milking",NULL,value=17,min=0,step=1))
                             ),
                             fluidRow(column(width=8, helpText("Current hours of heat detection (hours per day)")),
                                      column(width=4, numericInput("hr_heat_detection",NULL,value=0.65,min=0,step=.05))
                             )
-#                             fluidRow(column(width=8, helpText("Projected change in dry matter intake (DMI) per day (lbs DM/day)")),
-#                                      column(width=4, uiOutput("DMI_change"))
-#                             ),
-                           
-                            )),  
+                            #                             fluidRow(column(width=8, helpText("Projected change in dry matter intake (DMI) per day (lbs DM/day)")),
+                            #                                      column(width=4, uiOutput("DMI_change"))
+                            #                             ),
+                            
+                          )),  
                         icon=icon("home")), 
                tabPanel("Markets", value="Markets",
                         #                         milk price, heifer price, cull price,  
@@ -122,29 +122,29 @@ div(
                             ), br(),
                             radioButtons("dep_method","Depreciation accounting method:",
                                          choices=c("Accelerated GDS"="d1","Straight-line ADS"="d2"))
-                            )),
+                          )),
                         icon=icon("money")),
                ## --------------- Profile-specific Inpiuts  --------------- 
                "Change with Investment",
-                tabPanel("Capital", value="Capital",
-                         fluidRow(column(width=10, offset=1,
-                         tabsetPanel(id="prCapital", 
-                                     tabPanel("Robots", value=base_profiles[1],
-                                              changeVariablesCapital(base_profiles[1])),
-                                     tabPanel("Retrofit Parlors", value=base_profiles[2],
-                                              changeVariablesCapital(base_profiles[2])),
-                                     tabPanel("New Parlors", value=base_profiles[3],
-                                              changeVariablesCapital(base_profiles[3]))
-                                     # tabPanel("Retrofit/Robots",  value=combo_profiles[1],
-                                     #          helpText("* This assumes first Retrofit Parlors and then New Parlors."),
-                                     #          helpText("* Values are taken from the two profiles.")),
-                                     # tabPanel("Retrofit/New",  value=combo_profiles[2],
-                                     #          helpText("* This assumes first Retrofit Parlors and then New Parlors."),
-                                     #          helpText("* Values are taken from the two profiles."))
-                        )
+               tabPanel("Capital", value="Capital",
+                        fluidRow(column(width=10, offset=1,
+                                        tabsetPanel(id="prCapital", 
+                                                    tabPanel("Robots", value=base_profiles[1],
+                                                             changeVariablesCapital(base_profiles[1])),
+                                                    tabPanel("Retrofit Parlors", value=base_profiles[2],
+                                                             changeVariablesCapital(base_profiles[2])),
+                                                    tabPanel("New Parlors", value=base_profiles[3],
+                                                             changeVariablesCapital(base_profiles[3]))
+                                                    # tabPanel("Retrofit/Robots",  value=combo_profiles[1],
+                                                    #          helpText("* This assumes first Retrofit Parlors and then New Parlors."),
+                                                    #          helpText("* Values are taken from the two profiles.")),
+                                                    # tabPanel("Retrofit/New",  value=combo_profiles[2],
+                                                    #          helpText("* This assumes first Retrofit Parlors and then New Parlors."),
+                                                    #          helpText("* Values are taken from the two profiles."))
+                                        )
                         )),
                         icon=icon("gears")
-                ), 
+               ), 
                tabPanel("Maintenance", value="Maintenance",
                         fluidRow(column(width=10, offset=1,
                                         tabsetPanel(id="prMaintenance", 
@@ -158,60 +158,60 @@ div(
                         )),
                         icon=icon("wrench")
                ), 
-                tabPanel("Milk & Feed", value="Milk",
-                         fluidRow(column(width=10, offset=1,
-                        tabsetPanel(id="prMilk", 
-                                     tabPanel("Robots", value=base_profiles[1],
-                                              changeVariablesMilkfeed(base_profiles[1]),
-                                              source(file.path("ui_files","ui_feed_calculation.R"), local=TRUE)$value
-                                              ),
-                                     tabPanel("Retrofit Parlors", value=base_profiles[2],
-                                              changeVariablesMilkfeed(base_profiles[2])),
-                                     tabPanel("New Parlors", value=base_profiles[3],
-                                              changeVariablesMilkfeed(base_profiles[3]))
-                        )
-                          )),
+               tabPanel("Milk & Feed", value="Milk",
+                        fluidRow(column(width=10, offset=1,
+                                        tabsetPanel(id="prMilk", 
+                                                    tabPanel("Robots", value=base_profiles[1],
+                                                             changeVariablesMilkfeed(base_profiles[1]),
+                                                             source(file.path("ui_files","ui_feed_calculation.R"), local=TRUE)$value
+                                                    ),
+                                                    tabPanel("Retrofit Parlors", value=base_profiles[2],
+                                                             changeVariablesMilkfeed(base_profiles[2])),
+                                                    tabPanel("New Parlors", value=base_profiles[3],
+                                                             changeVariablesMilkfeed(base_profiles[3]))
+                                        )
+                        )),
                         icon=icon("truck")
-                ),
-                 tabPanel("Labor & Energy", value="Labor",
-              fluidRow(column(width=10, offset=1,
-                              tabsetPanel(id="prLabor", 
-                                          tabPanel("Robots", value=base_profiles[1],
-                                                   changeVariablesLaborenergy(base_profiles[1])),
-                                          tabPanel("Retrofit Parlors", value=base_profiles[2],
-                                                   changeVariablesLaborenergy(base_profiles[2])),
-                                          tabPanel("New Parlors", value=base_profiles[3],
-                                                   changeVariablesLaborenergy(base_profiles[3]))
-                              )
-              )),
-              icon=icon("male")
-                ),
-              tabPanel("Finance", value="Finance",
-              fluidRow(column(width=10, offset=1,
-                              tabsetPanel(id="prFinance", 
-                                          tabPanel("Robots", value=base_profiles[1],
-                                                   changeVariablesFinance(base_profiles[1])),
-                                          tabPanel("Retrofit Parlors", value=base_profiles[2],
-                                                   changeVariablesFinance(base_profiles[2])),
-                                          tabPanel("New Parlors", value=base_profiles[3],
-                                                   changeVariablesFinance(base_profiles[3]))
-                                          # tabPanel("Retrofit/Robots",   value=combo_profiles[1],
-                                          #          changeVariablesCombo("Retrofit/Robots","Retrofit Parlors","Robots"),
-                                          #          helpText("* This assumes first Retrofit Parlors and then New Parlors."),
-                                          #          helpText("* The second set of Parlors are excluded from the calculation."),
-                                          #          helpText("* The rest of the values are taken from the two profiles.")
-                                          #          ),
-                                          # tabPanel("Retrofit/New",    value=combo_profiles[2],
-                                          #          changeVariablesCombo("Retrofit/New","Retrofit Parlors","New Parlors"),
-                                          #          helpText("* This assumes first Retrofit Parlors and then New Parlors."),
-                                          #          helpText("* The second set of Parlors are excluded from the calculation."),
-                                          #          helpText("* The rest of the values are taken from the two profiles.")
-                                          # )
-                              )
-              )),
-               icon=icon("bank")
+               ),
+               tabPanel("Labor & Energy", value="Labor",
+                        fluidRow(column(width=10, offset=1,
+                                        tabsetPanel(id="prLabor", 
+                                                    tabPanel("Robots", value=base_profiles[1],
+                                                             changeVariablesLaborenergy(base_profiles[1])),
+                                                    tabPanel("Retrofit Parlors", value=base_profiles[2],
+                                                             changeVariablesLaborenergy(base_profiles[2])),
+                                                    tabPanel("New Parlors", value=base_profiles[3],
+                                                             changeVariablesLaborenergy(base_profiles[3]))
+                                        )
+                        )),
+                        icon=icon("male")
+               ),
+               tabPanel("Finance", value="Finance",
+                        fluidRow(column(width=10, offset=1,
+                                        tabsetPanel(id="prFinance", 
+                                                    tabPanel("Robots", value=base_profiles[1],
+                                                             changeVariablesFinance(base_profiles[1])),
+                                                    tabPanel("Retrofit Parlors", value=base_profiles[2],
+                                                             changeVariablesFinance(base_profiles[2])),
+                                                    tabPanel("New Parlors", value=base_profiles[3],
+                                                             changeVariablesFinance(base_profiles[3]))
+                                                    # tabPanel("Retrofit/Robots",   value=combo_profiles[1],
+                                                    #          changeVariablesCombo("Retrofit/Robots","Retrofit Parlors","Robots"),
+                                                    #          helpText("* This assumes first Retrofit Parlors and then New Parlors."),
+                                                    #          helpText("* The second set of Parlors are excluded from the calculation."),
+                                                    #          helpText("* The rest of the values are taken from the two profiles.")
+                                                    #          ),
+                                                    # tabPanel("Retrofit/New",    value=combo_profiles[2],
+                                                    #          changeVariablesCombo("Retrofit/New","Retrofit Parlors","New Parlors"),
+                                                    #          helpText("* This assumes first Retrofit Parlors and then New Parlors."),
+                                                    #          helpText("* The second set of Parlors are excluded from the calculation."),
+                                                    #          helpText("* The rest of the values are taken from the two profiles.")
+                                                    # )
+                                        )
+                        )),
+                        icon=icon("bank")
                ), 
-                               widths=c(3,9)
+               widths=c(3,9)
   )    
 ) 
 

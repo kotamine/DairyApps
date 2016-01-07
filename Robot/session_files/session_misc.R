@@ -14,22 +14,24 @@ lapply(base_profiles, function(x) {
   
   # Show/hide Second set of Robot or Parlors
   observe({
-     if (input[[paste0("n_sets",x)]]=="2") { 
+    if (input[[paste0("n_sets",x)]]=="2") { 
       for (i in c(1:11)) shinyjs::show(paste0(x,2,i)) # Located in ui_data_entry_functions
       for (i in c(1:6))  shinyjs::show(paste0(x,"_CF",2,i)) # Located in ui_cash_flow
+      for (i in c(1:1))  shinyjs::show(paste0(x,"_PB",2,i)) # Located in ui_partial_budget
     } else {
       for (i in c(1:11))  shinyjs::hide(paste0(x,2,i))
       for (i in c(1:6))   shinyjs::hide(paste0(x,"_CF",2,i))
+      for (i in c(1:1))   shinyjs::hide(paste0(x,"_PB",2,i)) 
     }
   })
   
   # Show/hide delayed investment 
   observeEvent(input[[paste0("yr_system1",x)]], {
-        if (input[[paste0("yr_system1",x)]]>0) {
-          shinyjs::show(paste0(x,"delay",1))
-        } else {
-          shinyjs::hide(paste0(x,"delay",1))
-        }
+    if (input[[paste0("yr_system1",x)]]>0) {
+      shinyjs::show(paste0(x,"delay",1))
+    } else {
+      shinyjs::hide(paste0(x,"delay",1))
+    }
   })  
   
   # Show/hide Partial Budget Plots
@@ -80,18 +82,18 @@ lapply(list_tabs, function(z) {
 list_profiles <- c(base_profiles,base_profiles_se)
 
 my_update_dashboard <- function(var, choices) {
-lapply(list_profiles, function(z) {
-  observeEvent(input[[paste0(var,z)]], {
-    lapply(list_profiles, function(w) {
-      updateRadioButtons(session, paste(var),NULL,
-                         choices=choices, selected=input[[paste0(var,z)]])
-      if (z!=w)  {
-        updateRadioButtons(session, paste0(var,w),NULL,
+  lapply(list_profiles, function(z) {
+    observeEvent(input[[paste0(var,z)]], {
+      lapply(list_profiles, function(w) {
+        updateRadioButtons(session, paste(var),NULL,
                            choices=choices, selected=input[[paste0(var,z)]])
-      }
+        if (z!=w)  {
+          updateRadioButtons(session, paste0(var,w),NULL,
+                             choices=choices, selected=input[[paste0(var,z)]])
+        }
+      })
     })
   })
-})
 } 
 
 my_update_dashboard("IOFC", c("per cow","per cwt"))
@@ -104,9 +106,9 @@ lapply(base_profiles, function(x) {
   output[[paste0("dl_button_cash_flow",x)]] <- renderUI({
     need(!is.null(ans[[x]]$table_cash_flow) & !is.null(ans[[x]]$table_debt) &
            !is.null(ans[[x]]$table_depreciation)) %>% validate()
-       downloadButton('download_table_cash_flow', 'Download')
+    downloadButton('download_table_cash_flow', 'Download')
   })
-
+  
   
 })
 
@@ -127,10 +129,12 @@ output[["data_download"]] <- downloadHandler(
 
 
 get_common_variables <- function() {
-  df <- df_null(c("variable","value")) 
+  df <- df_null(c("variable","label","value")) 
   common_vars <- c(list_inputs_shared,list_inputs_feed)
+  label_vars <- c(label_inputs_shared,label_inputs_feed)
+  
   for(i in seq_along(common_vars)) {
-    df[i,] <-  c(paste(common_vars[i]),
+    df[i,] <-  c(common_vars[i],label_vars[i],
                  input[[paste(common_vars[i])]])
   } 
   return(df)
@@ -141,10 +145,10 @@ get_profile_specific_variables <- function() {
   df <- lapply(base_profiles, refProfileName) %>% unlist %>% df_null()
   
   for(i in seq_along(list_inputs_profile)) {
-  df[i,] <- lapply(base_profiles, function(x) input[[paste0(list_inputs_profile[i],x)]]) %>% unlist()
+    df[i,] <- lapply(base_profiles, function(x) input[[paste0(list_inputs_profile[i],x)]]) %>% unlist()
   }
-  df <- cbind(variable=list_inputs_profile, df)
-
+  df <- cbind(variable=list_inputs_profile, label=label_inputs_profile,df)
+  
   return(df)
 }
 
@@ -194,9 +198,9 @@ observe({
   input$default_data
   
   isolate({
-  # ** Make this depend on the case the user selects
-  user_data$common_variables <- default_common_case_1
-  user_data$profile_specific_variables  <- default_profile_specific_case_1 
+    # ** Make this depend on the case the user selects
+    user_data$common_variables <- default_common_case_1
+    user_data$profile_specific_variables  <- default_profile_specific_case_1 
   })
 })
 
@@ -205,14 +209,14 @@ observe({
 observe({ 
   need(!is.null(user_data$common_variables) &
          !is.null(user_data$profile_specific_variables), "NA") %>% validate() 
-
+  
   isolate({
     # Replace "." symbole with space " "
     colnames(user_data$common_variables) <- gsub("\\."," ",colnames(user_data$common_variables))
     colnames(user_data$profile_specific_variables) <- gsub("\\."," ",colnames(user_data$profile_specific_variables))
     
-    colnames_1 <- c("variable","value")
-    colnames_2 <- c("variable", unlist(lapply(base_profiles, refProfileName))) 
+    colnames_1 <- c("variable", "label", "value")
+    colnames_2 <- c("variable", "label", unlist(lapply(base_profiles, refProfileName))) 
     
     # Check colnames
     if (!(all(colnames(user_data$common_variables) %in% colnames_1) &
@@ -246,38 +250,40 @@ observe({
     updateRadioButtons(session, "dep_method", "Depreciation accounting method:", 
                        selected=user_data$common_variables["dep_method","value"], 
                        choices=c("Accelerated GDS"="d1","Straight-line ADS"="d2"))
-
+    
     # Update data with uploaded data 
-     for(i in seq_along(rownames_1)) {
-        loc_var <- input[[rownames_1[i]]]
-        if (!is.null( loc_var)) 
-        {  if (is.numeric( loc_var)) {
-            updateNumericInput(session, rownames_1[i], NULL,
-                             value=as.numeric(user_data$common_variables[rownames_1[i],"value"]), 
-                             min= common_variables_min_step[i,"min"],
-                             step=common_variables_min_step[i,"step"])
-        } 
-        }
+    for(i in seq_along(rownames_1)) {
+      loc_var <- input[[rownames_1[i]]]
+      if (!is.null( loc_var)) 
+      {  if (is.numeric( loc_var)) {
+        updateNumericInput(session, rownames_1[i], NULL,
+                           value=user_data$common_variables[rownames_1[i],"value"] %>% as.numeric(), 
+                           min= common_variables_min_step[i,"min"] %>% as.numeric(),
+                           step=common_variables_min_step[i,"step"] %>% as.numeric(),
+                           max= common_variables_min_step[i,"max"] %>% as.numeric())
       } 
-  
+      }
+    } 
+    
     lapply(base_profiles, function(x) {
       x_col <- which(refProfileName(x)==colnames(user_data$profile_specific_variables))
-    
-    for(i in seq_along(rownames_2)) {
-      loc_var <- input[[paste0(rownames_2[i],x)]]
-      if (!is.null( loc_var))
-      {  if (is.numeric( loc_var)) {
-    
+      
+      for(i in seq_along(rownames_2)) {
+        loc_var <- input[[paste0(rownames_2[i],x)]]
+        if (!is.null( loc_var))
+        {  if (is.numeric( loc_var)) {
+          
           updateNumericInput(session, paste0(rownames_2[i],x), NULL,
-                           value=as.numeric(user_data$profile_specific_variables[rownames_2[i],x_col]),
-                           min=profile_specific_variables_min_step[i,"min"],
-                           step=profile_specific_variables_min_step[i,"step"] )
-      } else if (rownames_2[i]=="n_sets") {
+                             value=user_data$profile_specific_variables[rownames_2[i],x_col] %>% as.numeric(),
+                             min=profile_specific_variables_min_step[i,"min"] %>% as.numeric(),
+                             step=profile_specific_variables_min_step[i,"step"] %>% as.numeric(),
+                             max=profile_specific_variables_min_step[i,"max"] %>% as.numeric())
+        } else if (rownames_2[i]=="n_sets") {
           updateRadioButtons(session, paste0("n_sets",x), NULL, choices=c("one"=1, "two"=2),
-            selected=as.character(user_data$profile_specific_variables["n_sets", x_col]), inline=TRUE) 
+                             selected=as.character(user_data$profile_specific_variables["n_sets", x_col]), inline=TRUE) 
+        }
+        } 
       }
-      } 
-    }
     }) 
     
   })
