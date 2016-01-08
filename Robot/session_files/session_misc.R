@@ -5,6 +5,8 @@ p_empty_table <- df_null(p_colnames)
 
 
 
+
+
 # Show/hide DMI calculations 
 shinyjs::onclick("customDMI",
                  shinyjs::toggle(id="DMI_inputs", anim = TRUE)
@@ -65,12 +67,14 @@ observeEvent(input$coeff_reset,{
 }) 
 
 
-# Make profile choice equivalent across various tabs 
+# Make profile choice equivalent across various tabs
 list_tabs <- c("dashboard","prMilk", "prLabor","prFinance","prMaintenance","prCapital",
                "partial_budget","cash_flow","sensitivity")
 
 lapply(list_tabs, function(z) {
   observeEvent(input[[paste(z)]], {
+    # browser()
+    # if (any(sapply(base_profiles, function(x) length(ans[[x]]$net_annual_impact_before_tax)==0))) return()
     lapply(list_tabs, function(w) {
       if (z!=w)  updateTabsetPanel(session, paste(w), input[[paste(z)]])
     })
@@ -112,6 +116,9 @@ lapply(base_profiles, function(x) {
   
 })
 
+
+
+# ----------- Download and Upload of User Data -----------------
 # Download the tables as an Excel file   
 output[["data_download"]] <- downloadHandler(
   filename = "user_input_data.xlsx",  

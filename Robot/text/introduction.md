@@ -41,10 +41,10 @@ This online tool assists you with understanding how these factors influence the 
 ## What's more? 
 ---
 1. Additional tools are provided for assessing the robustness of your results with respect to a change in a key variable (**Sensitivity Analysis**) and changes in a set of related variables (**Scenario Analysis**). 
-    * **Sensitivity Analysis**: Focusing on ten variables that are deemed most important, you can assess how the results hold up under a significant error in your assumption or a unforeseen change of course in the economy.     
-    <br>
-	   * **Scenario Analysis**: [Under Construction]
-    <br> 
+  * **Sensitivity Analysis**: Focusing on ten variables that are deemed most important, you can assess how the results hold up under a significant error in your assumption or a unforeseen change of course in the economy.     
+  <br>
+	* **Scenario Analysis**: [Under Construction]
+  <br> 
 
 
 2. An optional feature allows for simulating a two-step investment process for the new milking system (Robots, Retrogit Parlors, or New Parlors) and the related housing. The initial investment is a part or all of the housing investment, and the forthcoming investment is the remainder of the housing investment and the installment of the new milking system. This feature can be accessed by setting *Year of Investment* for the milking system (under *Finance* section in *Data Entry* tab) to be greater than zero. Such a strategy may be attractive for those who want to smooth out cash flows or those who want to adobt modern barn construction while waiting for further development of the milking system technology.   
@@ -57,6 +57,8 @@ Please contact us at Kota@umn.edu and tell us about the difficulty that you are 
 ## Known Issues
 --- 
 * At the moment the user-input values for Retrofit and New Parlors profiles that are loaded by default may be unreliable. We are working on it to set up sound default values. 
+<br>
+* When you encounter a bug, please kindly report the issue [here](https://github.com/kotamine/shiny/issues). 
 
 
  

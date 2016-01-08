@@ -33,21 +33,12 @@ uiDashboard <- function(x) {
                fluidRow(
                  column(4,
                         uiOutput(paste0("milk_feed",x))
-                        #                   lapply(x, function(x1) { 
-                        #                     if (!grepl("_se", x)) htmlOutput(paste0("plot1",x), height = 200)
-                        #                   })
                  ),
                  column(4,
                         uiOutput(paste0("labor_repair",x)) 
-                        #                   lapply(x, function(x1) { 
-                        #                     if (!grepl("_se", x)) htmlOutput(paste0("plot2",x), height = 200)
-                        #                     })
                  ),
                  column(4,
                         uiOutput(paste0("capital",x)) 
-                        #                   lapply(x, function(x1) { 
-                        #                     if (!grepl("_se", x)) htmlOutput(paste0("plot3",x), height = 200)
-                        #                     })
                  )
                ),
                fluidRow(column(6,uiOutput(paste0("misc",x))),

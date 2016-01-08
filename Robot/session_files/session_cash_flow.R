@@ -31,7 +31,7 @@ if (input$dep_method=="d1") {
   # setting salvage = 0 under total depreciation 
   dep_milking[1:yr_AGDS_milking] <- vdb((ans[[X]]$cost_milking1 + input[[paste0("delay_housing1",x)]]), 0,
                                         yr_AGDS_milking, factor=1.5, sequence=TRUE) 
-  if (input[[paste0("n_sets",x)]] ==2) {
+  if (ans[[X]]$n_sets ==2) {
     dep_milking[(ans[[X]]$useful_years+1):(ans[[X]]$useful_years+ yr_AGDS_milking)] <-
       vdb(ans[[X]]$cost_milking2, 0,  yr_AGDS_milking, factor=1.5, sequence=TRUE) 
   }
@@ -43,7 +43,7 @@ if (input$dep_method=="d1") {
   ## if Straight line depreciation method is used 
   # setting salvage = 0 under total depreciation 
   dep_milking[1:yr_SLD_milking] <- (ans[[X]]$cost_milking1 + input[[paste0("delay_housing1",x)]] - 0)/yr_SLD_milking
-  if (input[[paste0("n_sets",x)]] ==2) {
+  if (ans[[X]]$n_sets ==2) {
     dep_milking[(1+ans[[X]]$useful_years):(ans[[X]]$useful_years+ yr_SLD_milking)] <- 
       (ans[[X]]$cost_milking2 - 0)/yr_SLD_milking
   }
@@ -51,9 +51,10 @@ if (input$dep_method=="d1") {
   dep_housing[1:yr_SLD_housing] <- (ans[[X]]$cost_housing - input[[paste0("delay_housing1",x)]] - 0)/yr_SLD_housing
 }
 
+
 # add back salvage at the end
 dep_milking[ans[[X]]$useful_years] <-  -ans[[X]]$salvage_milking_fv1 
-if (input[[paste0("n_sets",x)]] >=2) {
+if (ans[[X]]$n_sets ==2) {
   dep_milking[(2*ans[[X]]$useful_years)] <-  -ans[[X]]$salvage_milking_fv2
 } 
 
@@ -79,6 +80,7 @@ colnames(tbl_milking) <- lapply(colnames(tbl_milking), function(x) { paste0("mil
 tbl_barn <- debt_table(ans[[X]]$loan_housing, ans[[X]]$r_housing/100, input[[paste0("n_yr_housing",x)]], n_years, 1)
 colnames(tbl_barn) <- lapply(colnames(tbl_barn), function(x) { paste0("barn_",x)}) %>% unlist()
 
+
 # Adjust for delayed investment
 if (delay_years>0) { 
   tmp_zeros <- zeros(delay_years,ncol(tbl_milking))
@@ -91,7 +93,6 @@ table_debt <- cbind(tbl_milking, tbl_barn[,c(-1)])
 colnames(table_debt) <- c("year",colnames(table_debt)[c(-1)])
 table_debt$interest_total <- table_debt$milking_interest + table_debt$barn_interest 
 table_debt$principal_total <- table_debt$milking_principal + table_debt$barn_principal
-
 
 
 ## ------------ Cash Flow Table ------------

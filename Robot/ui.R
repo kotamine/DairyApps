@@ -35,6 +35,28 @@ shinyUI(
     # tags$link(rel = "stylesheet", type = "text/css", href = "www/UMN.css"),
     # includeHTML("www/UMN_header.html"),
     #  list(tags$head(HTML(" "))),
+    
+    # Shiny.addCustomMessageHandler('activeNavs', function(nav_label) {
+    #   $('#mynavlist a:contains(\"' + nav_label + '\")').parent().removeClass('disabled');
+    # });
+    
+    # tags$head(tags$script("
+    #     window.onload = function() {
+    #                       $('#prCapital a:contains(\"Robots\")').parent().addClass('disabled');
+    #                       $('#prCapital a:contains(\"Retrofit\")').parent().addClass('disabled');
+    #                       $('#prCapital a:contains(\"New\")').parent().addClass('disabled');
+    #                       $('#prMilk a:contains(\"Retrofit\")').parent().addClass('disabled');
+    #                       $('#prMilk a:contains(\"New\")').parent().addClass('disabled');
+    #                       };
+    #                       
+    #                       ")),
+    tags$head(tags$script(HTML('
+      Shiny.addCustomMessageHandler("jsCode",
+                               function(message) {
+                               eval(message.code);
+                               }
+    );
+                               '))),
     div(class="well", style="background-color:#7a0019; color:white;", 
         fluidRow(column(width=8, offset=1, h1("UM Extension Dairy")))),
     navbarPage(
@@ -196,13 +218,13 @@ shinyUI(
       #       ),
       # ---------- About -----------
       tabPanel("About", value = "About", 
-               fluidRow(column(width=1),
-                        column(width=10,
+               fluidRow(column(width=2),
+                        column(width=8,
                                includeMarkdown(file.path("text","about.md")),
                                br(), br()
                         ))
       ),
-      useShinyjs(),
+      useShinyjs(), 
       collapsible = TRUE)
   )
 ) 

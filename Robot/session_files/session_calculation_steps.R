@@ -15,20 +15,21 @@ if ( input[[paste0("n_sets",x)]]=="2") {
 }
 
 ans[[X]]$cost_milking2 <-  ans[[X]]$cost_milking1*(1+ans[[X]]$inflation_robot/100)^
-  (ans[[X]]$useful_years+ input[[paste0("yr_system1",x)]]) *(input[[paste0("n_sets",x)]] == 2) 
+  (ans[[X]]$useful_years+ input[[paste0("yr_system1",x)]]) *(ans[[X]]$n_sets == 2) 
 
 ans[[X]]$milking_horizon <- ans[[X]]$n_sets * max(ans[[X]]$useful_years)+ input[[paste0("yr_system1",x)]]
 
-ans[[X]]$planning_horizon <- ans[[X]]$n_sets * max(ans[[X]]$useful_years, 
-                                                   input[[paste0("n_yr_milking1",x)]])+ input[[paste0("yr_system1",x)]]
-
-
+ans[[X]]$planning_horizon <- max(ans[[X]]$n_sets * max(ans[[X]]$useful_years,  
+                                 input[[paste0("n_yr_milking1",x)]])+ input[[paste0("yr_system1",x)]], 
+                                 input[[paste0("n_yr_housing",x)]])  
+  
+ 
 ans[[X]]$salvage_milking_fv1 <- input[[paste0("salvage_milking1",x)]] *
   (1+ans[[X]]$inflation_robot/100)^(ans[[X]]$useful_years+ input[[paste0("yr_system1",x)]])
 
 ans[[X]]$salvage_milking_fv2 <- input[[paste0("salvage_milking1",x)]] * 
   (1+ans[[X]]$inflation_robot/100)^(ans[[X]]$useful_years*2+ input[[paste0("yr_system1",x)]]) *
-  (input[[paste0("n_sets",x)]] >=2)
+  (ans[[X]]$n_sets >=2)
 
 ans[[X]]$yr_system2 <- ans[[X]]$useful_years+ input[[paste0("yr_system1",x)]]
 
@@ -149,6 +150,9 @@ if (input[[paste0("yr_system1",x)]]>0) {
 
 # Calculate cash flow tables
 source(file.path("session_files", "session_cash_flow.R"), local=TRUE)  
+
+
+if ( input[[paste0("n_sets",x)]]=="1" & x=="Robots") browser()
 
 
 ans[[X]]$capital_recovery_milking <-  -pmt(ans[[X]]$r_milking1/100, ans[[X]]$planning_horizon,
