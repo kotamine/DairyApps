@@ -11,7 +11,7 @@ uiCashFlow <- function(x) {
              fluidRow(column(8, offset=1, helpText("Weighted average cost of capital after-tax (WACC)")),   
                       column(2, uiOutput(paste0("WACC",x)))
              ), 
-             fluidRow(column(10, offset=1, a(id = paste0("CF_formula_show_1",x),"Show/hide formula"))),
+             fluidRow(column(8, offset=1, a(id = paste0("CF_formula_show_1",x),"Show/hide formula"))),
              shinyjs::hidden(
                div(id = paste0("id_CF_formula_show_1",x),
                    hr(),
@@ -67,7 +67,7 @@ uiCashFlow <- function(x) {
              fluidRow(column(8,  offset=1,helpText("Return on Investment (ROI)")),   
                       column(2, uiOutput(paste0("ROI",x)))
              ),
-             fluidRow(column(10, offset=1, a(id = paste0("CF_formula_show_2",x),"Show/hide formula"))),
+             fluidRow(column(8, offset=1, a(id = paste0("CF_formula_show_2",x),"Show/hide formula"))),
              shinyjs::hidden(
                div(id = paste0("id_CF_formula_show_2",x),
                    hr(), 

@@ -110,15 +110,23 @@ lapply(base_profiles, function(x) {
                    shinyjs::hide(id=paste0("sensitivity_details",x), anim=TRUE)
   )
   
+  
   # Show dashboard in "Details"
   output[[paste0("sensitivity_dashboard",x)]] <- renderUI({
     
     i <- ans[[paste0(x,"_se_details")]]
     X <- paste0(x,"_se",i)
+    on.exit({
+      # shinyjs::enable(paste0('radio_NAI',X))
+      # shinyjs::enable(paste0('radio_IOFC',X))
+      # updateRadioButtons(session, paste0('radio_NAI',X),NULL,
+      #                    choices=c("before tax","after tax"), selected='after tax')
+    })
+    
     need(length(ans[[paste0(x,"_da_","after_tax")]]$NAI)>0,"Please first see Data Entry tab.") %>% validate()
     div( 
       div(style="background-color:white; color:#4863A0;",
-          h4(paste0(sensitivity_labels[i],","),  "Change by", input[[paste0("sensitivity_slider",x,i)]],"%", 
+          h4(paste0(sensitivity_labels[i],","),  "Changed by", input[[paste0("sensitivity_slider",x,i)]],"%", 
              "(From ",ans[[X]]$val0, "  to ",ans[[X]]$val1, ")", align="center")), 
       uiDashboard(X)
     ) 

@@ -189,6 +189,7 @@ lapply(base_profiles, function(x) {
     add_space2 <- "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp"
     
     div( 
+      hr(),
       helpText("WACC is the weighted average of the interest rates for housing and milking system loans and the 
                             hurdle rate (opportunity cost) assumed for downpayments. 
                The weights are the proportions of loans and downpayments. 
@@ -208,7 +209,8 @@ lapply(base_profiles, function(x) {
                ans[[x]][["loan_milking1"]]  %>% formatcomma(dollar=TRUE), "*", 
                input$hurdle_rate %>% round_pct(2),") / ",
                ans[[x]][["total_investment"]] %>% formatcomma(dollar=TRUE), br(),
-               HTML(add_space2), "=", ans[[x]]$WACC %>% round_pct(2))
+               HTML(add_space2), "=", ans[[x]]$WACC %>% round_pct(2)),
+      hr()
     )
   }) 
   
@@ -223,6 +225,7 @@ lapply(base_profiles, function(x) {
     WACC1[1] <- ""
     CF_PV <- lapply(c(1:CF_T), function(a) paste(CF[a],WACC1[a])) %>% unlist()
     div( 
+      hr(),
       helpText("NPV is a sum of discounted cash flows. 
                Here we calculate NPV of after-tax cash flows (CFs) over the course of 
                investment horizon (T) using WACC as a discount rate."), 
@@ -235,7 +238,7 @@ lapply(base_profiles, function(x) {
                This represents the value of investment in the form of constant income stream 
                over the investment horizon. The discounted value of annuity incomes is equivalent to NPV;"),
       helpText("annuity + annuity/(1+WACC) + annuity/(1+WACC)^2 + ... + annuity/(1+WACC)^T", br(),
-               HTML(add_space2),"= NPV"), br(),
+               HTML(add_space2),"= NPV"), 
       helpText("This implies; "),
       helpText("annuity = NPV / (1 + (1+WACC) + (1+WACC)^2 + ... + (1+WACC)^T)",br(),
                HTML(add_space2), HTML("&nbsp;&nbsp;&nbsp;&nbsp"),"=", ans[[x]]$ANPV %>% formatcomma(0, dollar=TRUE)), br(),
@@ -244,7 +247,8 @@ lapply(base_profiles, function(x) {
       helpText("ROI = NPV/ (initial investment for housing and milking system  +  any additional investment)", br(),
                HTML(add_space2),"= ",  NPV, "/ (",ans[[x]]$total_investment %>% formatcomma(0, dollar=TRUE), "+",
                ans[[x]]$cost_milking2 %>% formatcomma(0, dollar=TRUE) ,")", br(),
-               HTML(add_space2),"= ",  ans[[x]]$ROI %>% round_pct(2))
+               HTML(add_space2),"= ",  ans[[x]]$ROI %>% round_pct(2)),
+      hr()
     )
   }) 
   
@@ -314,20 +318,11 @@ lapply(c(base_profiles,base_profiles_se), function(x) {
   dashboard_labels <- c("Milk Income - Feed Cost", "Labor + Repair Cost", "Cost of Capital",
                         "Others", "Inflation Adjustments")
   
-  observeEvent(input[[paste0("NAI",x)]],{
-    browser() 
-
-        session$sendCustomMessage(type="jsCode",
-                              list(code= "$('#NAIRobots').attr('disabled',true)")) 
-  })
-  
   lapply(dashboard_items, function(item) {
     
     output[[paste0(item,x)]] <- renderUI({
       need(!is.null(ans[[paste0(x,"_da")]]()[[input$NAI]][[item]]),"NA") %>% validate()
       
-      # on.exit(shinyjs::enable(paste0("NAI",x)))
-        
       loc <- which(dashboard_items==item)
       
       if (sensitivity) {
@@ -347,6 +342,9 @@ lapply(c(base_profiles,base_profiles_se), function(x) {
   
   # Dashboard plots and charts
   output[[paste0("plot1",x)]] <- renderGvis({ 
+    
+    shinyjs::enable(paste0('radio_NAI',x))
+    shinyjs::enable(paste0('radio_IFOC',x))
     
     tbl <- data.frame(
       varnames=c("Milk","Feed"),
@@ -578,7 +576,7 @@ lapply(base_profiles, function(x) {
                     vAxis="{title:'Net Annual Impact under Robot ($)'}",
                     hAxis="{title:'Year'}",
                     legend="bottom",
-                    chartArea ='{width: "50%", height: "65%" }',
+                    # chartArea ='{width: "50%", height: "65%" }',
                     width=800, height=400
                   ))
   })

@@ -50,6 +50,7 @@ shinyServer(function(input, output, session) {
   
   calc_type <- "full"  # Set default calculation type
   
+  # shinyjs::disable('calswitch')
   
   # ----------- Functions: some of them depend on local variables  -----------
   source("helper.R",local=TRUE)
@@ -86,6 +87,8 @@ shinyServer(function(input, output, session) {
     fileInput("data_upload", "Upload Input-Data File",
               accept=c(".xlsx", "application/vnd.ms-excel"))
   })
+  
+  source(file.path("session_files","session_popover.R"), local=TRUE)
   
 }) 
 

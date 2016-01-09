@@ -1,0 +1,262 @@
+"Package" "LibPath" "Version" "Priority" "Depends" "Imports" "LinkingTo" "Suggests" "Enhances" "License" "License_is_FOSS" "License_restricts_use" "OS_type" "MD5sum" "NeedsCompilation" "Built"
+"acepack" "acepack" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.3-3.3" NA NA NA NA NA NA "MIT + file LICENSE" NA NA NA NA "yes" "3.2.0"
+"assertthat" "assertthat" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.1" NA NA NA NA "testthat" NA "GPL-3" NA NA NA NA "no" "3.2.0"
+"base" "base" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "3.2.2" "base" NA NA NA NA NA "Part of R 3.2.2" NA NA NA NA NA "3.2.2"
+"base64enc" "base64enc" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.1-3" NA "R (>= 2.9.0)" NA NA NA "png" "GPL-2 | GPL-3" NA NA NA NA "yes" "3.2.0"
+"BH" "BH" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.58.0-1" NA NA NA NA NA NA "BSL-1.0" NA NA NA NA "no" "3.2.0"
+"bitops" "bitops" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.0-6" NA NA NA NA NA NA "GPL (>= 2)" NA NA NA NA "yes" "3.2.0"
+"boot" "boot" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.3-17" "recommended" "R (>= 3.0.0), graphics, stats" NA NA "MASS, survival" NA "Unlimited" NA NA NA NA "no" "3.2.2"
+"brew" "brew" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.0-6" NA NA NA NA NA NA "GPL-2" NA NA NA NA NA "3.2.0"
+"caTools" "caTools" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.17.1" NA "R (>= 2.2.0)" "bitops" NA "MASS, rpart" NA "GPL-3" NA NA NA NA "yes" "3.2.0"
+"cellranger" "cellranger" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.0.0" NA "R (>= 3.0.0)" NA NA "covr, testthat" NA "MIT + file LICENSE" NA NA NA NA "no" "3.2.0"
+"class" "class" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "7.3-14" "recommended" "R (>= 3.0.0), stats, utils" "MASS" NA NA NA "GPL-2 | GPL-3" NA NA NA NA "yes" "3.2.0"
+"cluster" "cluster" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "2.0.3" "recommended" "R (>= 2.15.0), utils" "graphics, grDevices, stats" NA "MASS" NA "GPL (>= 2)" NA NA NA NA "yes" "3.2.2"
+"codetools" "codetools" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.2-14" "recommended" "R (>= 2.1)" NA NA NA NA "GPL" NA NA NA NA "no" "3.2.2"
+"colorspace" "colorspace" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.2-6" NA "R (>= 2.13.0), methods" "graphics" NA "KernSmooth, MASS, kernlab, mvtnorm, vcd, dichromat, tcltk" NA "BSD_3_clause + file LICENSE" NA NA NA NA "yes" "3.2.0"
+"compiler" "compiler" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "3.2.2" "base" NA NA NA NA NA "Part of R 3.2.2" NA NA NA NA NA "3.2.2"
+"crayon" "crayon" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.3.1" NA NA "memoise, grDevices, methods, utils" NA "testthat" NA "MIT + file LICENSE" NA NA NA NA "no" "3.2.0"
+"curl" "curl" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.9.3" NA "R (>= 2.10.0)" NA NA "testthat, knitr, jsonlite, rmarkdown, magrittr" NA "MIT + file LICENSE" NA NA NA NA "yes" "3.2.0"
+"datasets" "datasets" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "3.2.2" "base" NA NA NA NA NA "Part of R 3.2.2" NA NA NA NA NA "3.2.2"
+"DBI" "DBI" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.3.1" NA "R (>= 2.15.0), methods" NA NA "testthat, RSQLite" NA "LGPL (>= 2)" NA NA NA NA "no" "3.2.0"
+"devtools" "devtools" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.9.1" NA "R (>= 3.0.2)" "httr (>= 0.4), curl (>= 0.9), utils, tools, methods, memoise,
+whisker, evaluate, digest, rstudioapi (>= 0.2.0), jsonlite,
+roxygen2 (>= 4.1.0), rversions, stats, git2r (>= 0.11.0)" NA "testthat (>= 0.7), BiocInstaller, Rcpp (>= 0.10.0), MASS,
+rmarkdown, knitr, lintr (>= 0.2.1), bitops" NA "GPL (>= 2)" NA NA NA NA "yes" "3.2.0"
+"dichromat" "dichromat" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "2.0-0" NA "R (>= 2.10), stats" NA NA NA NA "GPL-2" NA NA NA NA NA "3.2.0"
+"digest" "digest" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.6.8" NA "R (>= 2.4.1)" NA NA NA NA "GPL-2" NA NA NA NA "yes" "3.2.0"
+"doParallel" "doParallel" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.0.10" NA "R (>= 2.14.0), foreach(>= 1.2.0), iterators(>= 1.0.0),
+parallel, utils" NA NA "caret, mlbench, rpart" "compiler, RUnit" "GPL-2" NA NA NA NA "no" "3.2.0"
+"dplyr" "dplyr" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.4.3" NA "R (>= 3.1.2)" "assertthat, utils, R6, Rcpp, magrittr, lazyeval (>= 0.1.10),
+DBI (>= 0.3)" "Rcpp (>= 0.12.0), BH (>= 1.58.0-1)" "RSQLite (>= 1.0.0), RMySQL, RPostgreSQL, data.table,
+testthat, knitr, microbenchmark, ggplot2, mgcv, Lahman (>=
+3.0-1), nycflights13, methods" NA "MIT + file LICENSE" NA NA NA NA "yes" "3.2.0"
+"DT" "DT" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.1" NA NA "htmltools, htmlwidgets (>= 0.4), magrittr" NA "jsonlite (>= 0.9.16), knitr (>= 1.8), shiny (>= 0.12.0)" NA "GPL-3 | file LICENSE" NA NA NA NA "no" "3.2.0"
+"dygraphs" "dygraphs" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.5" NA "R (>= 3.0)" "magrittr, htmlwidgets (>= 0.3.2), zoo (>= 1.7-10), xts (>=
+0.9-7)" NA "testthat" "rmarkdown (>= 0.3.3), shiny (>= 0.10.2.1)" "MIT + file LICENSE" NA NA NA NA "no" "3.2.0"
+"evaluate" "evaluate" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.8" NA "R (>= 3.0.2)" "methods, stringr (>= 0.6.2)" NA "testthat, lattice, ggplot2" NA "MIT + file LICENSE" NA NA NA NA "no" "3.2.0"
+"foreach" "foreach" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.4.3" NA "R (>= 2.5.0)" "codetools, utils, iterators" NA "randomForest" "compiler, doMC, RUnit, doParallel" "Apache License (== 2.0)" NA NA NA NA "no" "3.2.0"
+"foreign" "foreign" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.8-66" "recommended" "R (>= 3.0.0)" "methods, utils, stats" NA NA NA "GPL (>= 2)" NA NA NA NA "yes" "3.2.0"
+"formatR" "formatR" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.2.1" NA "R (>= 3.0.2)" NA NA "codetools, shiny, testit, knitr" NA "GPL" NA NA NA NA "no" "3.2.0"
+"Formula" "Formula" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.2-1" NA "R (>= 2.0.0), stats" NA NA NA NA "GPL-2 | GPL-3" NA NA NA NA "no" "3.2.0"
+"ggplot2" "ggplot2" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.0.1" NA "R (>= 2.14), stats, methods" "plyr (>= 1.7.1), digest, grid, gtable (>= 0.1.1), reshape2,
+scales (>= 0.2.3), proto, MASS" NA "quantreg, Hmisc, mapproj, maps, hexbin, maptools, multcomp,
+nlme, testthat, knitr, mgcv" "sp" "GPL-2" NA NA NA NA "no" "3.2.0"
+"ggvis" "ggvis" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.4.2" NA "R (>= 3.0)" "assertthat, jsonlite (>= 0.9.11), shiny (>= 0.11.1), magrittr,
+dplyr (>= 0.4.0), lazyeval, htmltools (>= 0.2.4)" NA "MASS, mgcv, lubridate, testthat (>= 0.8.1), knitr (>= 1.6),
+rmarkdown" NA "GPL-2 | file LICENSE" NA NA NA NA "no" "3.2.0"
+"git2r" "git2r" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.11.0" NA "R (>= 3.0.2)" "graphics, methods, utils" NA NA NA "GPL-2" NA NA NA NA "yes" "3.2.0"
+"googlesheets" "googlesheets" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.1.0" NA "R (>= 3.1.1)" "cellranger (>= 1.0.0), dplyr (>= 0.4.0), ggplot2, httr (>=
+0.6.1), plyr, stats, stringr, tidyr, utils, XML, xml2" NA "covr, knitr, testthat" NA "MIT + file LICENSE" NA NA NA NA "no" "3.2.0"
+"googleVis" "googleVis" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.5.10" NA "R (>= 3.0.2)" "methods, RJSONIO, utils" NA "shiny (>= 0.4.0), httpuv (>= 1.2.0), knitr (>= 1.5)" NA "GPL (>= 2)" NA NA NA NA "no" "3.2.0"
+"graphics" "graphics" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "3.2.2" "base" NA "grDevices" NA NA NA "Part of R 3.2.2" NA NA NA NA NA "3.2.2"
+"grDevices" "grDevices" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "3.2.2" "base" NA NA NA NA NA "Part of R 3.2.2" NA NA NA NA NA "3.2.2"
+"grid" "grid" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "3.2.2" "base" NA "grDevices" NA "lattice" NA "Part of R 3.2.2" NA NA NA NA NA "3.2.2"
+"gridBase" "gridBase" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.4-7" NA "R (>= 2.3.0)" "graphics, grid" NA "lattice" NA "GPL" NA NA NA NA "no" "3.2.0"
+"gridExtra" "gridExtra" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "2.0.0" NA NA "gtable, grid, grDevices, graphics, utils" NA "ggplot2, lattice, knitr, testthat" NA "GPL (>= 2)" NA NA NA NA "no" "3.2.0"
+"gtable" "gtable" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.1.2" NA "R (>= 2.14), grid" NA NA "testthat, plyr" NA "GPL-2" NA NA NA NA NA "3.2.0"
+"gtools" "gtools" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "3.5.0" NA "R (>= 2.10)" NA NA NA NA "GPL-2" NA NA NA NA "yes" "3.2.0"
+"hexbin" "hexbin" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.27.1" NA "R (>= 2.0.1), methods" "lattice, grid, graphics, grDevices, stats, utils" NA "marray, affy, Biobase, limma" NA "GPL-2" NA NA NA NA "yes" "3.2.0"
+"highr" "highr" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.5.1" NA "R (>= 3.0.2)" NA NA "knitr, testit" NA "GPL" NA NA NA NA "no" "3.2.0"
+"Hmisc" "Hmisc" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "3.17-0" NA "grid, lattice, survival (>= 2.37-6), Formula, ggplot2" "methods, proto, scales, latticeExtra, cluster, rpart, nnet,
+acepack, foreign, gtable, gridExtra" NA "chron, rms, mice, tables, knitr, ff, ffbase, htmltools" NA "GPL (>= 2)" NA NA NA NA "yes" "3.2.0"
+"htmltools" "htmltools" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.2.6" NA "R (>= 2.14.1)" "utils, digest" NA "markdown, testthat" "knitr" "GPL (>= 2)" NA NA NA NA "no" "3.2.0"
+"htmlwidgets" "htmlwidgets" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.5" NA NA "htmltools (>= 0.2.6), jsonlite (>= 0.9.16), yaml" NA "knitr (>= 1.8)" "shiny (>= 0.12)" "MIT + file LICENSE" NA NA NA NA "no" "3.2.0"
+"httpuv" "httpuv" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.3.3" NA "R (>= 2.15.1), methods" "Rcpp (>= 0.11.0), utils" "Rcpp" NA NA "GPL-3 | file LICENSE" NA NA NA NA "yes" "3.2.0"
+"httr" "httr" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.0.0" NA "R (>= 3.0.0)" "digest, jsonlite, mime, curl (>= 0.6), R6, stringr (>= 0.6.1)" NA "base64enc, httpuv, jpeg, knitr, PKI (>= 0.1-2), png, testthat
+(>= 0.8.0), XML" NA "MIT + file LICENSE" NA NA NA NA "no" "3.2.0"
+"igraph" "igraph" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.0.1" NA "methods" "Matrix, magrittr, NMF, irlba" NA "igraphdata, stats4, rgl, tcltk, graph, ape, scales" NA "GPL (>= 2)" NA NA NA NA "yes" "3.2.0"
+"irlba" "irlba" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "2.0.0" NA "Matrix" "stats" NA NA NA "GPL" NA NA NA NA "no" "3.2.0"
+"iterators" "iterators" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.0.8" NA "R (>= 2.5.0), utils" NA NA "RUnit" NA "Apache License (== 2.0)" NA NA NA NA "no" "3.2.0"
+"jSonarR" "jSonarR" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.1.1" NA "R (>= 2.12.1), RCurl, jsonlite, methods" NA NA NA NA "AGPL-3" NA NA NA NA "no" "3.2.0"
+"jsonlite" "jsonlite" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.9.19" NA "methods" NA NA "curl (>= 0.5), plyr, testthat, knitr, rmarkdown, R.rsp" NA "MIT + file LICENSE" NA NA NA NA "yes" "3.2.2"
+"KernSmooth" "KernSmooth" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "2.23-15" "recommended" "R (>= 2.5.0), stats" NA NA "MASS" NA "Unlimited" NA NA NA NA "yes" "3.2.2"
+"knitr" "knitr" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.11" NA "R (>= 3.0.2)" "evaluate (>= 0.7.2), digest, formatR, highr, markdown, stringr
+(>= 0.6), yaml (>= 2.1.5), methods, tools" NA "testit, rgl (>= 0.95.1201), codetools, rmarkdown, XML, RCurl" NA "GPL" NA NA NA NA "no" "3.2.2"
+"labeling" "labeling" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.3" NA NA NA NA NA NA "MIT + file LICENSE | Unlimited" NA NA NA NA "no" "3.2.0"
+"lattice" "lattice" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.20-33" "recommended" "R (>= 3.0.0)" "grid, grDevices, graphics, stats, utils" NA "KernSmooth, MASS" "chron" "GPL (>= 2)" NA NA NA NA "yes" "3.2.2"
+"latticeExtra" "latticeExtra" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.6-26" NA "R (>= 2.10.0), RColorBrewer, lattice (>= 0.18-1)" "grid" NA "maps, mapproj, deldir, tripack, quantreg, zoo, MASS, mgcv" NA "GPL (>= 2)" NA NA NA NA "no" "3.2.0"
+"lazyeval" "lazyeval" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.1.10" NA "R (>= 3.1.0)" NA NA "knitr, rmarkdown (>= 0.2.65), microbenchmark, testthat" NA "GPL-3" NA NA NA NA "yes" "3.2.0"
+"linprog" "linprog" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.9-2" NA "R (>= 2.4.0), lpSolve" NA NA NA NA "GPL (>= 2)" NA NA NA NA NA "3.2.0"
+"lintr" "lintr" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.3.3" NA "R (>= 3.1.1)" "rex, crayon, codetools, stringdist, testthat, digest, igraph,
+rstudioapi (>= 0.2), httr, jsonlite, knitr, stats, utils" NA NA NA "MIT + file LICENSE" NA NA NA NA "no" "3.2.0"
+"localsolver" "localsolver" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "2.3" NA "R (>= 3.0.1)" NA NA "knitr" NA "LGPL-2.1" NA NA NA NA "no" "3.2.0"
+"lpSolve" "lpSolve" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "5.6.13" NA NA NA NA NA NA "LGPL-2" NA NA NA NA "yes" "3.2.0"
+"lpSolveAPI" "lpSolveAPI" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "5.5.2.0-14" NA NA NA NA NA NA "LGPL-2" NA NA NA NA "yes" "3.2.0"
+"lsa" "lsa" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.73.1" NA "SnowballC" NA NA "tm" NA "GPL (>= 2)" NA NA NA NA "no" "3.2.0"
+"magrittr" "magrittr" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.5" NA NA NA NA "testthat, knitr" NA "MIT + file LICENSE" NA NA NA NA "no" "3.2.0"
+"maps" "maps" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "3.0.0-2" NA "R (>= 2.14.0)" "graphics, utils" NA "mapproj (>= 1.2-0), mapdata (>= 2.2-4)" NA "GPL-2" NA NA NA NA "yes" "3.2.0"
+"markdown" "markdown" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.7.7" NA "R (>= 2.11.1)" "mime (>= 0.3)" NA "knitr, RCurl" NA "GPL-2" NA NA NA NA "yes" "3.2.0"
+"MASS" "MASS" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "7.3-44" "recommended" "R (>= 3.1.0), grDevices, graphics, stats, utils" "methods" NA "lattice, nlme, nnet, survival" NA "GPL-2 | GPL-3" NA NA NA NA "yes" "3.2.0"
+"Matrix" "Matrix" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.2-2" "recommended" "R (>= 3.0.1)" "methods, graphics, grid, stats, utils, lattice" NA "expm, MASS" "MatrixModels, graph, SparseM, sfsmisc" "GPL (>= 2)" NA NA NA NA "yes" "3.2.2"
+"memoise" "memoise" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.2.1" NA NA "digest" NA NA NA "MIT + file LICENSE" NA NA NA NA "no" "3.2.0"
+"methods" "methods" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "3.2.2" "base" NA "utils" NA NA NA "Part of R 3.2.2" NA NA NA NA NA "3.2.2"
+"mgcv" "mgcv" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.8-8" "recommended" "R (>= 2.14.0), nlme (>= 3.1-64)" "methods, stats, graphics, Matrix" NA "splines, parallel, survival, MASS" NA "GPL (>= 2)" NA NA NA NA "yes" "3.2.0"
+"mime" "mime" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.4" NA NA "tools" NA NA NA "GPL-2" NA NA NA NA "yes" "3.2.0"
+"mongolite" "mongolite" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.6" NA NA "jsonlite (>= 0.9.16)" NA "knitr, rmarkdown" NA "Apache License 2.0" NA NA NA NA "yes" "3.2.0"
+"munsell" "munsell" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.4.2" NA NA "colorspace" NA "ggplot2 (>= 0.9.2)" NA "MIT + file LICENSE" NA NA NA NA "no" "3.2.0"
+"mvtnorm" "mvtnorm" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.0-3" NA "R(>= 1.9.0)" "stats, methods" NA NA NA "GPL-2" NA NA NA NA "yes" "3.2.0"
+"nlme" "nlme" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "3.1-122" "recommended" "graphics, stats, R (>= 3.0.0)" "lattice" NA "Hmisc, MASS" NA "GPL (>= 2)" NA NA NA NA "yes" "3.2.0"
+"NMF" "NMF" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.20.6" NA "R (>= 3.0.0), methods, utils, pkgmaker (>= 0.20), registry,
+rngtools (>= 1.2.3), cluster" "graphics, stats, stringr (>= 1.0.0), digest, grid, grDevices,
+gridBase, colorspace, RColorBrewer, foreach, doParallel,
+ggplot2, reshape2" NA "RcppOctave (>= 0.11), fastICA, doMPI, bigmemory (>= 4.2),
+synchronicity, corpcor, xtable, devtools, knitr, bibtex, RUnit,
+mail, Biobase" NA "GPL (>= 2)" NA NA NA NA "yes" "3.2.0"
+"nnet" "nnet" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "7.3-11" "recommended" "R (>= 2.14.0), stats, utils" NA NA "MASS" NA "GPL-2 | GPL-3" NA NA NA NA "yes" "3.2.0"
+"nycflights13" "nycflights13" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.1" NA "R (>= 3.1.0)" NA NA "dplyr" NA "CC0" NA NA NA NA "no" "3.2.0"
+"packrat" "packrat" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.4.5" NA "R (>= 3.0.0)" "tools, utils" NA "testthat (>= 0.7), devtools, httr, pkgKitten" "knitr, BiocInstaller" "GPL-2" NA NA NA NA "no" "3.2.0"
+"pander" "pander" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.5.2" NA "R (>= 2.15.0)" "methods, digest, tools, Rcpp" "Rcpp" "grid, lattice, ggplot2 (>= 0.9.2), koRpus, survival,
+microbenchmark, zoo, nlme, descr, MASS, knitr, tables" NA "AGPL-3 | file LICENSE" NA NA NA NA "yes" "3.2.0"
+"parallel" "parallel" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "3.2.2" "base" NA "tools" NA NA "snow, nws, Rmpi" "Part of R 3.2.2" NA NA NA NA NA "3.2.2"
+"pitchRx" "pitchRx" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.8.1" NA "R (>= 2.15.1), ggplot2 (>= 0.9.3)" "XML2R (>= 0.0.6), plyr, MASS, hexbin, mgcv" NA "DBI, dplyr, RSQLite (>= 1.0.0), parallel, knitr, animation,
+shiny, testthat, ggsubplot, rgl" NA "MIT + file LICENSE" NA NA NA NA "no" "3.2.0"
+"pkgmaker" "pkgmaker" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.22" NA "R (>= 3.0.0), stats, registry" "methods, tools, codetools, digest, stringr, xtable, grDevices" NA "devtools (>= 0.8), bibtex, RUnit, testthat, knitr,
+ReportingTools, hwriter, argparse" NA "GPL (>= 2)" NA NA NA NA "no" "3.2.0"
+"PKI" "PKI" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.1-3" NA "R (>= 2.9.0), base64enc" NA NA NA "gmp" "GPL-2 | GPL-3 | file LICENSE" NA NA NA NA "yes" "3.2.0"
+"plotly" "plotly" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.0.7" NA "
+ggplot2" "
+scales,
+httr,
+jsonlite,
+magrittr,
+digest,
+viridis" NA "
+dplyr,
+maps,
+testthat,
+knitr,
+devtools,
+shiny,
+htmltools,
+curl,
+rmarkdown,
+RColorBrewer" NA "MIT + file LICENSE" NA NA NA NA NA "3.2.1"
+"plyr" "plyr" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.8.3" NA "R (>= 3.1.0)" "Rcpp (>= 0.11.0)" "Rcpp" "abind, testthat, tcltk, foreach, doParallel, itertools,
+iterators" NA "MIT + file LICENSE" NA NA NA NA "yes" "3.2.0"
+"praise" "praise" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.0.0" NA NA NA NA "testthat" NA "MIT + file LICENSE" NA NA NA NA "no" "3.2.0"
+"proto" "proto" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.3-10" NA NA NA NA "graph, Rgraphviz" NA "GPL-2" NA NA NA NA NA "3.2.0"
+"pryr" "pryr" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.1.2" NA "R (>= 3.1.0)" "stringr, codetools, methods, Rcpp (>= 0.11.0)" "Rcpp" "testthat (>= 0.8.0)" NA "GPL-2" NA NA NA NA "yes" "3.2.0"
+"R6" "R6" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "2.1.1" NA "R (>= 3.0)" NA NA "knitr, microbenchmark, pryr, testthat, ggplot2, scales" NA "MIT + file LICENSE" NA NA NA NA "no" "3.2.0"
+"RColorBrewer" "RColorBrewer" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.1-2" NA "R (>= 2.0.0)" NA NA NA NA "Apache License 2.0" NA NA NA NA "no" "3.2.0"
+"Rcpp" "Rcpp" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.12.2" NA "R (>= 3.0.0)" "methods, utils" NA "RUnit, inline, rbenchmark, highlight, pkgKitten (>= 0.1.2)" NA "GPL (>= 2)" NA NA NA NA "yes" "3.2.2"
+"RCurl" "RCurl" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.95-4.7" NA "R (>= 3.0.0), methods, bitops" NA NA "Rcompression, XML" NA "BSD" NA NA NA NA "yes" "3.2.0"
+"registry" "registry" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.3" NA "R (>= 2.6.0)" "utils" NA NA NA "GPL-2" NA NA NA NA "no" "3.2.0"
+"reshape2" "reshape2" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.4.1" NA NA "plyr (>= 1.8.1), stringr, Rcpp" "Rcpp" "testthat (>= 0.8.0), lattice" NA "MIT + file LICENSE" NA NA NA NA "yes" "3.2.0"
+"rex" "rex" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.0.1" NA NA "magrittr, lazyeval" NA "testthat, knitr, rmarkdown, dplyr, ggplot2, lintr, Hmisc,
+stringr, rvest" NA "MIT + file LICENSE" NA NA NA NA "no" "3.2.0"
+"Rglpk" "Rglpk" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.6-1" NA "slam (>= 0.1-9)" NA NA NA NA "GPL-2 | GPL-3" NA NA NA NA "yes" "3.2.0"
+"rhandsontable" "rhandsontable" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.2.1" NA NA "jsonlite, htmlwidgets (>= 0.3.3), magrittr, methods" NA "knitr" "shiny (>= 0.12)" "MIT + file LICENSE" NA NA NA NA "no" "3.2.0"
+"rJava" "rJava" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.9-7" NA "R (>= 2.5.0), methods" NA NA NA NA "GPL-2" NA NA NA NA "yes" "3.2.0"
+"rjson" "rjson" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.2.15" NA "R (>= 3.1.0)" NA NA NA NA "GPL-2" NA NA NA NA "yes" "3.2.0"
+"RJSONIO" "RJSONIO" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.3-0" NA NA "methods" NA NA NA "BSD_3_clause + file LICENSE" NA NA NA NA "yes" "3.2.0"
+"rmarkdown" "rmarkdown" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.8.1" NA "R (>= 3.0)" "tools, utils, grDevices, knitr (>= 1.11), yaml (>= 2.1.5),
+htmltools (>= 0.2.4), caTools" NA "shiny (>= 0.11), testthat, digest" NA "GPL-3" NA NA NA NA "no" "3.2.2"
+"rmongodb" "rmongodb" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.8.0" NA "
+R (>= 2.10)" "
+jsonlite,
+plyr" NA "
+RUnit,
+knitr" NA "Apache License 2.0" NA NA NA NA "yes" "3.2.2"
+"rmongodbHelper" "rmongodbHelper" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.0.0" NA "
+R (>= 3.1.1)" "
+rmongodb" NA NA NA "MIT" NA NA NA NA NA "3.2.2"
+"rngtools" "rngtools" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.2.4" NA "R (>= 3.0.0), methods, pkgmaker (>= 0.20)" "stringr, digest" NA "parallel, RUnit, knitr" NA "GPL-3" NA NA NA NA "no" "3.2.0"
+"roxygen2" "roxygen2" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "5.0.0" NA "R (>= 3.0.2)" "stringr (>= 0.5), stringi, brew, digest, methods, Rcpp (>=
+0.11.0)" "Rcpp" "testthat (>= 0.8.0), knitr, devtools, rmarkdown" NA "GPL (>= 2)" NA NA NA NA "yes" "3.2.2"
+"rpart" "rpart" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "4.1-10" "recommended" "R (>= 2.15.0), graphics, stats, grDevices" NA NA "survival" NA "GPL-2 | GPL-3" NA NA NA NA "yes" "3.2.2"
+"rsconnect" "rsconnect" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.4.1.4" NA "
+R (>= 3.0.0)" "
+digest,
+PKI,
+RCurl,
+RJSONIO,
+packrat (>= 0.4.2-1),
+yaml (>= 2.1.5),
+rstudioapi (>= 0.2)" NA "
+scrypt,
+knitr,
+testthat,
+rmarkdown (>= 0.5.2)" "BiocInstaller" "GPL-2" NA NA NA NA NA "3.2.1"
+"rstudioapi" "rstudioapi" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.3.1" NA NA NA NA NA NA "MIT + file LICENSE" NA NA NA NA "no" "3.2.0"
+"rversions" "rversions" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.0.2" NA NA "curl, xml2, utils" NA NA NA "MIT + file LICENSE" NA NA NA NA "no" "3.2.0"
+"scales" "scales" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.3.0" NA "R (>= 2.13)" "RColorBrewer, dichromat, plyr, munsell (>= 0.2), labeling,
+methods, Rcpp" "Rcpp" "testthat (>= 0.8)" NA "MIT + file LICENSE" NA NA NA NA "yes" "3.2.0"
+"shiny" "shiny" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.12.2" NA "R (>= 3.0.0), methods" "utils, httpuv (>= 1.3.3), mime (>= 0.3), jsonlite (>= 0.9.16),
+xtable, digest, htmltools (>= 0.2.6), R6 (>= 2.0)" NA "datasets, Cairo (>= 1.5-5), testthat, knitr (>= 1.6),
+markdown, ggplot2" NA "GPL-3 | file LICENSE" NA NA NA NA "no" "3.2.0"
+"shinyAce" "shinyAce" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.1.0" NA "R (>= 2.15.0)" "shiny (>= 0.7.0)" NA "testthat" NA "MIT + file LICENSE" NA NA NA NA "no" "3.2.0"
+"shinyapps" "shinyapps" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.4.1.4" NA "
+R (>= 3.0.0)" "
+digest,
+PKI,
+RCurl,
+RJSONIO,
+packrat (>= 0.4.2-1),
+yaml (>= 2.1.5),
+rstudioapi (>= 0.2)" NA "
+scrypt,
+knitr,
+testthat,
+rmarkdown (>= 0.5.2)" "BiocInstaller" "GPL-2" NA NA NA NA NA "3.2.1"
+"shinybootstrap2" "shinybootstrap2" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.2.1" NA "R (>= 3.0.0)" "htmltools (>= 0.2.6), jsonlite (>= 0.9.12), shiny" NA NA NA "GPL-3 | file LICENSE" NA NA NA NA "no" "3.2.0"
+"shinyBS" "shinyBS" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.61" NA NA "shiny (>= 0.11), htmltools" NA NA NA "GPL-3" NA NA NA NA "no" "3.2.0"
+"shinydashboard" "shinydashboard" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.5.1" NA "R (>= 3.0)" "utils, shiny (>= 0.11.1), htmltools (>= 0.2.6)" NA NA NA "GPL-2 | file LICENSE" NA NA NA NA "no" "3.2.0"
+"shinyFiles" "shinyFiles" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.6.0" NA NA "tools, shiny (>= 0.11), htmltools, RJSONIO" NA NA NA "GPL (>= 2)" NA NA NA NA "no" "3.2.0"
+"shinyjs" "shinyjs" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.2.2" NA "R (>= 3.1.0)" "
+digest (>= 0.6.8),
+htmltools (>= 0.2.6),
+shiny (>= 0.11.1),
+stats" NA "
+knitr (>= 1.7),
+testthat (>= 0.9.1),
+V8 (>= 0.6)" NA "MIT + file LICENSE" NA NA NA NA NA "3.2.1"
+"shinyRGL" "shinyRGL" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.1.0" NA "R (>= 2.15.0)" "rgl (>= 0.93.949), shiny (>= 0.6.0)" NA "testthat" NA "MIT + file LICENSE" NA NA NA NA "no" "3.2.0"
+"shinystan" "shinystan" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "2.0.1" NA "R (>= 3.1.0), shiny (>= 0.12.1)" "DT (>= 0.1), dygraphs (>= 0.4.5), ggplot2 (>= 1.0.0),
+gridExtra, gtools, markdown (>= 0.7.4), methods, reshape2,
+stats, shinyjs (>= 0.1.0), shinythemes (>= 1.0.1), threejs (>=
+0.2.1), utils, xtable, xts (>= 0.9-7)" NA "coda, knitr (>= 1.9), rstan (>= 2.7), testthat" NA "GPL (>= 3)" NA NA NA NA "no" "3.2.0"
+"shinyTable" "shinyTable" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.1.0" NA "
+R (>= 2.15.0)" "
+shiny (>= 0.8.0)" NA "
+testthat" NA "MIT" NA NA NA NA NA "3.2.2"
+"shinythemes" "shinythemes" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.0.1" NA "R (>= 3.0.0)" "shiny (>= 0.11)" NA NA NA "GPL-3 | file LICENSE" NA NA NA NA "no" "3.2.0"
+"shinyTree" "shinyTree" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.2.2" NA "R (>= 2.15.1), methods" "shiny (>= 0.9.0)" NA "testthat" NA "MIT + file LICENSE" NA NA NA NA "no" "3.2.0"
+"slam" "slam" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.1-32" NA "R (>= 2.8.0)" "stats" NA NA "Matrix, SparseM, spam" "GPL-2" NA NA NA NA "yes" "3.2.0"
+"slidify" "slidify" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.3.52" NA "
+R (>= 2.15.0)" "
+knitr (>= 0.1),
+markdown,
+stringr,
+yaml,
+whisker" NA NA NA "MIT" NA NA NA NA NA "3.2.2"
+"slidifyLibraries" "slidifyLibraries" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.3.1" NA NA NA NA NA NA "MIT" NA NA NA NA NA "3.2.2"
+"SnowballC" "SnowballC" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.5.1" NA NA NA NA NA NA "BSD_2_clause + file LICENSE" NA NA NA NA "yes" "3.2.0"
+"spatial" "spatial" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "7.3-11" "recommended" "R (>= 3.0.0), graphics, stats, utils" NA NA "MASS" NA "GPL-2 | GPL-3" NA NA NA NA "yes" "3.2.0"
+"splines" "splines" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "3.2.2" "base" NA "graphics, stats" NA NA NA "Part of R 3.2.2" NA NA NA NA NA "3.2.2"
+"stats" "stats" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "3.2.2" "base" NA NA NA NA NA "Part of R 3.2.2" NA NA NA NA NA "3.2.2"
+"stats4" "stats4" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "3.2.2" "base" NA "graphics, methods, stats" NA NA NA "Part of R 3.2.2" NA NA NA NA NA "3.2.2"
+"stringdist" "stringdist" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.9.4" NA "R (>= 2.15.3)" "parallel" NA "testthat" NA "GPL-3" NA NA NA NA "yes" "3.2.0"
+"stringi" "stringi" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.0-1" NA "R (>= 2.13.1)" "tools, utils, stats" NA NA NA "file LICENSE" "yes" NA NA NA "yes" "3.2.0"
+"stringr" "stringr" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.0.0" NA "R (>= 2.14)" "stringi (>= 0.4.1), magrittr" NA "testthat, knitr" NA "GPL-2" NA NA NA NA "no" "3.2.0"
+"survival" "survival" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "2.38-3" "recommended" "R (>= 2.13.0), graphics, stats" "splines, methods" NA "cmprsk" NA "LGPL (>= 2)" NA NA NA NA "yes" "3.2.2"
+"tcltk" "tcltk" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "3.2.2" "base" NA "utils" NA NA NA "Part of R 3.2.2" NA NA NA NA NA "3.2.2"
+"testthat" "testthat" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.11.0" NA "R (>= 3.1.0), methods" "digest, crayon, praise" NA "devtools" NA "MIT + file LICENSE" NA NA NA NA "yes" "3.2.0"
+"threejs" "threejs" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.2.1" NA "R (>= 3.0.0)" "htmlwidgets (>= 0.3.2), base64enc" NA "htmltools (>= 0.2.6), RCurl, maps, sp" "knitr, shiny" "MIT + file LICENSE" NA NA NA NA "no" "3.2.0"
+"tidyr" "tidyr" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.3.1" NA "R (>= 3.1.0)" "dplyr (>= 0.4), stringi, lazyeval, magrittr, Rcpp" "Rcpp" "knitr, testthat, data.table, covr" NA "MIT + file LICENSE" NA NA NA NA "yes" "3.2.0"
+"tools" "tools" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "3.2.2" "base" NA NA NA "XML" NA "Part of R 3.2.2" NA NA NA NA NA "3.2.2"
+"utils" "utils" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "3.2.2" "base" NA NA NA NA NA "Part of R 3.2.2" NA NA NA NA NA "3.2.2"
+"viridis" "viridis" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.3.1" NA "R (>= 2.10)" "stats, grDevices, ggplot2 (>= 1.0.1), gridExtra" NA "hexbin (>= 1.27.0), scales, MASS, knitr, dichromat,
+colorspace, rasterVis, httr, mapproj" NA "MIT + file LICENSE" NA NA NA NA "no" "3.2.0"
+"whisker" "whisker" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.3-2" NA NA NA NA "markdown" NA "GPL-3" NA NA NA NA "no" "3.2.0"
+"XLConnect" "XLConnect" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.2-11" NA "R (>= 2.10.0), XLConnectJars (== 0.2-9)" "methods, rJava" NA "RUnit, lattice, ggplot2 (>= 0.9.3), zoo" NA "GPL-3" NA NA NA NA "no" "3.2.0"
+"XLConnectJars" "XLConnectJars" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.2-9" NA NA "rJava" NA NA NA "GPL-3" NA NA NA NA "no" "3.2.0"
+"xlsx" "xlsx" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.5.7" NA "rJava, xlsxjars" NA NA NA NA "GPL-3" NA NA NA NA "no" "3.2.0"
+"xlsxjars" "xlsxjars" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.6.1" NA "rJava" NA NA NA NA "GPL-3" NA NA NA NA "no" "3.2.0"
+"XML" "XML" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "3.98-1.3" NA "R (>= 2.13.0), methods, utils" NA NA "bitops, RCurl" NA "BSD_2_clause + file LICENSE" NA NA NA NA "yes" "3.2.0"
+"xml2" "xml2" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.1.2" NA "R (>= 3.1.0)" "Rcpp" "Rcpp (>= 0.11.4.6), BH" "testthat, curl" NA "GPL (>= 2)" NA NA NA NA "yes" "3.2.0"
+"XML2R" "XML2R" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.0.6" NA "R (>= 2.15.1), XML" "RCurl, plyr" NA NA NA "GPL (>= 2)" NA NA NA NA "no" "3.2.0"
+"xtable" "xtable" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.8-0" NA "R (>= 2.10.0)" "stats, utils" NA "knitr" NA "GPL (>= 2)" NA NA NA NA "no" "3.2.0"
+"xts" "xts" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "0.9-7" NA "zoo (>= 1.7-10)" NA NA "timeSeries,timeDate,tseries,its,chron,fts,tis" NA "GPL (>= 2)" NA NA NA NA "yes" "3.2.0"
+"yaml" "yaml" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "2.1.13" NA NA NA NA "testthat" NA "BSD_3_clause + file LICENSE" NA NA NA NA "yes" "3.2.0"
+"zoo" "zoo" "/Library/Frameworks/R.framework/Versions/3.2/Resources/library" "1.7-12" NA "R (>= 2.10.0), stats" "utils, graphics, grDevices, lattice (>= 0.20-27)" NA "coda, chron, DAAG, fts, its, ggplot2, mondate, scales,
+strucchange, timeDate, timeSeries, tis, tseries, xts" NA "GPL-2 | GPL-3" NA NA NA NA "yes" "3.2.0"

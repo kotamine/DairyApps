@@ -1,9 +1,7 @@
 
-c_empty_table <- df_null(c_colnames) 
-s_empty_table <- df_null(s_colnames) 
-p_empty_table <- df_null(p_colnames) 
-
-
+# c_empty_table <- df_null(c_colnames) 
+# s_empty_table <- df_null(s_colnames) 
+# p_empty_table <- df_null(p_colnames) 
 
 
 
@@ -77,32 +75,57 @@ lapply(list_tabs, function(z) {
     # if (any(sapply(base_profiles, function(x) length(ans[[x]]$net_annual_impact_before_tax)==0))) return()
     lapply(list_tabs, function(w) {
       if (z!=w)  updateTabsetPanel(session, paste(w), input[[paste(z)]])
+      # shinyjs::disable(paste0('radio_',z))
+
     })
   })
 })
 
 
 # Make IOFC and NAI choices equivalent across various profiles 
-list_profiles <- c(base_profiles,base_profiles_se)
+# list_profiles <- c(base_profiles,base_profiles_se)
+
+# my_update_dashboard <- function(var, choices) {
+#   lapply(list_profiles, function(z) {
+#     observeEvent(input[[paste0(var,z)]], {
+#       shinyjs::disable(paste0('radio_',var,z))
+#       lapply(list_profiles, function(w) {
+#         updateRadioButtons(session, paste(var),NULL,
+#                            choices=choices, selected=input[[paste0(var,z)]])
+#         if (z!=w)  {
+#           updateRadioButtons(session, paste0(var,w),NULL,
+#                              choices=choices, selected=input[[paste0(var,z)]])
+#         }
+#         
+#       })
+#     })
+#   })
+# }
+
+list_profiles <- list(base_profiles,base_profiles_se)
 
 my_update_dashboard <- function(var, choices) {
-  lapply(list_profiles, function(z) {
+  for (list in list_profiles) {
+    ifelse(all(list==base_profiles), disable<-TRUE, disable<-FALSE)
+  lapply(list, function(z) {
     observeEvent(input[[paste0(var,z)]], {
-      lapply(list_profiles, function(w) {
+      if (disable) shinyjs::disable(paste0('radio_',var,z))
+      lapply(list, function(w) {
         updateRadioButtons(session, paste(var),NULL,
                            choices=choices, selected=input[[paste0(var,z)]])
         if (z!=w)  {
           updateRadioButtons(session, paste0(var,w),NULL,
                              choices=choices, selected=input[[paste0(var,z)]])
         }
+        
       })
     })
   })
-} 
+  }
+}
 
 my_update_dashboard("IOFC", c("per cow","per cwt"))
 my_update_dashboard("NAI", c("before tax", "after tax"))
-
 
 
 ## download cashflow, debt, depreciation tables

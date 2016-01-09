@@ -141,8 +141,8 @@ uiPartialBudget <- function(x) {
           fluidRow(column(width=8, offset=2, 
                           helpText(em("Increased Revenue Total"),"and", em("Increased Expense Total"), 
                                    "show the projected values for a given budget year, according to the inflation rate of IOFC margin   
-                    (from the Data Entry section). Similarly,", em("Decreased Expense Total,"), 
-                                   "is the projected value, according to the inflation rate of labor. 
+                    (from the Data Entry section). Similarly,", em("Decreased Expense Total"), 
+                                   "is the projected value according to the inflation rate of labor. 
                     On the other hand,", em("Increased Cost of Capital"), "is presented as a constant, annualized value."), 
                           helpText("The figure below presents the trajectories of these variables over budget years.") 
           )), br(),
@@ -155,8 +155,9 @@ uiPartialBudget <- function(x) {
                    helpText("In the following, we summarize how to obtain calculations from the positive and negative impacts above
            to before-tax and after-tax impacts. 
            We present such a summary by using annualized values. The adjustment, labeled", em("Inflation adjustments,"),
-                            ", is introduced between a (budget year-specific)", em("Total positive impacts minus total negative impacts"),
-                            "and a (constant) ", em("Before-tax Net annual impact*."),  "Further adding annualized tax and tax deductions, 
+                            " is introduced between a (budget year-specific)", em("Total positive impacts minus total negative impacts"),
+                            "and a (constant) ", em("Before-tax Net annual impact*."),  
+            "Furthermore, the addition of annualized tax and tax deductions, 
             as well as some adjustments to the cost of capital, leads to",  em("After-tax net annual impact*."))
             ))
       )),
@@ -234,8 +235,8 @@ uiPartialBudget <- function(x) {
                           helpText(" Annualized values such as", em("the Annualized Before-tax Impact"),"in the figure represent a form of 
               valuation that converts a stream of cash flows into
               a stream of constant payments (called annuity) that has the same value under a given discount rate.  
-                             This calculation is straightforward; we first convert a stream of cash flows into a discounted sum, 
-                             or the Net Present Value (NPV), and further converts NPV into a constant annual payment, or the annuity, 
+                             This calculation is straightforward; we first convert a stream of cash flow into a discounted sum, 
+                             or the Net Present Value (NPV), and then convert the NPV into a constant annual payment, or the annuity, 
                              of the equivalent value."), br(), 
                           
                           helpText("The two figures below present the cash flows and their annualized values.
@@ -266,12 +267,12 @@ uiPartialBudget <- function(x) {
     fluidRow(column(width=8, offset=2,
                     hr(),
                     h5(paste("Breakeven Wage:", refProfileName(x))),
-                    helpText("The primary benefit of installing a new milking system is labor saving, and its
+                    helpText("The primary benefit of installing a new milking system is the reduction of labor requirement, and its
                          importance depends on wage rate. Here, we ask under what wage rate it is sensible to invest in", x, ".",
                              "Holding everything else constant, any wage rate higher than the breakeven wage 
                          implies profits from the investment, while any wage rate lower than the breakeven wage implies 
                          a loss."),
-                    helpText("Given the long-term nature of investment at hand, 
+                    helpText("Given the long-term nature of the investment at hand, 
                          we define the breakeven wage as a sequence of labor wage rates over the planning horizon   
                         that sets ", em("After-tax net annual impact"), "approximately zero. 
                          Here are the two cases of such a wage sequence we obtained:"), 

@@ -14,13 +14,13 @@ uiDashboard <- function(x) {
              fluidRow(
                column(6,
                       uiOutput(paste0("IOFC",x)),
-                      radioButtons(paste0("IOFC",x),NULL,
-                                   choices=c("per cow","per cwt"), selected="per cwt")
+                      div(id=paste0('radio_IOFC',x),radioButtons(paste0("IOFC",x),NULL,
+                                   choices=c("per cow","per cwt"), selected="per cwt"))
                ),
                column(6,
                       uiOutput(paste0("NAI",x)),
-                      radioButtons(paste0("NAI",x),NULL,
-                                   choices=c("before tax","after tax"),selected="after tax")
+                      div(id=paste0('radio_NAI',x), radioButtons(paste0("NAI",x),NULL,
+                                   choices=c("before tax","after tax"),selected="after tax"))
                )
              ),
              lapply(x, function(x1) {  

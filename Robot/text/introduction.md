@@ -2,7 +2,7 @@
 
 ## DISCLAIMER
 ----
-This online application, last updated on 1/6/2016, is **preliminary**.  Once complete, the official brainding of the University of Minnesota will be used.    
+This online application, last updated on 1/8/2016, is **preliminary**.  Once complete, the official brainding of the University of Minnesota will be used.    
 
 
 

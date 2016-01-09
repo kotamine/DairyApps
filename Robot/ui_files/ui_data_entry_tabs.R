@@ -128,7 +128,8 @@ div(
                "Change with Investment",
                tabPanel("Capital", value="Capital",
                         fluidRow(column(width=10, offset=1,
-                                        tabsetPanel(id="prCapital", 
+                                        div(id="radio_prCapital", 
+                                            tabsetPanel(id="prCapital", 
                                                     tabPanel("Robots", value=base_profiles[1],
                                                              changeVariablesCapital(base_profiles[1])),
                                                     tabPanel("Retrofit Parlors", value=base_profiles[2],
@@ -141,6 +142,7 @@ div(
                                                     # tabPanel("Retrofit/New",  value=combo_profiles[2],
                                                     #          helpText("* This assumes first Retrofit Parlors and then New Parlors."),
                                                     #          helpText("* Values are taken from the two profiles."))
+                                        )
                                         )
                         )),
                         icon=icon("gears")

@@ -28,18 +28,19 @@ refProfileName <-  function(x) {
   )
 }
 
+ems <- function(txt) em(strong(txt)) 
+
 shinyUI(  
   fluidPage(
+    tags$head(
+      tags$link(rel = "stylesheet", type = "text/css", href = "www/UMN.css")
+    ),
     # list(tags$head(HTML("  "))),
     # tags$head(
     # tags$link(rel = "stylesheet", type = "text/css", href = "www/UMN.css"),
     # includeHTML("www/UMN_header.html"),
     #  list(tags$head(HTML(" "))),
-    
-    # Shiny.addCustomMessageHandler('activeNavs', function(nav_label) {
-    #   $('#mynavlist a:contains(\"' + nav_label + '\")').parent().removeClass('disabled');
-    # });
-    
+  
     # tags$head(tags$script("
     #     window.onload = function() {
     #                       $('#prCapital a:contains(\"Robots\")').parent().addClass('disabled');
@@ -48,15 +49,10 @@ shinyUI(
     #                       $('#prMilk a:contains(\"Retrofit\")').parent().addClass('disabled');
     #                       $('#prMilk a:contains(\"New\")').parent().addClass('disabled');
     #                       };
-    #                       
+    #                       Shiny.addCustomMessageHandler('activeTabs', function(tab_label) {
+    #                       $('#mynavlist a:contains(\"' + tab_label + '\")').parent().removeClass('disabled');
+    #                       });
     #                       ")),
-    tags$head(tags$script(HTML('
-      Shiny.addCustomMessageHandler("jsCode",
-                               function(message) {
-                               eval(message.code);
-                               }
-    );
-                               '))),
     div(class="well", style="background-color:#7a0019; color:white;", 
         fluidRow(column(width=8, offset=1, h1("UM Extension Dairy")))),
     navbarPage(
@@ -71,12 +67,13 @@ shinyUI(
       ),
       # ---------- Data Entry -----------
       tabPanel("Data Entry", value="Data_Entry",
-               # Need to add "$value" for including source in UI: 
-               # otherwise "TRUE" will show up at the end of file
                conditionalPanel("input.case1>0",
+                                div(id="dataEntry", h3("Data Entry",HTML(paste(icon("info-circle")))),align="center"),
                                 source(file.path("ui_files","ui_data_entry_tabs.R"), local=TRUE)$value,
-                                
+                                # Need to add "$value" for including source in UI: 
+                                # otherwise "TRUE" will show up at the end of file
                                 conditionalPanel("input.calculation_switch=='ON'",
+                                div(id="dashboardPanel", h3("Dashboard",HTML(paste(icon("info-circle")))),align="center"),
                                                  tabsetPanel(id="dashboard", 
                                                              #                            The following does not work for some reason..
                                                              #                            lapply(base_profiles, function(profile) {
@@ -97,7 +94,7 @@ shinyUI(
                                                              selected="after tax")),
                                 br(), 
                                 div(radioButtons("calculation_switch","Calculation Switch",
-                                                 choices=c("OFF","ON"), inline=TRUE),align="center"),
+                                                 choices=c("OFF","ON"), inline=TRUE),id ='calswitch',align="center"),
                                 # --------- Data Table ---------
                                 br(),
                                 hr(),
@@ -116,7 +113,7 @@ shinyUI(
                conditionalPanel("input.case1==0",
                                 fluidRow(
                                   column(8, offset=2,
-                                         h4("Please select a case that best describes your operation."),
+                                         h3("Select a case that best describes your operation."),
                                          helpText("The case will load 
                                             an appropriate set of starting values for your user-data inputs."),
                                          br(),
@@ -128,10 +125,8 @@ shinyUI(
       ),
       # ---------- Partial Budget Analysis -----------
       tabPanel("Partial Budget", value = "Partial_Budget",
-               
-               fluidRow(column(6, offset=3,
-                               h3("Partial Budget Analysis",align="center")
-               )),
+                               div(id="partialBudget",
+                                   h3("Partial Budget Analysis",HTML(paste(icon("info-circle")))),align="center"),
                conditionalPanel("input.calculation_switch=='ON'",
                                 tabsetPanel(id="partial_budget",
                                             tabPanel("Robots", value=base_profiles[1],
@@ -149,7 +144,8 @@ shinyUI(
       ),
       # ---------- Cash Flow Analysis -----------
       tabPanel("Cash Flow", value = "Cash_Flow",
-               h3("Cash Flow Analysis",align="center"),
+               div(id="cashFlow",
+                   h3("Cash Flow Analysis",HTML(paste(icon("info-circle")))),align="center"),
                conditionalPanel("input.calculation_switch=='ON'",
                                 tabsetPanel(id="cash_flow",
                                             tabPanel("Robots", value=base_profiles[1],
@@ -167,7 +163,9 @@ shinyUI(
       ),
       # ---------- Summary  -----------
       tabPanel("Summary", value="Summary",
-               h3("Summary",align="center"),
+               div(id="summary",
+                   h3("Summary of Investment Profiles",
+                      HTML(paste(icon("info-circle")))),align="center"),
                conditionalPanel("input.calculation_switch=='ON'",
                                 source(file.path("ui_files","ui_summary.R"), local=TRUE)$value
                ),
@@ -178,7 +176,8 @@ shinyUI(
       ),
       # ---------- Sensitivity Analysis -----------
       tabPanel("Sensitivity", value="Sensitivity",
-               h3("Sensitivity Analysis",align="center"),
+               div(id="sensitivityAnalysis",
+                   h3("Sensitivity Analysis",HTML(paste(icon("info-circle")))),align="center"),
                conditionalPanel("input.calculation_switch=='ON'",
                                 tabsetPanel(id="sensitivity",
                                             tabPanel("Robots", value=base_profiles[1],
@@ -194,28 +193,6 @@ shinyUI(
                                     align="center")
                )
       ),
-      #       # ---------- Additional Analyses -----------
-      #       navbarMenu("More", value = "More", 
-      #                  tabPanel("Robustness Checks",
-      #                           conditionalPanel("input.budget==0",
-      #                                            div(helpText("Please review all tabs in Data Entry."),align="center")
-      #                           ),
-      #                           conditionalPanel("input.budget>0",
-      #                                            fluidRow(column(6, offset=3,
-      #                                                            radioButtons("robust", "Robustness analysis options", 
-      #                                                                         choices=c("Off","Sensitivity","Scenarios")),
-      #                                                            helpText("To assess the robustness of your results, consider changes in key variables. 
-      #                                                  Sensitivity Analysis uses a change in one variable at a time, whereas
-      #                                                  Scenario Analysis uses changes in a set of related variables at a time.
-      #                                                  In Data Entry tab, the results of Sensitivity or Scneario Analysis will 
-      #                                                  appear below the baseline results in a parallel fashion."),
-      #                                                            conditionalPanel('input.robust=="Sensitivity"', br(), hr(),
-      #                                                                             includeMarkdown(file.path("text","sensitivity.md"))),
-      #                                                            conditionalPanel('input.robust=="Scenarios"', br(), hr(),
-      #                                                                             includeMarkdown(file.path("text","scenario.md")))
-      #                                            ))
-      #                           )),
-      #       ),
       # ---------- About -----------
       tabPanel("About", value = "About", 
                fluidRow(column(width=2),
@@ -225,7 +202,9 @@ shinyUI(
                         ))
       ),
       useShinyjs(), 
-      collapsible = TRUE)
+      collapsible = TRUE),
+      source(file.path("ui_files","ui_tooltip.R"), local=TRUE)$value,
+      source(file.path("ui_files","ui_modal.R"), local=TRUE)$value
   )
 ) 
 
