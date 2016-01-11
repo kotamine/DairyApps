@@ -50,6 +50,23 @@ lapply(c('operating_income','after_tax_cash_flow'), function(loc_var) {
 })
 
 
+# Download button
+output[["download_table_summary"]] <- downloadHandler( 
+
+  filename = paste0("summary_over_milking_systems.xlsx"), 
+  content = function(file) {  
+    wb <- XLConnect::loadWorkbook(file, create = TRUE)
+    lapply(c('operating_income','after_tax_cash_flow','before_tax','after_tax'), function(loc_var) {  
+      XLConnect::createSheet(wb, name = loc_var)
+      tbl <- sum[[paste0("table_",loc_var)]]()
+      if(rownames(tbl)[1]!="1") tbl <- cbind(item=rownames(tbl),tbl)
+      XLConnect::writeWorksheet(wb, tbl, sheet = loc_var) 
+    })   
+    XLConnect::saveWorkbook(wb)
+  }  
+)  
+
+
 output$summary_table_before_tax <- DT::renderDataTable({
   tbl <- sum[["table_before_tax"]]()
   need(length(tbl) > 0, "NA") %>% validate()

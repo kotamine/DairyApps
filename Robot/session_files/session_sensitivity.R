@@ -402,6 +402,24 @@ lapply(base_profiles, function(x) {
     
     
   })
+  
+  output[[paste0("download_table_sensitivity",x)]] <- downloadHandler( 
+
+    filename = paste0("sensitivity_",x,"_milking_system.xlsx"), 
+    content = function(file) { 
+      wb <- XLConnect::loadWorkbook(file, create = TRUE)
+      lapply(c('operating_income','after_tax_cash_flow','before_tax','after_tax'), function(loc_var) {
+        XLConnect::createSheet(wb, name = loc_var)
+        tbl <- sum[[paste0("sensitivity_table_",loc_var,x)]]()
+        if(rownames(tbl)[1]!="1") tbl <- cbind(item=rownames(tbl),tbl)
+        XLConnect::writeWorksheet(wb, tbl, sheet = loc_var) 
+      })
+      XLConnect::saveWorkbook(wb)
+    }
+  ) 
+  
 })
+
+
 
 

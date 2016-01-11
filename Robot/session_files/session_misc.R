@@ -85,24 +85,6 @@ lapply(list_tabs, function(z) {
 
 
 # Make IOFC and NAI choices equivalent across various profiles 
-# list_profiles <- c(base_profiles,base_profiles_se)
-
-# my_update_dashboard <- function(var, choices) {
-#   lapply(list_profiles, function(z) {
-#     observeEvent(input[[paste0(var,z)]], {
-#       shinyjs::disable(paste0('radio_',var,z))
-#       lapply(list_profiles, function(w) {
-#         updateRadioButtons(session, paste(var),NULL,
-#                            choices=choices, selected=input[[paste0(var,z)]])
-#         if (z!=w)  {
-#           updateRadioButtons(session, paste0(var,w),NULL,
-#                              choices=choices, selected=input[[paste0(var,z)]])
-#         }
-#         
-#       })
-#     })
-#   })
-# }
 
 list_profiles <- list(base_profiles,base_profiles_se)
 
@@ -130,17 +112,27 @@ my_update_dashboard("IOFC", c("per cow","per cwt"))
 my_update_dashboard("NAI", c("before tax", "after tax"))
 
 
-## download cashflow, debt, depreciation tables
-lapply(base_profiles, function(x) {
-  output[[paste0("dl_button_cash_flow",x)]] <- renderUI({
-    need(!is.null(ans[[x]]$table_cash_flow) & !is.null(ans[[x]]$table_debt) &
-           !is.null(ans[[x]]$table_depreciation)) %>% validate()
-    downloadButton('download_table_cash_flow', 'Download')
-  })
-  
-  
-})
-
+# ## download cashflow, debt, depreciation tables
+# lapply(base_profiles, function(x) {
+#   output[[paste0("dl_button_cash_flow",x)]] <- renderUI({
+#     need(!is.null(ans[[x]]$table_cash_flow) & !is.null(ans[[x]]$table_debt) &
+#            !is.null(ans[[x]]$table_depreciation)) %>% validate()
+#     downloadButton(paste0('download_table_cash_flow',x), 'Download')
+#   })
+#   
+#   output[[paste0("dl_button_sensitivity",x)]] <- renderUI({
+#     need(!is.null(ans[[x]]$table_cash_flow) & !is.null(ans[[x]]$table_debt) &
+#            !is.null(ans[[x]]$table_depreciation)) %>% validate()
+#     downloadButton(paste0('download_table_sensitivity',x), 'Download')
+#   })
+# 
+# })
+# 
+# output[["dl_button_summary"]] <- renderUI({
+#   need(!is.null(ans[[x]]$table_cash_flow) & !is.null(ans[[x]]$table_debt) &
+#          !is.null(ans[[x]]$table_depreciation)) %>% validate()
+#   downloadButton('download_table_summary', 'Download')
+# })
 
 
 # ----------- Download and Upload of User Data -----------------

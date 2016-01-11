@@ -40,15 +40,11 @@ shinyUI(
     # tags$link(rel = "stylesheet", type = "text/css", href = "www/UMN.css"),
     # includeHTML("www/UMN_header.html"),
     #  list(tags$head(HTML(" "))),
-<<<<<<< Updated upstream
-  
-=======
     
     # Shiny.addCustomMessageHandler('activeNavs', function(nav_label) {
     #   $('#mynavlist a:contains(\"' + nav_label + '\")').parent().removeClass('disabled');
     # });
     
->>>>>>> Stashed changes
     # tags$head(tags$script("
     #     window.onload = function() {
     #                       $('#prCapital a:contains(\"Robots\")').parent().addClass('disabled');
@@ -57,12 +53,10 @@ shinyUI(
     #                       $('#prMilk a:contains(\"Retrofit\")').parent().addClass('disabled');
     #                       $('#prMilk a:contains(\"New\")').parent().addClass('disabled');
     #                       };
-<<<<<<< Updated upstream
     #                       Shiny.addCustomMessageHandler('activeTabs', function(tab_label) {
     #                       $('#mynavlist a:contains(\"' + tab_label + '\")').parent().removeClass('disabled');
     #                       });
     #                       ")),
-=======
     #                       
     #                       ")),
     tags$head(tags$script(HTML('
@@ -72,7 +66,6 @@ shinyUI(
                                }
     );
                                '))),
->>>>>>> Stashed changes
     div(class="well", style="background-color:#7a0019; color:white;", 
         fluidRow(column(width=8, offset=1, h1("UM Extension Dairy")))),
     navbarPage(
@@ -222,15 +215,11 @@ shinyUI(
                         ))
       ),
       useShinyjs(), 
-<<<<<<< Updated upstream
       collapsible = TRUE),
       source(file.path("ui_files","ui_tooltip.R"), local=TRUE)$value,
       source(file.path("ui_files","ui_modal.R"), local=TRUE)$value
-=======
-      collapsible = TRUE)
->>>>>>> Stashed changes
-  )
-) 
+    )
+)   
 
 
 

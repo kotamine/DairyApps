@@ -2,11 +2,9 @@
 
 ## DISCLAIMER
 ----
-<<<<<<< Updated upstream
 This online application, last updated on 1/8/2016, is **preliminary**.  Once complete, the official brainding of the University of Minnesota will be used.    
-=======
+
 This online application, last updated on 1/6/2016, is **preliminary**.  Once complete, the official branding of the University of Minnesota will be used.    
->>>>>>> Stashed changes
 
 
 
@@ -45,23 +43,17 @@ This online tool assists you with understanding how these factors influence the 
 ## What's more? 
 ---
 1. Additional tools are provided for assessing the robustness of your results with respect to a change in a key variable (**Sensitivity Analysis**) and changes in a set of related variables (**Scenario Analysis**). 
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
-    * **Sensitivity Analysis**: Focusing on ten variables that are deemed most important, you can assess how the results hold up under a significant error in your assumption or an unforeseen change of course in the economy.     
-    <br>
-	   * **Scenario Analysis**: [Under Construction]
-    <br> 
-=======
->>>>>>> Stashed changes
+
+  * **Sensitivity Analysis**: Focusing on ten variables that are deemed most important, you can assess how the results hold up under a significant error in your assumption or an unforeseen change of course in the economy.     
+  <br>
+   * **Scenario Analysis**: [Under Construction]
+  <br> 
+
   * **Sensitivity Analysis**: Focusing on ten variables that are deemed most important, you can assess how the results hold up under a significant error in your assumption or a unforeseen change of course in the economy.     
   <br>
 	* **Scenario Analysis**: [Under Construction]
   <br> 
-<<<<<<< Updated upstream
-=======
->>>>>>> origin/master
->>>>>>> Stashed changes
+
 
 
 2. An optional feature allows for simulating a two-step investment process for the new milking system (Robots, Retrofit Parlors, or New Parlors) and the related housing. The initial investment is a part or all of the housing investment, and the forthcoming investment is the remainder of the housing investment and the installment of the new milking system. This feature can be accessed by setting *Year of Investment* for the milking system (under *Finance* section in *Data Entry* tab) to be greater than zero. Such a strategy may be attractive for those who want to smooth out cash flows or those who want to adopt modern barn construction while waiting for further development of the milking system technology.   

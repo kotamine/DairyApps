@@ -56,6 +56,8 @@ uiSensitivity <- function(x) {
                                DT::dataTableOutput(paste0("sensitivity_table_after_tax_cash_flow",x)) 
                       ), selected="After Tax")
     )),br(),
+    div(downloadButton(paste0("download_table_sensitivity",x)),align="center"),
+    br(),
     fluidRow(column(width=10, offset=1,   
                     h4("Plot over a Range of Percentage Change:"),
                     fluidRow(

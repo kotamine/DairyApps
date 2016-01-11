@@ -317,21 +317,18 @@ lapply(c(base_profiles,base_profiles_se), function(x) {
   dashboard_colors <- c("#1569C7", "#FF926F", "#64E986", "#EDDA74", "#7A5DC7")
   dashboard_labels <- c("Milk Income - Feed Cost", "Labor + Repair Cost", "Cost of Capital",
                         "Others", "Inflation Adjustments")
-  
-  observeEvent(input[[paste0("NAI",x)]],{
-    browser() 
-
-        session$sendCustomMessage(type="jsCode",
-                              list(code= "$('#NAIRobots').attr('disabled',true)")) 
-  })
-  
+  # 
+  # # Disable 
+  # observeEvent(input[[paste0("NAI",x)]],{
+  #       session$sendCustomMessage(type="jsCode",
+  #                             list(code= "$('#NAIRobots').attr('disabled',true)")) 
+  # })
+  # 
   lapply(dashboard_items, function(item) {
     
     output[[paste0(item,x)]] <- renderUI({
       need(!is.null(ans[[paste0(x,"_da")]]()[[input$NAI]][[item]]),"NA") %>% validate()
       
-      # on.exit(shinyjs::enable(paste0("NAI",x)))
-        
       loc <- which(dashboard_items==item)
       
       if (sensitivity) {
