@@ -5,6 +5,8 @@
 
 
 
+
+
 # Show/hide DMI calculations 
 shinyjs::onclick("customDMI",
                  shinyjs::toggle(id="DMI_inputs", anim = TRUE)
