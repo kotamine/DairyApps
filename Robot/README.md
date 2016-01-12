@@ -17,13 +17,13 @@ This application is developed as a decision-support tool for dairy producers in 
 
 Components: <br>
 The UI consists of the following tabs. 
-* Introduction: introduces the application to the user for its purpose, usage, and design 
-* Data Entry: asks for the user-provided data entry and presents a dashboard of results 
+* **Introduction**: introduces the application to the user for its purpose, usage, and design 
+* **Data Entry**: asks for the user-provided data entry and presents a dashboard of results 
 * **Partial Budget**: presents a partial budget analysis 
 * **Cash Flow**: presents a cash flow analysis
-* Summary: presents a summary of the results from three investment profiles (Robots, Retrofit Parlors, and New Parlors)
-* Sensitivity: presents a sensitivity analysis for 10 key variables
-* About: shows credits and contact information etc.
+* **Summary**: presents a summary of the results from three investment profiles (Robots, Retrofit Parlors, and New Parlors)
+* **Sensitivity**: presents a sensitivity analysis for 10 key variables
+* **About**: shows credits and contact information etc.
 
 Interactions: <br>
  The user is first asked to select a set of default user-input values from several *“Cases”* that describe the underlying farm type for production practices and facilities in ways that help predict how AMS and other milking systems would change the operation for the farm.  Then, the user skims through the default values while making changes as needed. The emphasis is at first on familiarizing himself/herself on the input variables and getting some sense of the analysis the application provides.   
@@ -40,19 +40,19 @@ Interactions: <br>
 
 Components: <br>
 The major distinction in server-side files is as fllows.
-* files used for the main calculation (“session_calculation_main.R”, “session_calculation_steps.R”, “session_dashboard.R”, “session_partial_budget.R”, “session_cash_flow.R”)
-* a file used for rendering outputs to UI (“session_render_base.R”)
-* files used for additional features (“session_summary.R”, “session_sensitivity.R”, “session_calculation_delay.R”) 
-* others (“session_misc.R”, “session_popover.R”).    
+* files used for the main calculation (*“session_calculation_main.R”*, *“session_calculation_steps.R”*, *“session_dashboard.R”*, *“session_partial_budget.R”*, *“session_cash_flow.R”*)
+* a file used for rendering outputs to UI (*“session_render_base.R”*)
+* files used for additional features (*“session_summary.R”*, *“session_sensitivity.R”*, *“session_calculation_delay.R”*) 
+* others (*“session_misc.R”*, *“session_popover.R”*).    
 
 Interactions: <br>
-**Main calculation.** File “session_calculation_main.R” calls “session_calculation_steps.R”, “session_cash_flow.R” and “session_dashboard.R”, sequentially carrying out the main calculation.  The functions in “session_calculation_main.R” react to any change in user input (i.e., list “input”).  About half of the outputs in **Partial Budget** is calculated in this procedure, and the rest is calculated in “session_partial_budget.R”, which is invoked when the user views the **Partial Budget** pane. 
+**Main calculation.** File *“session_calculation_main.R”* calls *“session_calculation_steps.R”*, *“session_cash_flow.R”* and *“session_dashboard.R”*, sequentially carrying out the main calculation.  The functions in *“session_calculation_main.R”* react to any change in user input (i.e., list “input”).  About half of the outputs in **Partial Budget** is calculated in this procedure, and the rest is calculated in *“session_partial_budget.R”*, which is invoked when the user views the **Partial Budget** pane. 
 
-**Rendering.** Most of the output (stored in list “output”) is processed in “session_render_base.R”. It handles some minor formatting and conditional adjustments.  All rendering items are reactive and react to the change in input or other calculated reactive values.   
+**Rendering.** Most of the output (stored in list “output”) is processed in *“session_render_base.R”*. It handles some minor formatting and conditional adjustments.  All rendering items are reactive and react to the change in input or other calculated reactive values.   
 
-**Additional features.** ‘’session_summary.R’ simply sorts out the results from three base investment profiles in tables and charts and its functions are activated when the Summary tab is viewed. “session_sensitivity.R” triggers the main calculation by substituting a value of one variable with an alternative value.  When the user sets the year of investment in milking system greater than zero, “session_calculation_delay.R” inserts some additional variables describing the budget calculation prior to the beginning of that investment. 
+**Additional features.** ‘’session_summary.R’ simply sorts out the results from three base investment profiles in tables and charts and its functions are activated when the Summary tab is viewed. *“session_sensitivity.R”* triggers the main calculation by substituting a value of one variable with an alternative value.  When the user sets the year of investment in milking system greater than zero, *“session_calculation_delay.R”* inserts some additional variables describing the budget calculation prior to the beginning of that investment. 
 
-**Others.** “session_misc.R” implements some axillary functions that update tabs (to synchronize a selected profile across the series of tabs in the Data Entry) and process the download and upload of data inputs. “session_popover.R” displays popovers in UI using the variables and conditions from the server side.  
+**Others.** *“session_misc.R”* implements some axillary functions that update tabs (to synchronize a selected profile across the series of tabs in the Data Entry) and process the download and upload of data inputs. *“session_popover.R”* displays popovers in UI using the variables and conditions from the server side.  
 	 
 
 
