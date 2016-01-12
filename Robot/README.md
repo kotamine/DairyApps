@@ -1,7 +1,7 @@
 # Robotic Milking Systems
 
 ## Concept 
-This application is developed as a decision-support tool for dairy producers in assessing their investment decisions for robotic milking systems (AMS). The primary motivation for this app is the increasing labor shortage in the dairy industry and the advancement of AMS.    
+This application is developed as a decision-support tool for dairy producers in assessing their investment decisions for robotic milking systems (AMS). The primary motivation for this app comes from the increasing labor shortage in the dairy industry and the advancement of AMS technology.    
 
 
 ## Goals
