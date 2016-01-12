@@ -374,7 +374,7 @@ lapply(c(base_profiles,base_profiles_se), function(x) {
                               titleTextStyle="{fontSize:12}",
                               legend="none",
                               vAxis="{fontSize:12}", 
-                              hAxis="{title:'$1,000'}",
+                              hAxis="{title:'Unit: $1,000'}",
                               chartArea ='{width: "50%", height: "50%" }')
     )
   })
@@ -403,7 +403,7 @@ lapply(c(base_profiles,base_profiles_se), function(x) {
                               titleTextStyle="{fontSize:12}",
                               legend="none",
                               vAxis="{fontSize:12}", 
-                              hAxis="{title:'$1,000'}",
+                              hAxis="{title:'Unit: $1,000'}",
                               chartArea ='{width: "50%", height: "50%"}')
     )
   })
@@ -429,7 +429,7 @@ lapply(c(base_profiles,base_profiles_se), function(x) {
                               titleTextStyle="{fontSize:12}",
                               legend="none",
                               vAxis="{fontSize:12}", 
-                              hAxis="{title:'$1,000'}",
+                              hAxis="{title:'Unit: $1,000'}",
                               chartArea ='{width: "50%", height: "50%" }')
     )
   })

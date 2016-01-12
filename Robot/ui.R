@@ -1,13 +1,5 @@
-library(shiny)
-library(shinyBS)
-library(rmarkdown)
-library(ggplot2)
-suppressPackageStartupMessages(library(googleVis))
-suppressPackageStartupMessages(library(shinyjs))
-suppressPackageStartupMessages(library(DT))
-suppressPackageStartupMessages(library(dplyr))
-suppressPackageStartupMessages(library(xlsx))
-suppressPackageStartupMessages(library(XLConnect))
+
+source("global_parameters.R")
 
 # Load files that contain functions
 source(file.path("ui_files", "ui_data_entry_functions.R"), local=TRUE)
@@ -16,19 +8,6 @@ source(file.path("ui_files", "ui_cash_flow.R"), local=TRUE)
 source(file.path("ui_files", "ui_dashboard.R"), local=TRUE) 
 source(file.path("ui_files", "ui_sensitivity.R"), local=TRUE)  
 
-
-base_profiles <- c("Robots","Retrofit","New")
-# combo_profiles <- c("RetrofitRobots","RetrofitNew")
-
-refProfileName <-  function(x) {
-  switch(x, 
-         "Robots"="Robots",
-         "Retrofit"="Retrofit Parlors",
-         "New"="New Parlors"
-  )
-}
-
-ems <- function(txt) em(strong(txt)) 
 
 shinyUI(  
   fluidPage(

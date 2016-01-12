@@ -22,6 +22,9 @@ lapply(base_profiles, function(x) {
     
     # browser()
     
+    # Skip calculation before loading any "case" of default values 
+    if (input$case1==0) return()
+    
     # Make this reactive to all data inputs; 
     lapply(list_inputs_shared, function(z) input[[paste(z)]])
     lapply(list_inputs_profile, function(z) input[[paste0(z,x)]])

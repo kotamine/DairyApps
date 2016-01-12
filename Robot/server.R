@@ -1,22 +1,7 @@
-library(shiny)
-library(shinyBS)
-library(rmarkdown)
-library(ggplot2)
-suppressPackageStartupMessages(library(googleVis))
-suppressPackageStartupMessages(library(shinyjs))
-suppressPackageStartupMessages(library(DT))
-suppressPackageStartupMessages(library(dplyr))
-suppressPackageStartupMessages(library(xlsx))
-suppressPackageStartupMessages(library(XLConnect))
 
 source("global_parameters.R")
+
 source(file.path("ui_files", "ui_dashboard.R"), local=TRUE)  # Contains functions
-
-
-common_variables_min_step <- read.xlsx("www/user_input_data_min_step.xlsx", 
-                                       sheetIndex = 1, stringsAsFactors =FALSE) 
-profile_specific_variables_min_step <- read.xlsx("www/user_input_data_min_step.xlsx", 
-                                                 sheetIndex = 2, stringsAsFactors =FALSE)  
 
 ## Load the default setting values for investment profiles 
 default_common_case_1 <- myRead.xlsx("www/user_input_data_case_1.xlsx", 
@@ -25,19 +10,7 @@ default_profile_specific_case_1 <- myRead.xlsx("www/user_input_data_case_1.xlsx"
                                                sheetIndex = 2, stringsAsFactors =FALSE) 
 
 
-base_profiles <- c("Robots","Retrofit","New")
-base_profiles_se <- c(outer(base_profiles, paste0("_se",c(1:10)),FUN=paste,sep="")) # update the number 5
-# combo_profiles <- c("RetrofitRobots","RetrofitNew")
 
-refProfileName <-  function(x) {
-  if (grepl("_se", x)) {  # TRUE/FALSE for sensitivity analysis
-    x <- gsub("_se\\d+","",x)
-  } 
-  switch(x, 
-         "Robots"="Robots",
-         "Retrofit"="Retrofit Parlors",
-         "New"="New Parlors")
-}
 
 shinyServer(function(input, output, session) { 
   

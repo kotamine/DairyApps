@@ -1,5 +1,38 @@
 
 # Loaded once. Shared across all sessions.
+library(shiny)
+library(shinyBS)
+library(rmarkdown)
+library(ggplot2)
+suppressPackageStartupMessages(library(googleVis))
+suppressPackageStartupMessages(library(shinyjs))
+suppressPackageStartupMessages(library(DT))
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(xlsx))
+suppressPackageStartupMessages(library(XLConnect))
+
+base_profiles <- c("Robots","Retrofit","New")
+base_profiles_se <- c(outer(base_profiles, paste0("_se",c(1:10)),FUN=paste,sep=""))
+
+# combo_profiles <- c("RetrofitRobots","RetrofitNew")
+refProfileName <-  function(x) {
+  if (grepl("_se", x)) {  # TRUE/FALSE for sensitivity analysis
+    x <- gsub("_se\\d+","",x)
+  } 
+  switch(x, 
+         "Robots"="Robots",
+         "Retrofit"="Retrofit Parlors",
+         "New"="New Parlors")
+}
+
+ems <- function(txt) em(strong(txt)) 
+
+common_variables_min_step <- read.xlsx("www/user_input_data_min_step.xlsx", 
+                                       sheetIndex = 1, stringsAsFactors =FALSE) 
+profile_specific_variables_min_step <- read.xlsx("www/user_input_data_min_step.xlsx", 
+                                                 sheetIndex = 2, stringsAsFactors =FALSE)  
+
+
 
 conv_factor <- 2.2046  # conversion factor from kg to pound 
 
