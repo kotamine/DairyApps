@@ -1,6 +1,7 @@
 library(shiny)
 library(shinyBS)
 library(shinydashboard)
+library(rmarkdown)
 library(googlesheets)
 suppressPackageStartupMessages(library(dplyr))
 
@@ -37,32 +38,22 @@ shinyUI(
       tabItems(
         tabItem(tabName = "mainTab", 
                 # ------------- Main --------------------
-                bsCollapse(id = "collapseMain", open = "Posts",
-                           bsCollapsePanel(
-                             "Posts", style = "info",
-                             source(file.path("ui_files","ui_posts.R"), local=TRUE)$value,
-                             source(file.path("ui_files","ui_details.R"), local=TRUE)                             
+                bsCollapse(id = "collapseMain", multiple = FALSE, open = "Posts", 
+                           bsCollapsePanel("Posts", style = "info",
+                                           source(file.path("ui_files","ui_posts.R"), local=TRUE)$value 
+                           ),
+                           bsCollapsePanel("Details", style = "success",
+                             source(file.path("ui_files","ui_details.R"), local=TRUE)$value
                            )
-                ),
-                helpText("test")
-        )
+                )
       ),
       tabItem(tabName ="postTab",
-              source(file.path("ui_files","ui_new_post.R"), local=TRUE)
+              source(file.path("ui_files","ui_new_post.R"), local=TRUE)$value
       ),
-      # # ------------- People --------------------
+      # ------------- People --------------------
       tabItem(tabName="peopleTab",
-              source(file.path("ui_files","ui_people.R"), local=TRUE)
+              source(file.path("ui_files","ui_people.R"), local=TRUE)$value
       ),
-      #      tabItem(tabName="completedTab",
-      #              helpText("list of completed posts")
-      #      ),
-      #      tabItem(tabName="resolvedTab",
-      #              helpText("list of resolved posts for which app already exists")
-      #      ),
-      #      tabItem(tabName="discontinuedTab",
-      #              helpText("list of discontinued posts")
-      #      ),
       tabItem(tabName="tableTab",
               selectInput("selectTable","Table Type",
                           choices=c("posts","completed_posts", "resolved_posts",
@@ -70,10 +61,10 @@ shinyUI(
                                     "comments", "archive_comments")),
               DT::dataTableOutput("viewTable")
       ),
-      tabItem(tabName="aboutTab", 
-              includeMarkdown(file.path("text","about.md"))
+      tabItem(tabName="aboutTab",
+            includeMarkdown(file.path("text","about.md"))
       )
-    ),
+    )),
     shinyjs::useShinyjs()
   ))   
 

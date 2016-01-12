@@ -1,6 +1,7 @@
 # ------------- Details --------------------
-bsCollapsePanel(
-  "Details", style = "success",
+# bsCollapsePanel(
+#   "Details", style = "success",
+div(
   div(id = "post_form",
       shinyjs::hidden(
         div(id = "loadMsg", wellPanel("Loading..."), align="center")

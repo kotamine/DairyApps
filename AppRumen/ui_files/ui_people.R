@@ -1,7 +1,7 @@
 bsCollapse(id = "collapsePeople", open = "People",
            bsCollapsePanel(
              "People", style = "info",
-             checkboxGroupInput("filterProfessions", "Professions", 
+             checkboxGroupInput("filterProfessions", "Profession", 
                                 choices=c("Student"=1,
                                           "Producer"=2,
                                           "Industry"=3, 

@@ -35,7 +35,7 @@ output$selectedUser  <- renderUI({
     if ( dim(rv$selectedUser)[1] ==0)  { rv$selectedUser <- NULL }
     
     validate( 
-      need(!is.null( field_userID) & !is.null(rv$selectedUser), 'No individual is selected.')
+      need(!is.null(field_userID) & !is.null(rv$selectedUser), 'No individual is selected.')
     )  
     
     tmp_user <- rv$selectedUser
@@ -61,7 +61,6 @@ output$selectedUser  <- renderUI({
 #     wellPanel( 
 #       h3(strong(tmp_user$user_name)),
 #       p( strong("Profession: "), tmp_user$profession, br(), br(),
-#          strong("Topics: "), tmp_user$topics,br(),
 #          strong("Interests: "),tmp_user$interests,br(), br(),
 #          strong("LinkedIn: "), tmp_user$linkedin, br(), br(),
 #          strong("Stats: "), br(),
