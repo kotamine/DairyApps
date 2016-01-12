@@ -1,7 +1,7 @@
 div( 
 bsModal("id_modal_dataEntry", "Gather Your Data, Shape Your Future","dataEntry", size = "large",
         fluidRow(column(width=8,offset=2,
-                        p("You will enter the data about your farm and assumptions in this page."), 
+                        p("You will enter your farm data and your assumptions in this page."), 
                         p("The left column shows the categories of input items starting with", ems("Operation,"),
                           ems("Markets,"), "and so on. The items appear on the right with some default values.   
                           When you get to Capital, you will see the input items will be defined for three investmenet profiles,

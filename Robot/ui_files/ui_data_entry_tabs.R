@@ -41,7 +41,10 @@ div(
                             ),
                             fluidRow(column(width=8, helpText("Current hours of heat detection (hours per day)")),
                                      column(width=4, numericInput("hr_heat_detection",NULL,value=0.65,min=0,step=.05))
-                            )
+                            ),
+                            br(),
+                            br(),
+                            div(bsButton("operation_market", "Next",style="primary"),align="center")
                             #                             fluidRow(column(width=8, helpText("Projected change in dry matter intake (DMI) per day (lbs DM/day)")),
                             #                                      column(width=4, uiOutput("DMI_change"))
                             #                             ),

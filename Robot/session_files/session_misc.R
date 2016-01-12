@@ -1,11 +1,8 @@
 
-# c_empty_table <- df_null(c_colnames) 
-# s_empty_table <- df_null(s_colnames) 
-# p_empty_table <- df_null(p_colnames) 
-
-
-
-
+# Next buttons
+observeEvent(input[["operation_market"]],{ 
+  updateNavlistPanel(session, "navlistPanel","Markets")
+})
 
 # Show/hide DMI calculations 
 shinyjs::onclick("customDMI",

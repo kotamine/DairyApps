@@ -187,7 +187,7 @@ lapply(base_profiles, function(x) {
                          "Annualized_Before_Tax_Impact"),
                   options=list(
                     title=paste("Definition of Inflation Adjustments:", refProfileName(x)), 
-                    vAxis="{title:'Cash flows and annualized values ($)'}",
+                    vAxis="{title:'Cash flows & annualized value ($)'}",
                     hAxis="{title:'Year', ticks: [5,10,15,20,25,30] }", 
                     legend="{position: 'right'}" ,
                     chartArea ='{width: "50%", height: "60%" }' 
@@ -210,7 +210,7 @@ lapply(base_profiles, function(x) {
                          "Deduction_Interest","Deduction_Depreciation","After_Tax_Cashflow"),
                   options=list(
                     title=paste("Impact of Tax and Tax Deductions:", refProfileName(x)), 
-                    vAxis="{title:'Cash flows ($)'}",
+                    vAxis="{title:'Cash flow ($)'}",
                     hAxis="{title:'Year', ticks: [5,10,15,20,25,30] }", 
                     legend="{position: 'right'}" ,
                     chartArea ='{width: "50%", height: "60%" }' 
@@ -233,7 +233,7 @@ lapply(base_profiles, function(x) {
                          "Deduction_Interest","Deduction_Depreciation","After_Tax_Cashflow"),
                   options=list(
                     title=paste("Annualized Cash Flows:", refProfileName(x)), 
-                    vAxis="{title:'Annualized values ($)'}",
+                    vAxis="{title:'Annualized value ($)'}",
                     hAxis="{title:'Year', ticks: [5,10,15,20,25,30] }", 
                     legend="{position: 'right'}" ,
                     chartArea ='{width: "50%", height: "60%" }' 

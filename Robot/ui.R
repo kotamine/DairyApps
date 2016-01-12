@@ -1,6 +1,15 @@
 
 source("global_parameters.R")
 
+
+common_variables_min_step <- read.xlsx("www/user_input_data_min_step.xlsx", 
+                                       sheetIndex = 1, stringsAsFactors =FALSE) 
+profile_specific_variables_min_step <- read.xlsx("www/user_input_data_min_step.xlsx", 
+                                                 sheetIndex = 2, stringsAsFactors =FALSE)  
+
+partial_budget_notes <- read.xlsx("www/partial_budget_notes.xlsx", 
+                                       sheetIndex = 1, stringsAsFactors =FALSE) 
+
 # Load files that contain functions
 source(file.path("ui_files", "ui_data_entry_functions.R"), local=TRUE)
 source(file.path("ui_files", "ui_partial_budget.R"), local=TRUE)  

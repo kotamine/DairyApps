@@ -47,8 +47,7 @@ uiCashFlow <- function(x) {
                             column(2, uiOutput(paste0("CF_hr_milking1",x))),
                             column(2, div(id=paste0(x,"_CF",2,6),uiOutput(paste0("CF_hr_milking2",x))))
                    ),
-                   uiOutput(paste0("CF_WACC_formula",x)),
-                   hr()
+                   uiOutput(paste0("CF_WACC_formula",x))
                )),
              fluidRow(column(8, offset=1, helpText("Net present value (NPV)")),   
                       column(2, uiOutput(paste0("NPV",x)))
@@ -70,15 +69,13 @@ uiCashFlow <- function(x) {
              fluidRow(column(8, offset=1, a(id = paste0("CF_formula_show_2",x),"Show/hide formula"))),
              shinyjs::hidden(
                div(id = paste0("id_CF_formula_show_2",x),
-                   hr(), 
-                   uiOutput(paste0("CF_NPV_formula",x)), 
-                   hr()
+                   uiOutput(paste0("CF_NPV_formula",x))
                ))
       )),
     br(),
     fluidRow(
       column(width=10,offset=1,
-             div(htmlOutput(paste0("cashflow_chart",x)),align="center"), br(), br(),
+             htmlOutput(paste0("cashflow_chart",x)), br(), br(),
              tabsetPanel(
                tabPanel("Cash Flow",
                         DT::dataTableOutput(paste0("table_cash_flow",x))

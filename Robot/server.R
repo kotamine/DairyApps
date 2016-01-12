@@ -61,7 +61,7 @@ shinyServer(function(input, output, session) {
               accept=c(".xlsx", "application/vnd.ms-excel"))
   })
   
-  source(file.path("session_files","session_popover.R"), local=TRUE)
+  # source(file.path("session_files","session_popover.R"), local=TRUE)
   
 }) 
 
