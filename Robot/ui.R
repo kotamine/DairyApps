@@ -10,6 +10,9 @@ profile_specific_variables_min_step <- read.xlsx("www/user_input_data_min_step.x
 partial_budget_notes <- read.xlsx("www/partial_budget_notes.xlsx", 
                                        sheetIndex = 1, stringsAsFactors =FALSE) 
 
+# color of tabs in Data Entry
+tabcolor <- "background-color:#900021; color:#FFDE7A;"
+  
 # Load files that contain functions
 source(file.path("ui_files", "ui_data_entry_functions.R"), local=TRUE)
 source(file.path("ui_files", "ui_partial_budget.R"), local=TRUE)  
@@ -54,7 +57,7 @@ shinyUI(
                                }
     );
                                '))),
-    div(class="well", style="background-color:#7a0019; color:white;", 
+    div(class="well", style="background-color:#7a0019; color:#FFCC33;", 
         fluidRow(column(width=8, offset=1, h1("UM Extension Dairy")))),
     navbarPage(
       "Robotic Milking Systems", id = "Navbar",
@@ -68,26 +71,24 @@ shinyUI(
       ),
       # ---------- Data Entry -----------
       tabPanel("Data Entry", value="Data_Entry",
-               conditionalPanel("input.case1>0",
-                                div(id="dataEntry", h3("Data Entry",HTML(paste(icon("info-circle")))),align="center"),
+               conditionalPanel("input.case1>0", # UPDATE HERE WHEN OTHER CASES ARE ADDED
+                                div(id = "loadMsg", wellPanel("Loading initial set-up and data..."), align="center"),
+                                div(id="dataEntry", h3("Data Entry",HTML(paste(icon("info-circle")))),
+                                    align="center"),
                                 source(file.path("ui_files","ui_data_entry_tabs.R"), local=TRUE)$value,
                                 # Need to add "$value" for including source in UI: 
                                 # otherwise "TRUE" will show up at the end of file
                                 conditionalPanel("input.calculation_switch=='ON'",
                                 div(id="dashboardPanel", h3("Dashboard",HTML(paste(icon("info-circle")))),align="center"),
-                                                 tabsetPanel(id="dashboard", 
-                                                             #                            The following does not work for some reason..
-                                                             #                            lapply(base_profiles, function(profile) {
-                                                             #                              tabPanel(refProfileName(profile), value=profile,
-                                                             #                                       uiDashboard(profile))
-                                                             #                            }) 
+                                                  tabsetPanel(id="dashboard", 
                                                              tabPanel("Robots", value=base_profiles[1],
                                                                       uiDashboard(base_profiles[1])),
                                                              tabPanel("Retrofit Parlors", value=base_profiles[2],
                                                                       uiDashboard(base_profiles[2])),
                                                              tabPanel("New Parlors", value=base_profiles[3],
                                                                       uiDashboard(base_profiles[3]))
-                                                 )
+                                                  )
+
                                 ),
                                 shinyjs::hidden(radioButtons("IOFC",NULL,choices=c("per cow","per cwt"), 
                                                              selected="per cwt")),
@@ -203,7 +204,7 @@ shinyUI(
                         ))
       ),
       useShinyjs(), 
-      collapsible = TRUE),
+      collapsible = TRUE), 
       source(file.path("ui_files","ui_tooltip.R"), local=TRUE)$value,
       source(file.path("ui_files","ui_modal.R"), local=TRUE)$value
     )

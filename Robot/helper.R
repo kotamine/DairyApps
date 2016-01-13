@@ -209,30 +209,25 @@ debt_table <- function(loan, interest_rate, loan_period,
 # ----- dashboard features -----
 
 dash_IOFC <- function(IOFC, IOFC2, basis, x, 
-                      cutoffs=NULL,
+                      cutoff=0,
                       difference=NULL) {
   validate( 
     need(!(is.na(IOFC) | is.na(IOFC2)), 
          "NA")
   ) 
   
-  if (basis=="per cow")
-  {  if (is.null(cutoffs)) { cutoffs <- c(663,331) } 
+  if (basis=="per cow") { 
     digit <- 0
     IOFC_unit <- "IOFC ($/cow/year)"
-  }
-  else {
-    if (is.null(cutoffs)) { cutoffs <- c(8,4) } 
+  } else {
     digit <- 2
     IOFC_unit <- "IOFC ($/cwt)"
   }
   diff <- IOFC2 - IOFC
   
-  if (IOFC > cutoffs[1]) { 
+  if (IOFC > cutoff) { 
     style <- "background-color: #3EA055; color:white;"
-  } 
-  else if (IOFC > cutoffs[2]) {
-    style <-  "background-color: #FFA62F; color:white;" 
+  #  style <- "background-color: #726F2D;  color:white;"
   } else {
     style <-  "background-color: #F70D1A; color:white;" 
   }
@@ -241,8 +236,7 @@ dash_IOFC <- function(IOFC, IOFC2, basis, x,
     div(class="well", style=style,  align="center",
         diff  %>% formatdollar2(digit) %>% strong() %>% h3(),
         h5(IOFC_unit), h5("under", refProfileName(x)))
-  } 
-  else {
+  } else {
     div(class="well", style=style,  align="center",
         diff  %>% formatdollar2(digit) %>% strong() %>% h3(),
         h5(IOFC_unit),
@@ -259,9 +253,10 @@ dash_NAI <- function(NAI, x,cutoff=0, difference=NULL) {
   )     
   
   if (NAI>cutoff) { 
-    style <- "background-color: #306EFF; color:white;"
-  } 
-  else {
+     style <- "background-color: #306EFF; color:white;"
+   # style <- "background-color: #0B3D4C; color:white;"
+    
+  }  else {
     style <-  "background-color: #F70D1A; color:white;" 
   }
   
@@ -270,8 +265,7 @@ dash_NAI <- function(NAI, x,cutoff=0, difference=NULL) {
         NAI %>% formatdollar2() %>% strong() %>% h3(),
         h5("Net Impact ($/year)"),
         h5("under", refProfileName(x)))
-  }  
-  else {
+  } else {
     div(class="well", style=style, align="center",
         NAI %>% formatdollar2() %>% strong() %>% h3(),
         h5("Net Impact ($/year)"),

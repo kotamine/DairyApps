@@ -1,29 +1,14 @@
 
-# list_tabs_S <- c("dashboard","prMilk", "prLabor","prFinance","prMaintenance","prCapital") 
-# # Halt tab swithces 
-# lapply(list_tabs_S, shinyjs:: disable)
-# # on.exit(lapply(list_tabs_S, shinyjs:: enable))
-# 
-# observe({
-#   if (input$herd_size==120) { 
-#   browser()
-#   shinyjs:: disable("prCapital")
-#   shinyjs:: disable("herd_size")
-#   shinyjs:: disable("prMaintenance")
-#   }
-# })
-
-
 
 lapply(base_profiles, function(x) {
-
+  
   # Calculations given a profile x
-  observe(priority=100, {
-    
-    # browser()
+  observe({
     
     # Skip calculation before loading any "case" of default values 
     if (input$case1==0) return()
+    
+    # browser()
     
     # Make this reactive to all data inputs; 
     lapply(list_inputs_shared, function(z) input[[paste(z)]])

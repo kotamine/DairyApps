@@ -1,6 +1,7 @@
 
-### Credits
----
+## Credits
+----
+
 The original version of the tools in Excel format, created and maintained by Willam Lazarus, are found [here](http://wlazarus.cfans.umn.edu/william-lazarus-spreadsheet-decision-tools/) under the file names [ROBOT.xlsm](https://drive.google.com/uc?export=download&id=0B3psjoooP5QxQ2tlNzlNdGg3cWc) and [ROBOT_PARLOR.xlsm](https://drive.google.com/uc?export=download&id=0B3psjoooP5QxbmNjQTZxTUs4bzg). 
 
 
@@ -13,8 +14,9 @@ Created using [Shiny](http://shiny.rstudio.com/) by [Rstudio](https://www.rstudi
 Source code for this online tool is found [here](https://github.com/kotamine/shiny/tree/master/Robot). 
 
 
-### Contacts
----
+## Contact
+----
+
 Kota Minegishi <br/>
 Dairy Analytics, Assistant Professor  <br/>
 Department of Animal Science  <br/>
@@ -23,8 +25,9 @@ Email: Kota@umn.edu <br/>
 
 
 
-### Additional Resources
----
+## Additional Resources
+----
+
 ...
 
 

@@ -220,7 +220,8 @@ uiPartialBudget <- function(x) {
     shinyjs::hidden(
       div(id = paste0("id_PB_plot_show_2",x),
           fluidRow(column(width=8, offset=2, 
-                          helpText("The figure below illustrates what we call ", em("Inflation Adjustments,"), " which is the difference between",
+                          helpText("The figure below illustrates what we call ", em("Inflation Adjustments,"), 
+                                   " which is the difference between",
                                    em("the (time-variant) Positive-minus-Negative Impacts"), " and",
                                    em("the (constant) Annualized Before-tax Impact."),
                                    "Thus, by definition, the sum of", em("the (time-variant) Positive-minus-Negative Impacts"), "and ", 
@@ -232,7 +233,8 @@ uiPartialBudget <- function(x) {
                           htmlOutput(paste0("PB_plot_before_tax_impact",x))
           )),
           fluidRow(column(width=8, offset=2, 
-                          helpText(" Annualized values such as", em("the Annualized Before-tax Impact"),"in the figure represent a form of 
+                          helpText(" Annualized values such as", em("the Annualized Before-tax Impact"),
+              "in the figure represent a form of 
               valuation that converts a stream of cash flows into
               a stream of constant payments (called annuity) that has the same value under a given discount rate.  
                              This calculation is straightforward; we first convert a stream of cash flow into a discounted sum, 

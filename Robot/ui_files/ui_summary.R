@@ -5,14 +5,12 @@ div(
       h4("Net Annual Impact:"),
       div(htmlOutput("profile_impacts"),align="center"),
       h4("Cash Flow:"),
-      div(
         tabsetPanel(
           tabPanel("Operating Income",
                    htmlOutput("profile_operating_income_chart")),
           tabPanel("Cashflow",
                    htmlOutput("profile_cashflow_chart")),
           selected="Cashflow"),
-        align="center"),
       h4("Table View:"),
       tabsetPanel(
         tabPanel("Before Tax",

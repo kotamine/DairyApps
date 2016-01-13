@@ -276,7 +276,7 @@ output$rep_milk_change <- renderUI({
 
 
 
-## ------------ Dashboard ------------
+## ------------------------------------ Dashboard ---------------------------------------
 lapply(c(base_profiles,base_profiles_se), function(x) { 
   
   sensitivity <- grepl("_se", x)  # TRUE/FALSE for sensitivity analysis
@@ -314,7 +314,8 @@ lapply(c(base_profiles,base_profiles_se), function(x) {
   })
   
   dashboard_items <- c("milk_feed","labor_repair","capital","misc","inflation")
-  dashboard_colors <- c("#1569C7", "#FF926F", "#64E986", "#EDDA74", "#7A5DC7")
+  # dashboard_colors <- c("#1569C7", "#FF926F", "#64E986", "#EDDA74", "#7A5DC7")
+  dashboard_colors <- c('#16BBE6', '#E98524','#BCD530','#F0CC65','#91785B')
   dashboard_labels <- c("Milk Income - Feed Cost", "Labor + Repair Cost", "Cost of Capital",
                         "Others", "Inflation Adjustments")
   # 
@@ -356,10 +357,10 @@ lapply(c(base_profiles,base_profiles_se), function(x) {
       varnames=c("Milk","Feed"),
       Robot=(c(ans[[paste0(x,"_da")]]()[[input$NAI]]$milk_robot,
                ans[[paste0(x,"_da")]]()[[input$NAI]]$feed_robot)/1000) %>% round,
-      color1=rep("#356AE8",2),
+      color1=rep("#16BBE6",2),
       Current=(c(ans[[paste0(x,"_da")]]()[[input$NAI]]$milk_current, 
                  ans[[paste0(x,"_da")]]()[[input$NAI]]$feed_current)/1000) %>% round,
-      color2=rep("#99CEFF",2)
+      color2=rep("#87D5EB",2)
     )
     colnames(tbl)[2] <- gsub(" ","",refProfileName(x))
     
@@ -386,10 +387,10 @@ lapply(c(base_profiles,base_profiles_se), function(x) {
       varnames=c("Labor","Repair"),
       Robot=(c(ans[[paste0(x,"_da")]]()[[input$NAI]]$labor_robot,
                ans[[paste0(x)]]$inc_exp_repair)/1000) %>% round,
-      color1=rep("#FF7F50",2),
+      color1=rep("#E98524",2),
       Current=(c(ans[[paste0(x,"_da")]]()[[input$NAI]]$labor_current, 
                  0)/1000) %>% round,
-      color2=rep("#FFBB8C",2)
+      color2=rep("#F6C17E",2)
     )
     colnames(tbl)[2] <- gsub(" ","",refProfileName(x))
     
@@ -416,7 +417,7 @@ lapply(c(base_profiles,base_profiles_se), function(x) {
                ans[[paste0(x,"_da")]]()[[input$NAI]]$capital_recovery_housing2, 
                ans[[paste0(x)]]$cost_downpayment, 
                -ans[[x]]$salvage_milking_PV)/1000) %>% round, 
-      color1=rep("#64E986",4)  
+      color1=rep("#BCD530",4)  
     )   
     colnames(tbl)[2] <- gsub(" ","",refProfileName(x))
     

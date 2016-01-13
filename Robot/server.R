@@ -22,27 +22,28 @@ shinyServer(function(input, output, session) {
   user_data <- reactiveValues() # uploaded (or default) user data
   
   calc_type <- "full"  # Set default calculation type
+  shinyjs::show("loadMsg")
   
   # shinyjs::disable('calswitch')
   
   # ----------- Functions: some of them depend on local variables  -----------
   source("helper.R",local=TRUE)
-  
+
   # ----------- Miselleneous tasks -----------
   source(file.path("session_files","session_misc.R"), local=TRUE)
-  
+
   # ----------- Calculations for Partial Budget and Cash Flow Analyses -----------
   source(file.path("session_files","session_calculations_main.R"), local=TRUE)
-  
+
   source(file.path("session_files","session_partial_budget.R"), local=TRUE)
-  
+
   source(file.path("session_files","session_summary.R"), local=TRUE)
-  
+
   source(file.path("session_files","session_render_base.R"), local=TRUE)
-  
+
   # ----------- Sensitivity Analysis -----------
   source(file.path("session_files","session_sensitivity.R"), local=TRUE)
-  
+
   #   
   #   # ----------- Scenario Analysis -----------
   #   source(file.path("session_files","session_scenarios.R"), local=TRUE)  
@@ -61,8 +62,9 @@ shinyServer(function(input, output, session) {
               accept=c(".xlsx", "application/vnd.ms-excel"))
   })
   
-  # source(file.path("session_files","session_popover.R"), local=TRUE)
-  
+  source(file.path("session_files","session_popover.R"), local=TRUE)
+
+  shinyjs::hide("loadMsg")
 }) 
 
 

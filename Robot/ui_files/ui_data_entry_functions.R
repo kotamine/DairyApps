@@ -5,7 +5,7 @@ changeVariablesCapital<- function(x) {
   # related housing changes per cow,(related housing total),  (total investment), (total investement per cow) 
   div(   
     tabPanel(paste(x), 
-             div(style="background-color:#4863A0; color:white;",
+             div(style=tabcolor,
                  fluidRow(column(width=8, 
                                  h5(strong("Item"),align="center")),
                           column(width=4, h5(strong("User Data"), 
@@ -82,7 +82,7 @@ changeVariablesMaintenace <- function(x) {
   # capital:  repiar, life of milking system, cycles, (planning horizon), insurance value, insurance
   div(   
     tabPanel(paste(x), 
-             div(style="background-color:#4863A0; color:white;",
+             div(style=tabcolor,
                  fluidRow(column(width=8, 
                                  h5(strong("Item"),align="center")),
                           column(width=4, h5(strong("User Data"), 
@@ -123,7 +123,7 @@ changeVariablesMilkfeed<- function(x) {
   #   scc change, projected change dry matter, pellets, pellets cost, software, turnover rate
   div(
     tabPanel(paste(x), 
-             div(style="background-color:#4863A0; color:white;",
+             div(style=tabcolor,
                  fluidRow(column(width=8, 
                                  h5(strong("Item"),align="center")),
                           column(width=4, h5(strong("User Data"), 
@@ -188,7 +188,7 @@ changeVariablesLaborenergy<- function(x) {
   #   increased records management, reduced labor management, electricity, water, chemical  
   div(
     tabPanel(paste(x),  
-             div(style="background-color:#4863A0; color:white;",
+             div(style=tabcolor,
                  fluidRow(column(width=8, 
                                  h5(strong("Item"),align="center")),
                           column(width=4, h5(strong("User Data"), 
@@ -230,7 +230,7 @@ changeVariablesFinance<- function(x) {
   #          Finance: year of investment, invetment amount, downpayment, loan, interest, loan period, salvage value
   div( 
     tabPanel("Finance", 
-             div(style="background-color: #4863A0; color:white;",
+             div(style=tabcolor,
                  fluidRow(column(width=6,  h5(strong("Item"), align="center")),
                           column(width=2,  h5(strong("Housing"), align="center")),
                           column(width=2,  h5(strong(paste(refProfileName(x), "1")), align="center")),

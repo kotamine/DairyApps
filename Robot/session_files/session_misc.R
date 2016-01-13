@@ -1,8 +1,24 @@
 
 # Next buttons
-observeEvent(input[["operation_market"]],{ 
-  updateNavlistPanel(session, "navlistPanel","Markets")
+input_tabs <- c("Operation","Markets","Inflations","Capital","Maintenance","Milk","Labor","Finance")
+lapply(seq_along(input_tabs), function(i) {  
+  if (i<length(input_tabs)) {
+    observeEvent(input[[paste0("next_tab_",i)]],{ 
+      updateNavlistPanel(session, "navlistPanel",input_tabs[(i+1)])
+    })
+  }
+  if (i>1) {
+    observeEvent(input[[paste0("back_tab_",i)]],{ 
+      updateNavlistPanel(session, "navlistPanel",input_tabs[(i-1)])
+    })
+  }
+}) 
+
+observeEvent(input[[paste0("next_tab_",length(input_tabs))]],{ 
+  updateRadioButtons(session, "calculation_switch","Calculation Switch",
+                              choices=c("OFF","ON"), inline=TRUE, selected="ON")
 })
+
 
 # Show/hide DMI calculations 
 shinyjs::onclick("customDMI",
@@ -109,28 +125,6 @@ my_update_dashboard("IOFC", c("per cow","per cwt"))
 my_update_dashboard("NAI", c("before tax", "after tax"))
 
 
-# ## download cashflow, debt, depreciation tables
-# lapply(base_profiles, function(x) {
-#   output[[paste0("dl_button_cash_flow",x)]] <- renderUI({
-#     need(!is.null(ans[[x]]$table_cash_flow) & !is.null(ans[[x]]$table_debt) &
-#            !is.null(ans[[x]]$table_depreciation)) %>% validate()
-#     downloadButton(paste0('download_table_cash_flow',x), 'Download')
-#   })
-#   
-#   output[[paste0("dl_button_sensitivity",x)]] <- renderUI({
-#     need(!is.null(ans[[x]]$table_cash_flow) & !is.null(ans[[x]]$table_debt) &
-#            !is.null(ans[[x]]$table_depreciation)) %>% validate()
-#     downloadButton(paste0('download_table_sensitivity',x), 'Download')
-#   })
-# 
-# })
-# 
-# output[["dl_button_summary"]] <- renderUI({
-#   need(!is.null(ans[[x]]$table_cash_flow) & !is.null(ans[[x]]$table_debt) &
-#          !is.null(ans[[x]]$table_depreciation)) %>% validate()
-#   downloadButton('download_table_summary', 'Download')
-# })
-
 
 # ----------- Download and Upload of User Data -----------------
 # Download the tables as an Excel file   
@@ -146,6 +140,21 @@ output[["data_download"]] <- downloadHandler(
     XLConnect::saveWorkbook(wb)
   } 
 )
+
+case_1 <- function() {
+  user_data$common_variables <- default_common_case_1
+  user_data$profile_specific_variables  <- default_profile_specific_case_1 
+}
+
+observe({
+  input$case1
+  input$default_data
+  
+  isolate({
+    # ** Make this depend on the case the user selects
+    case_1()
+  })
+})
 
 
 
@@ -193,7 +202,7 @@ observe({
                   content = "Not a Excel workbook: 
                   please upload a proper file.", 
                   append = TRUE)
-      return()
+      return(case_1()) # UPDATE WHEN MORE CASES ARE ADDED
     }
     
     wb <- XLConnect::loadWorkbook(inFile$datapath) 
@@ -205,36 +214,16 @@ observe({
                   content = "Wrong number of sheets: 
                   please upload a proper file.",
                   append = TRUE)
-      return()
+      return(case_1()) # UPDATE WHEN MORE CASES ARE ADDED
     }
     
     user_data$common_variables <- myRead.xlsx(inFile$datapath, sheetIndex = 1) 
     user_data$profile_specific_variables <- myRead.xlsx(inFile$datapath, sheetIndex = 2) 
-  })
-  
-})
-
-observe({
-  input$case1
-  input$default_data
-  
-  isolate({
-    # ** Make this depend on the case the user selects
-    user_data$common_variables <- default_common_case_1
-    user_data$profile_specific_variables  <- default_profile_specific_case_1 
-  })
-})
-
-
-# Change to default data or uploaded data triggers updates of inputs 
-observe({ 
-  need(!is.null(user_data$common_variables) &
-         !is.null(user_data$profile_specific_variables), "NA") %>% validate() 
-  
-  isolate({
+    
     # Replace "." symbole with space " "
     colnames(user_data$common_variables) <- gsub("\\."," ",colnames(user_data$common_variables))
-    colnames(user_data$profile_specific_variables) <- gsub("\\."," ",colnames(user_data$profile_specific_variables))
+    colnames(user_data$profile_specific_variables) <- 
+      gsub("\\."," ",colnames(user_data$profile_specific_variables))
     
     colnames_1 <- c("variable", "label", "value")
     colnames_2 <- c("variable", "label", unlist(lapply(base_profiles, refProfileName))) 
@@ -248,7 +237,7 @@ observe({
                   content = "Wrong column names: 
                   please upload  a proper file.",
                   append = TRUE)
-      return()
+      return(case_1()) # UPDATE WHEN MORE CASES ARE ADDED
     }
     
     rownames_1 <- c(list_inputs_shared, list_inputs_feed)
@@ -262,11 +251,30 @@ observe({
                   please upload a proper file.",
                   append = TRUE)
       
-      return()
+      return(case_1()) # UPDATE WHEN MORE CASES ARE ADDED
     } 
     
     closeAlert(session, "ref_upload_alert")
-    
+
+  })
+})
+
+
+
+# Change to default data or uploaded data triggers updates of inputs 
+observe({ 
+  need(!is.null(user_data$common_variables) &
+         !is.null(user_data$profile_specific_variables), "NA") %>% validate() 
+  
+  rownames_1 <- c(list_inputs_shared, list_inputs_feed)
+  rownames_2 <- c(list_inputs_profile)
+  
+  # Replace "." symbole with space " "
+  colnames(user_data$common_variables) <- gsub("\\."," ",colnames(user_data$common_variables))
+  colnames(user_data$profile_specific_variables) <- 
+    gsub("\\."," ",colnames(user_data$profile_specific_variables))
+  
+  isolate({
     #  Update data with uploaded data 
     updateRadioButtons(session, "dep_method", "Depreciation accounting method:", 
                        selected=user_data$common_variables["dep_method","value"], 

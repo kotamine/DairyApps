@@ -28,7 +28,6 @@ uiSensitivity <- function(x) {
     div(htmlOutput(paste0("sensitivity_impacts1",x)),
         htmlOutput(paste0("sensitivity_impacts2",x)), align="center"),
     fluidRow(column(width=10, offset=1, h4("Cash Flow:"))),
-    div(
       tabsetPanel(
         tabPanel("Operating Income",
                  htmlOutput(paste0("sensitivity_operating_income_chart1",x)),
@@ -39,7 +38,6 @@ uiSensitivity <- function(x) {
                  htmlOutput(paste0("sensitivity_cashflow_chart2",x))
         ),
         selected="Cashflow"),
-      align="center"),
     fluidRow(column(width=10, offset=1, 
                     h4("Table View:"),
                     tabsetPanel(

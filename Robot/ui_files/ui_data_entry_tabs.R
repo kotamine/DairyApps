@@ -14,7 +14,7 @@ div(
                         fluidRow(
                           column(
                             width=10, offset=1, 
-                            div(style="background-color:#4863A0; color:white;",
+                            div(style=tabcolor,
                                 fluidRow(column(width=8, 
                                                 h5(strong("Item"),align="center")),
                                          column(width=4, h5(strong("User Data"), 
@@ -44,11 +44,8 @@ div(
                             ),
                             br(),
                             br(),
-                            div(bsButton("operation_market", "Next",style="primary"),align="center")
-                            #                             fluidRow(column(width=8, helpText("Projected change in dry matter intake (DMI) per day (lbs DM/day)")),
-                            #                                      column(width=4, uiOutput("DMI_change"))
-                            #                             ),
-                            
+                            fluidRow(column(width=1, offset=10,
+                                    bsButton("next_tab_1", "Next",style="primary")))
                           )),  
                         icon=icon("home")), 
                tabPanel("Markets", value="Markets",
@@ -62,7 +59,7 @@ div(
                         fluidRow(
                           column(
                             width=10, offset=1, 
-                            div(style="background-color:#4863A0; color:white;",
+                            div(style=tabcolor,
                                 fluidRow(column(width=8, 
                                                 h5(strong("Item"),align="center")),
                                          column(width=4, h5(strong("User Data"), 
@@ -89,7 +86,13 @@ div(
                             ),
                             fluidRow(column(width=8, helpText("Labor rate for records and labor management ($/hour)")),
                                      column(width=4, numericInput("labor_rate_rc_mgt",NULL,value=18.00,min=0,step=0.25))
-                            )
+                            ),
+                            br(),
+                            br(),
+                            fluidRow(column(width=1,offset=8,
+                                                      bsButton("back_tab_2", "Back",style="primary")),
+                                     column(width=1, offset=1,
+                                            bsButton("next_tab_2", "Next",style="primary")))
                           )),
                         icon=icon("bell-o")),
                tabPanel("Inflations", value="Inflations",
@@ -101,7 +104,7 @@ div(
                         fluidRow(
                           column(
                             width=10, offset=1, 
-                            div(style="background-color:#4863A0; color:white;",
+                            div(style=tabcolor,
                                 fluidRow(column(width=8, 
                                                 h5(strong("Item"),align="center")),
                                          column(width=4, h5(strong("User Data"), 
@@ -124,7 +127,12 @@ div(
                                      column(width=4, numericInput("tax_rate",NULL,value=40, min=0, step=2))
                             ), br(),
                             radioButtons("dep_method","Depreciation accounting method:",
-                                         choices=c("Accelerated GDS"="d1","Straight-line ADS"="d2"))
+                                         choices=c("Accelerated GDS"="d1","Straight-line ADS"="d2")),
+                            br(), br(),
+                            fluidRow(column(width=1,offset=8,
+                                            bsButton("back_tab_3", "Back",style="primary")),
+                                     column(width=1,  offset=1,
+                                            bsButton("next_tab_3", "Next",style="primary")))
                           )),
                         icon=icon("money")),
                ## --------------- Profile-specific Inpiuts  --------------- 
@@ -146,7 +154,12 @@ div(
                                                     #          helpText("* This assumes first Retrofit Parlors and then New Parlors."),
                                                     #          helpText("* Values are taken from the two profiles."))
                                         )
-                                        )
+                                        ),
+                                        br(),br(),
+                                        fluidRow(column(width=1,offset=8,
+                                                        bsButton("back_tab_4", "Back",style="primary")),
+                                                 column(width=1, offset=1,
+                                                        bsButton("next_tab_4", "Next",style="primary")))
                         )),
                         icon=icon("gears")
                ), 
@@ -159,7 +172,12 @@ div(
                                                              changeVariablesMaintenace(base_profiles[2])),
                                                     tabPanel("New Parlors", value=base_profiles[3],
                                                              changeVariablesMaintenace(base_profiles[3]))
-                                        )
+                                        ), 
+                                        br(),br(),
+                                        fluidRow(column(width=1,offset=8,
+                                                        bsButton("back_tab_5", "Back",style="primary")),
+                                                 column(width=1,   offset=1,
+                                                        bsButton("next_tab_5", "Next",style="primary")))
                         )),
                         icon=icon("wrench")
                ), 
@@ -174,7 +192,12 @@ div(
                                                              changeVariablesMilkfeed(base_profiles[2])),
                                                     tabPanel("New Parlors", value=base_profiles[3],
                                                              changeVariablesMilkfeed(base_profiles[3]))
-                                        )
+                                        ),
+                                        br(),br(),
+                                        fluidRow(column(width=1,offset=8,
+                                                        bsButton("back_tab_6", "Back",style="primary")),
+                                                 column(width=1, offset=1,
+                                                        bsButton("next_tab_6", "Next",style="primary")))
                         )),
                         icon=icon("truck")
                ),
@@ -187,7 +210,12 @@ div(
                                                              changeVariablesLaborenergy(base_profiles[2])),
                                                     tabPanel("New Parlors", value=base_profiles[3],
                                                              changeVariablesLaborenergy(base_profiles[3]))
-                                        )
+                                        ),
+                                        br(),br(),
+                                        fluidRow(column(width=1,offset=8,
+                                                        bsButton("back_tab_7", "Back",style="primary")),
+                                                 column(width=1,  offset=1,
+                                                        bsButton("next_tab_7", "Next",style="primary")))
                         )),
                         icon=icon("male")
                ),
@@ -212,7 +240,12 @@ div(
                                                     #          helpText("* The second set of Parlors are excluded from the calculation."),
                                                     #          helpText("* The rest of the values are taken from the two profiles.")
                                                     # )
-                                        )
+                                        ),
+                                        br(),br(),
+                                        fluidRow(column(width=1,offset=8,
+                                                        bsButton("back_tab_8", "Back",style="primary")),
+                                                 column(width=1, offset=1,
+                                                        bsButton("next_tab_8", "Next",style="primary")))
                         )),
                         icon=icon("bank")
                ), 
