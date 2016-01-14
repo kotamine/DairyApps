@@ -32,13 +32,22 @@ lapply(base_profiles, function(x) {
     if (input[[paste0("n_sets",x)]]=="2") { 
       for (i in c(1:11)) shinyjs::show(paste0(x,2,i)) # Located in ui_data_entry_functions
       for (i in c(1:6))  shinyjs::show(paste0(x,"_CF",2,i)) # Located in ui_cash_flow
-      for (i in c(1:1))  shinyjs::show(paste0(x,"_PB",2,i)) # Located in ui_partial_budget
     } else {
       for (i in c(1:11))  shinyjs::hide(paste0(x,2,i))
       for (i in c(1:6))   shinyjs::hide(paste0(x,"_CF",2,i))
-      for (i in c(1:1))   shinyjs::hide(paste0(x,"_PB",2,i)) 
     }
   })
+  
+  # Show/hide Items related to Delayed Investment 
+  observe({
+    if (input[[paste0("n_sets",x)]]=="2" & input[[paste0("yr_system1",x)]]>0) { 
+      for (i in c(1:1)) shinyjs::show(paste0(x,"_PB_delay",2,i))  # Located in ui_partial_budget
+    } else {
+      for (i in c(1:1)) shinyjs::hide(paste0(x,"_PB_delay",2,i))
+    }
+  })
+  
+  
   
   # Show/hide delayed investment 
   observeEvent(input[[paste0("yr_system1",x)]], {

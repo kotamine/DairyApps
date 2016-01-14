@@ -38,15 +38,16 @@ bsModal("id_modal_dashboardPanel", "Analyze Like an Executive","dashboardPanel",
 bsModal("id_modal_partialBudget", "Divide and Conquer: Your Budget and Your Tax",
         "partialBudget", size = "large",
         fluidRow(column(width=8,offset=2,
-                        p("You will see the systematic change in your operation 
-                            in terms of positive and negative impact of the investment 
-                            and also put the associated change in taxes in perspective."),
-                          p("While such impact on your operation change slowly over time 
+                        p("You will see systematic changes in your operation 
+                            through positive and negative influence on your budget 
+                            and the associated changes in taxes."),
+                          p("While the impact on budget may change slowly over time 
                             (at least in projection), the cash flows associated with
                           financing the investment and the tax deductions 
-                          fluctuate more widely over time. To better compare the two,
-                            we introduce the concept of annualized value, or
-                            a constant annual payment or income that smoothes out such fluctuations.")
+                          fluctuate more widely over time. To put all this in perspective,
+                            we use the concept of annualized value, or
+                            a constant annual payment or income that smoothes 
+                            out wild fluctuations.")
         ))
         ), 
 
@@ -55,11 +56,11 @@ bsModal("id_modal_cashFlow", "Master the Flow of Cash: Tame and Ride","cashFlow"
                         p("Knowing the basics goes a long way."),
                         p("The better you can interpret the cash flow, 
                           the better you can scope out what lies ahead.
-                           Having a clear understanding of your cash flow 
-                          also helps communicate your vision to your lender."),
+                           Moreover, having a clear understanding of your cash flow 
+                           helps communicate your vision to your lender."),
                         p("The tables of", ems("Cash Flow,"), ems("Debt Calculation,"),
-                          "and", ems("Depreciation"), "will equip you with the essential 
-                          perspective on the cost of investment from a tax treatment standpoint.") 
+                          "and", ems("Depreciation"), "will equip you with an essential 
+                          perspective on the cost of investment.") 
         ))
 ), 
 

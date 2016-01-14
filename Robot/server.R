@@ -14,6 +14,8 @@ default_profile_specific_case_1 <- myRead.xlsx("www/user_input_data_case_1.xlsx"
 
 shinyServer(function(input, output, session) { 
   
+  # browser()
+  
   # All calculations results are stored in "ans" as lists for various profiles  
   # This helps reactive rending of many variables
   

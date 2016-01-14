@@ -139,27 +139,14 @@ uiPartialBudget <- function(x) {
     shinyjs::hidden(
       div(id = paste0("id_PB_plot_show_1",x),
           fluidRow(column(width=8, offset=2, 
-                          helpText(em("Increased Revenue Total"),"and", em("Increased Expense Total"), 
-                                   "show the projected values for a given budget year, according to the inflation rate of IOFC margin   
-                    (from the Data Entry section). Similarly,", em("Decreased Expense Total"), 
-                                   "is the projected value according to the inflation rate of labor. 
-                    On the other hand,", em("Increased Cost of Capital"), "is presented as a constant, annualized value."), 
-                          helpText("The figure below presents the trajectories of these variables over budget years.") 
+                          helpText("Here are the trajectories of", ems("Increased Revenue Total,"), 
+                                   ems("Increased Expense Total,"), "and", ems("Decreased Expense Total"),
+                                   "against",  ems("(Annualized) Increased Cost of Capital")) 
           )), br(),
           fluidRow(
             column(width=10, offset=1,  
                    htmlOutput(paste0("PB_plot_pos_neg_impact",x))
-            )), br(),
-          fluidRow(
-            column(width=8, offset=2, 
-                   helpText("In the following, we summarize how to obtain calculations from the positive and negative impacts above
-           to before-tax and after-tax impacts. 
-           We present such a summary by using annualized values. The adjustment, labeled", em("Inflation adjustments,"),
-                            " is introduced between a (budget year-specific)", em("Total positive impacts minus total negative impacts"),
-                            "and a (constant) ", em("Before-tax Net annual impact*."),  
-            "Furthermore, the addition of annualized tax and tax deductions, 
-            as well as some adjustments to the cost of capital, leads to",  em("After-tax net annual impact*."))
-            ))
+            )), br()
       )),
     # -------- Inflation adjustments and Taxes ------- 
     fluidRow(column(width=8, offset=2, 
@@ -172,7 +159,7 @@ uiPartialBudget <- function(x) {
                                     helpText("Inflation adjustments")),
                              column(width=3, uiOutput(paste0("pb_inflation_adjustment",x)))
                     ),
-                    div(id=paste0(x,"_PB",2,1),
+                    div(id=paste0(x,"_PB_delay",2,1),
                         fluidRow(column(width=10, offset=1, 
                                         helpText("This item includes adjustments to delayed",refProfileName(x), "installment. 
                                         Change", em("Budget Year"), "at the top of the page
@@ -220,48 +207,49 @@ uiPartialBudget <- function(x) {
     shinyjs::hidden(
       div(id = paste0("id_PB_plot_show_2",x),
           fluidRow(column(width=8, offset=2, 
-                          helpText("The figure below illustrates what we call ", em("Inflation Adjustments,"), 
-                                   " which is the difference between",
-                                   em("the (time-variant) Positive-minus-Negative Impacts"), " and",
-                                   em("the (constant) Annualized Before-tax Impact."),
-                                   "Thus, by definition, the sum of", em("the (time-variant) Positive-minus-Negative Impacts"), "and ", 
-                                   em("Inflation Adjustments"),
-                                   " is", em("the (constant) Annualized Before-tax Impact.")) 
+                   helpText("How did we get from", ems("Total positive impacts minus total negative impacts"), 
+                            "to", ems("Before-tax net annual impact"), "and then to", 
+                            ems("After-tax net annual impact"), "?"),
+                   helpText("It is done using annualized values.  Here is the first step.")
           )), 
           br(),
           fluidRow(column(width=10, offset=1, 
                           htmlOutput(paste0("PB_plot_before_tax_impact",x))
           )),
           fluidRow(column(width=8, offset=2, 
-                          helpText(" Annualized values such as", em("the Annualized Before-tax Impact"),
-              "in the figure represent a form of 
-              valuation that converts a stream of cash flows into
-              a stream of constant payments (called annuity) that has the same value under a given discount rate.  
-                             This calculation is straightforward; we first convert a stream of cash flow into a discounted sum, 
-                             or the Net Present Value (NPV), and then convert the NPV into a constant annual payment, or the annuity, 
-                             of the equivalent value."), br(), 
+                          helpText(),
                           
-                          helpText("The two figures below present the cash flows and their annualized values.
-               It illustrates why it can be useful to annualize cash flows for evaluating the relative importance of 
-               each variable that fluctuates over time. In the figures,", 
-                                   em("Before-tax cashflow"), "accounts for", em("Total Positive Impact"), em("Increased Expense Total"), "and",
-                                   em("the Cost of Capital"), "(interest payments, principal payments, downpayments,
-                and salvage sales revenue). 
-               Adding taxes, tax deductions, and minor capital cost adjustments to", em("Before-tax Cashflow"), 
-                                   "yields", em("After-tax Cashflow."))  
+                          helpText(ems("Annualized before-tax impact"),
+              "represents a (hypothetical) stream of constant payments that has the equivalent value to 
+              the underlying", ems("Before-tax cash flow."), 
+              "The calculation is straightforward; for a given discount rate we first convert the cash flow 
+              into a discounted sum, 
+                     or the Net Present Value (NPV), and then convert the NPV into a constant annual payment, 
+              or the annuity,  of the equivalent value."), 
+              helpText(ems("Before-tax cash flow"), "accounts for", ems("Total Positive Impact"), 
+                       ems("Increased Expense Total"), "and",
+                       ems("the Cost of Capital"), "(interest payments, principal payments, downpayments,
+                       and salvage sales revenue)."), 
+              br(),
+              helpText("The second step is to add annualized values of taxes, tax deductions, 
+                  and minor capital cost adjustments. Here are such cash flows and their annualized values. ") 
           )), br(),
           fluidRow(column(width=10, offset=1, 
                           htmlOutput(paste0("PB_plot_after_tax_impact",x)),
                           htmlOutput(paste0("PB_plot_after_tax_impact_const",x))
           )), br(),
           fluidRow(column(width=8, offset=2,
-                          helpText("The annualization above depends on the discount rate.
-                             The Partial Budget calculation here primarily uses a mix of interest rates 
-                              for milking system and housing loans and
+                      helpText("These figures illustrate the usefulness of annualizing cash flows
+                               in comparing their relative importance."),   
+                      
+                      helpText("Note that the concept of annualization depends on a discount rate.
+                             The", ems("Partial Budget"), "calculation here primarily uses a mix of interest rates 
+                              for milking-system and housing loans and
                              the hurdle rate for downpayments. 
-                             The Cashflow Analysis (in the next tab) calculation uses a weighted average
-                             of these rates, or the Weighted Average Cost of Capital (WACC). The WACC adjustments above refer to
-                             the diffences attributable to the difference in the discount rate used for annualization.")
+                             The", ems("Cashflow Analysis"), "(the next tab) calculation uses a weighted average
+                             of these rates, or the Weighted Average Cost of Capital (WACC). 
+                             The WACC adjustments above refer to
+                             the diffences attributable to the difference in the discount rates used for annualization.")
           ))
       )), br(), 
     # -------- Breakeven wage ------- 
@@ -269,30 +257,29 @@ uiPartialBudget <- function(x) {
     fluidRow(column(width=8, offset=2,
                     hr(),
                     h5(paste("Breakeven Wage:", refProfileName(x))),
-                    helpText("The primary benefit of installing a new milking system is the reduction of labor requirement, and its
-                         importance depends on wage rate. Here, we ask under what wage rate it is sensible to invest in", x, ".",
+                    helpText("The primary benefit of installing a new milking system is the reduction 
+                             of labor requirement, and its contribution depends on wage rate. 
+                             Here, we ask under what wage rate it is sensible to invest in the milking system.", 
                              "Holding everything else constant, any wage rate higher than the breakeven wage 
                          implies profits from the investment, while any wage rate lower than the breakeven wage implies 
                          a loss."),
                     helpText("Given the long-term nature of the investment at hand, 
                          we define the breakeven wage as a sequence of labor wage rates over the planning horizon   
-                        that sets ", em("After-tax net annual impact"), "approximately zero. 
+                        that sets ", ems("After-tax net annual impact"), "approximately zero. 
                          Here are the two cases of such a wage sequence we obtained:"), 
-                    fluidRow(column(9,offset=1, helpText("(a) The starting wage rate, while keeping the wage inflation fixed:
-                                                     (any starting wage rage higher than the calculated value implies profits)")),
+                    fluidRow(column(9,offset=1, 
+                                    helpText("(a) The starting wage rate, while keeping the wage inflation fixed:")),
                              column(2, uiOutput(paste0("bw_wage_after_tax",x)))
                     ),br(), 
-                    fluidRow(column(9,offset=1, helpText( "(b) The wage inflation/deflation rate, while keeping the starting wage rate fixed: 
-                                                      (any wage inflation rate higher than the calculated value implies profits)")),
+                    fluidRow(column(9,offset=1, helpText( "(b) The wage inflation/deflation rate, 
+                                                          while keeping the starting wage rate fixed:")),
                              column(2, uiOutput(paste0("bw_wage_inflation_after_tax",x)))
                     ),
-                    helpText("The figure below illustrates trajectories of wage rates for the baseline and the two cases of
-                         breakeven wage calculations. If the baseline wage trajectory stays above the breakeven trajectories,
-                         the investment is profitable, holding everything else constant.") 
-    )),
+                    helpText("Here is the trajectory of breakeven wages.") 
+    )), 
     fluidRow(column(width=10, offset=1, 
                     htmlOutput(paste0("breakeven_chart",x)) 
-    )), br(), br() 
+    )), br(), br()  
     # #tags$a(href ="#data_entry",  #"#tab-9037-2",
     # ## I haven't been able to set a link to a tab. It seems compliated in Shiny.
     # div(id="goData", class="well", style="background-color: gray; color:white;", 

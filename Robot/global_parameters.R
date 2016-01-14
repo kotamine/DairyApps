@@ -27,6 +27,10 @@ refProfileName <-  function(x) {
 
 ems <- function(txt) em(strong(txt)) 
 
+ldquo <- HTML("&ldquo;")
+rdquo <- HTML("&rdquo;")
+emquo <- function(txt) em(HTML(paste0("&ldquo;",txt,"&rdquo;"))) 
+
 common_variables_min_step <- read.xlsx("www/user_input_data_min_step.xlsx", 
                                        sheetIndex = 1, stringsAsFactors =FALSE) 
 profile_specific_variables_min_step <- read.xlsx("www/user_input_data_min_step.xlsx", 
