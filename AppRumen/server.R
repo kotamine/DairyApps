@@ -25,6 +25,7 @@ shinyServer(function(input, output, session) {
      
      browser()
      
+     
      ## Connect to mongodb from a mongolab location
      host <- "ds061954.mongolab.com:61954"
      username <- "user1"
@@ -39,7 +40,7 @@ shinyServer(function(input, output, session) {
      mongo_completed_posts <- mongo(collection="completed_posts", db=db, url = url)
      mongo_resolved_posts <- mongo(collection="resolved_posts", db=db, url = url)
      mongo_discontinued_posts <- mongo(collection="discontinued_posts", db=db, url = url)
-     # mongo_users <- mongo(collection="users", db=db, url = url)
+     mongo_users <- mongo(collection="users", db=db, url = url)
      mongo_system_use <-   mongo(collection="system_use", db=db, url = url)
 
      mongo_posts$index('{"post_category":1}')

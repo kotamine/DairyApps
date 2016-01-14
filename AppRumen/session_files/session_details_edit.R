@@ -78,7 +78,7 @@ output$selectedPost  <- renderUI({
   
   if (!rv$edit_auth) {
     # regular view without editing  
-    
+
     update_views <- paste0('{"$set":{', '"current_views":', as.integer(tmp_post$current_views + 1),
                            ', "cumulative_views":', as.integer(tmp_post$cumulative_views + 1), '}}')
     

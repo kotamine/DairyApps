@@ -48,7 +48,8 @@ library(googlesheets)
 # }
 
 
-
+sort2 <- function(x,...) ifelse(is.null(x),NA,sort(x,...))
+div2 <- function(x,y) ifelse(y==0 | length(y)==0, NA, x/y)
 
 # mandatory fields in the form
 fields_post_mandatory <- c(

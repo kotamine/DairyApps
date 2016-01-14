@@ -358,7 +358,7 @@ dim(m0d)
 
 
 ## --------------------------------------------------
-
+# This goes into the Terminal
 
 ## csv file must be saved as "Windows Comma Separated(.csv)" format 
 # mongoimport -h ds061954.mongolab.com:61954 -d app_rumen  -c posts -u user1 -p user1 --file /data/db/app_rumen/posts.csv --headerline --type csv --drop 
@@ -381,6 +381,7 @@ mongoexport -h ds061954.mongolab.com:61954 -d app_rumen -u user1 -p user1 -c pos
 
 # mongoimport -h ds061954.mongolab.com:61954 -d app_rumen  -c comments -u user1 -p user1 --file /Volumes/iMacSATA/data/db/app_rumen/comments.csv --headerline --type csv --drop 
 
+mongoimport -h ds061954.mongolab.com:61954 -d app_rumen -c users -u user1 -p user1 --file /Volumes/iMacSATA/data/db/app_rumen/users.csv --headerline --type csv --drop 
 
 # --------------------------------
 
@@ -422,6 +423,8 @@ myMongoExportCsv(db, url, loc_app_rumen, "resolved_posts")
 myMongoExportCsv(db, url, loc_app_rumen, "discontinued_posts")
 
 
+
+data_users <- mongo(collection="users", db=db, url = url)$find()
 
 
 
