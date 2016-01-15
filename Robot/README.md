@@ -1,6 +1,6 @@
 # Robotic Milking Systems 
 
-### Status: Preliminary Version, located [here](https://kotamine.shinyapps.io/Robot/).
+### Status: Preliminary. Located [here](https://kotamine.shinyapps.io/Robot/).
 
 
 ## Concept 
