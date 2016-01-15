@@ -111,13 +111,13 @@ div(
                                                             align="center"))
                                 )
                             ), br(),
-                            fluidRow(column(width=8, helpText("Robot/parlor & related-housing prices (%)")),
+                            fluidRow(column(width=8, helpText("Inflation of robot/parlor & related-housing prices (%)")),
                                      column(width=4, numericInput("inflation_robot",NULL,value=1.5,step=0.25))
                             ),
-                            fluidRow(column(width=8, helpText("Margin milk over feed & operation per cow with robots (%)")),
+                            fluidRow(column(width=8, helpText("Inflation of margin milk over feed & operation per cow with robots (%)")),
                                      column(width=4, numericInput("inflation_margin",NULL,value=0.2,step=0.25))
                             ),
-                            fluidRow(column(width=8, helpText("Milking & chore labor rate per hour (%)")),
+                            fluidRow(column(width=8, helpText("Inflation of milking & chore labor rate per hour (%)")),
                                      column(width=4, numericInput("inflation_labor",NULL,value=1.5,step=0.25))
                             ),
                             fluidRow(column(width=8, helpText("Hurdle rate for equity (%)")),   

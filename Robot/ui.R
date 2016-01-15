@@ -24,7 +24,7 @@ source(file.path("ui_files", "ui_sensitivity.R"), local=TRUE)
 shinyUI(  
   fluidPage(
     tags$head(
-      tags$link(rel = "stylesheet", type = "text/css", href = "www/UMN.css")
+      tags$link(rel = "stylesheet", type = "text/css", href = "UMN.css")
     ),
     # list(tags$head(HTML("  "))),
     # tags$head(
