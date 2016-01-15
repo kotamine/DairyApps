@@ -12,7 +12,7 @@ source("helpers.R")
  
 shinyServer(function(input, output, session) {
      
-     rv <- reactiveValues(view = NULL, edit_auth = FALSE, 
+     rv <- reactiveValues(view = NULL, edit_auth = FALSE, edit_user_auth=FALSE,
                           selectedPost = NULL, selectedComments = NULL,
                           comment_reset =0, post_reset=0, 
                           back_to_selected_post = 0, 

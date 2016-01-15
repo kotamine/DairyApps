@@ -60,6 +60,21 @@ observe({
   shinyjs::toggleState("edit", tmp_edit)
 })
 
+# # Allow the user to edit his/her profile 
+# observe({
+#   if (is.null(user_session$info$token_valid) | is.null( rv$selectedPost$email_address)) {
+#     tmp_edit <- FALSE
+#   }
+#   else {
+#     if (user_session$info$emailAddress == rv$selectedPost$email_address) {
+#       tmp_edit <- TRUE
+#     } else {
+#       tmp_edit <- FALSE
+#     }
+#   }
+#   shinyjs::toggleState("edit", tmp_edit)
+# })
+
 # log in from new post
 observeEvent(input$gmail1, {
   # Give googlesheets permission to access your spreadsheets and google drive
