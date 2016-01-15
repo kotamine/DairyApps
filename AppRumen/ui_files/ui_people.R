@@ -22,9 +22,9 @@ bsCollapse(id = "collapsePeople", open = "People",
                                 inline = TRUE), 
              fluidRow(column(5,numericInput("n_boxes_people","Number of People", value=10, min=0,step=5,max=100)),
                       column(7,selectInput("sortPeople","Sort by",
-                                           choices=c("Most recently posted","Most recently commented",
+                                           choices=c("Most recently joined","Most posted",
                                                      "Most commented", "Most viewed",
-                                                     "Highest interests")))),
+                                                     "Most followed")))),
              fluidRow(
                uiOutput("peopleboxes")
              ) 

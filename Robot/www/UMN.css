@@ -1,73 +1,152 @@
-header {
-  background-color: #7a0019;
-}
-#calswitch {
-color: #fff;
-  background: #7a0019;
-  margin: 0;
-width: 165px;
-height: 65px;
-border-radius: 20px;
-padding: 0;
-box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.5);
-}
 
-#radio_NAIRobots {
-color: #fff;
-  background: #7a0019;
-  margin: 0;
-width: 165px;
-height: 65px;
-border-radius: 20px;
-padding: 0;
-box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.5);
-}
-
-#umn-header a {
-color: #FFFFFF;
-  }
-
-#umn-links {
-margin-top: 1em;
-margin-bottom: 4px;
-}
-
-#umn-wordmark-link {
-display: inline-block;
-padding-top: 1.25em;
-}
-
-#umn-wordmark {
-width: 240px;
-margin: 0px 8px 8px 0px;
-}
-
-#umn-search {
-float: right;
-clear: both;
-}
-
-#umnheader-search {
-width: 200px;
-border-top-left-radius: 4px;
-border-bottom-left-radius: 4px;
-}
-
-.btn-umn-maroon {
-  background-color: #47000f;
-    border: 1px solid #47000f;
-  color: #FFFFFF;
-}
-
-#btn-mobile-search {
-margin-top: 1.5em;
-}
-
-@media (min-width: 600px) {
-  #university-wordmark {
-  width: 300px;
-  margin: 0px 2em 16px 0px;
-}
-
-}
-
+    input:invalid {
+      border-color: #ff0000;
+      border-width: 2px;
+    }
+    .btn-primary {
+      background-color: #0B3D4C;
+      border-color: #809FA6;
+      border-radius: 100px;
+    }
+    .btn-primary:hover {
+      background-color: #809FA6;
+    }
+    .btn-primary:focus {
+      background-color: #809FA6;
+      border: none;
+    }
+    #Navbar .navbar-nav {
+      color: #0f0;
+    }
+    .navbar .nav  > li > a {
+      background-color: #FFB71E;
+      color: #000;
+      margin: 2.5px;
+    }
+    .navbar .nav  > li > a:hover,
+    .navbar .nav  > li > a:focus {
+      background-color: #5B0013;
+      color: #fff;
+    }
+    .navbar .nav > .active > a,
+    .navbar .nav > .active > a:hover,
+    .navbar .nav > .active > a:focus {
+      background-color: #5B0013;
+      color: #fff;
+    }
+    .nav > li {
+      color: #000;
+      text-align: center;
+    }
+    .nav > li > a {
+      background-color: #809FA6;
+      border-radius: 100px;
+      color: #000;
+      margin: 2.5px;
+      text-align: left;
+    }
+      .nav >li > a:hover {
+        background-color: #0B3D4C;
+        color: #fff;
+        }
+      #navlistPanel > .active > a,
+      #navlistPanel > .active > a:hover,
+      #navlistPanel > .active > a:focus,
+      #dashboard > .active > a,
+      #dashboard > .active > a:hover,
+      #dashboard > .active > a:focus,
+      #partial_budget > .active > a,
+      #partial_budget > .active > a:hover,
+      #partial_budget > .active > a:focus,
+      #cash_flow > .active > a,
+      #cash_flow > .active > a:hover,
+      #cash_flow > .active > a:focus,
+      #sensitivity > .active > a,
+      #sensitivity > .active > a:hover,
+      #sensitivity > .active > a:focus{
+          background-color: #0B3D4C;
+          color: #fff;
+      }
+      
+      #prCapital > .active > a,
+      #prCapital > .active > a:hover,
+      #prCapital > .active > a:focus,
+      #prMaintenance > .active > a,
+      #prMaintenance > .active > a:hover,
+      #prMaintenance > .active > a:focus,
+      #prMilk > .active > a,
+      #prMilk > .active > a:hover,
+      #prMilk > .active > a:focus,
+      #prLabor > .active > a,
+      #prLabor > .active > a:hover,
+      #prLabor > .active > a:focus,
+      #prFinance > .active > a,
+      #prFinance > .active > a:hover,
+      #prFinance > .active > a:focus,
+      h4 > .active > a,
+      h4 > .active > a:hover,
+      h4 > .active > a:focus {
+          background-color: #0B3D4C;
+          color: #fff;
+      }
+    #calswitch {
+      color: #fff;
+      background: #5B0013;
+      margin: 0;
+      width: 165px;
+      height: 65px;
+      border-radius: 100px;
+      padding: 0;
+      box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.5);
+    }
+      
+  header {
+    background-color: #7a0019;
+    }
+      
+      #umn-header a {
+      color: #FFFFFF;
+      }
+      
+      #umn-links {
+      margin-top: 1em;
+      margin-bottom: 4px;
+      }
+      
+      #umn-wordmark-link {
+      display: inline-block;
+      padding-top: 1.25em;
+      }
+      
+      #umn-wordmark {
+      width: 240px;
+      margin: 0px 8px 8px 0px;
+      }
+      
+      #umn-search {
+      float: right;
+      clear: both;
+      }
+      
+      #umnheader-search {
+      width: 200px;
+      border-top-left-radius: 4px;
+      border-bottom-left-radius: 4px;
+      }
+      
+      .btn-umn-maroon {
+      background-color: #47000f;
+      border: 1px solid #47000f;
+      color: #FFFFFF;
+      }
+      
+      #btn-mobile-search {
+      margin-top: 1.5em;
+      }
+      
+      @media (min-width: 600px) {
+      #university-wordmark {
+      width: 300px;
+      margin: 0px 2em 16px 0px;
+      }
+      }

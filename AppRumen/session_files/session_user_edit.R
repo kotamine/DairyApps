@@ -90,6 +90,8 @@ output$selectedUser  <- renderUI({
 
     # Increase the view counter of user page
     update_views <- paste0('{"$set":{', '"profile_views":', as.integer(tmp_user$profile_views + 1), '}}')
+    
+    
     mongo_users$update(field_userID, update=update_views)
     
     # Prepare output$selectedUser for commenting

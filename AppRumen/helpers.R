@@ -1,51 +1,10 @@
-## largely borrowed from:
+## some part borrowed from:
 # https://github.com/daattali/shiny-server/persistent-data-storage/storage.R
 # https://github.com/daattali/shiny-server/persistent-data-storage/helpers.R
 
-
 library(dplyr)
 library(digest)
-# library(DBI)
-# library(RMySQL)
-# library(RSQLite)
-# library(rmongodb)
 library(googlesheets)
-# library(RAmazonS3)
-# library(rdrop2)
-
-# 
-# 
-# # decide which function to use to save based on storage type
-# get_save_fxn <- function(type) {
-#      fxn <- sprintf("save_data_%s", type)
-#      stopifnot(existsFunction(fxn))
-#      fxn
-# }
-# save_data <- function(data, type) {
-#      fxn <- get_save_fxn(type)
-#      do.call(fxn, list(data))
-# }
-# 
-# # decide which function to use to load based on storage type
-# get_load_fxn <- function(type) {
-#      fxn <- sprintf("load_data_%s", type)
-#      stopifnot(existsFunction(fxn))
-#      fxn
-# }
-# load_data <- function(type) {
-#      fxn <- get_load_fxn(type)
-#      data <- do.call(fxn, list())
-#      
-#      # Just for a nicer UI, if there is no data, construct an empty
-#      # dataframe so that the colnames will still be shown
-#      if (nrow(data) == 0) {
-#           data <-
-#                matrix(nrow = 0, ncol = length(fields_all),
-#                       dimnames = list(list(), fields_all)) %>%
-#                data.frame
-#      }
-#      data %>% dplyr::arrange(desc(timestamp))
-# }
 
 
 sort2 <- function(x,...) ifelse(is.null(x),NA,sort(x,...))
