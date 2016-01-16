@@ -60,7 +60,7 @@ shinyUI(
     div(class="well", style="background-color:#7a0019; color:#FFCC33;", 
         fluidRow(column(width=8, offset=1, h1("UM Extension Dairy")))),
     navbarPage(
-      "Robotic Milking Systems", id = "Navbar",
+      div(h4("Robotic Milking Systems"), style="color:#7a0019;"), id = "Navbar",
       # ---------- Introduction  -----------
       tabPanel("Introduction",  value="Introduction",
                fluidRow(column(width=2),
@@ -203,10 +203,11 @@ shinyUI(
                                br(), br()
                         ))
       ),
-      useShinyjs(), 
+      # useShinyjs(), 
       collapsible = TRUE), 
       source(file.path("ui_files","ui_tooltip.R"), local=TRUE)$value,
-      source(file.path("ui_files","ui_modal.R"), local=TRUE)$value
+      source(file.path("ui_files","ui_modal.R"), local=TRUE)$value,
+      useShinyjs()
     )
 )   
 

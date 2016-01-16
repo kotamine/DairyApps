@@ -52,7 +52,7 @@ lapply(base_profiles, function(x) {
         helpText("Base:", val0, align="center"), 
         helpText("New :", val1, align="center"), 
         sliderInput(paste0("sensitivity_slider",x,i), "% Change",min=-100, max=100, step=20, value = value), 
-        actionButton(paste0("sensitivity_action",x,i), "Details"),
+        bsButton(paste0("sensitivity_action",x,i), "Details", style="primary"),
         align="center") 
     }) 
     
