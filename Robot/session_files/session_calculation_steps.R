@@ -188,7 +188,7 @@ if (calc_type == "full") { # skip some calculations that are not needed for some
   
   # Create copies of input$vars for Cash Flow tab etc.
   ans[[X]]$copy_salvage_milking1 <- input[[paste0("salvage_milking1",x)]]*
-    (1+ans[[X]]$inflation_robot/100)^(1+input[[paste0("yr_system1",x)]]) 
+    (1+ans[[X]]$inflation_robot/100)^(input[[paste0("yr_system1",x)]]) 
   ans[[X]]$copy_salvage_milking2 <- ans[[X]]$salvage_milking_fv1
   ans[[X]]$copy_DMI_projected <-   ans[[X]]$DMI_projected
   

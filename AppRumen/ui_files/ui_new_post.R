@@ -2,7 +2,7 @@
 # title="New Post", id="postTab",
 div(
   div(id = "post_form",
-      textInput("post_name","Suggested App Name", value=""),
+      textInput("post_name","App Name", value=""),
       selectInput("post_category","Category", 
                   choices=c("Milk","Forage","Labor","Social")),
       h5(strong("Description")), 

@@ -5,8 +5,6 @@ output$selectedUser  <- renderUI({
   # Acts as a trigger when the user is viewing
   rv$back_to_selected_user 
   
-  browser()
-  
 #   # User-experience stuff
 #   shinyjs::show("loadMsg")
 #   shinyjs::hide("details_contents")
@@ -28,19 +26,23 @@ output$selectedUser  <- renderUI({
                              rv$active_archive_comment_users_email[rv$view_archive_comment_user],'"','}')
       field_userID_com <- paste0('{"comment_email_address":', '"',
                              rv$active_archive_comment_users_email[rv$view_archive_comment_user],'"','}')
+    } else if (rv$user_trafic=="post") {
+      field_userID <- paste0('{"email_address":', '"',rv$active_posts_email[rv$view_user],'"','}')
+      field_userID_com <- paste0('{"comment_email_address":', '"',rv$active_posts_email[rv$view_user],'"','}')
     } else {
       field_userID <- paste0('{"email_address":', '"',rv$active_users_email[rv$view_user],'"','}')
       field_userID_com <- paste0('{"comment_email_address":', '"',rv$active_users_email[rv$view_user],'"','}')
     }
-
-    rv$selectedUser <-  mongo_users$find(field_userID)  
     
-    if ( dim(rv$selectedUser)[1] ==0)  { rv$selectedUser <- NULL }
+    rv$selected_user <-  mongo_users$find(field_userID)  
+    rv$selected_user_email <-  rv$selected_user$email_address
+    
+    if ( dim(rv$selected_user)[1] ==0)  { rv$selected_user <- NULL }
     validate( 
-      need(!is.null(field_userID) & !is.null(rv$selectedUser), 'No individual is selected.')
+      need(!is.null(field_userID) & !is.null(rv$selected_user), 'No individual is selected.')
     )  
     
-    tmp_user <- rv$selectedUser[1,]
+    tmp_user <- rv$selected_user[1,]
   }) 
   
     if (!rv$edit_user_auth) {
@@ -94,11 +96,12 @@ output$selectedUser  <- renderUI({
     
     mongo_users$update(field_userID, update=update_views)
     
-    # Prepare output$selectedUser for commenting
+    
+    # Prepare output$selected_user for commenting
     wellPanel(
       h3(strong(tmp_user$user_name)),
       p( strong("Profession: "), tmp_user$profession, br(), 
-         strong("Interests: "),tmp_user$interests,br(),
+         strong("Interests: "), gsub(",",", ",tmp_user$interests),br(),
          strong("Location: "),tmp_user$location,br(),
          strong("LinkedIn: "), tmp_user$linked_in, br(),
          strong("About: "), tmp_user$about, br(), 
@@ -133,22 +136,17 @@ output$selectedUser  <- renderUI({
 
   } else {
      # Prepare output$selectedPost for editing
-    vec_interests <- ifelse(is.null(tmp_user$interests), NULL, strsplit(tmp_user$interests, ", ")[[1]])
+  
+   vec_interests <- ifelse(is.null(tmp_user$interests), NULL,
+                              strsplit(tmp_user$interests[[1]],",")) %>% unlist() %>% c()
   
     wellPanel(
       h3(strong(tmp_user$user_name)),
       p( selectInput("profession", "Profession", 
-                   choices=c("Student","Producer","Industry", "Extension","Other"),
+                   choices=vars_profession,
                    selected=tmp_user$profession), 
          checkboxGroupInput("interests", "Interests", 
-                            choices=c("Generating ideas",
-                            "Collaborating",
-                            "Dairy Productivity",
-                            "Producer Outreach", 
-                            "Youth Education",
-                            "Public Outreach",
-                            "Networking",
-                            "Other"),
+                            choices=vars_interests,
                             selected =vec_interests, 
                             inline = TRUE),
          selectInput("location", "Location", 
@@ -186,18 +184,21 @@ observeEvent(input$user_edit_send, {
 #     shinyjs::enable("post_send")
 #     shinyjs::hide("submitMsg")
 #   })
-  browser()
 
-  tmp_user <- rv$selectedUser[1,]
+  tmp_user <- rv$selected_user[1,]
   str_interests <- input$interests[1]
   lapply(seq_along(input$interests)[-1], 
-         function(i) str_interests <<- paste0(str_interests,", ", input$interests[i]))
+         function(i) str_interests <<- paste0(str_interests,",", input$interests[i]))
+  
+  tag_interests <- input$interests[1]
+  lapply(seq_along(input$interests)[-1], 
+         function(i) tag_interests <<- paste0(tag_interests,": ", input$interests[i]))
   
   field_userID <- paste0('{"email_address":', '"', tmp_user$email_address, '"', '}')
   
   update_edit <- paste0('{"$set":{',
                           '  "profession":',  '"', input$profession, '"',
-                          ', "interests":',  '"', str_interests, '"',
+                          ', "interests":',  '["', str_interests, '"]',
                           ', "location":',  '"', input$location, '"',
                           ', "linked_in":', '"', input$linked_in, '"',
                           ', "about":', '"', input$about, '"', 

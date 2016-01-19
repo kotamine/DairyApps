@@ -12,8 +12,83 @@ row_inputs <- function(fields) {
   colnames(new_row) <- fields
   return(new_row)
 }
+ 
+
+# Change between Like to Liked
+switch_like_unlike <- function(mongo_db, like_show, unlike_show,
+                               var_name1, var_name2, var1, var2,
+                               button1, button2) {
+list(observe({ 
+  if (length(user_session$info)>0) {
+    shinyjs::enable(like_show)
+    input[[button1]]
+    input[[button2]]
+  if (length(mongo_db$find(paste0('{"',var_name1, '": "', user_session$info[[var1]],  
+                                   '", "', var_name2,'": "', rv[[var2]],'"}')))>0) {
+    shinyjs::hide(like_show) 
+    shinyjs::show(unlike_show)
+  } else {
+    shinyjs::hide(unlike_show)
+    shinyjs::show(like_show) 
+    }
+  } 
+}),
+observeEvent(input[[button1]], {
+  new_row <- matrix(c(user_session$info[[var1]],rv[[var2]]),nrow=1) %>% data.frame()
+  colnames(new_row) <- (mongo_db$find() %>% colnames())
+  mongo_db$insert(new_row)
+}),
+observeEvent(input[[button2]], {
+  mongo_db$remove(paste0('{ "',var_name1, '": "', user_session$info[[var1]], 
+                            '", "',var_name2,'": "', rv[[var2]],'"}')) 
+})
+)
+}
+
+switch_like_unlike(mongo_likes, "like_0","like_1", "user", "post",
+                  "emailAddress", "selected_post_id",
+                   "like","unlike") %>% unlist()
+
+switch_like_unlike(mongo_follow_post, "follow_0","follow_1", "user", "post",
+                   "emailAddress", "selected_post_id",
+                   "follow","unfollow") %>% unlist() 
+
+switch_like_unlike(mongo_follow_user, "follow_user_0","follow_user_1", "follower", "followed",
+                   "emailAddress", "selected_user_email",
+                   "follow_user","unfollow_user") %>% unlist() 
+ 
+
+# # Change between Like to Liked
+# observe({ 
+#   if (length(user_session$info)>0) {
+#     shinyjs::enable("like_0")
+#     browser()
+#     input$like
+#     input$unlike 
+#     if (length(mongo_likes$find( paste0('{ "user": "',user_session$info$emailAddress, 
+#                                         '", "post": "',rv$active_postsID[rv$view],'"}')))>0) {
+#       shinyjs::hide("like_0") 
+#       shinyjs::show("like_1")
+#     } else {
+#       shinyjs::hide("like_1")
+#       shinyjs::show("like_0") 
+#     }
+#   } 
+# })  
+# 
+# observeEvent(input$like, {
+#   new_row <- matrix(c(user_session$info$emailAddress,rv$active_postsID[rv$view]),nrow=1) %>% data.frame()
+#   colnames(new_row) <- (mongo_likes$find() %>% colnames())
+#   mongo_likes$insert(new_row)
+# })
+# 
+# observeEvent(input$unlike, {
+#   mongo_likes$remove(paste0('{ "user": "',user_session$info$emailAddress, 
+#                             '", "post": "',rv$active_postsID[rv$view],'"}')) 
+# })
 
 
+         
 # -- temporarily disabled for dev & testing purposes --
 # # disable email_address and user_name in Post, 
 # # which forces the user to log in through Google Account

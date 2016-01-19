@@ -1,4 +1,5 @@
 library(shiny)
+library(mongolite)
 
 shinyUI(pageWithSidebar(
   headerPanel("Scratch Paper"),

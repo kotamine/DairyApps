@@ -1,34 +1,33 @@
 
 # ------- Prepare postings in Active Posts ------- 
 
+# Construct mongdb qry content
 list_filter_items <- function(var) {
-  v_list <- c()
+   v_list <- c()
   for (i in seq_along(var)) {  
-    v_list  <<- paste0(v_list, '"', var[i], '"')
-    if (i < length(var))  v_list <<- paste0(v_list,',')  
+    v_list  <- paste0(v_list, '"', var[i], '"')
+    if (i < length(var))  v_list <- paste0(v_list,',')  
+  }
+  return(v_list)
+}
+
+# Construct mongdb qry content (tag-like method)
+list_filter_items2 <- function(var, vec) {
+  v_list <- c()
+  vec_list <- c()
+  for (i in seq_along(var)) vec_list <- c(vec_list,vec[grepl(var[i], vec)])
+  vec_list <- vec_list %>% unique()
+  for (i in seq_along(vec_list)) {
+    v_list  <- paste0(v_list, '"', vec_list[i], '"')
+    if (i < length(vec_list))  v_list <- paste0(v_list,',')  
   }
   return(v_list)
 }
 
 filter_posts <- reactive({
-  
   status <- list_filter_items(input$filterStatus)
   categories <- list_filter_items(input$filterCategory)
-  
-#   status <- c()
-#   for (i in 1:length(input$filterStatus)) {
-#     status  <- paste0( status,'"',input$filterStatus[i],'"')
-#     if (i < length(input$filterStatus))  status <- paste0( status,',')  
-#   }
-#   
-#   categories <- c()
-#   for (i in 1:length(input$filterCategory)) {
-#     categories <- paste0(categories,'"',input$filterCategory[i],'"')
-#     if (i < length(input$filterCategory)) categories <- paste0(categories,',')  
-#   }
-  
-  #paste(input$filterCategory, 1:length(input$filterCategory), sep=",") %>% cat() 
-  
+
   filter <-paste0('{"status": { "$in": [', status,'] }, "post_category": {"$in": [', categories,'] }}')
   return(filter)
 })
@@ -36,7 +35,8 @@ filter_posts <- reactive({
 
 filter_people <- reactive({
   profession <- list_filter_items(input$filterProfessions)
-  interests <- list_filter_items(input$filterInterests)
+  interests <- list_filter_items2(input$filterInterests,  
+                                  mongo_users$find()$interests %>% unlist() %>% unique()) 
   
   filter <-paste0('{"profession": { "$in": [', profession,'] }, "interests": {"$in": [', interests,'] }}')
   return(filter)
@@ -51,7 +51,8 @@ output$postboxes <- renderUI({
     )  
   
   table_posts_copy <-  mongo_posts$find(filter_posts()) 
-
+  if (length(table_posts_copy)==0) return()
+  
   tmp_sort <- switch(input$sortPost, 
                      "Most recently posted"=  table_posts_copy$timestamp,
                      "Most recently commented"= table_posts_copy$timestamp_comment,
@@ -74,7 +75,7 @@ output$postboxes <- renderUI({
     }))
   })
   
-  rv$active_users_email <- sorted_table_posts$email_address
+  rv$active_posts_email <- sorted_table_posts$email_address
     
   lapply(c(1:input$n_boxes_people), function(x) {
     observeEvent(input[[paste0("user",x)]], ({
@@ -132,8 +133,10 @@ output$peopleboxes <- renderUI({
     need( (!is.null(input$n_boxes_people) & input$n_boxes_people>0) , 
           'Please enter the number of people.')
   )  
+  browser()
   
   table_users_copy <-  mongo_users$find(filter_people()) 
+  if (length(table_users_copy)==0) return()
   
   tmp_sort <- switch(input$sortPeople, 
                      "Most recently joined"= table_users_copy$timestamp, # ADD TIMESTAMP IN USERS
@@ -144,7 +147,9 @@ output$peopleboxes <- renderUI({
   
   # Sorted user profiles that will be retreived in "Details" panel via rv$view 
   sorted_table_users <- table_users_copy[rev(order(tmp_sort)),]
-  rv$active_users <-  sorted_table_users$email_address 
+  rv$active_users_email <-  sorted_table_users$email_address 
+  rv$user_trafic <- "people"
+  
   lapply(c(1:input$n_boxes), function(x) {
     observeEvent(input[[paste0("view_user",x)]], ({
       rv$view_user <- x
@@ -180,7 +185,6 @@ output$peopleboxes <- renderUI({
       actionButton(inputId = paste0("view_user", i),"View","primary") 
     )
   })
-  
   
 })
 

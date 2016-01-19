@@ -51,7 +51,7 @@ observeEvent(input$comment_send, {
     shinyjs::hide("submitMsg2")
   })
   
-  tmp_post <- rv$selectedPost
+  tmp_post <- rv$selected_post
 
   rv$commentID <- as.integer(get_time_epoch())
   rv$timestamp2 <- get_time_human()

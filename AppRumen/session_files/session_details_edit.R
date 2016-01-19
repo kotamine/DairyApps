@@ -1,7 +1,7 @@
 
 # ------------ Show Selected Post and Enable Edit process ----------------
 # Prepare the display of a selectet post in Details
-output$selectedPost  <- renderUI({
+output$selectedPost  <- renderUI({ 
   # Acts as a trigger when the user is viewing
   rv$back_to_selected_post 
   
@@ -16,17 +16,21 @@ output$selectedPost  <- renderUI({
   
   isolate({
   field_postID <- paste0('{"postID":', rv$active_postsID[rv$view],'}')
-  rv$selectedPost <-  mongo_posts$find(field_postID)
-  if ( dim(rv$selectedPost)[1] ==0)  { rv$selectedPost <- NULL }
+  rv$selected_post <-  mongo_posts$find(field_postID)
+  rv$selected_post_id <-  rv$active_postsID[rv$view]
   
+  if ( dim(rv$selected_post)[1] ==0)  { rv$selected_post <- NULL }
+
   validate(
-    need(!is.null(rv$view) & !is.null(rv$selectedPost), 'No post is selected.')
+    need(!is.null(rv$view) & !is.null(rv$selected_post), 'No post is selected.')
   ) 
   
-  tmp_post <- rv$selectedPost
+  tmp_post <- rv$selected_post
   
-  rv$selectedComments <- mongo_comments$find(field_postID)
-  tmp_comments <- rv$selectedComments 
+
+  
+  rv$selected_comments <- mongo_comments$find(field_postID)
+  tmp_comments <- rv$selected_comments 
   rv$active_comment_users_email <- tmp_comments$comment_email_address
   
   rv$user_trafic <- "post"
@@ -73,7 +77,7 @@ output$selectedPost  <- renderUI({
     rv$tmp_archive_comments <- NULL
   }
   
-  })
+  }) 
   
   
   if (!rv$edit_auth) {
@@ -85,7 +89,7 @@ output$selectedPost  <- renderUI({
     mongo_posts$update(field_postID, update=update_views)
     
     
-    # prepare output$selectedPost for commenting
+    # prepare output$selected_post for commenting
     wellPanel(
       h3(strong(tmp_post$post_name)),
       p( strong("By: "), actionButton(inputId = "post_user", tmp_post$user_name, "link"), br(),
@@ -105,13 +109,13 @@ output$selectedPost  <- renderUI({
     )
    
   } else { 
-    #  prepare output$selectedPost for editing
+    #  prepare output$selected_post for editing
     wellPanel( 
       textInput("post_name_ed", "App Name", value = tmp_post$post_name),
       
       p( strong("By: "), tmp_post$user_name), br(),
       selectInput("post_category_ed","Category", selected=tmp_post$post_category,
-                  choices=c("Milk","Forage","Labor","Social")),
+                  choices=vars_category),
       h5(strong("Description")), 
       inputTextarea('post_ed', value= tmp_post$post,20,50), 
       tags$head(tags$style(type="text/css", "#post_ed {border-color: #C0C0C0}")),
@@ -176,15 +180,15 @@ observeEvent(input$edit_send, {
            shinyjs::hide("submitMsg")
          })
   
-  tmp_post <- rv$selectedPost
+  tmp_post <- rv$selected_post
   
   
   # move the old post and comments to archive tables
-  mongo_archive_posts$insert(rv$selectedPost)
+  mongo_archive_posts$insert(rv$selected_post)
   
-  N_comments <- dim(rv$selectedComments)[1]
+  N_comments <- dim(rv$selected_comments)[1]
   if (!is.null(N_comments)) {
-    mongo_archive_comments$insert(rv$selectedComments)
+    mongo_archive_comments$insert(rv$selected_comments)
     
     # remove old comments 
     field_postID <- paste0('{"postID":', tmp_post$postID, '}')

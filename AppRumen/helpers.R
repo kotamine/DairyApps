@@ -10,6 +10,11 @@ library(googlesheets)
 sort2 <- function(x,...) ifelse(is.null(x),NA,sort(x,...))
 div2 <- function(x,y) ifelse(y==0 | length(y)==0, NA, x/y)
 
+vars_category <- c("Milk","Forage","Labor","Social")
+vars_profession <- c("Student", "Producer", "Industry", "Extension", "Other")
+vars_interests <- c("Generating ideas",  "Collaborating",  "Dairy Productivity",  "Producer Outreach",  
+  "Youth Education",  "Public Outreach",  "Networking",  "Other")
+
 # mandatory fields in the form
 fields_post_mandatory <- c(
   "post_name", "post_category", "user_name", "email_address", "post"
