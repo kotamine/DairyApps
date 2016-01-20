@@ -27,7 +27,8 @@ div(
   DT::dataTableOutput("table_notice_progress"),
   br(),
   h3("Updates of posts you follow"),
-  DT::dataTableOutput("table_notice_follow")
+  DT::dataTableOutput("table_notice_follow"),
+  br(),br()
 )
 
 

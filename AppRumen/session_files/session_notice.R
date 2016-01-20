@@ -89,7 +89,7 @@ output$table_notice_message <- DT::renderDataTable({
   DT::datatable( 
     tbl[c('message_id','timestamp','sender_name', 'title','viewed')],
     rownames = FALSE,
-    colnames =c('id','Time','Sender', 'Title','Viewed'),
+    colnames =c('id','Time','From', 'Title','Viewed'),
     selection = 'single', 
     options = list(scrollX = TRUE)
   ) %>% 
@@ -110,7 +110,7 @@ output$table_notice_sent <- DT::renderDataTable({
   DT::datatable( 
     tbl[c('message_id','timestamp','receiver_name', 'title','viewed')],
     rownames = FALSE,
-    colnames =c('id','Time','Receiver', 'Title','Viewed'),
+    colnames =c('id','Time','To', 'Title','Viewed'),
     selection = 'single', 
     options = list(lengthChange = FALSE, scrollX = TRUE)
   ) %>% 
@@ -200,12 +200,24 @@ observeEvent(input$send_reply, {
 })
 
 
+gen_post_id_links <- function(post_names, post_IDs, link_id,
+                              post_trafic, varname_postID) {
+  lapply(1:length(post_names), function(i) { 
+    shinyjs::onclick(paste0(link_id,i), {
+      rv$post_trafic <- post_trafic
+      rv[[varname_postID]] <- post_IDs[i]
+      updateCollapse(session,"collapseMain","Details")
+      updateTabItems(session, "tabs", selected="mainTab")
+    })
+    
+  paste0('<a id="',link_id,i,'">', post_names[i], '</a>')
+}) %>% unlist() 
+} 
+
 
 # ---------------- Comments received ------------------
 output$table_notice_comment <- DT::renderDataTable({ 
   need(length(user_session$info)>0," ",NULL) %>% validate()
-  
-  browser()
   
   userID <- paste0('{"email_address": "', user_session$info$emailAddress,'"}')
   posts <- mongo_posts$find(userID)
@@ -225,25 +237,28 @@ output$table_notice_comment <- DT::renderDataTable({
   
   need(dim(tbl)[1]>0,"No comments.") %>% validate()
   
-  tbl$comment_15 <- lapply(tbl$comment, function(com) paste0(strtrim(com,15),"..")) %>% unlist()
-  tbl$post_link <- lapply(1:length(tbl$post_name), function(i) {
-    paste0('<a id="link_comment_post',i,'">',tbl$post_name[i], '</a>')
-  }) %>% unlist() 
-  
-  lapply(1:length(tbl$post_name), function(i) { 
-  shinyjs::onclick(paste0("link_comment_post",i), {
-    rv$post_trafic <- "notice_comment"
-    rv$notice_comment_postID <- tbl$postID[i]
-    updateCollapse(session,"collapseMain","Details")
-    updateTabItems(session, "tabs", selected="mainTab")
-  })
-  })
+  tbl$comment_20 <- lapply(tbl$comment, function(com) paste0(strtrim(com,20),"..")) %>% unlist()
+  tbl$post_link <- gen_post_id_links(tbl$post_name, tbl$postID, "link_comment_post",
+                                     "notice_comment", "notice_comment_postID")
+    
+#   tbl$post_link <- lapply(1:length(tbl$post_name), function(i) {
+#     paste0('<a id="link_comment_post',i,'">',tbl$post_name[i], '</a>')
+#   }) %>% unlist() 
+#   
+#   lapply(1:length(tbl$post_name), function(i) { 
+#   shinyjs::onclick(paste0("link_comment_post",i), {
+#     rv$post_trafic <- "notice_comment"
+#     rv$notice_comment_postID <- tbl$postID[i]
+#     updateCollapse(session,"collapseMain","Details")
+#     updateTabItems(session, "tabs", selected="mainTab")
+#   })
+#   })
 
   DT::datatable( 
-    tbl[c('timestamp2','post_link','comment_15','viewed')],
+    tbl[c('post_link','timestamp2','comment_20','viewed')],
     escape = FALSE,
-    # rownames = FALSE, 
-    colnames = c('Time','Post Name','Comment..','Viewed'), 
+    rownames = FALSE, 
+    colnames = c('Post Name','Time','Comment..','Viewed'), 
     selection = 'single', 
     options = list(lengthChange = FALSE, scrollX = TRUE)
   ) %>% 
@@ -252,6 +267,27 @@ output$table_notice_comment <- DT::renderDataTable({
                 backgroundColor = styleInterval(0, c('yellow','white'))
     )
 }) 
+
+# ---------------- Progress in user's posts ------------------
+output$table_notice_progress <- DT::renderDataTable({  
+  need(length(user_session$info)>0," ",NULL) %>% validate()
+  
+  
+  userID <- paste0('{"email_address": "', user_session$info$emailAddress,'"}')
+  tbl <- mongo_posts$find(userID)
+
+  tbl$post_link <- gen_post_id_links(tbl$post_name, tbl$postID, "link_progress_post",
+                                     "notice_progress", "notice_progress_postID")
+  
+  DT::datatable( 
+    tbl[c('post_link','post_category','cumulative_views','cumulative_comments','likes', 'completeness')],
+    escape = FALSE,
+    rownames = FALSE, 
+    selection = 'single', 
+    colnames =c('Post Name','Category','Cumulative Views','Cumulative Comments','Likes', 'Completeness'),
+    options = list(lengthChange = FALSE, searching=FALSE, scrollX = TRUE)
+  ) 
+})
 
 
 # ---------------- Updates of posts the user follows ------------------
@@ -271,10 +307,15 @@ output$table_notice_follow <- DT::renderDataTable({
   filter_userID <- list_filter_items(following_userID)
   tbl <- mongo_posts$find(paste0('{ "$or": [ {"postID": { "$in": [', filter_postID,']}},',
                             '{"email_address": { "$in": [', filter_userID,']}} ]}'))
-
+ 
+  
+  tbl$post_link <- gen_post_id_links(tbl$post_name, tbl$postID, "link_follow_post",
+                                     "notice_follow", "notice_follow_postID")
+  
   DT::datatable( 
-    tbl[c('post_name', 'user_name','timestamp','status','edits','completeness')],
+    tbl[c('post_link', 'user_name','timestamp','status','edits','completeness')],
     colnames = c('Post Name', 'User Name','Last Updated','Status','Edits','Completeness'),
+    escape = FALSE,
     rownames = FALSE,
     selection = 'single', 
     options = list(lengthChange = FALSE, scrollX = TRUE)
@@ -287,22 +328,4 @@ output$table_notice_follow <- DT::renderDataTable({
 }) 
 
 
-# ---------------- Progress in user's posts ------------------
-output$table_notice_progress <- DT::renderDataTable({  
-  need(length(user_session$info)>0," ",NULL) %>% validate()
-  
-
-  userID <- paste0('{"email_address": "', user_session$info$emailAddress,'"}')
-  posts <- mongo_posts$find(userID)
-  tbl <- posts[c('post_name','post_category','cumulative_views','cumulative_comments','likes', 'completeness')]   
-  
-  DT::datatable( 
-    tbl,
-    rownames = FALSE, 
-    
-    selection = 'single', 
-    colnames =c('Post Name','Category','Cumulative Views','Cumulative Comments','Likes', 'Completeness'),
-    options = list(lengthChange = FALSE, searching=FALSE, scrollX = TRUE)
-  ) 
-})
 

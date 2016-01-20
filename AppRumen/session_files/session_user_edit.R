@@ -4,6 +4,7 @@
 output$selectedUser  <- renderUI({
   # Acts as a trigger when the user is viewing
   rv$back_to_selected_user 
+  rv$view_sender
   
   browser()
 #   # User-experience stuff

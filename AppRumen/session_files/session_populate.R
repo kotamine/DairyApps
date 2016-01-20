@@ -138,12 +138,12 @@ output$peopleboxes <- renderUI({
   )  
   browser()
   
-  # isolate({
-  # if (rv$user_trafic == "message") {
-  #   updateCollapse(session,"collapsePeople","Details")
-  #   return()
-  # }
-  # }) 
+  isolate({
+  if (rv$user_trafic == "message") {
+    updateCollapse(session,"collapsePeople","Details")
+    return()
+  }
+  }) 
   
   table_users_copy <-  mongo_users$find(filter_people()) 
   if (length(table_users_copy)==0) return()

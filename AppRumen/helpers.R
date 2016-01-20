@@ -6,6 +6,9 @@ library(dplyr)
 library(digest)
 library(googlesheets)
 
+zeros <- function(r,c) matrix(c(mat.or.vec(r,c)),nrow=r,ncol=c) 
+ones <- function(r,c) matrix(c(rep(1,r*c)),nrow=r,ncol=c) 
+nulls <- function(r,c) matrix(c(rep(NA,r*c)),nrow=r,ncol=c)
 
 sort2 <- function(x,...) ifelse(is.null(x),NA,sort(x,...))
 div2 <- function(x,y) ifelse(y==0 | length(y)==0, NA, x/y)
@@ -124,7 +127,4 @@ retrieveComments <- function(N_comments, tmp_comments, archive=FALSE) {
     (p("Leave the first comment on this idea!"))
   }
 }    
-
-
-
 

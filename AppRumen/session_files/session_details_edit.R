@@ -4,6 +4,11 @@
 output$selectedPost  <- renderUI({ 
   # Acts as a trigger when the user is viewing
   rv$back_to_selected_post 
+  rv$notice_comment_postID
+  rv$notice_progress_postID
+  rv$notice_follow_postID
+  browser() 
+  
   
   # User-experience stuff
   shinyjs::show("loadMsg")
@@ -17,8 +22,11 @@ output$selectedPost  <- renderUI({
   isolate({
   
   if (rv$post_trafic=="notice_comment") {
-    browser() 
     field_postID <- paste0('{"postID":', rv$notice_comment_postID,'}') 
+  } else if (rv$post_trafic=="notice_progress") {
+    field_postID <- paste0('{"postID":', rv$notice_progress_postID,'}') 
+  } else if (rv$post_trafic=="notice_follow") {
+    field_postID <- paste0('{"postID":', rv$notice_follow_postID,'}') 
   } else { 
     field_postID <- paste0('{"postID":', rv$active_postsID[rv$view],'}')
   }
@@ -29,7 +37,7 @@ output$selectedPost  <- renderUI({
   if ( dim(rv$selected_post)[1] ==0)  { rv$selected_post <- NULL }
 
   validate(
-    need(!is.null(rv$view) & !is.null(rv$selected_post), 'No post is selected.')
+    need( !is.null(rv$selected_post), 'No post is selected.')
   ) 
   
   tmp_post <- rv$selected_post
