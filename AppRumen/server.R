@@ -28,6 +28,29 @@ shinyServer(function(input, output, session) {
      tables <- reactiveValues()
      
      
+     # Log in when opening the website
+     observeEvent(input$log_in_0, {
+       # Give googlesheets permission to access your spreadsheets and google drive
+       gs_auth( new_user = TRUE)
+       user_session$info <- gs_user()
+       updateTextInput(session, "user_name", value = user_session$info$displayName)
+       updateTextInput(session, "email_address", value =  user_session$info$emailAddress)
+       updateTextInput(session, "comment_user_name", value = user_session$info$displayName)
+       updateTextInput(session, "comment_email_address", value =  user_session$info$emailAddress)
+     })
+     
+     # Show/hide the UI through log-in 
+     observe({
+       if (!is.null(user_session$info)) {
+        shinyjs:: hide("log_in_page")
+        shinyjs:: show("after_log_in")
+       } else {
+         shinyjs:: show("log_in_page")
+         shinyjs:: hide("after_log_in")
+       }
+     })
+     
+     
      ## Connect to mongodb from a mongolab location
      host <- "ds061954.mongolab.com:61954"
      username <- "user1"

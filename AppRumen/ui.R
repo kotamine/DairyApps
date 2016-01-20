@@ -34,7 +34,11 @@ shinyUI(
     dashboardBody(    
       tags$head(
         tags$link(rel = "stylesheet", typfe = "text/css", href = "custom.css")
-      ), 
+      ),
+      div(id="log_in_page",
+        h2(icon("google-plus-square"), "Please log in:", align="center"),
+        div(actionButton("log_in_0","Login","primary"), align="center")),
+      shinyjs::hidden(div(id="after_log_in",
       tabItems(
         tabItem(tabName = "mainTab", 
                 # ------------- Main --------------------
@@ -69,7 +73,8 @@ shinyUI(
       tabItem(tabName="aboutTab",
             includeMarkdown(file.path("text","about.md"))
       )
-    )),
+     )
+    ))),
     shinyjs::useShinyjs()
   ))   
 

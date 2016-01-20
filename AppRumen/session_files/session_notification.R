@@ -80,18 +80,18 @@ output$notificationMenu <- renderMenu({
                  status = "info"
                ),
                notificationItem(
-                 text = "XX posts being discussed.",
+                 text = "XX posts being discussed in total.",
                  icon = icon("comments"),
                  status = "success"
                ),
                notificationItem(
-                 text = "XX posts completed.",
+                 text = "XX posts completed in total.",
                  icon = icon("trophy"),
                  status = "success"
                ),
                notificationItem(
-                 text = "XX comments exchanged.",
-                 icon = icon("heart-o"),
+                 text = "XX comments exchanged in total.",
+                 icon = icon("commenting"),
                  status = "success"
                )
   )
