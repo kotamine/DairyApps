@@ -2,8 +2,10 @@ library(shiny)
 library(shinyBS)
 library(shinydashboard)
 library(rmarkdown)
+library(DT)
 library(googlesheets)
-library(mongolite) 
+library(mongolite)
+library(data.table)
 suppressPackageStartupMessages(library(dplyr))
 library(magrittr)
 
@@ -15,6 +17,8 @@ shinyServer(function(input, output, session) {
      rv <- reactiveValues(view = NULL, edit_auth = FALSE, edit_user_auth=FALSE,
                           selectedPost = NULL, selectedComments = NULL,
                           comment_reset =0, post_reset=0, 
+                          reply_reset=0, msg_rest=0,
+                          message_content = NULL,
                           back_to_selected_post = 0, 
                           back_to_selected_user = 0,
                           view_rest=0) 
@@ -45,7 +49,7 @@ shinyServer(function(input, output, session) {
      mongo_messages <-   mongo(collection="messages", db=db, url = url)
      mongo_system_use <-   mongo(collection="system_use", db=db, url = url)
 
-     browser()
+     # browser()
      mongo_posts$index('{"post_category":1}')
 
      source(file.path("session_files","session_populate.R"), local=TRUE)

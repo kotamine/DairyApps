@@ -2,10 +2,13 @@
 # ------- Prepare postings in Active Posts ------- 
 
 # Construct mongdb qry content
-list_filter_items <- function(var) {
+list_filter_items <- function(var, numeric=FALSE) {
    v_list <- c()
   for (i in seq_along(var)) {  
-    v_list  <- paste0(v_list, '"', var[i], '"')
+    ifelse(numeric, 
+           v_list  <- paste0(v_list, var[i]),
+           v_list  <- paste0(v_list, '"', var[i], '"')
+    )
     if (i < length(var))  v_list <- paste0(v_list,',')  
   }
   return(v_list)
@@ -134,6 +137,13 @@ output$peopleboxes <- renderUI({
           'Please enter the number of people.')
   )  
   browser()
+  
+  # isolate({
+  # if (rv$user_trafic == "message") {
+  #   updateCollapse(session,"collapsePeople","Details")
+  #   return()
+  # }
+  # }) 
   
   table_users_copy <-  mongo_users$find(filter_people()) 
   if (length(table_users_copy)==0) return()

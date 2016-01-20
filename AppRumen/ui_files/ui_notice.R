@@ -1,29 +1,33 @@
-div( #id="collapseNotice",
-                # bsCollapsePanel(
-                  # "Message", style = "info",
-                  tabsetPanel(id="Message", title="Message", 
-                    tabPanel("Table",
-                            uiOutput("table_notice_message")),
-                    tabPanel("Content",
-                            uiOutput("message_conentent"),
-                            textInput("message_to","Message to:",value=NULL),
-                            uiOutput("resetable_message"),
-                            bsButton("send_message","Send")
-                    )
-                  ),
-                  hr(),
-                # ),
-                # bsCollapsePanel(
-                 # "Updates", style = "info",
-                # )
-                h4("Comments received"),
-                uiOutput("table_notice_comment"),
-                hr(),
-                h4("Updates in following posts"),
-                uiOutput("table_notice_follow"),
-                hr(),
-                h4("Progress in your posts"),
-                uiOutput("table_notice_progress")
+div( 
+  h3("Messages"),
+  tabsetPanel(id="Message_tab", title="Message", 
+              tabPanel("Message Box",
+                       DT::dataTableOutput("table_notice_message")),
+              tabPanel("Content",
+                       uiOutput("message_content"),
+                       h5("Reply:"),
+                       uiOutput('resettable_reply_content'),
+                       bsButton("send_reply","Send")
+              ),
+              tabPanel("New",
+                       textInput("msg_title","Title:",value=NULL),
+                       shinyjs::disabled(textInput("msg_user","To:",value=NULL)), 
+                       uiOutput('resettable_msg_content'),
+                       bsButton("send_msg","Send")
+              ),
+              tabPanel("Sent",
+                       DT::dataTableOutput("table_notice_sent")
+              )
+  ),
+  br(),
+  h3("Comments received"),
+  DT::dataTableOutput("table_notice_comment"),
+  br(),
+  h3("Progress in your posts"),
+  DT::dataTableOutput("table_notice_progress"),
+  br(),
+  h3("Updates of posts you follow"),
+  DT::dataTableOutput("table_notice_follow")
 )
 
 

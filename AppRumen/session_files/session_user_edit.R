@@ -5,6 +5,7 @@ output$selectedUser  <- renderUI({
   # Acts as a trigger when the user is viewing
   rv$back_to_selected_user 
   
+  browser()
 #   # User-experience stuff
 #   shinyjs::show("loadMsg")
 #   shinyjs::hide("details_contents")
@@ -29,6 +30,10 @@ output$selectedUser  <- renderUI({
     } else if (rv$user_trafic=="post") {
       field_userID <- paste0('{"email_address":', '"',rv$active_posts_email[rv$view_user],'"','}')
       field_userID_com <- paste0('{"comment_email_address":', '"',rv$active_posts_email[rv$view_user],'"','}')
+    } else if (rv$user_trafic=="message")  {
+      rv$user_trafic <- "NA"
+      field_userID <- paste0('{"email_address":', '"',rv$active_senders_email[rv$view_sender],'"','}')
+      field_userID_com <- paste0('{"comment_email_address":', '"',rv$active_senders_email[rv$view_sender],'"','}')
     } else {
       field_userID <- paste0('{"email_address":', '"',rv$active_users_email[rv$view_user],'"','}')
       field_userID_com <- paste0('{"comment_email_address":', '"',rv$active_users_email[rv$view_user],'"','}')

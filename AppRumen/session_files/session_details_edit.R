@@ -15,7 +15,14 @@ output$selectedPost  <- renderUI({
   shinyjs::hide("view_archive_comments")
   
   isolate({
-  field_postID <- paste0('{"postID":', rv$active_postsID[rv$view],'}')
+  
+  if (rv$post_trafic=="notice_comment") {
+    browser() 
+    field_postID <- paste0('{"postID":', rv$notice_comment_postID,'}') 
+  } else { 
+    field_postID <- paste0('{"postID":', rv$active_postsID[rv$view],'}')
+  }
+    
   rv$selected_post <-  mongo_posts$find(field_postID)
   rv$selected_post_id <-  rv$active_postsID[rv$view]
   

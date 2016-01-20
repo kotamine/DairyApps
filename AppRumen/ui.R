@@ -2,7 +2,9 @@ library(shiny)
 library(shinyBS)
 library(shinydashboard)
 library(rmarkdown)
+library(DT)
 library(googlesheets)
+library(data.table)
 suppressPackageStartupMessages(library(dplyr))
 
 source("helpers.R")
@@ -31,7 +33,7 @@ shinyUI(
     ), 
     dashboardBody(    
       tags$head(
-        tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
+        tags$link(rel = "stylesheet", typfe = "text/css", href = "custom.css")
       ), 
       tabItems(
         tabItem(tabName = "mainTab", 

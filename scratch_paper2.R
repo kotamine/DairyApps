@@ -372,11 +372,13 @@ dim(m0d)
 # mongoimport -h ds061954.mongolab.com:61954 -d app_rumen  -c system_use -u user1 -p user1 --file /data/db/app_rumen/system_use.csv --headerline --type csv --drop 
 
 #  mkdir /Volumes/iMacSATA/data/db/app_rumen
-mongoexport -h ds061954.mongolab.com:61954 -d app_rumen -u user1 -p user1 -c posts \
+mongoexport -h ds061954.mongolab.com:61954 -d app_rumen -u user1 -p user1 -c posts 
 -f timestamp,postID  
 -o /Volumes/iMacSATA/data/db/app_rumen/posts.csv 
 
+mongoexport -h ds061954.mongolab.com:61954 -d app_rumen -u user1 -p user1 -c messages -f "message_id,timestap" -o /Volumes/iMacSATA/data/db/app_rumen/messages.csv 
 
+$ mongoexport -h ds061954.mongolab.com:61954 -d app_rumen -c domain -o domain-bk.json
 
 
 # mongoimport -h ds061954.mongolab.com:61954 -d app_rumen  -c posts -u user1 -p user1 --file /Volumes/iMacSATA/data/db/app_rumen/posts.csv --headerline --type csv --drop 
@@ -386,6 +388,18 @@ mongoexport -h ds061954.mongolab.com:61954 -d app_rumen -u user1 -p user1 -c pos
 mongoimport -h ds061954.mongolab.com:61954 -d app_rumen -c users -u user1 -p user1 --file /Users/kota/Dropbox/working_projects/app_rumen/users.csv --headerline --type csv --drop 
 
 mongoimport -h ds061954.mongolab.com:61954 -d app_rumen -c likes -u user1 -p user1 --file /Users/kota/Dropbox/working_projects/app_rumen/likes.csv --headerline --type csv --drop 
+
+
+mongo_messages$update("{}",paste0('{"$set": { "title": "some title"}}'),multiple=TRUE) 
+
+mongo_posts$update("{}",'{"$set": {"completeness": 50} }',multiple=TRUE)
+mongo_posts$update("{}",'{"$set": {"likes": 0} }',multiple=TRUE) 
+mongo_comments$update("{}",'{"$set": {"viewed": 0} }',multiple=TRUE) 
+
+mongo_follow_post$update("{}",'{"$set": {"viewed": 0} }',multiple=TRUE) 
+
+mongo_posts$find()[1,]
+
 
 # --------------------------------
 
