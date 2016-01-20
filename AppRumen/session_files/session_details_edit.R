@@ -30,7 +30,8 @@ output$selectedPost  <- renderUI({
   } else { 
     field_postID <- paste0('{"postID":', rv$active_postsID[rv$view],'}')
   }
-    
+  rv$post_trafic <- "NA"
+      
   rv$selected_post <-  mongo_posts$find(field_postID)
   rv$selected_post_id <-  rv$active_postsID[rv$view]
   
