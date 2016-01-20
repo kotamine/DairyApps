@@ -43,7 +43,7 @@ output$selectedPost  <- renderUI({
   
   tmp_post <- rv$selected_post
   
-
+  
   
   rv$selected_comments <- mongo_comments$find(field_postID)
   tmp_comments <- rv$selected_comments 
@@ -67,6 +67,13 @@ output$selectedPost  <- renderUI({
       updateCollapse(session, "collapsePeople", open = "Details")
     }))
   })
+  }
+  
+  # Update "viewed"=1 on comments if the owner of the post is viewing
+  if (!is.null(user_session$info$emailAddress) & N_comments>0) {
+     if (user_session$info$emailAddress==tmp_post$email_address) {
+    mongo_comments$update(field_postID, '{"$set": {"viewed":1}}', multiple=TRUE)
+     }
   }
   
   # Repeat for archive_comments

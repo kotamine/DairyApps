@@ -42,7 +42,7 @@ output$resettable_msg_content <- renderUI({
 
 # Function to retrive messages
 retrieveMessages <- function(messages) {
-   div(h4(" Exchange: ",strong(messages[1,]$sender_name), 
+   div(h4("Conversation: ",strong(messages[1,]$sender_name), 
           "and", strong(messages[1,]$receiver_name)),
        h4(" Title: ", strong(messages[1,]$title)),
   
@@ -91,11 +91,12 @@ output$table_notice_message <- DT::renderDataTable({
     rownames = FALSE,
     colnames =c('id','Time','From', 'Title','Viewed'),
     selection = 'single', 
-    options = list(scrollX = TRUE)
+    options = list(pageLength = 5, scrollX = TRUE)
   ) %>% 
     formatStyle('viewed',
-                color=styleInterval(0,c('gray','black')),
-                backgroundColor = styleInterval(0, c('yellow','white'))
+                target='row',
+                color=styleEqual(c(1,0),c('white','black')),
+                backgroundColor = styleEqual(c(1, 0), c('gray', 'yellow'))
     )
 })
 
@@ -112,11 +113,12 @@ output$table_notice_sent <- DT::renderDataTable({
     rownames = FALSE,
     colnames =c('id','Time','To', 'Title','Viewed'),
     selection = 'single', 
-    options = list(lengthChange = FALSE, scrollX = TRUE)
+    options = list(pageLength = 5, scrollX = TRUE)
   ) %>% 
     formatStyle('viewed',
-                color=styleInterval(0,c('gray','black')),
-                backgroundColor = styleInterval(0, c('yellow','white'))
+                target='row',
+                color=styleEqual(c(1,0),c('white','black')),
+                backgroundColor = styleEqual(c(1, 0), c('gray', 'yellow'))
     )
 })
 
@@ -260,11 +262,12 @@ output$table_notice_comment <- DT::renderDataTable({
     rownames = FALSE, 
     colnames = c('Post Name','Time','Comment..','Viewed'), 
     selection = 'single', 
-    options = list(lengthChange = FALSE, scrollX = TRUE)
+    options = list(pageLength = 5, scrollX = TRUE)
   ) %>% 
     formatStyle('viewed',
-                color=styleInterval(0,c('gray','black')),
-                backgroundColor = styleInterval(0, c('yellow','white'))
+                target='row',
+                color=styleEqual(c(1,0),c('white','black')),
+                backgroundColor = styleEqual(c(1, 0), c('gray', 'yellow'))
     )
 }) 
 
@@ -285,7 +288,7 @@ output$table_notice_progress <- DT::renderDataTable({
     rownames = FALSE, 
     selection = 'single', 
     colnames =c('Post Name','Category','Cumulative Views','Cumulative Comments','Likes', 'Completeness'),
-    options = list(lengthChange = FALSE, searching=FALSE, scrollX = TRUE)
+    options = list(pageLength = 5, searching=FALSE, scrollX = TRUE)
   ) 
 })
 
@@ -294,13 +297,13 @@ output$table_notice_progress <- DT::renderDataTable({
 output$table_notice_follow <- DT::renderDataTable({ 
   need(length(user_session$info)>0," ",NULL) %>% validate()
   
-  # browser()
-  
+
   userID <- paste0('{"user": "', user_session$info$emailAddress,'"}')
   following_postID <- mongo_follow_post$find(userID)$post 
   
+  # Might not need userID2: check this later 
   userID2 <- paste0('{"follower": "', user_session$info$emailAddress,'"}')
-  following_userID <- mongo_follow_user$find(userID2)
+  following_userID <- mongo_follow_user$find(userID2)$followed
   
  
   filter_postID <- list_filter_items(following_postID, numeric=TRUE)
@@ -318,14 +321,15 @@ output$table_notice_follow <- DT::renderDataTable({
     escape = FALSE,
     rownames = FALSE,
     selection = 'single', 
-    options = list(lengthChange = FALSE, scrollX = TRUE)
-  )  
-  # %>% 
-  #   formatStyle('viewed',
-  #               color=styleInterval(0,c('gray','black')),
-  #               backgroundColor = styleInterval(0, c('yellow','white'))
-  #   )
-}) 
+    options = list(pageLength = 5, scrollX = TRUE)
+  ) %>%
+    formatStyle('completeness',
+                background = styleColorBar(tbl$completeness, 'lightblue'),
+                backgroundSize = '100% 90%',
+                backgroundRepeat = 'no-repeat',
+                backgroundPosition = 'left'
+    ) 
+})  
 
 
 

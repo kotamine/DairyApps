@@ -28,6 +28,10 @@ div(
   br(),
   h3("Updates of posts you follow"),
   DT::dataTableOutput("table_notice_follow"),
+  h3("Posts you may be interested in following"),
+  DT::dataTableOutput("table_recom_posts"),
+  h3("People you may be interested in following"),
+  DT::dataTableOutput("table_recom_users"),
   br(),br()
 )
 

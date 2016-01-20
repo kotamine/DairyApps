@@ -24,7 +24,7 @@ shinyServer(function(input, output, session) {
                           view_rest=0) 
      
      user_session <- reactiveValues(info = NULL)
-     
+
      tables <- reactiveValues()
      
      

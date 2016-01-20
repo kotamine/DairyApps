@@ -67,6 +67,7 @@ output$postboxes <- renderUI({
   sorted_table_posts <- table_posts_copy[rev(order(tmp_sort)),]
   rv$active_postsID <-  sorted_table_posts$postID 
   rv$user_trafic <- "post"
+  rv$post_trafic <- "post"
   
   lapply(c(1:input$n_boxes), function(x) {
     observeEvent(input[[paste0("view",x)]], ({
