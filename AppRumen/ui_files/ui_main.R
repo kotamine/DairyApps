@@ -42,7 +42,7 @@ bsCollapse(id = "collapseMain",
                                                            bsButton("unfollow","Undo: Follow",  style="primary"))),
                                        column(5, 
                                               a(id = "a_view_archive_comments","Show/hide comments in archive")
-                                       )),
+                                       ),
                                    shinyjs::hidden(
                                      div(id = "view_archive_comments",                  
                                          br(),
@@ -63,6 +63,7 @@ bsCollapse(id = "collapseMain",
                                    tags$head(tags$style(type="text/css", "#post {height: 100px}")),
                                    br(),
                                    shinyjs::disabled(actionButton("comment_send", "Send","primary"))
+                                   )
                                ),
                                shinyjs::hidden(
                                  span(id = "submitMsg2", "Sending...", style = "margin-left: 15px;")

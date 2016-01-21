@@ -2,13 +2,8 @@
 # ------------ Show Selected Post and Enable Edit process ----------------
 # Prepare the display of a selectet post in Details
 output$selectedPost  <- renderUI({ 
-#   # Acts as a trigger when the user is viewing
-#   rv$back_to_selected_post 
-#   rv$notice_comment_postID
-#   rv$notice_progress_postID
-#   rv$notice_follow_postID
+  # React to the change in rv$selected_post
   browser() 
-  
   
   # User-experience stuff
   shinyjs::show("loadMsg")
@@ -19,66 +14,23 @@ output$selectedPost  <- renderUI({
   })
   shinyjs::hide("view_archive_comments")
   
-  isolate({
-  
-#   if (rv$post_trafic=="notice_comment") {
-#     field_postID <- paste0('{"postID":', rv$notice_comment_postID,'}') 
-#   } else if (rv$post_trafic=="notice_progress") {
-#     field_postID <- paste0('{"postID":', rv$notice_progress_postID,'}') 
-#   } else if (rv$post_trafic=="notice_follow") {
-#     field_postID <- paste0('{"postID":', rv$notice_follow_postID,'}') 
-#   } else { 
-#     field_postID <- paste0('{"postID":', rv$active_postsID[rv$view],'}')
-#   }
-#   rv$post_trafic <- "NA"
-#       
-#   rv$selected_post <-  mongo_posts$find(field_postID)
-#   rv$selected_post_id <-  rv$active_postsID[rv$view]
-#   
-#   if ( dim(rv$selected_post)[1] ==0)  { rv$selected_post <- NULL }
-
   need(!is.null(rv$selected_post), 'No post is selected.') %>% validate()
    
   tmp_post <- rv$selected_post
-  }) 
-  
+
   if (!rv$edit_auth) {
-  
-  # rv$selected_comments <- mongo_comments$find(field_postID)
   
   isolate({
   active_comments <- rv$selected_comments[rv$selected_comments$comment_status=="Active",] 
   active_comment_users_email <- active_comments$comment_email_address
-  N_comments <- dim(active_comments )[1]
-#   rv$user_trafic <- "post"
-  
-  # N_comments <- dim(tmp_comments)[1]
+  rv$N_comments <- dim(active_comments )[1]
 
-  if (length(active_comment_users_email)>0) {
-    active_comments <- active_comments[order(active_comments$timestamp2),] 
+  if (rv$N_comments>0) {
+    rv$active_comments <- active_comments[order(active_comments$timestamp2),] 
     gen_post_links(active_comment_users_email,"comment_user")
-  } 
-  
-  # Update "viewed"=1 on comments if the owner of the post is viewing
-  if (!is.null(user_session$info$emailAddress) & length(active_comment_users_email)>0) {
-    if (user_session$info$emailAddress==rv$selected_post$email_address) {
-      mongo_comments$update(field_postID, '{"$set": {"viewed_by_owner":1}}', multiple=TRUE)
-    }
+  } else {
+    rv$active_comments <-NULL
   }
-  
-#   lapply(c(1:N_comments), function(x) {
-#     observeEvent(input[[paste0("comment_user",x)]], ({
-#       browser()
-#       rv$view_comment_user <- x
-#       rv$user_trafic <- "comment"
-#       # Update "Details" panel via trigger "rv$back_to_selected_user"  
-#       rv$back_to_selected_user <- rv$back_to_selected_user + 1
-#       updateTabItems(session, "tabs","peopleTab")
-#       updateCollapse(session, "collapsePeople", open = "Details")
-#     }))
-#   })
-#   
-  # } 
   
   # Repeat for archive_comments
   archive_comments <- rv$selected_comments[rv$selected_comments$comment_status=="Archive",] 
@@ -89,29 +41,6 @@ output$selectedPost  <- renderUI({
   }
   
   })
-#   rv$selectedArchiveComments <- mongo_archive_comments$find(field_postID)
-#   tmp_archive_comments <- rv$selectedArchiveComments
-  
-#   N_archive_comments <- dim(tmp_archive_comments)[1]
-#   if (N_archive_comments>0) {
-#     rv$tmp_archive_comments <- tmp_archive_comments[order(tmp_archive_comments$timestamp2),]
-#     
-#     lapply(c(1:N_archive_comments), function(x) {
-#       observeEvent(input[[paste0("archive_comment_user",x)]], ({
-#         rv$view_archive_comment_user <- x
-#         rv$user_trafic <- "archive_comment" 
-#         # Update "Details" panel via trigger "rv$back_to_selected_user"  
-#         rv$back_to_selected_user <- rv$back_to_selected_user + 1
-#         updateTabItems(session, "tabs","peopleTab")
-#         updateCollapse(session, "collapsePeople", open = "Details")
-#       })
-#       )
-#     })
-#     
-#   } else {
-#     rv$tmp_archive_comments <- NULL
-#   }
-  
  
     # regular view without editing  
     field_postID <- paste0('{"postID":', tmp_post$postID,'}')
@@ -120,27 +49,35 @@ output$selectedPost  <- renderUI({
     
     mongo_posts$update(field_postID, update=update_views)
     
+    gen_user_links(tmp_post$email_address, "post_user0", N=1)
+    
+    # Update "viewed"=1 on comments if the owner of the post is viewing
+    if (!is.null(user_session$info$emailAddress) & length(active_comment_users_email)>0) {
+      if (user_session$info$emailAddress==tmp_post$email_address) {
+        mongo_comments$update(field_postID, '{"$set": {"viewed_by_owner":1}}', multiple=TRUE)
+      }
+    }
     
     # prepare output$selected_post for commenting
     wellPanel(
       h3(strong(tmp_post$post_name)),
-      p( strong("By: "), actionButton(inputId = "post_user", tmp_post$user_name, "link"), br(),
+      p( strong("By: "), actionButton("post_user01", tmp_post$user_name, "link"), br(),
          strong("Category: "), tmp_post$post_category,br(),
          strong("Description: "),tmp_post$post), br(),
       p(strong("Views: "), tmp_post$cumulative_views, br(),
          strong("Comments:"), tmp_post$cumulative_comments, br(), 
-         strong("Likes: "), tmp_post$likes,2, br(),
+         strong("Likes: "), tmp_post$likes, br(),
          strong("Follower: "), tmp_post$n_followers, br(),
          strong("Date:  "), strtrim(tmp_post$timestamp,10),br(),br(),
          strong("Edits:"), tmp_post$edits, br(),
          strong("Views since last edit: "), tmp_post$current_views, br(),
          strong("Comments since last edit:"), tmp_post$current_comments), br(), 
           insert_edit("edit",
-                  rv$selected_post$email_address, user_session$info$emailAddress),  
+                  tmp_post$email_address, user_session$info$emailAddress),  
          br(),  
          strong("<< Comments >> "), 
        
-         retrieveComments(N_comments, active_comments)
+         retrieveComments(rv$N_comments, rv$active_comments)
     )
    
   } else { 
@@ -157,7 +94,7 @@ output$selectedPost  <- renderUI({
       br(), 
       p(strong("Views: "), tmp_post$cumulative_views, br(),
         strong("Comments:"), tmp_post$cumulative_comments, br(), 
-        strong("Likes: "), tmp_post$likes,2, br(),
+        strong("Likes: "), tmp_post$likes, br(),
         strong("Follower: "), tmp_post$n_followers, br(),
         strong("Date:  "), strtrim(tmp_post$timestamp,10),br(),br(),
         strong("Edits:"), tmp_post$edits, br(),
@@ -167,7 +104,7 @@ output$selectedPost  <- renderUI({
         strong("<< Comments >> ")
       ),
       
-      retrieveComments(N_comments, tmp_comments),
+      retrieveComments(rv$N_comments, rv$active_comments),
       selectInput("decision","Decision",choices=c("Continue editing"="c1", "Label Completed"="c2",
                                                   "Label Resolved"="c3", "Label Discontinued"="c4")),
       sliderInput("completeness","Degree of Completion",min=0,step=5,value=tmp_post$completeness,max=100), 
@@ -190,19 +127,10 @@ output$selectedArchiveComments <- renderUI({
   }
 })
   
-
-# observeEvent(input$post_user, {
-#     rv$view_user <- rv$view 
-#     # Update "Details" panel via trigger "rv$back_to_selected_user"  
-#     rv$back_to_selected_user <- rv$back_to_selected_user + 1
-#     updateTabItems(session, "tabs","peopleTab")
-#     updateCollapse(session, "collapsePeople", open = "Details")
-# })
   
 
 # Open up description for edit 
 observeEvent(input$edit, { 
-  # authentication via google account
   shinyjs::hide("show_comment_box")
   rv$edit_auth <- TRUE
 })
@@ -219,27 +147,27 @@ observeEvent(input$edit_send, {
            shinyjs::hide("submitMsg")
          })
   
-  tmp_post <- rv$selected_post
-  tmp_post$status <- "Archive"
+         tmp_post <- rv$selected_post
+         tmp_post$status <- "Archive"
+         
   # Change the status of the old post and comments to archive 
   mongo_posts$insert(tmp_post)
   
   active_comments <- rv$selected_comments[rv$selected_comments$comment_status=="Active",] 
   N_comments <- dim(active_comments)[1]
  
-  # check $in
-  browser()
-  
-   if (!is.null(N_comments)) {
+   com_list <- c()
+   if (N_comments>0) {
     for (i in 1:N_comments) {
-      
-      field_commentID <- paste0('{"commentID":[', active_comments$commentID[i], ']}')
-      update_status <-  paste0('{"$set" : { "comment_status": "Archive"}}')
-      mongo_comments$update(field_commentID, update_status)
+      ifelse(i<N_comments, 
+             com_list <- paste0(com_list, active_comments$commentID[i],", "),
+             com_list <- paste0(com_list, active_comments$commentID[i])
+             )
     }
-#     # remove old comments 
-#     field_postID <- paste0('{"postID":', tmp_post$postID, '}')
-#     mongo_comments$remove(field_postID, multiple = TRUE) 
+     field_commentID <- paste0('{"commentID": {"$in": [', com_list, ']}}')
+     update_status <-  paste0('{"$set" : { "comment_status": "Archive"}}')
+     mongo_comments$update(field_commentID, update_status)
+     
   }
   
   field_postID <- paste0('{"postID":', tmp_post$postID, '}')
@@ -270,45 +198,7 @@ observeEvent(input$edit_send, {
     # Discontinued
     mongo_posts$update(field_postID, update= update_post("Discontinued"))
   }
-#     # Decision to move to: Completed, Resolved, or Discontinued
-#     new_row <- tmp_post
-#     new_row$timestamp <- get_time_human() 
-#     new_row$edits <- as.integer(new_row$edits + 1)
-#     new_row$post_name_ed <- input$post_name_ed
-#     new_row$post_category_ed <- input$post_category_ed
-#     new_row$current_views <- 0
-#     new_row$current_comments <- 0
-#     new_row$post <- input$post_ed
-#     
-#     if (input$decision=="c2") {
-#       
-#       tryCatch({
-#         mongo_completed_posts$insert(new_row) 
-#         updateTabItems(session, "tabs","completedTab") 
-#       })
-#       
-#     } else if (input$decision=="c3") { 
-#       
-#       tryCatch({
-#         mongo_resolved_posts$insert(new_row) 
-#         updateTabItems(session, "tabs","resolvedTab") 
-#       })
-#       
-#     } else {
-#       tryCatch({
-#         mongo_discontinued_posts$insert(new_row) 
-#         updateTabItems(session, "tabs","discontinuedTab") 
-#       })
-#     }
-# 
-#     mongo_posts$remove(field_postID) 
-    # Updating input$n_boxes triggers update of "Posts" panel 
-    # updateNumericInput(session,"n_boxes","Number of Posts", value=(input$n_boxes-1), min=0,step=5,max=100)
-    # updateCollapse(session, "collapseMain", open = "Posts")
-  }
-  
-  # rv$back_to_selected_post <- rv$back_to_selected_post + 1
-  
+ 
   shinyjs::show("show_comment_box") 
   rv$edit_auth <- FALSE 
 }) 

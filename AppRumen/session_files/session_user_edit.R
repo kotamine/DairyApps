@@ -1,101 +1,52 @@
 
 # ------------ Show Selected User and Enable Edit process ----------------
 # Prepare the display of a selectet post in User
-output$selectedUser  <- renderUI({
-  # Acts as a trigger when the user is viewing
-  rv$back_to_selected_user 
-  rv$view_sender
+output$selectedUser  <- renderUI({ 
+  # React to the change in rv$selected_post
   
   browser()
-#   # User-experience stuff
-#   shinyjs::show("loadMsg")
-#   shinyjs::hide("details_contents")
-#   on.exit({
-#     shinyjs::hide("loadMsg")
-#     shinyjs::show("details_contents")
-#   })
-#   shinyjs::hide("view_archive_comments")
+    
+    if (dim(rv$selected_user)[1] ==0)  { rv$selected_user <- NULL }
+      need(!is.null(rv$selected_user), 
+           'No individual is selected.') %>% validate()
+    
+    tmp_user <- rv$selected_user
   
-  
-  isolate({
-    
-    if (rv$user_trafic=="comment") {
-      field_userID <- paste0('{"email_address":', '"',rv$active_comment_users_email[rv$view_comment_user],'"','}')
-      field_userID_com <- paste0('{"comment_email_address":', '"',rv$active_comment_users_email[rv$view_comment_user],'"','}')
-      
-    } else if (rv$user_trafic=="archive_comment") {
-      field_userID <- paste0('{"email_address":', '"',
-                             rv$active_archive_comment_users_email[rv$view_archive_comment_user],'"','}')
-      field_userID_com <- paste0('{"comment_email_address":', '"',
-                             rv$active_archive_comment_users_email[rv$view_archive_comment_user],'"','}')
-    } else if (rv$user_trafic=="post") {
-      field_userID <- paste0('{"email_address":', '"',rv$active_posts_email[rv$view_user],'"','}')
-      field_userID_com <- paste0('{"comment_email_address":', '"',rv$active_posts_email[rv$view_user],'"','}')
-    } else if (rv$user_trafic=="message")  {
-      rv$user_trafic <- "NA"
-      field_userID <- paste0('{"email_address":', '"',rv$active_senders_email[rv$view_sender],'"','}')
-      field_userID_com <- paste0('{"comment_email_address":', '"',rv$active_senders_email[rv$view_sender],'"','}')
-    } else {
-      field_userID <- paste0('{"email_address":', '"',rv$active_users_email[rv$view_user],'"','}')
-      field_userID_com <- paste0('{"comment_email_address":', '"',rv$active_users_email[rv$view_user],'"','}')
-    }
-    
-    rv$selected_user <-  mongo_users$find(field_userID)  
-    rv$selected_user_email <-  rv$selected_user$email_address
-    
-    if ( dim(rv$selected_user)[1] ==0)  { rv$selected_user <- NULL }
-    validate( 
-      need(!is.null(field_userID) & !is.null(rv$selected_user), 'No individual is selected.')
-    )  
-    
-    tmp_user <- rv$selected_user[1,]
-  }) 
+    field_userID <- paste0('{"email_address":', '"',tmp_user$email_address,'"','}')
+    field_userID_com <- paste0('{"comment_email_address":', 
+                               '"',tmp_user$comment_users_email,'"','}')
   
     if (!rv$edit_user_auth) {
-      # Render regular view without editing
+    # Render regular view without editing
       
     # Retrive info related to this user 
-    tmp_list <- list(active_posts = mongo_posts$find(field_userID), 
-                     comments = mongo_comments$find(field_userID_com),  
-                     archive_posts = mongo_archive_posts$find(field_userID),
-                     archive_comments = mongo_archive_comments$find(field_userID_com),
-                     completed_posts = mongo_completed_posts$find(field_userID),
-                     resolved_posts = mongo_resolved_posts$find(field_userID),
-                     discontinued_posts = mongo_discontinued_posts$find(field_userID)
-                     )
+      
+    posts0 <- mongo_posts$find(field_userID)
+    posts <- posts0[posts0$status!="Archive",]
     
-    all_post_names <- c("active_posts", "completed_posts","resolved_posts", "discontinued_posts")
-    
-    lapply(c(all_post_names, "comments"),
-           function(item) tmp_user[[item]] <<- tmp_list[[item]] %>% nrow())  
+    comments0 <-mongo_comments$find(field_userID_com)
+    comments <- comments0[comments0$comment_status!="Archive"]
 
-    tmp_user$total_posts <- (tmp_user$active_posts + tmp_user$completed_posts + 
-                              + tmp_user$resolved_posts +  tmp_user$discontinued_posts)
-  
-    tmp_user$total_posts <-  lapply(all_post_names, 
-                                    function(item) tmp_user[[item]]) %>% unlist() %>% sum()
+    tmp_user$total_posts <-  dim(posts)[1]
+   
+    tmp_user$total_views <- sum(posts$cumulative_views)
     
-    tmp_user$total_views <- lapply(all_post_names, 
-                                   function(item) tmp_list[[item]]$cumulative_views) %>% unlist() %>% sum()
+    tmp_user$total_comments_received <- sum(posts$cumulative_comments) 
     
-    tmp_user$total_comments <- lapply(all_post_names, 
-                                      function(item) tmp_list[[item]]$cumulative_comments) %>% unlist() %>% sum()
+    tmp_user$last_posted <- posts$timestamp %>% sort2(decreasing=TRUE) %>% "["(1) 
     
-    tmp_user$average_interest <- lapply(all_post_names, 
-                                        function(item) {
-                                          tmp_list[[item]]$average_interest * tmp_list[[item]]$cumulative_comments
-                                        }) %>% unlist() %>% sum() %>% div2(tmp_user$total_comments)
+    tmp_user$total_comments_made <-  dim(comments)[1]
     
-    tmp_user$last_posted <- lapply(all_post_names, 
-                                   function(item) {
-                                     tmp_list[[item]]$timestamp 
-                                     }) %>% unlist() %>% sort2(decreasing=TRUE) %>% "["(1) 
+    tmp_user$last_commented <- comments$timestamp2 %>% sort2(decreasing=TRUE) %>% "["(1) 
     
-    tmp_user$last_commented <- lapply(c("comments","archive_comments"), 
-                                      function(item) {
-                                        tmp_list[[item]]$timestamp2 
-                                      }) %>% unlist() %>% sort2(decreasing=TRUE) %>% "["(1) 
-
+    
+    # tmp_user$all_posts <- list_post_links(posts$post_name, "user_post")
+    # gen_post_links(posts$postID, "user_post")    
+   
+    active <- posts$status=="Active"
+    completed <- posts$status=="Completed"
+    resolved <- posts$status=="Resolved"
+    
     # Increase the view counter of user page
     update_views <- paste0('{"$set":{', '"profile_views":', as.integer(tmp_user$profile_views + 1), '}}')
   
@@ -106,32 +57,33 @@ output$selectedUser  <- renderUI({
       h3(strong(tmp_user$user_name)),
       p( strong("Profession: "), tmp_user$profession, br(), 
          strong("Interests: "), gsub(",",", ",tmp_user$interests),br(),
-         strong("Location: "),tmp_user$location,br(),
+         strong("Location: "), tmp_user$location,br(),
          strong("LinkedIn: "), tmp_user$linked_in, br(),
-         strong("About Me: "), tmp_user$about, br(), br(),
-         strong("User Stats:"), br(),
+         strong("About Me: "), tmp_user$about, br(),
+         br(),
+         strong("Stats:"), br(),
          strong("Profile Views: "),tmp_user$profile_views, br(),
-         strong("Total Comments Made:"), tmp_user$comments, br(),
+         strong("Total Comments Made:"), tmp_user$total_comments_made, br(),
          strong("User Since:"), strtrim(tmp_user$timestamp,10),br(),
-         strong("Last Logged In:"), strtrim(tmp_user$last_logged_in,10),br(),
+         # strong("Last Logged In:"), strtrim(tmp_user$last_logged_in,10),br(),  # CREATE USER LOG ?
          strong("Last Posted:"), strtrim(tmp_user$last_posted,10),br(),
-         strong("Last Commented:"), strtrim(tmp_user$last_commented,10),br(),
+         strong("Last Commented:"), strtrim(tmp_user$last_commented,10),br(), 
          strong("Followers:"), strtrim(tmp_user$n_followers,10),br(),
          br(),
-         strong("Post Stats: "), br(),
+         strong("Posts: "), br(),
          strong("Total Posts: "),tmp_user$total_posts, br(),
-         strong("Active: "),tmp_user$active_posts, br(),
-         strong("Completed: "),tmp_user$completed_posts, br(),
-         strong("Resolved: "),tmp_user$resolved_posts, br(),
-         strong("Discontinued: "),tmp_user$discontinued_posts, br(),
-         strong("Total Views: "),tmp_user$total_views, br(),
-         strong("Total Comments Received:"), tmp_user$total_comments, br(),
-         strong("Average Interest: "),round(tmp_user$average_interest,2), br(),
-         strong("Followed Posts:"), strtrim(tmp_user$n_followed_posts,10)), br(), 
+         strong("Total Views: "), tmp_user$total_views), br(),
+         # LIST THE POST NAMES HERE
+         strong("Active: "), list_post_links(posts$post_name[active],
+                                             posts$postID[active], "user_post"), br(),
+         strong("Completed: "), list_post_links(posts$post_name[completed],
+                                                posts$postID[completed], "user_post"), br(),
+         strong("Resolved: "), list_post_links(posts$post_name[resolved],
+                                               posts$postID[resolved], "user_post"), br(),
          insert_edit("user_edit",
-                  rv$selected_user$email_address, user_session$info$emailAddress)
-      ) 
-  } else {
+                  tmp_user$email_address, user_session$info$emailAddress)
+      )  
+  } else { 
      # Prepare output$selectedPost for editing
   
    vec_interests <- ifelse(is.null(tmp_user$interests), NULL,
@@ -158,31 +110,18 @@ output$selectedUser  <- renderUI({
     )
     )
   }
-})
-
-
+}) 
 
 
 # Open up description for edit 
 observeEvent(input$user_edit, { 
-  # authentication via google account
-  # shinyjs::hide("show_comment_box")
   rv$edit_user_auth <- TRUE
 })
 
 # ---------- Event: edit_send button ------------
 observeEvent(input$user_edit_send, {
   
-#   # User-experience stuff
-#   shinyjs::disable("post_send")
-#   shinyjs::show("submitMsg")
-#   shinyjs::hide("error")
-#   on.exit({
-#     shinyjs::enable("post_send")
-#     shinyjs::hide("submitMsg")
-#   })
-
-  tmp_user <- rv$selected_user[1,]
+  tmp_user <- rv$selected_user
   str_interests <- input$interests[1]
   lapply(seq_along(input$interests)[-1], 
          function(i) str_interests <<- paste0(str_interests,",", input$interests[i]))
@@ -202,8 +141,6 @@ observeEvent(input$user_edit_send, {
                           '}}')
 
   mongo_users$update(field_userID, update=update_edit)
-
-  rv$back_to_selected_user <- rv$back_to_selected_user + 1
 
   rv$edit_user_auth <- FALSE
 })

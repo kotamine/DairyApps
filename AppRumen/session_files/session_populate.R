@@ -46,10 +46,7 @@ filter_people <- reactive({
 })
 
 output$postboxes <- renderUI({
-#   # Acts as a trigger when the user is viewing
-#   rv$back_to_active_post  
-  
-
+ 
   need((!is.null(input$n_boxes) & input$n_boxes>0) ,
            'Please enter the number of posts.') %>% validate()
     
@@ -66,10 +63,7 @@ output$postboxes <- renderUI({
 
   # Sorted posts that will be retreived in "Details" panel via rv$view 
   sorted_table_posts <- table_posts_copy[rev(order(tmp_sort)),]
-#   rv$active_postsID <-  sorted_table_posts$postID 
-#   rv$user_trafic <- "post"
-#   rv$post_trafic <- "post"
-  
+
   N <- dim(table_posts_copy)[1]
   if (is.null(input$n_boxes) || is.na(input$n_boxes)) {
     n <- 0
@@ -78,30 +72,7 @@ output$postboxes <- renderUI({
   }
   
   gen_post_links(sorted_table_posts$postID, "post", n)
-  gen_post_links(sorted_table_posts$email_address,"post_owner", n)
-  
-#   lapply(c(1:input$n_boxes), function(x) {
-#     observeEvent(input[[paste0("view",x)]], ({
-#       rv$view <- x
-#       # Update "Details" panel via trigger "rv$back_to_selected_post"  
-#       rv$back_to_selected_post <- rv$back_to_selected_post + 1
-#       updateTabItems(session, "tabs","mainTab")
-#       updateCollapse(session, "collapseMain", open = "Details")
-#     }))
-#   })
-#   
-#   rv$active_posts_email <- sorted_table_posts$email_address
-#     
-#   lapply(c(1:input$n_boxes_people), function(x) {
-#     observeEvent(input[[paste0("user",x)]], ({
-#       rv$view_user <- x
-#       # Update "Details" panel via trigger "rv$back_to_selected_user"  
-#       rv$back_to_selected_user <- rv$back_to_selected_user + 1
-#       updateTabItems(session, "tabs","peopleTab")
-#       updateCollapse(session, "collapsePeople", open = "Details")
-#     }))
-#   })
-  
+  gen_user_links(sorted_table_posts$email_address,"post_owner", n)
   
   lapply(1:n, function(i) {
     tmp_post <- sorted_table_posts[i,]  
@@ -112,7 +83,7 @@ output$postboxes <- renderUI({
         "Description:  ",paste(strtrim(tmp_post$post,140),"..."),br(),
         "Views:  ", tmp_post$cumulative_views, br(),
         "Comments:  ", tmp_post$cumulative_comments, br(),
-        "Average Interest:  ", round(tmp_post$average_interest,2), br(),
+        "Likes:  ", tmp_post$likes, br(),
         "Date:  ", strtrim(tmp_post$timestamp,10), br(), 
        "By:", actionButton(inputId = paste0("post_owner", i), tmp_post$user_name, "link")
        ), 
@@ -124,36 +95,24 @@ output$postboxes <- renderUI({
 
 
 output$peopleboxes <- renderUI({
-#   # Acts as a trigger when the user is viewing
-#   rv$back_to_active_people 
-  
 
     need((!is.null(input$n_boxes_people) & input$n_boxes_people>0), 
           'Please enter the number of people.') %>% validate()
 
   browser()
-  
-#   isolate({
-#   if (rv$user_trafic == "message") {
-#     updateCollapse(session,"collapsePeople","Details")
-#     return()
-#   }
-#   }) 
-  
+
   table_users_copy <-  mongo_users$find(filter_people()) 
   if (length(table_users_copy)==0) return()
   
   tmp_sort <- switch(input$sortPeople, 
                      "Most recently joined"= table_users_copy$timestamp, # ADD TIMESTAMP IN USERS
-#                      "Most posted" = table_users_copy$total_posts,  # ADD COUNTER FROM POST AND COMMENTS
-#                      "Most commented"= table_users_copy$comments, 
+                     # "Most posted" = table_users_copy$total_posts,  # ADD COUNTER FROM POST AND COMMENTS
+                     # "Most commented"= table_users_copy$total_comments_made,
                      "Most viewed"=table_users_copy$profile_views,
                      "Most followed"=table_users_copy$n_followers)
   
   # Sorted user profiles that will be retreived in "Details" panel via rv$view 
   sorted_table_users <- table_users_copy[rev(order(tmp_sort)),]
-  rv$active_users_email <-  sorted_table_users$email_address 
-  rv$user_trafic <- "people"
   
   N <- dim(table_users_copy)[1]
   if (is.null(input$n_boxes_people) || is.na(input$n_boxes_people)) {
@@ -162,23 +121,11 @@ output$peopleboxes <- renderUI({
     n <- min(input$n_boxes_people,N)
   }
   
-  
-#   lapply(c(1:input$n_boxes), function(x) {
-#     observeEvent(input[[paste0("view_user",x)]], ({
-#       rv$view_user <- x
-#       # Update "Details" panel via trigger "rv$back_to_selected_post"  
-#       rv$back_to_selected_user <- rv$back_to_selected_user + 1
-#       updateTabItems(session, "tabs","peopleTab")
-#       updateCollapse(session, "collapsePeople", open = "Details")
-#     }))
-#   })
-  
-  gen_post_links(sorted_table_users$email_address ,"user", n)
+  gen_user_links(sorted_table_users$email_address,"user", n)
   
   lapply(1:n, function(i) {
     tmp_user <- sorted_table_users[i,]  
     box(
-      # browser(), 
       p("User Name:  ", strong(tmp_user$user_name),br(),
         "Profession:  ", tmp_user$profession,br(),
         "Interests:", tmp_user$interests, br(), 
@@ -190,7 +137,7 @@ output$peopleboxes <- renderUI({
         "Since:  ", strtrim(tmp_user$timestamp,10),br()
       ),
       br(),
-      actionButton(inputId = paste0("view_user", i),"View","primary") 
+      actionButton(inputId = paste0("user",i),"View","primary") 
     )
   })
   

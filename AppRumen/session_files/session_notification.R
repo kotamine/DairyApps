@@ -1,9 +1,5 @@
 
 
-# system_use <- gs_title("system_use")
-messageData <-   mongo_system_use$find() 
-
-
 
 output$userpanel <- renderUI({
   # session$user is non-NULL only when authenticated 
@@ -28,8 +24,7 @@ output$messageMenu <- renderMenu({
   # that messageData is a data frame with two columns, 'from' and 'message'.
   need(length(user_session$info)>0," ",NULL) %>% validate()
   
-  browser()
-  
+
   userID <- paste0('{"receiver_email_address": "',user_session$info$emailAddress,'"}')
   tbl <- mongo_messages$find(userID) 
   tbl <- tbl[tbl$viewed_by_receiver==0,]

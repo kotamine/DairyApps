@@ -11,8 +11,10 @@ bsCollapse(id = "collapsePeople", open = "People",
                                 inline = TRUE), 
              fluidRow(column(5,numericInput("n_boxes_people","Number of People", value=10, min=0,step=5,max=100)),
                       column(7,selectInput("sortPeople","Sort by",
-                                           choices=c("Most recently joined","Most posted",
-                                                     "Most commented", "Most viewed",
+                                           choices=c("Most recently joined",
+                                                     # "Most posted",  # ADD COUNTER FROM POST AND COMMENTS
+                                                     # "Most commented", 
+                                                     "Most viewed",
                                                      "Most followed")))),
              fluidRow(
                uiOutput("peopleboxes")
@@ -22,7 +24,8 @@ bsCollapse(id = "collapsePeople", open = "People",
              "Details", style = "warning",
              uiOutput("selectedUser"),
                       shinyjs::disabled(
-                        bsButton("message_user", "Send a message to this User", style='primary')), br(),
+                        bsButton("message_user", "Send a message to this User", style='primary')), 
+                        br(), br(),
                       div(id="follow_user_0",
                       shinyjs::disabled(
                         bsButton("follow_user","Follow this User", style="primary"))),

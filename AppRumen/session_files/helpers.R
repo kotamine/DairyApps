@@ -46,6 +46,65 @@ filter_people <- reactive({
 
 
 ## ------------------ Functions that create links -------------------------
+gen_post_links <- function(post_IDs, link_id, N=length(post_IDs)) { 
+    if (N==0) return()
+    lapply(1:N, function(i) { 
+      observeEvent(input[[paste0(link_id,i)]], {
+        browser()
+        
+        field_postID <- paste0('{"postID":', post_IDs[i],'}')
+        tmp_post <-  mongo_posts$find(field_postID)
+        rv$selected_post <- tmp_post[tmp_post$status!="Archive",]
+        rv$selected_comments <- mongo_comments$find(field_postID)
+        updateTabItems(session, "tabs", selected="mainTab")
+        updateCollapse(session,"collapseMain","Details")
+        # updateTabItems(session, "tabs","peopleTab")
+    })
+  })
+}
+
+# shinyjs::onclick(paste0(link_id,i), {... })  
+#   would implement something similar but cannot be overwritten
+
+gen_user_links <- function(user_IDs, link_id, N=length(user_IDs)) { 
+  if (N==0) return()
+  lapply(1:N, function(i) { 
+    observeEvent(input[[paste0(link_id,i)]], {
+      field_postID <- paste0('{"email_address":"', user_IDs[i],'"}')
+      rv$selected_user <-  mongo_users$find(field_postID)
+      updateCollapse(session,"collapsePeople","Details")
+      updateTabsetPanel(session,'tabs',"peopleTab")
+      # updateTabItems(session, "tabs","peopleTab")
+    })
+  })
+}
+
+list_post_links <- function(post_names, post_IDs, link_id, N=length(post_names)) {
+  if (N==0) return()
+  browser()
+  lapply(1:N, function(i) { 
+    shinyjs::onclick(paste0(link_id,i), {
+      field_postID <- paste0('{"postID":', post_IDs[i],'}')
+      tmp_post <-  mongo_posts$find(field_postID)
+      rv$selected_post <- tmp_post[tmp_post$status!="Archive",]
+      rv$selected_comments <- mongo_comments$find(field_postID)
+      updateCollapse(session,"collapseMain","Details")
+      updateTabItems(session, "tabs", selected="mainTab")
+    })
+  })
+  
+  lapply(1:N, function(i) { 
+    if (i<N) {
+        HTML(paste0('<a id="',link_id,i,'">', post_names[i], '</a>,&nbsp;&nbsp;'))
+    } else {
+        HTML(paste0('<a id="',link_id,i,'">', post_names[i], '</a>'))
+    }
+    # HTML(paste0('<a id="',link_id,i,'">', post_names[i], '</a>,&nbsp;&nbsp;'))
+  })
+}
+
+
+
 gen_post_id_links <- function(post_names, post_IDs, link_id,
                               post_trafic, varname_postID) {
   lapply(1:length(post_names), function(i) { 
@@ -60,63 +119,6 @@ gen_post_id_links <- function(post_names, post_IDs, link_id,
     paste0('<a id="',link_id,i,'">', post_names[i], '</a>')
   }) %>% unlist() 
 }
-
-gen_post_links <- function(post_IDs, link_id, N=length(post_IDs)) { 
-    lapply(1:N, function(i) { 
-      shinyjs::onclick(paste0(link_id,i), {
-        field_postID <- paste0('{"postID":', post_IDs[i],'}')
-        rv$selected_post <-  mongo_posts$find(field_postID)
-        rv$selected_comments <- mongo_comments$find(field_postID)
-        updateCollapse(session,"collapseMain","Details")
-        updateTabItems(session, "tabs", selected="mainTab")
-        # updateTabItems(session, "tabs","peopleTab")
-    })
-  })
-}
-
-gen_user_links <- function(user_IDs, link_id, N=length(user_IDs)) { 
-  lapply(1:N, function(i) { 
-    shinyjs::onclick(paste0(link_id,i), {
-      field_postID <- paste0('{"postID":', post_IDs[i],'}')
-      rv$selected_post <-  mongo_posts$find(field_postID)
-      updateCollapse(session,"collapsePeople","Details")
-      updateTabsetPanel(session,'tabs',"peopleTab")
-      # updateTabItems(session, "tabs","peopleTab")
-    })
-  })
-}
-
-# 
-# shinyjs::onclick(paste0("message_sender",i), {
-#   rv$view_sender <- i 
-#   rv$user_trafic <- "message"
-#   updateCollapse(session,"collapsePeople","Details")
-#   updateTabsetPanel(session,'tabs',"peopleTab")
-#   # updateTabItems(session, "tabs","peopleTab")
-# })
-# 
-# lapply(c(1:input$n_boxes_people), function(x) {
-#   observeEvent(input[[paste0("user",x)]], ({
-#     rv$view_user <- x
-#     # Update "Details" panel via trigger "rv$back_to_selected_user"  
-#     rv$back_to_selected_user <- rv$back_to_selected_user + 1
-#     updateTabItems(session, "tabs","peopleTab")
-#     updateCollapse(session, "collapsePeople", open = "Details")
-#   }))
-# })
-# 
-# lapply(c(1:input$n_boxes), function(x) {
-#   observeEvent(input[[paste0("view",x)]], ({
-#     rv$view <- x
-#     # Update "Details" panel via trigger "rv$back_to_selected_post"  
-#     rv$back_to_selected_post <- rv$back_to_selected_post + 1
-#     updateTabItems(session, "tabs","mainTab")
-#     updateCollapse(session, "collapseMain", open = "Details")
-#   }))
-# })
-
-
-
 
 # Function to insert previuos comments
 retrieveComments <- function(N_comments, tmp_comments, archive=FALSE) {
