@@ -21,11 +21,13 @@ bsCollapse(id = "collapsePeople", open = "People",
            bsCollapsePanel(
              "Details", style = "warning",
              uiOutput("selectedUser"),
-             fluidRow(column(5, bsButton("message_user", "Send a message to this User", style='primary')),
-                      column(5, div(id="follow_user_0",
-                      shinyjs::disabled(bsButton("follow_user","Follow this User", style="primary"))),
+                      shinyjs::disabled(
+                        bsButton("message_user", "Send a message to this User", style='primary')), br(),
+                      div(id="follow_user_0",
+                      shinyjs::disabled(
+                        bsButton("follow_user","Follow this User", style="primary"))),
                       shinyjs::hidden(div(id="follow_user_1",
-                                          bsButton("unfollow_user","Undo: Follow",  style="primary")))) 
-                      )
+                                          bsButton("unfollow_user","Undo: Follow",  style="primary")))
+                      
            )
 )  

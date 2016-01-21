@@ -389,6 +389,10 @@ mongoimport -h ds061954.mongolab.com:61954 -d app_rumen -c users -u user1 -p use
 
 mongoimport -h ds061954.mongolab.com:61954 -d app_rumen -c likes -u user1 -p user1 --file /Users/kota/Dropbox/working_projects/app_rumen/likes.csv --headerline --type csv --drop 
 
+mongoimport -h ds061954.mongolab.com:61954 -d app_rumen -c posts -u user1 -p user1 --file /Users/kota/Dropbox/working_projects/app_rumen/posts.csv --headerline --type csv --drop 
+
+mongoimport -h ds061954.mongolab.com:61954 -d app_rumen -c comments -u user1 -p user1 --file /Users/kota/Dropbox/working_projects/app_rumen/comments.csv --headerline --type csv --drop 
+
 
 mongo_messages$update("{}",paste0('{"$set": { "title": "some title"}}'),multiple=TRUE) 
 

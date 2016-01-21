@@ -98,11 +98,9 @@ output$selectedUser  <- renderUI({
 
     # Increase the view counter of user page
     update_views <- paste0('{"$set":{', '"profile_views":', as.integer(tmp_user$profile_views + 1), '}}')
-    
-    
+  
     mongo_users$update(field_userID, update=update_views)
-    
-    
+
     # Prepare output$selected_user for commenting
     wellPanel(
       h3(strong(tmp_user$user_name)),
@@ -110,8 +108,7 @@ output$selectedUser  <- renderUI({
          strong("Interests: "), gsub(",",", ",tmp_user$interests),br(),
          strong("Location: "),tmp_user$location,br(),
          strong("LinkedIn: "), tmp_user$linked_in, br(),
-         strong("About: "), tmp_user$about, br(), 
-         br(),
+         strong("About Me: "), tmp_user$about, br(), br(),
          strong("User Stats:"), br(),
          strong("Profile Views: "),tmp_user$profile_views, br(),
          strong("Total Comments Made:"), tmp_user$comments, br(),
@@ -130,16 +127,10 @@ output$selectedUser  <- renderUI({
          strong("Total Views: "),tmp_user$total_views, br(),
          strong("Total Comments Received:"), tmp_user$total_comments, br(),
          strong("Average Interest: "),round(tmp_user$average_interest,2), br(),
-         strong("Followed Posts:"), strtrim(tmp_user$n_followed_posts,10),br(),
-         br(),
-         div(id="button_user_edit",
-             fluidRow(column(5,
-                actionButton("user_edit","Edit (author only)","primary"))
-             ),
-             br()
-        )
-      ))
-
+         strong("Followed Posts:"), strtrim(tmp_user$n_followed_posts,10)), br(), 
+         insert_edit("user_edit",
+                  rv$selected_user$email_address, user_session$info$emailAddress)
+      ) 
   } else {
      # Prepare output$selectedPost for editing
   
@@ -159,7 +150,7 @@ output$selectedUser  <- renderUI({
                      choices=c("Minnesota",state.name[state.name!="Minnesota"], "Other"),
                      selected=tmp_user$location), br(),
          textInput("linked_in", "LinkedIn", value=tmp_user$linked_in), br(),
-         strong("About: "), br(),
+         strong("About Me: "), br(),
          inputTextarea('about', value=tmp_user$about,20,50), br(), 
          tags$head(tags$style(type="text/css", "#about {border-color: #C0C0C0}")),
          br(),br(), 

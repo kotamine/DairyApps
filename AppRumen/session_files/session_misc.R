@@ -1,3 +1,73 @@
+## -------- code regarding log in info ---------
+# Log in when opening the website 
+lapply(c("log_in_0","log_in"), function(item) {
+  observeEvent(input[[item]], { 
+    google_login()
+  })
+})
+
+# Give googlesheets permission to access your spreadsheets and google drive
+google_login <- function() {
+  gs_auth( new_user = TRUE)
+  user_session$guest <- FALSE
+  user_session$info <- gs_user()
+  rv$user_name <- user_session$info$displayName
+  rv$email_address <- user_session$info$emailAddress
+  rv$comment_user_name <- user_session$info$displayName
+  rv$comment_email_address <-  user_session$info$emailAddress
+}
+
+observeEvent(input$log_in_guest, {
+  user_session$guest <- TRUE
+})
+
+send_buttons <- c("post_send","comment_send", "message_user")
+
+observe({
+  user_session$guest 
+  
+  if (!is.null(user_session$info)) {
+    lapply(c(fields_post_mandatory,fields_comment_mandatory,send_buttons ),
+           function(item)  shinyjs:: enable(item))
+    
+  } else {
+    lapply(c(fields_post_mandatory,fields_comment_mandatory,send_buttons ),
+           function(item)  shinyjs:: disable(item))
+  }
+})
+
+# Show/hide the UI through log-in 
+observe({
+  if (!is.null(user_session$info) | user_session$guest) {
+    shinyjs:: hide("log_in_page")
+    shinyjs:: show("after_log_in")
+  } else {
+    shinyjs:: show("log_in_page")
+    shinyjs:: hide("after_log_in")
+  }
+  if (!is.null(user_session$info)) { 
+    shinyjs:: show("after_log_in_notice")
+  } else {
+    shinyjs:: hide("after_log_in_notice")
+  }
+})
+
+
+## ------------- Enable/disable by condition --------------
+# Allow the owner of the selected post or selected user to edit
+insert_edit <- function(var_name, item1, item2) {
+  # lappy() can be used for UI-side logic 
+  lapply(1, function(a) { # a is just a placeholder 
+  ifelse(is.null(user_session$info) | is.null(item1), # check NULL only for item1
+    tmp_edit <- FALSE,
+    ifelse(item1 == item2, tmp_edit <- TRUE, tmp_edit <- FALSE)) 
+    if (tmp_edit) {
+      div(actionButton(var_name,"Edit (author only)","primary"), br())
+    }
+  })
+}
+
+
 
 # Gather all the form inputs
 row_inputs <- function(fields) {
@@ -13,6 +83,22 @@ row_inputs <- function(fields) {
   return(new_row)
 }
  
+
+# Enable the Submit button when all mandatory fields are filled out
+observe({
+  fields_post_filled <-
+    fields_post_mandatory %>%
+    sapply(function(x) !is.null(input[[x]]) && input[[x]] != "") %>%
+    all()
+  shinyjs::toggleState("post_send", fields_post_filled)
+  
+  fields_comment_filled <-
+    fields_comment_mandatory %>%
+    sapply(function(x) !is.null(input[[x]]) && input[[x]] != "") %>%
+    all()
+  shinyjs::toggleState("comment_send", fields_comment_filled)
+})
+
 
 # Change between Like to Liked
 switch_like_unlike <- function(mongo_db, like_show, unlike_show,
@@ -58,131 +144,20 @@ switch_like_unlike(mongo_follow_user, "follow_user_0","follow_user_1", "follower
                    "follow_user","unfollow_user") %>% unlist() 
  
 
-# # Change between Like to Liked
-# observe({ 
-#   if (length(user_session$info)>0) {
-#     shinyjs::enable("like_0")
-#     browser()
-#     input$like
-#     input$unlike 
-#     if (length(mongo_likes$find( paste0('{ "user": "',user_session$info$emailAddress, 
-#                                         '", "post": "',rv$active_postsID[rv$view],'"}')))>0) {
-#       shinyjs::hide("like_0") 
-#       shinyjs::show("like_1")
-#     } else {
-#       shinyjs::hide("like_1")
-#       shinyjs::show("like_0") 
-#     }
-#   } 
-# })  
-# 
-# observeEvent(input$like, {
-#   new_row <- matrix(c(user_session$info$emailAddress,rv$active_postsID[rv$view]),nrow=1) %>% data.frame()
-#   colnames(new_row) <- (mongo_likes$find() %>% colnames())
-#   mongo_likes$insert(new_row)
-# })
-# 
-# observeEvent(input$unlike, {
-#   mongo_likes$remove(paste0('{ "user": "',user_session$info$emailAddress, 
-#                             '", "post": "',rv$active_postsID[rv$view],'"}')) 
-# })
-
-
-         
-# -- temporarily disabled for dev & testing purposes --
-# # disable email_address and user_name in Post, 
-# # which forces the user to log in through Google Account
-# shinyjs::toggleState("email_address", FALSE)
-# shinyjs::toggleState("user_name", FALSE)
-
-
+  
 # Show/hide archive comments
 shinyjs::onclick("a_view_archive_comments",
                  shinyjs::toggle(id="view_archive_comments", anim = TRUE)
 )
 
 
-# Enable the Submit button when all mandatory fields are filled out
-observe({
-  fields_post_filled <-
-    fields_post_mandatory %>%
-    sapply(function(x) !is.null(input[[x]]) && input[[x]] != "") %>%
-    all
-  shinyjs::toggleState("post_send", fields_post_filled)
-  
-  fields_comment_filled <-
-    fields_comment_mandatory %>%
-    sapply(function(x) !is.null(input[[x]]) && input[[x]] != "") %>%
-    all
-  shinyjs::toggleState("comment_send", fields_comment_filled)
-  
-})
 
 
 
-# Allow the owner of the selected post to edit
-observe({
-  if (is.null(user_session$info$token_valid) | is.null( rv$selectedPost$email_address)) {
-    tmp_edit <- FALSE
-  }
-  else {
-    if (user_session$info$emailAddress == rv$selectedPost$email_address) {
-      tmp_edit <- TRUE
-    } else {
-      tmp_edit <- FALSE
-    }
-  }
-  shinyjs::toggleState("edit", tmp_edit)
-})
 
-# # Allow the user to edit his/her profile 
-# observe({
-#   if (is.null(user_session$info$token_valid) | is.null( rv$selectedPost$email_address)) {
-#     tmp_edit <- FALSE
-#   }
-#   else {
-#     if (user_session$info$emailAddress == rv$selectedPost$email_address) {
-#       tmp_edit <- TRUE
-#     } else {
-#       tmp_edit <- FALSE
-#     }
-#   }
-#   shinyjs::toggleState("edit", tmp_edit)
-# })
 
-# log in from new post
-observeEvent(input$gmail1, {
-  # Give googlesheets permission to access your spreadsheets and google drive
-  gs_auth( new_user = TRUE)
-  user_session$info <- gs_user()
-  updateTextInput(session, "user_name", value = user_session$info$displayName)
-  updateTextInput(session, "email_address", value = user_session$info$emailAddress)
-  updateTextInput(session, "comment_user_name", value = user_session$info$displayName)
-  updateTextInput(session, "comment_email_address", value =  user_session$info$emailAddress)
-})
 
-# log in from comment 
-observeEvent(input$gmail2, {
-  # Give googlesheets permission to access your spreadsheets and google drive
-  gs_auth( new_user = TRUE)
-  user_session$info <- gs_user()
-  updateTextInput(session, "user_name", value = user_session$info$displayName)
-  updateTextInput(session, "email_address", value =  user_session$info$emailAddress)
-  updateTextInput(session, "comment_user_name", value = user_session$info$displayName)
-  updateTextInput(session, "comment_email_address", value =  user_session$info$emailAddress)
-})
-
-# log in from the top of the side bar
-observeEvent(input$log_in, {
-  # Give googlesheets permission to access your spreadsheets and google drive
-  gs_auth( new_user = TRUE)
-  user_session$info <- gs_user()
-  updateTextInput(session, "user_name", value = user_session$info$displayName)
-  updateTextInput(session, "email_address", value =  user_session$info$emailAddress)
-  updateTextInput(session, "comment_user_name", value = user_session$info$displayName)
-  updateTextInput(session, "comment_email_address", value =  user_session$info$emailAddress)
-})
-
+## --- The following is used in Table View. This section may be omitted. ---- 
 # load databases after "Send" operations   
 tables$posts <- reactive({
   input$post_send
@@ -220,8 +195,6 @@ tables$discontinued_posts <- reactive({
   input$edit_send
   mongo_discontinued_posts$find()
 })
-
-
 
 # Show tables of posts and comments 
 output$viewTable <- DT::renderDataTable({ 

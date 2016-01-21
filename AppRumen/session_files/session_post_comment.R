@@ -1,3 +1,26 @@
+output$resetable_comment <- renderUI({
+  # Acts as a trigger when the user is viewing
+  rv$comment_reset 
+  
+  div(
+    shinyjs::disabled(inputTextarea('comment', '',5,50)), 
+    tags$head(tags$style(type="text/css", "#comment {border-color: #C0C0C0}"))
+  )
+})
+
+
+output$resetable_post <- renderUI({
+  # Acts as a trigger when the user is viewing
+  rv$post_reset 
+  
+  div(
+    shinyjs::disabled(inputTextarea('post', '', 40,50)), 
+    tags$head(tags$style(type="text/css", "#post {border-color: #C0C0C0}"))
+  )
+})
+
+
+
 # ---------- Event: post_send button ------------
 observeEvent(input$post_send, {
   
@@ -14,6 +37,8 @@ observeEvent(input$post_send, {
   rv$timestamp <- get_time_human()
   rv$timestamp_comment <- 0 
   new_row <- row_inputs(fields_post)
+  
+  user_session$info$emailAddress
   
   # Add a row to the data (show an error message in case of error)
   tryCatch({
@@ -86,7 +111,8 @@ observeEvent(input$comment_send, {
                             '"current_comments":', (tmp_post$current_comments  + 1),
                             ', "cumulative_comments":', (tmp_post$cumulative_comments + 1),
                             ', "timestamp_comment":', get_time_epoch(), 
-                            ', "average_interest":', average_interest, '}}')
+                            # ', "average_interest":', average_interest,
+                            '}}')
   
   field_postID <- paste0('{"postID":', tmp_post$postID, '}')
   mongo_posts$update(field_postID, update=update_comments)
@@ -97,26 +123,5 @@ observeEvent(input$comment_send, {
   rv$back_to_selected_post <- rv$back_to_selected_post + 1
 }) 
 
-
-output$resetable_comment <- renderUI({
-  # Acts as a trigger when the user is viewing
-  rv$comment_reset 
-  
-  div(
-    inputTextarea('comment', '',5,50), 
-    tags$head(tags$style(type="text/css", "#comment {border-color: #C0C0C0}"))
-    )
-})
-
-
-output$resetable_post <- renderUI({
-  # Acts as a trigger when the user is viewing
-  rv$post_reset 
- 
-   div(
-    inputTextarea('post', '', 40,50), 
-    tags$head(tags$style(type="text/css", "#post {border-color: #C0C0C0}"))
-  )
-})
 
 
