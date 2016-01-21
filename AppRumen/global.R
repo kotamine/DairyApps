@@ -43,7 +43,7 @@ fields_post <- c(
   "user_name", "email_address", 
   "edits", "current_views", "cumulative_views", "current_comments",
   "cumulative_comments", "timestamp_comment", 
-  "likes", "n_followers"
+  "likes", "n_followers", "completeness"
 )
 
 # All fields in  mongo_comments

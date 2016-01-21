@@ -46,12 +46,13 @@ filter_people <- reactive({
 })
 
 output$postboxes <- renderUI({
-  # Acts as a trigger when the user is viewing
-  rv$back_to_active_post 
+#   # Acts as a trigger when the user is viewing
+#   rv$back_to_active_post  
   
-    validate(
-      need( (!is.null(input$n_boxes) & input$n_boxes>0) , 'Please enter the number of posts.')
-    )  
+
+  need((!is.null(input$n_boxes) & input$n_boxes>0) ,
+           'Please enter the number of posts.') %>% validate()
+    
   
   table_posts_copy <-  mongo_posts$find(filter_posts()) 
   if (length(table_posts_copy)==0) return()
@@ -61,36 +62,13 @@ output$postboxes <- renderUI({
                      "Most recently commented"= table_posts_copy$timestamp_comment,
                      "Most commented"= table_posts_copy$cumulative_comments, 
                      "Most viewed"= table_posts_copy$cumulative_views,
-                     "Highest interests"=  table_posts_copy$average_interest)
+                     "Most liked"=  table_posts_copy$likes)
 
   # Sorted posts that will be retreived in "Details" panel via rv$view 
   sorted_table_posts <- table_posts_copy[rev(order(tmp_sort)),]
-  rv$active_postsID <-  sorted_table_posts$postID 
-  rv$user_trafic <- "post"
-  rv$post_trafic <- "post"
-  
-  lapply(c(1:input$n_boxes), function(x) {
-    observeEvent(input[[paste0("view",x)]], ({
-      rv$view <- x
-      # Update "Details" panel via trigger "rv$back_to_selected_post"  
-      rv$back_to_selected_post <- rv$back_to_selected_post + 1
-      updateTabItems(session, "tabs","mainTab")
-      updateCollapse(session, "collapseMain", open = "Details")
-    }))
-  })
-  
-  rv$active_posts_email <- sorted_table_posts$email_address
-    
-  lapply(c(1:input$n_boxes_people), function(x) {
-    observeEvent(input[[paste0("user",x)]], ({
-      rv$view_user <- x
-      # Update "Details" panel via trigger "rv$back_to_selected_user"  
-      rv$back_to_selected_user <- rv$back_to_selected_user + 1
-      updateTabItems(session, "tabs","peopleTab")
-      updateCollapse(session, "collapsePeople", open = "Details")
-    }))
-  })
-  
+#   rv$active_postsID <-  sorted_table_posts$postID 
+#   rv$user_trafic <- "post"
+#   rv$post_trafic <- "post"
   
   N <- dim(table_posts_copy)[1]
   if (is.null(input$n_boxes) || is.na(input$n_boxes)) {
@@ -98,6 +76,32 @@ output$postboxes <- renderUI({
   } else {
     n <- min(input$n_boxes,N)
   }
+  
+  gen_post_links(sorted_table_posts$postID, "post", n)
+  gen_post_links(sorted_table_posts$email_address,"post_owner", n)
+  
+#   lapply(c(1:input$n_boxes), function(x) {
+#     observeEvent(input[[paste0("view",x)]], ({
+#       rv$view <- x
+#       # Update "Details" panel via trigger "rv$back_to_selected_post"  
+#       rv$back_to_selected_post <- rv$back_to_selected_post + 1
+#       updateTabItems(session, "tabs","mainTab")
+#       updateCollapse(session, "collapseMain", open = "Details")
+#     }))
+#   })
+#   
+#   rv$active_posts_email <- sorted_table_posts$email_address
+#     
+#   lapply(c(1:input$n_boxes_people), function(x) {
+#     observeEvent(input[[paste0("user",x)]], ({
+#       rv$view_user <- x
+#       # Update "Details" panel via trigger "rv$back_to_selected_user"  
+#       rv$back_to_selected_user <- rv$back_to_selected_user + 1
+#       updateTabItems(session, "tabs","peopleTab")
+#       updateCollapse(session, "collapsePeople", open = "Details")
+#     }))
+#   })
+  
   
   lapply(1:n, function(i) {
     tmp_post <- sorted_table_posts[i,]  
@@ -110,41 +114,31 @@ output$postboxes <- renderUI({
         "Comments:  ", tmp_post$cumulative_comments, br(),
         "Average Interest:  ", round(tmp_post$average_interest,2), br(),
         "Date:  ", strtrim(tmp_post$timestamp,10), br(), 
-       "By:", actionButton(inputId = paste0("user", i), tmp_post$user_name, "link")
+       "By:", actionButton(inputId = paste0("post_owner", i), tmp_post$user_name, "link")
        ), 
-      actionButton(inputId = paste0("view", i),"View","primary") 
+      actionButton(inputId = paste0("post", i),"View","primary") 
     ) 
   })
 })
 
-# 
-# observeEvent(input$n_boxes, {
-#   lapply(c(1:input$n_boxes), function(x) {
-#     observeEvent(input[[paste0("view",x)]], ({
-#       updateTabItems(session, "tabs","mainTab")
-#       updateCollapse(session, "collapseMain", open = "Details")
-#       rv$view <- x
-#     }))
-#   })
-# })
 
 
 output$peopleboxes <- renderUI({
-  # Acts as a trigger when the user is viewing
-  rv$back_to_active_people 
+#   # Acts as a trigger when the user is viewing
+#   rv$back_to_active_people 
   
-  validate(
-    need( (!is.null(input$n_boxes_people) & input$n_boxes_people>0) , 
-          'Please enter the number of people.')
-  )  
+
+    need((!is.null(input$n_boxes_people) & input$n_boxes_people>0), 
+          'Please enter the number of people.') %>% validate()
+
   browser()
   
-  isolate({
-  if (rv$user_trafic == "message") {
-    updateCollapse(session,"collapsePeople","Details")
-    return()
-  }
-  }) 
+#   isolate({
+#   if (rv$user_trafic == "message") {
+#     updateCollapse(session,"collapsePeople","Details")
+#     return()
+#   }
+#   }) 
   
   table_users_copy <-  mongo_users$find(filter_people()) 
   if (length(table_users_copy)==0) return()
@@ -161,22 +155,25 @@ output$peopleboxes <- renderUI({
   rv$active_users_email <-  sorted_table_users$email_address 
   rv$user_trafic <- "people"
   
-  lapply(c(1:input$n_boxes), function(x) {
-    observeEvent(input[[paste0("view_user",x)]], ({
-      rv$view_user <- x
-      # Update "Details" panel via trigger "rv$back_to_selected_post"  
-      rv$back_to_selected_user <- rv$back_to_selected_user + 1
-      updateTabItems(session, "tabs","peopleTab")
-      updateCollapse(session, "collapsePeople", open = "Details")
-    }))
-  })
-  
   N <- dim(table_users_copy)[1]
   if (is.null(input$n_boxes_people) || is.na(input$n_boxes_people)) {
     n <- 0
   } else {
     n <- min(input$n_boxes_people,N)
   }
+  
+  
+#   lapply(c(1:input$n_boxes), function(x) {
+#     observeEvent(input[[paste0("view_user",x)]], ({
+#       rv$view_user <- x
+#       # Update "Details" panel via trigger "rv$back_to_selected_post"  
+#       rv$back_to_selected_user <- rv$back_to_selected_user + 1
+#       updateTabItems(session, "tabs","peopleTab")
+#       updateCollapse(session, "collapsePeople", open = "Details")
+#     }))
+#   })
+  
+  gen_post_links(sorted_table_users$email_address ,"user", n)
   
   lapply(1:n, function(i) {
     tmp_user <- sorted_table_users[i,]  

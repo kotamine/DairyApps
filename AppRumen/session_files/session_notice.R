@@ -202,20 +202,6 @@ observeEvent(input$send_reply, {
 })
 
 
-gen_post_id_links <- function(post_names, post_IDs, link_id,
-                              post_trafic, varname_postID) {
-  lapply(1:length(post_names), function(i) { 
-    shinyjs::onclick(paste0(link_id,i), {
-      rv$post_trafic <- post_trafic
-      rv[[varname_postID]] <- post_IDs[i]
-      updateCollapse(session,"collapseMain","Details")
-      updateTabItems(session, "tabs", selected="mainTab")
-    })
-    
-  paste0('<a id="',link_id,i,'">', post_names[i], '</a>')
-}) %>% unlist() 
-} 
-
 
 # ---------------- Comments received ------------------
 output$table_notice_comment <- DT::renderDataTable({ 

@@ -18,6 +18,7 @@ shinyServer(function(input, output, session) {
   
   browser()
   
+
   ## Connect to mongodb from a mongolab location
   host <- "ds061954.mongolab.com:61954"
   username <- "user1"
@@ -25,8 +26,8 @@ shinyServer(function(input, output, session) {
   db <- "app_rumen"
   url <- paste0("mongodb://",username,":",password,"@", host, "/",db)
   
-  stop('restructuring mongo db') 
-  
+#   stop('restructuring mongo db') 
+#   
   mongo_posts <- mongo(collection="posts", db=db, url = url)
   mongo_comments <- mongo(collection="comments", db=db, url = url)
   # mongo_archive_posts <- mongo(collection="archive_posts", db=db, url = url)
@@ -40,27 +41,27 @@ shinyServer(function(input, output, session) {
   mongo_follow_user <- mongo(collection="follow_user", db=db, url = url)
   mongo_messages <-   mongo(collection="messages", db=db, url = url)
   # mongo_system_use <-   mongo(collection="system_use", db=db, url = url)
-  
-  # browser()
+#   
+#   # browser()
   mongo_posts$index('{"post_category":1}')
   
   source(file.path("session_files","helpers.R"), local=TRUE)
   
   source(file.path("session_files","session_populate.R"), local=TRUE)
   
-  source(file.path("session_files","session_post_comment.R"), local=TRUE)
-  
+#   source(file.path("session_files","session_post_comment.R"), local=TRUE)
+#   
   source(file.path("session_files","session_details_edit.R"), local=TRUE)
-  
-  source(file.path("session_files","session_user_edit.R"), local=TRUE)
-  
-  source(file.path("session_files","session_notice.R"), local=TRUE)
-  
-  source(file.path("session_files","session_notification.R"), local=TRUE)
-  
-  source(file.path("session_files","session_misc.R"), local=TRUE)
-  
-  
+#   
+#   source(file.path("session_files","session_user_edit.R"), local=TRUE)
+#   
+#   source(file.path("session_files","session_notice.R"), local=TRUE)
+#   
+#   source(file.path("session_files","session_notification.R"), local=TRUE)
+#   
+   source(file.path("session_files","session_misc.R"), local=TRUE)
+#   
+#   
   
 }) 
 

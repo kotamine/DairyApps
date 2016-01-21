@@ -40,18 +40,6 @@ bsCollapse(id = "collapseMain",
                                              bsButton("follow","Follow", style="primary"))),
                                        shinyjs::hidden(div(id="follow_1",
                                                            bsButton("unfollow","Undo: Follow",  style="primary"))),
-                                       # fluidRow(column(6,
-                                       #                 div(id="like_0",
-                                       #                     shinyjs::disabled(
-                                       #                       bsButton("like","Like", style="primary"))),
-                                       #                 shinyjs::hidden(div(id="like_1",
-                                       #                                     bsButton("unlike","Undo: Like",  style="primary")))),
-                                       #          column(6,
-                                       #                 div(id="follow_0",
-                                       #                     shinyjs::disabled(
-                                       #                       bsButton("follow","Follow", style="primary"))),
-                                       #                 shinyjs::hidden(div(id="follow_1",
-                                       #                                     bsButton("unfollow","Undo: Follow",  style="primary"))))),
                                        column(5, 
                                               a(id = "a_view_archive_comments","Show/hide comments in archive")
                                        )),

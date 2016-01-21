@@ -1,5 +1,4 @@
 # ------------- New Post --------------------
-# title="New Post", id="postTab",
 div(
   div(id = "post_form",
       shinyjs::disabled(textInput("post_name","App Name", value="")),
@@ -25,5 +24,6 @@ div(
   shinyjs::hidden(numericInput("current_views","", value=0)),
   shinyjs::hidden(numericInput("cumulative_views","", value=0)),
   shinyjs::hidden(numericInput("current_comments","", value=0)),
-  shinyjs::hidden(numericInput("cumulative_comments","", value=0))
+  shinyjs::hidden(numericInput("cumulative_comments","", value=0)),
+  shinyjs::hidden(numericInput("completeness","", value=5))
 )
