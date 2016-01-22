@@ -2,14 +2,15 @@
 # ------------ Show Selected User and Enable Edit process ----------------
 # Prepare the display of a selectet post in User
 output$selectedUser  <- renderUI({ 
-  # React to the change in rv$selected_post
-  
+  # React to the change in rv$selected_user
   browser()
-    
-    if (dim(rv$selected_user)[1] ==0)  { rv$selected_user <- NULL }
-      need(!is.null(rv$selected_user), 
-           'No individual is selected.') %>% validate()
-    
+  
+   need(!is.null(rv$selected_user), 
+       'No individual is selected.') %>% validate()
+   
+   need(nrow(rv$selected_user)>0, 
+        'No individual is selected.') %>% validate()
+   
     tmp_user <- rv$selected_user
   
     field_userID <- paste0('{"email_address":', '"',tmp_user$email_address,'"','}')
@@ -40,9 +41,6 @@ output$selectedUser  <- renderUI({
     tmp_user$last_commented <- comments$timestamp2 %>% sort2(decreasing=TRUE) %>% "["(1) 
     
     
-    # tmp_user$all_posts <- list_post_links(posts$post_name, "user_post")
-    # gen_post_links(posts$postID, "user_post")    
-   
     active <- posts$status=="Active"
     completed <- posts$status=="Completed"
     resolved <- posts$status=="Resolved"
@@ -84,7 +82,7 @@ output$selectedUser  <- renderUI({
                   tmp_user$email_address, user_session$info$emailAddress)
       )  
   } else { 
-     # Prepare output$selectedPost for editing
+     # Prepare output$selectedUser for editing
   
    vec_interests <- ifelse(is.null(tmp_user$interests), NULL,
                               strsplit(tmp_user$interests[[1]],",")) %>% unlist() %>% c()

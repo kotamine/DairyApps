@@ -2,8 +2,7 @@
 # ------------ Show Selected Post and Enable Edit process ----------------
 # Prepare the display of a selectet post in Details
 output$selectedPost  <- renderUI({ 
-  # React to the change in rv$selected_post and rv$back_to_selected_post 
-  rv$back_to_selected_post 
+  # React to the change in rv$selected_post 
   browser() 
   
   # User-experience stuff
@@ -117,7 +116,7 @@ output$selectedPost  <- renderUI({
 
 output$selectedArchiveComments <- renderUI({
   N <- dim(rv$archive_comments)[1]
-  if (!is.null(N_archive_comments)) {
+  if (!is.null(N)) {
     n <- min(input$n_archive_comments, N)
     archive_comment_users_email <- rv$archive_comments$comment_email_address
     gen_post_links(archive_comment_users_email,"archive_comment_user", n)

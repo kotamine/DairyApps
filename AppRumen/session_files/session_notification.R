@@ -4,7 +4,7 @@
 output$userpanel <- renderUI({
   # session$user is non-NULL only when authenticated 
   if (!is.null(user_session$info$token_valid)) {
-    fist_name <- paste0("Welcome ", strsplit(user_session$info$displayName," ")[[1]][1],"!")
+    fist_name <- paste0("Welcome ", strsplit(rv$user_name," ")[[1]][1],"!")
     sidebarUserPanel(
       span(fist_name),
       subtitle = actionButton("log_out", "Logout","link")) 
@@ -14,9 +14,7 @@ output$userpanel <- renderUI({
   } 
 }) 
 
-observeEvent(input$log_out, {
-  user_session$info <- NULL
-})
+
 
 
 output$messageMenu <- renderMenu({
@@ -24,15 +22,15 @@ output$messageMenu <- renderMenu({
   # that messageData is a data frame with two columns, 'from' and 'message'.
   need(length(user_session$info)>0," ",NULL) %>% validate()
   
-
-  userID <- paste0('{"receiver_email_address": "',user_session$info$emailAddress,'"}')
+  userID <- paste0('{"receiver_email_address": "', rv$email_address,'"}')
   tbl <- mongo_messages$find(userID) 
   tbl <- tbl[tbl$viewed_by_receiver==0,]
   
-  if (dim(tbl)[1]>0) {
-  msgs <- apply(tbl, 1, function(row) {
-    messageItem(from = row$sender_name, message = paste0(strtrim(row$content,15),".."))
-  })
+  if (nrow(tbl)>0) {
+    msgs <- lapply(1:nrow(tbl), function(row) {
+          messageItem(from = tbl[row,]$sender_name,
+                      message = paste0(strtrim(tbl[row,]$content,25),".."))
+        })
   } else {
     msgs = NULL
   }

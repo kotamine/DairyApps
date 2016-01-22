@@ -52,6 +52,12 @@ fields_comment <- c(
   fields_comment_mandatory, "viewed_by_owner"
 )
 
+user_fields <- c(
+  "timestamp", "email_address", "user_name", "profession", "interests", "location",        
+  "last_logged_in", "profile_views","about", "linked_in", 
+  "n_followed_posts", "n_followers", "n_log_in" 
+)
+
 # get current Epoch time
 get_time_epoch <- function() {
   return(as.integer(Sys.time()))

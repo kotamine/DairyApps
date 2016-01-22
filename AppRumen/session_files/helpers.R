@@ -50,8 +50,6 @@ gen_post_links <- function(post_IDs, link_id, N=length(post_IDs)) {
     if (N==0) return()
     lapply(1:N, function(i) { 
       observeEvent(input[[paste0(link_id,i)]], {
-        browser()
-        
         field_postID <- paste0('{"postID":', post_IDs[i],'}')
         tmp_post <-  mongo_posts$find(field_postID)
         rv$selected_post <- tmp_post[tmp_post$status!="Archive",]
@@ -70,18 +68,18 @@ gen_user_links <- function(user_IDs, link_id, N=length(user_IDs)) {
   if (N==0) return()
   lapply(1:N, function(i) { 
     observeEvent(input[[paste0(link_id,i)]], {
-      field_postID <- paste0('{"email_address":"', user_IDs[i],'"}')
-      rv$selected_user <-  mongo_users$find(field_postID)
+      field_userID <- paste0('{"email_address":"', user_IDs[i],'"}')
+      rv$selected_user <-  mongo_users$find(field_userID)
+      updateTabItems(session,'tabs',"peopleTab")
       updateCollapse(session,"collapsePeople","Details")
-      updateTabsetPanel(session,'tabs',"peopleTab")
       # updateTabItems(session, "tabs","peopleTab")
     })
   })
 }
 
-list_post_links <- function(post_names, post_IDs, link_id, N=length(post_names)) {
+list_post_links <- function(post_names, post_IDs, link_id, 
+                            N=length(post_names), nocomma=FALSE) {
   if (N==0) return()
-  browser()
   lapply(1:N, function(i) { 
     shinyjs::onclick(paste0(link_id,i), {
       field_postID <- paste0('{"postID":', post_IDs[i],'}')
@@ -94,31 +92,19 @@ list_post_links <- function(post_names, post_IDs, link_id, N=length(post_names))
   })
   
   lapply(1:N, function(i) { 
-    if (i<N) {
-        HTML(paste0('<a id="',link_id,i,'">', post_names[i], '</a>,&nbsp;&nbsp;'))
+    if (nocomma) {
+      HTML(paste0('<a id="',link_id,i,'">', post_names[i], '</a>')) 
     } else {
+      if (i<N) {
+        HTML(paste0('<a id="',link_id,i,'">', post_names[i], '</a>,&nbsp;&nbsp;'))
+      } else {
         HTML(paste0('<a id="',link_id,i,'">', post_names[i], '</a>'))
+      }
     }
-    # HTML(paste0('<a id="',link_id,i,'">', post_names[i], '</a>,&nbsp;&nbsp;'))
   })
 }
 
 
-
-gen_post_id_links <- function(post_names, post_IDs, link_id,
-                              post_trafic, varname_postID) {
-  lapply(1:length(post_names), function(i) { 
-    shinyjs::onclick(paste0(link_id,i), {
-      rv$post_trafic <- post_trafic
-      rv[[varname_postID]] <- post_IDs[i]
-      updateCollapse(session,"collapseMain","Details")
-      updateTabItems(session, "tabs", selected="mainTab")
-      # updateTabItems(session, "tabs","peopleTab")
-    })
-    
-    paste0('<a id="',link_id,i,'">', post_names[i], '</a>')
-  }) %>% unlist() 
-}
 
 # Function to insert previuos comments
 retrieveComments <- function(N_comments, tmp_comments, archive=FALSE) {
@@ -154,3 +140,27 @@ retrieveComments <- function(N_comments, tmp_comments, archive=FALSE) {
   }
 }    
 
+
+# Function to retrive messages
+retrieveMessages <- function(messages) {
+  
+  gen_user_links(messages$sender_email_address, "message_sender")
+  
+  div(h4("Conversation: ",strong(messages[1,]$sender_name), 
+         "and", strong(messages[1,]$receiver_name)),
+      h4(" Title: ", strong(messages[1,]$title)),
+
+      lapply(1:dim(messages)[1], function(i) { 
+      messages <- messages[order(messages$timestamp),]
+            tmp <- messages[i,]
+      wellPanel(  
+        p(tmp$content, br(),
+          # " -", actionButton(inputId =paste0("message_sender",i), tmp$sender_name, "link"), 
+          " -", HTML(paste0('<a id="message_sender',i,'">',tmp$sender_name, '</a>')), 
+          "at", substring(tmp$timestamp,12,16), 
+          "on", strtrim(tmp$timestamp,10)
+        ) 
+      )
+})
+  )
+}   

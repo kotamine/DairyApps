@@ -114,14 +114,15 @@ observeEvent(input$comment_send, {
   list1$commentID <- as.integer(get_time_epoch())
   list1$timestamp2 <- get_time_human()
   list1$postID <- tmp_post$postID
-  list1$post_name <- tmp_post$post_name
+#   list1$post_name <- tmp_post$post_name  # The input of the same name gives conflict 
   list1$comment_status <- "Active"
   list1$comment_user_name <- rv$user_name
   list1$comment_email_address <- rv$email_address
   list1$viewed_by_owner <- 0
   
   new_row <- row_inputs(fields_comment, list1)
-
+  new_row$post_name <- tmp_post$post_name 
+  
   # Add a row to Comments table (show an error message in case of error)
   tryCatch({
     mongo_comments$insert(new_row) 

@@ -7,13 +7,15 @@ div(
                        uiOutput("message_content"),
                        h5("Reply:"),
                        uiOutput('resettable_reply_content'),
-                       bsButton("send_reply","Send")
+                       actionButton("send_reply","Send","primary")
               ),
+              # shinyjs::hidden(div(id="create_new_message",
               tabPanel("New",
                        textInput("msg_title","Title:",value=NULL),
                        shinyjs::disabled(textInput("msg_user","To:",value=NULL)), 
                        uiOutput('resettable_msg_content'),
-                       bsButton("send_msg","Send")
+                       actionButton("send_msg","Send","primary")
+              # ))
               ),
               tabPanel("Sent",
                        DT::dataTableOutput("table_notice_sent")
@@ -28,8 +30,10 @@ div(
   br(),
   h3("Updates of posts you follow"),
   DT::dataTableOutput("table_notice_follow"),
+  br(),
   h3("Posts you may be interested in following"),
   DT::dataTableOutput("table_recom_posts"),
+  br(),
   h3("People you may be interested in following"),
   DT::dataTableOutput("table_recom_users"),
   br(),br()
