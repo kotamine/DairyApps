@@ -32,11 +32,6 @@ fields_post_mandatory <- c(
   "post_name", "post_category", "post"
 )
 
-fields_comment_mandatory <- c(
-  "novelty", "app_link", "comment" 
-)
-
-
 # All fields in  mongo_posts
 fields_post <- c(
   "timestamp", "postID", "status", fields_post_mandatory,  
@@ -44,6 +39,10 @@ fields_post <- c(
   "edits", "current_views", "cumulative_views", "current_comments",
   "cumulative_comments", "timestamp_comment", 
   "likes", "n_followers", "completeness"
+)
+
+fields_comment_mandatory <- c(
+  "novelty", "app_link", "comment" 
 )
 
 # All fields in  mongo_comments

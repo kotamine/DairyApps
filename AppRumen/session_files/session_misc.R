@@ -53,6 +53,7 @@ observe({
 })
 
 
+
 ## ------------- Enable/disable by condition --------------
 # Allow the owner of the selected post or selected user to edit
 insert_edit <- function(var_name, item1, item2) {
@@ -69,19 +70,6 @@ insert_edit <- function(var_name, item1, item2) {
 
 
 
-# Gather all the form inputs
-row_inputs <- function(fields) {
-  new_row <- lapply(fields, function(x) {
-    if (!is.null(input[[x]])) {
-      x = input[[x]] 
-    } else {
-      x = rv[[x]]
-    }
-  }) %>% data.frame()
-  rownames(new_row) <- NULL
-  colnames(new_row) <- fields
-  return(new_row)
-}
  
 
 # Enable the Submit button when all mandatory fields are filled out

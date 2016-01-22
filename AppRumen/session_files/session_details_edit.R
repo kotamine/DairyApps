@@ -2,7 +2,8 @@
 # ------------ Show Selected Post and Enable Edit process ----------------
 # Prepare the display of a selectet post in Details
 output$selectedPost  <- renderUI({ 
-  # React to the change in rv$selected_post
+  # React to the change in rv$selected_post and rv$back_to_selected_post 
+  rv$back_to_selected_post 
   browser() 
   
   # User-experience stuff

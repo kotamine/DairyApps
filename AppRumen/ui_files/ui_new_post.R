@@ -17,13 +17,5 @@ div(
         div(br(), tags$b("Error: "), span(id = "errorMsg")),
         style = "color: red;"
     )
-  ),
-  # hidden input field 
-  shinyjs::hidden(textInput("status","", value="Active")),
-  shinyjs::hidden(numericInput("edits","", value=0)),
-  shinyjs::hidden(numericInput("current_views","", value=0)),
-  shinyjs::hidden(numericInput("cumulative_views","", value=0)),
-  shinyjs::hidden(numericInput("current_comments","", value=0)),
-  shinyjs::hidden(numericInput("cumulative_comments","", value=0)),
-  shinyjs::hidden(numericInput("completeness","", value=5))
+  )
 )

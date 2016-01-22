@@ -39,8 +39,8 @@ shinyServer(function(input, output, session) {
   
   source(file.path("session_files","session_populate.R"), local=TRUE)
   
-#   source(file.path("session_files","session_post_comment.R"), local=TRUE)
-#   
+  source(file.path("session_files","session_post_comment.R"), local=TRUE)
+
   source(file.path("session_files","session_details_edit.R"), local=TRUE)
 
    source(file.path("session_files","session_user_edit.R"), local=TRUE)
