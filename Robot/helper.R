@@ -211,10 +211,6 @@ debt_table <- function(loan, interest_rate, loan_period,
 dash_IOFC <- function(IOFC, IOFC2, basis, x, 
                       cutoff=0,
                       difference=NULL) {
-  validate( 
-    need(!(is.na(IOFC) | is.na(IOFC2)), 
-         "NA")
-  ) 
   
   if (basis=="per cow") { 
     digit <- 0
@@ -223,15 +219,22 @@ dash_IOFC <- function(IOFC, IOFC2, basis, x,
     digit <- 2
     IOFC_unit <- "IOFC ($/cwt)"
   }
-  diff <- IOFC2 - IOFC
   
-  if (IOFC > cutoff) { 
-    style <- "background-color: #3EA055; color:white;"
-  #  style <- "background-color: #726F2D;  color:white;"
+  if (is.na(IOFC) | is.na(IOFC2)) {
+    diff <- NA
   } else {
-    style <-  "background-color: #F70D1A; color:white;" 
+    diff <- IOFC2 - IOFC
   }
-  
+  if (is.na(IOFC)) {
+    style <- "background-color: #3EA055; color:white;"
+  } else {
+    if (IOFC > cutoff) { 
+      style <- "background-color: #3EA055; color:white;"
+      #  style <- "background-color: #726F2D;  color:white;"
+    } else {
+      style <-  "background-color: #F70D1A; color:white;" 
+    }
+  }
   if (is.null(difference)) {
     div(class="well", style=style,  align="center",
         diff  %>% formatdollar2(digit) %>% strong() %>% h3(),
@@ -247,17 +250,16 @@ dash_IOFC <- function(IOFC, IOFC2, basis, x,
 
 
 dash_NAI <- function(NAI, x,cutoff=0, difference=NULL) {
-  validate( 
-    need(!is.na(NAI), 
-         "NA")
-  )     
   
-  if (NAI>cutoff) { 
-     style <- "background-color: #306EFF; color:white;"
-   # style <- "background-color: #0B3D4C; color:white;"
-    
-  }  else {
-    style <-  "background-color: #F70D1A; color:white;" 
+  if (is.na(NAI)) {
+    style <- "background-color: #306EFF; color:white;"
+  } else {
+    if (NAI>cutoff) { 
+      style <- "background-color: #306EFF; color:white;"
+      # style <- "background-color: #0B3D4C; color:white;"
+    } else {
+      style <- "background-color: #F70D1A; color:white;" 
+    }
   }
   
   if (is.null(difference)) {
@@ -271,6 +273,6 @@ dash_NAI <- function(NAI, x,cutoff=0, difference=NULL) {
         h5("Net Impact ($/year)"),
         difference %>% formatdollar2b() %>% strong() %>% h4())
   }
-}
+} 
 
 

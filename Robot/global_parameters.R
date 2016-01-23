@@ -31,14 +31,38 @@ ldquo <- HTML("&ldquo;")
 rdquo <- HTML("&rdquo;")
 emquo <- function(txt) em(HTML(paste0("&ldquo;",txt,"&rdquo;"))) 
 
+
+myRead.xlsx <- function(file, sheetIndex, rownameIndex=1, stringsAsFactors=FALSE) {
+  df <- read.xlsx(file, sheetIndex = sheetIndex, stringsAsFactors=stringsAsFactors) 
+  rownames(df) <- df[,rownameIndex]
+  df 
+}
+
+conv_factor <- 2.2046  # conversion factor from kg to pound 
+
+
+## Load the min/max/step setting values 
 common_variables_min_step <- read.xlsx("www/user_input_data_min_step.xlsx", 
                                        sheetIndex = 1, stringsAsFactors =FALSE) 
 profile_specific_variables_min_step <- read.xlsx("www/user_input_data_min_step.xlsx", 
                                                  sheetIndex = 2, stringsAsFactors =FALSE)  
 
 
+loc_dep_method <- which(common_variables_min_step$variable=="dep_method") 
+loc_n_sets <- which(profile_specific_variables_min_step$variable=="n_sets") 
 
-conv_factor <- 2.2046  # conversion factor from kg to pound 
+numeric_vars_min <- c(common_variables_min_step$min[-c(loc_dep_method)], 
+                      profile_specific_variables_min_step$min[-c(loc_n_sets)]) %>% as.numeric()
+
+numeric_vars_max <- c(common_variables_min_step$max[-c(loc_dep_method)], 
+                      profile_specific_variables_min_step$max[-c(loc_n_sets)]) %>% as.numeric()
+
+## Load the default setting values 
+default_common_case_1 <- myRead.xlsx("www/user_input_data_case_1.xlsx", 
+                                     sheetIndex = 1, stringsAsFactors =FALSE) 
+default_profile_specific_case_1 <- myRead.xlsx("www/user_input_data_case_1.xlsx", 
+                                               sheetIndex = 2, stringsAsFactors =FALSE) 
+
 
 list_inputs_shared <- c("herd_size","milk_cow_day","scc_average","hours_milking","hr_heat_detection",
                         "price_milk","scc_premium","cost_DM","cost_heifer","cull_price","labor_rate",
@@ -59,78 +83,13 @@ list_inputs_profile <- c("herd_increase","additional_labor","additional_cost", "
                          "down_housing","down_milking1","down_milking2",
                          "r_housing","r_milking1","n_yr_housing","n_yr_milking1","n_yr_milking2")
 
-label_inputs_shared <- c("Current herd size (milking & dry animals)",
-                         "Milk per cow per day, past year (lbs/cow/day)",
-                         "Current annual bulk tank average SCC (SCC/ml)",
-                         "Current hours of milking & chore labor (hours/day)",
-                         "Current hours of heat detection (hours per day)",
-                         "Mailbox milk price ($/cwt)",
-                         "SCC premium per 1,000 SCC (SCC/ml)",
-                         "Cost per lb of TMR dry matter ($ per lb DM)",
-                         "Cost of replacement heifer ($)",
-                         "Cull price per cow ($)",
-                         "Labor rate for milking and heat detection ($/hour)",
-                         "Labor rate for records and labor management ($/hour)",
-                         "Robot/parlor & related-housing prices (%)",
-                         "Margin milk over feed & operation per cow with robots (%)",
-                         "Milking & chore labor rate per hour (%)",
-                         "Hurdle rate for equity (%)",
-                         "Marginal (federal + state) income tax rate (%)",
-                         "Depreciation accounting method")
+label_inputs_shared <- default_common_case_1$label[1:length(list_inputs_shared)] 
 
-label_inputs_feed <-  c( "Milk per cow per day",
-                         "Milk fat content (%)",
-                         "Coefficient for Milk fat content",
-                         "Coefficient for Milk/cow/day adjusted to 4% fat",
-                         "Milking herd avg body weight (lb)",
-                         "Coefficient 1 for Milking herd avg body weight",
-                         "Coefficient 2 for Milking herd avg body weight",
-                         "Lactation weeks",
-                         "Coefficient 1 for Lactation weeks",
-                         "Coefficient 2 for Lactation weeks")
+label_inputs_feed <- default_common_case_1$label[(length(list_inputs_shared)+1):length(default_common_case_1$label)]
 
-label_inputs_profile <-  c("Anticipated increase in milking herd (cows)",
-                           "Additional labor expense with herd expansion ($/cow)",
-                           "Other expense with herd expansion ($/cow)",
-                           "Unit cost for Robots ($)",
-                           "Number of Robots (units)",
-                           "Cost for Retrofit or New Parlors ($)",
-                           "Housing changes per cow ($)",
-                           "Estimated annual change in milking system repair ($)",
-                           "Robots useful life (years)",
-                           "Sets of Robots or Parlors in planing horizon",
-                           "Salvage value of Robots in today's term ($)",
-                           "Insurance rate per $1000 value (%)",
-                           "Projected change in milk production (lbs/cow/day)",
-                           "Pellets fed in robot booth (lb/cow/day)",
-                           "Extra cost for pellets fed in robot booth ($/ton)",
-                           "Estimated percent change in SCC (%)",
-                           "Reproduction and herd health value of software ($/cow/year)",
-                           "Anticipated change in annual turnover rate (%)",
-                           "Anticipated savings in milking & chore labor (hours/day)",
-                           "Anticipated hours of heat detection (hours/day)",
-                           "Increased hours of records management (hours/day)",
-                           "Reduced hours of labor management (hours/day)",
-                           "Anticipated change in electricity cost ($/cow)",
-                           "Anticipated change in water cost ($/cow)",
-                           "Anticipated change in chemical cost ($/cow)",
-                           "Year of investment for the first set of Robots/Parlors",
-                           "Delayed amount of the housing investment till Robots/Parlors installment ($)",
-                           "Portion of anticipated milk increase installed with the initial housing investment (%)",
-                           "Portion of anticipated labor saving installed with the initial housing investment (%)",
-                           "Down payment for housing ($)",
-                           "Down payment for the first set of Robots/Parlors ($)",
-                           "Down payment for the second set of Robots/Parlors ($)",
-                           "Interest rate for housing loan (%)",
-                           "Interest rate for robots/parlors loan (%)",
-                           "Loan period for housing (year)",
-                           "Loan period for the first set of robots/parlors (years)",
-                           "Loan period for the second set of robots/parlors (years)")
+label_inputs_profile <-  default_profile_specific_case_1$label
 
+numeric_vars_label <- c(c(label_inputs_shared, label_inputs_feed)[-c(loc_dep_method)],  
+                        label_inputs_profile[-c(loc_n_sets)])
 
-myRead.xlsx <- function(file, sheetIndex, rownameIndex=1, stringsAsFactors=FALSE) {
-  df <- read.xlsx(file, sheetIndex = sheetIndex, stringsAsFactors=stringsAsFactors) 
-  rownames(df) <- df[,rownameIndex]
-  df 
-}
 

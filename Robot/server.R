@@ -3,14 +3,6 @@ source("global_parameters.R")
 
 source(file.path("ui_files", "ui_dashboard.R"), local=TRUE)  # Contains functions
 
-## Load the default setting values for investment profiles 
-default_common_case_1 <- myRead.xlsx("www/user_input_data_case_1.xlsx", 
-                                     sheetIndex = 1, stringsAsFactors =FALSE) 
-default_profile_specific_case_1 <- myRead.xlsx("www/user_input_data_case_1.xlsx", 
-                                               sheetIndex = 2, stringsAsFactors =FALSE) 
-
-
-
 
 shinyServer(function(input, output, session) { 
   

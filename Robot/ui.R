@@ -72,14 +72,28 @@ shinyUI(
       # ---------- Data Entry -----------
       tabPanel("Data Entry", value="Data_Entry",
                conditionalPanel("input.case1>0", # UPDATE HERE WHEN OTHER CASES ARE ADDED
-                                div(id = "loadMsg", wellPanel("Loading initial set-up and data..."), align="center"),
-                                div(id="dataEntry", h3("Data Entry",HTML(paste(icon("info-circle")))),
+                                fluidRow(column(6, offset=3,
+                                                div(id = "loadMsg", 
+                                                    wellPanel(h4("Loading initial set-up and data...",align="center"))),
+                                shinyjs::hidden(
+                                  div(id = "errorMsg_min",
+                                    wellPanel(h4("Invalid input data (violating the minimum):", align="center"), br(), 
+                                              uiOutput("error_min"))),
+                                div(id = "errorMsg_max",
+                                    wellPanel(h4("Invalid input data (violating the maximum):", align="center"), br(), 
+                                              uiOutput("error_max"))),
+                                div(id = "errorMsg_num",
+                                    wellPanel(h4("Invalid input data (violating numeric value):", align="center"), br(), 
+                                                 uiOutput("error_num")))
+                                )
+                                )),
+                                div(id="dataEntry", h2("Data Entry",HTML(paste(icon("info-circle")))),
                                     align="center"),
                                 source(file.path("ui_files","ui_data_entry_tabs.R"), local=TRUE)$value,
                                 # Need to add "$value" for including source in UI: 
                                 # otherwise "TRUE" will show up at the end of file
                                 conditionalPanel("input.calculation_switch=='ON'",
-                                div(id="dashboardPanel", h3("Dashboard",HTML(paste(icon("info-circle")))),align="center"),
+                                div(id="dashboardPanel", h2("Dashboard",HTML(paste(icon("info-circle")))),align="center"),
                                                   tabsetPanel(id="dashboard", 
                                                              tabPanel("Robots", value=base_profiles[1],
                                                                       uiDashboard(base_profiles[1])),
@@ -128,7 +142,7 @@ shinyUI(
       # ---------- Partial Budget Analysis -----------
       tabPanel("Partial Budget", value = "Partial_Budget",
                                div(id="partialBudget",
-                                   h3("Partial Budget Analysis",HTML(paste(icon("info-circle")))),align="center"),
+                                   h2("Partial Budget Analysis",HTML(paste(icon("info-circle")))),align="center"),
                conditionalPanel("input.calculation_switch=='ON'",
                                 tabsetPanel(id="partial_budget",
                                             tabPanel("Robots", value=base_profiles[1],
@@ -147,7 +161,7 @@ shinyUI(
       # ---------- Cash Flow Analysis -----------
       tabPanel("Cash Flow", value = "Cash_Flow",
                div(id="cashFlow",
-                   h3("Cash Flow Analysis",HTML(paste(icon("info-circle")))),align="center"),
+                   h2("Cash Flow Analysis",HTML(paste(icon("info-circle")))),align="center"),
                conditionalPanel("input.calculation_switch=='ON'",
                                 tabsetPanel(id="cash_flow",
                                             tabPanel("Robots", value=base_profiles[1],
@@ -166,7 +180,7 @@ shinyUI(
       # ---------- Summary  -----------
       tabPanel("Summary", value="Summary",
                div(id="summary",
-                   h3("Summary of Investment Profiles",
+                   h2("Summary of Investment Profiles",
                       HTML(paste(icon("info-circle")))),align="center"),
                conditionalPanel("input.calculation_switch=='ON'",
                                 source(file.path("ui_files","ui_summary.R"), local=TRUE)$value
@@ -179,7 +193,7 @@ shinyUI(
       # ---------- Sensitivity Analysis -----------
       tabPanel("Sensitivity", value="Sensitivity",
                div(id="sensitivityAnalysis",
-                   h3("Sensitivity Analysis",HTML(paste(icon("info-circle")))),align="center"),
+                   h2("Sensitivity Analysis",HTML(paste(icon("info-circle")))),align="center"),
                conditionalPanel("input.calculation_switch=='ON'",
                                 tabsetPanel(id="sensitivity",
                                             tabPanel("Robots", value=base_profiles[1],

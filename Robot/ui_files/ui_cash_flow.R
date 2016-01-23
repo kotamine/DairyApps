@@ -3,7 +3,7 @@
 uiCashFlow <- function(x) { 
   div( 
     fluidRow(column(6, offset=3,
-                    div(wellPanel(h4(paste(refProfileName(x))),align="center"))
+                    div(class="well-profile", h3(paste(refProfileName(x))),align="center")
     )),
     br(),
     fluidRow(

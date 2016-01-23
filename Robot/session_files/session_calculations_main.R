@@ -1,5 +1,4 @@
 
-
 lapply(base_profiles, function(x) {
   
   # Calculations given a profile x
@@ -8,7 +7,7 @@ lapply(base_profiles, function(x) {
     # Skip calculation before loading any "case" of default values 
     if (input$case1==0) return()
     
-    # browser()
+    if (ans[[paste0("invalid",x)]]) return()
     
     # Make this reactive to all data inputs; 
     lapply(list_inputs_shared, function(z) input[[paste(z)]])

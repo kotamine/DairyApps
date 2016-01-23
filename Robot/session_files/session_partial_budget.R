@@ -135,7 +135,7 @@ lapply(base_profiles, function(x) {
     n_year <- ans[[x]]$planning_horizon 
     delay_years <- input[[paste0("yr_system1",x)]]
     
-    df <- data.frame(Year=c(1:n_year))
+    df <- data.frame(Year=seq(1,n_year,1))
     df$Increased_Revenue_Total <- project_inflation(n_year, ans[[x]]$inc_rev_total, input$inflation_margin/100,
                                                     delay_years, ans[[paste0(x,"_delay")]]$inc_rev_total)
     df$Decreased_Expense_Total <- project_inflation(n_year, ans[[x]]$dec_exp_total, input$inflation_margin/100,
@@ -152,7 +152,8 @@ lapply(base_profiles, function(x) {
                     vAxis="{title:'Cash flows and annualized values ($)'}",
                     hAxis="{title:'Year', ticks: [5,10,15,20,25,30] }", 
                     legend="{position: 'right'}" ,
-                    chartArea ='{width: "50%", height: "60%" }' 
+                    chartArea ="{width: '50%', height: '50%' }",
+                    width=900, height=350 
                   ))
   })
   
@@ -164,7 +165,7 @@ lapply(base_profiles, function(x) {
     delay_years <- input[[paste0("yr_system1",x)]]
     
     
-    df <- data.frame(Year=c(1:n_year))
+    df <- data.frame(Year=seq(1,n_year,1))
     if (length(ans[[paste0(x,"_delay")]])>0) {
       delay_rev_minus_exp <- ans[[paste0(x,"_delay")]]$inc_rev_total - ans[[paste0(x,"_delay")]]$inc_exp_total
     } else {
@@ -190,15 +191,16 @@ lapply(base_profiles, function(x) {
                     vAxis="{title:'Cash flows & annualized value ($)'}",
                     hAxis="{title:'Year', ticks: [5,10,15,20,25,30] }", 
                     legend="{position: 'right'}" ,
-                    chartArea ='{width: "50%", height: "60%" }' 
-                  ))
+                    chartArea ="{width: '50%', height: '50%' }",
+                    width=900, height=350 
+                    ))
   }) 
   
   output[[paste0("PB_plot_after_tax_impact",x)]] <- renderGvis({
     need(!is.null(ans[[x]]$net_annual_impact_after_tax),"NA") %>% validate()
     
     n_year <- ans[[x]]$planning_horizon 
-    df <- data.frame(Year=c(0:n_year))
+    df <- data.frame(Year=seq(0,n_year,1))
     df$Before_Tax_Cashflow <-  round(ans[[x]]$table_cash_flow$before_tax_cash_flow)
     df$Tax_Operating_Income <- round(ans[[x]]$table_cash_flow$operating_income * input$tax_rate/100)
     df$Deduction_Interest <-  round(-ans[[x]]$table_cash_flow$interest_total * input$tax_rate/100)
@@ -213,15 +215,16 @@ lapply(base_profiles, function(x) {
                     vAxis="{title:'Cash flow ($)'}",
                     hAxis="{title:'Year', ticks: [5,10,15,20,25,30] }", 
                     legend="{position: 'right'}" ,
-                    chartArea ='{width: "50%", height: "60%" }' 
-                  ))
+                    chartArea ="{width: '50%', height: '50%' }",
+                    width=900, height=350 
+                    ))
   })
   
   output[[paste0("PB_plot_after_tax_impact_const",x)]] <- renderGvis({
     need(!is.null(ans[[x]]$net_annual_impact_after_tax),"NA") %>% validate()
     
     n_year <- ans[[x]]$planning_horizon 
-    df <- data.frame(Year=c(1:n_year))
+    df <- data.frame(Year=seq(1,n_year,1))
     df$Before_Tax_Cashflow <-  rep(round(ans[[x]]$net_annual_impact_before_tax), n_year)
     df$Tax_Operating_Income <- rep(round(ans[[x]]$tax_revenue_minus_expense),n_year)
     df$Deduction_Interest <-   rep(round(ans[[x]]$tax_interest),n_year)
@@ -236,8 +239,9 @@ lapply(base_profiles, function(x) {
                     vAxis="{title:'Annualized value ($)'}",
                     hAxis="{title:'Year', ticks: [5,10,15,20,25,30] }", 
                     legend="{position: 'right'}" ,
-                    chartArea ='{width: "50%", height: "60%" }' 
-                  ))
+                    chartArea ="{width: '50%', height: '50%' }",
+                    width=900, height=350 
+                    ))
   })
   
 })  
@@ -357,7 +361,7 @@ lapply(base_profiles, function(x) {
       labor_rate <- ans[[paste0(x,"_bw")]]$bw_wage_after_tax
       inflation <- ans[[paste0(x,"_bw")]]$bw_wage_inflation_after_tax
       
-      df <- data.frame(Year=c(1:n_year))
+      df <- data.frame(Year=seq(1,n_year,1))
       df$Baseline_projection <- project_inflation(n_year, input$labor_rate, input$inflation_labor/100, round=2)
       df$Breakeven_wage_shift <- project_inflation(n_year,labor_rate, input$inflation_labor/100, round=2)
       df$Wage_inflation_shift <- project_inflation(n_year, input$labor_rate, inflation, round=2)
@@ -369,8 +373,9 @@ lapply(base_profiles, function(x) {
                       vAxis="{title:'Wage Trajectory ($)'}", 
                       hAxis="{title:'Year'}", 
                       legend="{position: 'right'}",
-                      chartArea ="{width: '50%', height: '65%' }"
-                    ) 
+                      chartArea ="{width: '50%', height: '50%' }",
+                      width=900, height=350 
+                      ) 
       )
     })   
   }) 

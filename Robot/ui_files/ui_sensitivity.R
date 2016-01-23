@@ -3,7 +3,7 @@
 uiSensitivity <- function(x) {   
   div(    
     fluidRow(column(6, offset=3,
-                    div(wellPanel(h4(paste(refProfileName(x))),align="center"))
+                    div(class="well-profile", h3(paste(refProfileName(x))),align="center")
     )),
     fluidRow(column(10, offset=1, h4("Sensitivity with respect to:"))),   
     fluidRow(column(1), 

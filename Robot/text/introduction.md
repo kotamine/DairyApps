@@ -2,7 +2,7 @@
 
 ## DISCLAIMER
 ----
-This online application, last updated on 1/13/2016, is **preliminary**.  Once complete, the official brainding of the University of Minnesota will be used.    
+This online application, last updated on 1/22/2016, is **preliminary**.  Once complete, the official brainding of the University of Minnesota will be used.    
 
 
 ## Why robots matter? 

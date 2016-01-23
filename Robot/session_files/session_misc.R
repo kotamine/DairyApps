@@ -1,4 +1,59 @@
 
+# --------------- Check data inputs ---------------------------
+lapply(base_profiles, function(x) ans[[paste0("invalid",x)]] <- FALSE )
+
+observe(priority=100, {
+  profile <- input$dashboard
+  
+  vars1 <- lapply(c(list_inputs_shared, list_inputs_feed)[-c(loc_dep_method)],
+                  function(x) input[[x]]) %>% unlist()
+  vars2 <- lapply(c(list_inputs_profile)[-c(loc_n_sets)], 
+                  function(i) input[[paste0(i,profile)]]) %>% unlist()
+  vars <- c(vars1, vars2)
+  
+  ans$num_invalid <- any(is.na(vars))
+  
+  if (ans$num_invalid) {
+    ans$num_invalid_items <- 
+      numeric_vars_label[which(is.na(vars))] 
+    shinyjs::hide("errorMsg_min")
+    shinyjs::hide("errorMsg_max")
+  } else {
+    ans$min_invalid <- any(numeric_vars_min > vars) 
+    ans$max_invalid <- any(numeric_vars_max < vars) 
+    
+    if (ans$min_invalid) {
+      ans$min_invalid_items <- 
+        numeric_vars_label[which(numeric_vars_min > vars)] 
+    }
+    if (ans$max_invalid) {
+      ans$max_invalid_items <- 
+        numeric_vars_label[which(numeric_vars_max < vars)] 
+    }
+  }
+  ans[[paste0("invalid",profile)]] <- (ans$min_invalid | ans$max_invalid | ans$num_invalid)
+})
+
+lapply(c("min","max","num"), function(i) {
+  observe({
+    if (ans[[paste0(i,"_invalid")]]) { 
+      shinyjs::show(paste0("errorMsg_", i))
+    } else {  
+      shinyjs::hide(paste0("errorMsg_", i))
+    }
+  })
+  
+  output[[paste0("error_",i)]] <- renderUI({ 
+    error_txt <- c()
+    div(lapply(ans[[paste0(i,"_invalid_items")]],  
+               function(var) paste0(which(ans[[paste0(i,"_invalid_items")]]==var), ". ",var)) %>% unlist(),
+        align="left"
+    )
+  })
+})
+
+
+
 # Next buttons
 input_tabs <- c("Operation","Markets","Inflations","Capital","Maintenance","Milk","Labor","Finance")
 lapply(seq_along(input_tabs), function(i) {  
@@ -155,7 +210,7 @@ case_1 <- function() {
   user_data$profile_specific_variables  <- default_profile_specific_case_1 
 }
 
-observe({
+observe(priority=110,{
   input$case1
   input$default_data
   
@@ -193,7 +248,7 @@ get_profile_specific_variables <- function() {
 
 
 # Upload an Excel file, validate it, and then update tables
-observe({
+observe(priority=109,{
   if (is.null(input$data_upload)) { return() }
   
   inFile <- input$data_upload
@@ -271,9 +326,10 @@ observe({
 
 
 # Change to default data or uploaded data triggers updates of inputs 
-observe({ 
+observe(priority=108, {
   need(!is.null(user_data$common_variables) &
          !is.null(user_data$profile_specific_variables), "NA") %>% validate() 
+  on.exit(lapply(base_profiles, function(x) ans[[paste0("invalid",x)]] <- FALSE))
   
   rownames_1 <- c(list_inputs_shared, list_inputs_feed)
   rownames_2 <- c(list_inputs_profile)

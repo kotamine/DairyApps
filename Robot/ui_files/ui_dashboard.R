@@ -5,7 +5,8 @@ uiDashboard <- function(x) {
     lapply(x, function(x1) {  
       if (!grepl("_se",x)) {
         fluidRow(column(6, offset=3,
-                        div(class="well well-sm", h4(paste(refProfileName(x))),align="center")))
+        div(class="well-profile", h3(paste(refProfileName(x))),align="center")
+        ))
       } 
     }), 
     fluidRow( 

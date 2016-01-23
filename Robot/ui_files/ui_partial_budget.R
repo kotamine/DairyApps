@@ -4,9 +4,9 @@
 uiPartialBudget <- function(x) {   
   div(
     fluidRow(column(6, offset=3,
-                    div(wellPanel(
-                      h4(paste(refProfileName(x)),align="center"),                  
-                      sliderInput(paste0("budget_year",x), "Select budget year",value=1, min=1,max=30)), align="center")
+                    div(class="well-profile", h3(paste(refProfileName(x))),align="center"),
+                    div(sliderInput(paste0("budget_year",x), 
+                                    "Select budget year",value=1, min=1,max=30), align="center")
     )), 
     fluidRow(column(width=6,
                     wellPanel(
