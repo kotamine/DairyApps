@@ -39,27 +39,48 @@ output$messageMenu <- renderMenu({
   dropdownMenu(type = "messages", .list = msgs)
 })
 
-output$taskMenu <- renderMenu({
+output$taskMenu <- renderMenu({ 
   need(length(user_session$info)>0," ",NULL) %>% validate()
   
-  dropdownMenu(type = "tasks", badgeStatus = "success",
-               taskItem(value = 90, color = "green",
-                        "Documentation"
-               ),
-               taskItem(value = 17, color = "aqua",
-                        "Project X"
-               ),
-               taskItem(value = 75, color = "yellow",
-                        "Server deployment"
-               ),
-               taskItem(value = 80, color = "red",
-                        "Overall project"
-               )
+  browser()
+  
+#   field_userID <- paste0('{"email_address": "', rv$email_address,'"}')
+#   posts0 <- mongo_posts$find(field_userID)
+#   posts <- posts0[posts0$status!="Archive",]
+  
+  posts <- my_posts()
+  colors <- c("red","yellow","aqua","green")
+  
+  if (nrow(posts)>0)
+  color_code <- lapply(posts$completeness, 
+                      function(val) {
+                        if (val<25) { 
+                          colors[1] 
+                        } else if (val<50) {
+                          colors[2]
+                        } else if (val<75) {
+                          colors[3]
+                        } else colors[4]
+                          }) %>% unlist()
+  
+  dropdownMenu(type = "tasks", badgeStatus = "success", 
+                
+               lapply(1:nrow(posts), function(i) {
+                 taskItem(value = posts[i,]$completeness, 
+                          color = color_code[i],
+                          posts[i,]$post_name
+                 )
+               })
+#                taskItem(value = 90, color = "green",
+#                         "Documentation"
+#                ),
   )
 })
 
 output$notificationMenu <- renderMenu({ 
   need(length(user_session$info)>0," ",NULL) %>% validate()
+  
+  # browser()
   
   dropdownMenu(type = "notifications",
                notificationItem(
@@ -84,7 +105,7 @@ output$notificationMenu <- renderMenu({
                ),
                notificationItem(
                  text = "XX comments exchanged in total.",
-                 icon = icon("commenting"),
+                 icon = icon("users"),
                  status = "success"
                )
   )

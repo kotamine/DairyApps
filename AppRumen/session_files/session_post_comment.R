@@ -90,8 +90,14 @@ observeEvent(input$post_send, {
   rv$post_reset  <- rv$post_reset + 1
   updateNumericInput(session,"n_boxes","Number of Posts", value=(input$n_boxes+1), min=0,step=5,max=100)
   
-  updateCollapse(session, "collapseMain", open = "Posts")
+  field_userID <- paste0('{"email_address":', '"',rv$email_address,'"','}')
+  posts0 <- mongo_posts$find(field_userID)
+  posts <- posts0[posts0$status!="Archive",]
+  update_post_counter <- paste0('{"$set": { "total_posts":', dim(posts)[1],'}}')
+  mongo_users$update(field_userID, update_post_counter)
+  
   updateTabItems(session, "tabs", selected="mainTab")
+  updateCollapse(session, "collapseMain", open = "Posts")
 })
 
 
@@ -142,6 +148,14 @@ observeEvent(input$comment_send, {
   
   field_postID <- paste0('{"postID":', tmp_post$postID, '}')
   mongo_posts$update(field_postID, update=update_comments)
+
+  field_userID <- paste0('{"email_address":', '"',rv$email_address,'"','}')
+  field_userID_com <- paste0('{"comment_email_address":', 
+                             '"',rv$email_address,'"','}')
+  
+  comments <-mongo_comments$find(field_userID_com)
+  update_comment_counter <- paste0('{"$set": {"total_comments_made":', dim(comments)[1], '}}')
+  mongo_users$update(field_userID, update_comment_counter)   
   
   updateTextInput(session, "app_link","Name of a similar App",value="NA") 
   rv$comment_reset <-  rv$comment_reset + 1 

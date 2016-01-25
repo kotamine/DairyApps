@@ -105,7 +105,7 @@ output$peopleboxes <- renderUI({
   if (length(table_users_copy)==0) return()
   
   tmp_sort <- switch(input$sortPeople, 
-                     "Most recently joined"= table_users_copy$timestamp, # ADD TIMESTAMP IN USERS
+                     "Most recently joined"= table_users_copy$timestamp,
                      # "Most posted" = table_users_copy$total_posts,  # ADD COUNTER FROM POST AND COMMENTS
                      # "Most commented"= table_users_copy$total_comments_made,
                      "Most viewed"=table_users_copy$profile_views,

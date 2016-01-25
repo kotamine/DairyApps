@@ -27,7 +27,7 @@ shinyUI(
         menuItem("New Post", tabName = "postTab", icon = icon("lightbulb-o")),
         menuItem("People", tabName="peopleTab", icon=icon("group")),
         menuItem("Notice",tabName="notice",icon=icon("check")),
-        menuItem("Table View", tabName = "tableTab", icon = icon("th")),
+        # menuItem("Table View", tabName = "tableTab", icon = icon("th")),
         menuItem("About", tabName = "aboutTab", icon = icon("cog"))
       )
     ), 
@@ -58,14 +58,14 @@ shinyUI(
                                         source(file.path("ui_files","ui_notice.R"), local=TRUE)$value
                                     )
                             ),   
-                            # ------------- Table View: This may be eliminated later --------------------
-                            tabItem(tabName="tableTab",
-                                    selectInput("selectTable","Table Type",
-                                                choices=c("posts","completed_posts", "resolved_posts",
-                                                          "discontinued_posts", "archive_posts",
-                                                          "comments", "archive_comments")),
-                                    DT::dataTableOutput("viewTable")
-                            ),
+#                             # ------------- Table View: This may be eliminated later --------------------
+#                             tabItem(tabName="tableTab",
+#                                     selectInput("selectTable","Table Type",
+#                                                 choices=c("posts","completed_posts", "resolved_posts",
+#                                                           "discontinued_posts", "archive_posts",
+#                                                           "comments", "archive_comments")),
+#                                     DT::dataTableOutput("viewTable")
+#                             ),
                             tabItem(tabName="aboutTab",
                                     includeMarkdown(file.path("text","about.md"))
                             )

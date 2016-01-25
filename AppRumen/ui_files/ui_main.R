@@ -3,7 +3,7 @@ bsCollapse(id = "collapseMain",
            open = "Posts", 
            bsCollapsePanel("Posts", style = "info",
                            checkboxGroupInput("filterStatus", "Status", 
-                                              choices=c("Active","Completed","Resolved","Discontinued"),
+                                              choices=c("Active","Completed","Resolved"),
                                               selected = c("Active"), inline = TRUE), 
                            checkboxGroupInput("filterCategory", "Category", choices=vars_category,
                                               selected = vars_category, inline = TRUE),
@@ -14,7 +14,7 @@ bsCollapse(id = "collapseMain",
                                     selectInput("sortPost","Sort by",
                                                 choices=c("Most recently posted","Most recently commented",
                                                           "Most commented", "Most viewed",
-                                                          "Highest interests")))
+                                                          "Most Liked")))
                            ),
                            fluidRow(
                              uiOutput("postboxes")

@@ -6,14 +6,16 @@ observeEvent(input[["message_user"]], {
   # shinyjs::show("create_new_message")
   browser()
   updateTextInput(session,"msg_user","To:",value=rv$selected_user$user_name)
+  
   updateTabsetPanel(session,"Message_tab","New")
-  updateTabItems(session, "tabs", selected="notice")
+  updateTabsetPanel(session,"tabs", selected="notice")
+  
+  # updateTabItems(session, "tabs", selected="notice")
 })
 
 # Send a message
 observeEvent(input[["send_msg"]],{
   # on.exit(shinyjs::hide("create_new_message"))
-  browser()
 
   new_row <-  data.frame(message_id=as.integer(get_time_epoch()),
                          timestamp=get_time_human(),
@@ -27,6 +29,8 @@ observeEvent(input[["send_msg"]],{
   
   
   mongo_messages$insert(new_row)
+  updateTextInput(session,"msg_title","Title:",value="")
+  updateTextInput(session,"msg_user","To:",  value="")
   
     rv$msg_reset <- rv$msg_reset + 1
     updateTabsetPanel(session, "Message_tab",selected="Sent")
@@ -45,8 +49,6 @@ output$resettable_msg_content <- renderUI({
 # Resettable reply content
 output$resettable_reply_content <- renderUI({
   rv$reply_reset
-  updateTextInput(session,"msg_title","Title:",value="")
-  updateTextInput(session,"msg_user","To:",  value="")
   
   div(
     inputTextarea('reply_content', value=NULL,5,50),
@@ -175,25 +177,65 @@ output$message_content <- renderUI({
 
 
 # ---------------- Comments received ------------------
-output$table_notice_comment <- DT::renderDataTable({ 
-  need(length(user_session$info)>0," ",NULL) %>% validate()
+
+comments_received <- reactive({
   
-  userID <- paste0('{"email_address": "', rv$email_address,'"}')
-  posts <- mongo_posts$find(userID)
+  browser()
+  
+  posts <- my_posts()
   
   need(length(posts)>0,"No posts.") %>% validate()
   
+#   colnames1 <- c(mongo_comments$find() %>% colnames())
+#   tbl <- matrix(NA,nrow=0,ncol=length(colnames1)) %>% data.frame() 
+#   colnames(tbl)  <- colnames1
+#   
+#   for (post_id in posts$postID) {
+#     loc_postID <- paste0('{"postID":',post_id,'}')
+#     comments <- mongo_comments$find(loc_postID)
+#     if (length(comments)>0) tbl <- rbind(tbl, comments) 
+#   }
   
-  colnames1 <- c(mongo_comments$find() %>% colnames())
-  tbl <- matrix(NA,nrow=0,ncol=length(colnames1)) %>% data.frame() 
-  colnames(tbl)  <- colnames1
-  
-  for (post_id in posts$postID) {
-    loc_postID <- paste0('{"postID":',post_id,'}')
-    comments <- mongo_comments$find(loc_postID)
-    if (length(comments)>0) tbl <- rbind(tbl, comments) 
+  N_posts <- nrow(posts)
+  post_list <- c()
+  if (N_posts>0) {
+    for (i in 1:N_posts) {
+      ifelse(i<N_comments, 
+             post_list <- paste0(post_list, posts$postID[i],", "),
+             post_list <- paste0(post_list, posts$postID[i])
+      )
+    }
+    field_postID <- paste0('{"postID": {"$in": [', post_list, ']}}')
+    tbl <- mongo_comments$find(field_postID)
+  } else {
+    tbl <- NULL
   }
+    
+  return(tbl)
+})
+
+
+output$table_notice_comment <- DT::renderDataTable({ 
+  need(length(user_session$info)>0," ",NULL) %>% validate()
   
+#   userID <- paste0('{"email_address": "', rv$email_address,'"}')
+#   posts <- mongo_posts$find(userID)
+#   
+#   need(length(posts)>0,"No posts.") %>% validate()
+#   
+#   
+#   colnames1 <- c(mongo_comments$find() %>% colnames())
+#   tbl <- matrix(NA,nrow=0,ncol=length(colnames1)) %>% data.frame() 
+#   colnames(tbl)  <- colnames1
+#   
+#   for (post_id in posts$postID) {
+#     loc_postID <- paste0('{"postID":',post_id,'}')
+#     comments <- mongo_comments$find(loc_postID)
+#     if (length(comments)>0) tbl <- rbind(tbl, comments) 
+#   }
+#   
+  tbl <- comments_received()
+    
   need(dim(tbl)[1]>0,"No comments.") %>% validate()
   
   tbl$comment_20 <- lapply(tbl$comment, function(com) paste0(strtrim(com,20),"..")) %>% unlist()
@@ -218,13 +260,21 @@ output$table_notice_comment <- DT::renderDataTable({
 
 
 # ---------------- Progress in user's posts ------------------
+
+my_posts <- reactive({ 
+  userID <- paste0('{"email_address": "', rv$email_address,'"}')
+  tbl <- mongo_posts$find(userID)
+  return(tbl[tbl$status!="Archive",])
+})  
+
 output$table_notice_progress <- DT::renderDataTable({  
   need(length(user_session$info)>0," ",NULL) %>% validate()
   
+#   userID <- paste0('{"email_address": "', rv$email_address,'"}')
+#   tbl <- mongo_posts$find(userID)
+#   tbl <- tbl[tbl$status!="Archive",]
+  tbl <- my_posts()
   
-  userID <- paste0('{"email_address": "', rv$email_address,'"}')
-  tbl <- mongo_posts$find(userID)
-                            
   tbl$post_link <- list_post_links(tbl$post_name, tbl$postID, 
                                    "link_progress_post", nocomma=TRUE)
   
@@ -240,10 +290,8 @@ output$table_notice_progress <- DT::renderDataTable({
 
 
 # ---------------- Updates of posts the user follows ------------------
-output$table_notice_follow <- DT::renderDataTable({ 
-  need(length(user_session$info)>0," ",NULL) %>% validate()
-  
 
+updates_follow <- reactive({
   userID <- paste0('{"user": "', rv$email_address,'"}')
   following_postID <- mongo_follow_post$find(userID)$post 
   
@@ -251,18 +299,40 @@ output$table_notice_follow <- DT::renderDataTable({
   userID2 <- paste0('{"follower": "', rv$email_address,'"}')
   following_userID <- mongo_follow_user$find(userID2)$followed
   
- 
   filter_postID <- list_filter_items(following_postID, numeric=TRUE)
   filter_userID <- list_filter_items(following_userID)
   tbl <- mongo_posts$find(paste0('{ "$or": [ {"postID": { "$in": [', filter_postID,']}},',
-                            '{"email_address": { "$in": [', filter_userID,']}} ]}'))
+                                 '{"email_address": { "$in": [', filter_userID,']}} ]}'))
+  
+  return(tbl)
+})
+
+
+
+output$table_notice_follow <- DT::renderDataTable({ 
+  need(length(user_session$info)>0," ",NULL) %>% validate()
+  
+#   userID <- paste0('{"user": "', rv$email_address,'"}')
+#   following_postID <- mongo_follow_post$find(userID)$post 
+#   
+#   # Might not need userID2: check this later 
+#   userID2 <- paste0('{"follower": "', rv$email_address,'"}')
+#   following_userID <- mongo_follow_user$find(userID2)$followed
+#   
+#  
+#   filter_postID <- list_filter_items(following_postID, numeric=TRUE)
+#   filter_userID <- list_filter_items(following_userID)
+#   tbl <- mongo_posts$find(paste0('{ "$or": [ {"postID": { "$in": [', filter_postID,']}},',
+#                             '{"email_address": { "$in": [', filter_userID,']}} ]}'))
  
+  tbl <- updates_follow()
+  
   tbl$post_link <- list_post_links(tbl$post_name, tbl$postID, 
                                    "link_follow_post", nocomma=TRUE)
   
   DT::datatable( 
-    tbl[c('post_link', 'user_name','timestamp','status','edits','completeness')],
-    colnames = c('Post Name', 'User Name','Last Updated','Status','Edits','Completeness'),
+    tbl[c('post_link', 'user_name','timestamp','status','edits','completeness','viewed')],
+    colnames = c('Post Name', 'User Name','Last Updated','Status','Edits','Completeness','Viewed'),
     escape = FALSE,
     rownames = FALSE,
     selection = 'single', 
@@ -273,7 +343,12 @@ output$table_notice_follow <- DT::renderDataTable({
                 backgroundSize = '100% 90%',
                 backgroundRepeat = 'no-repeat',
                 backgroundPosition = 'left'
-    ) 
+    )  %>% 
+    formatStyle('viewed',
+                target='row',
+                color=styleEqual(c(1,0),c('white','black')),
+                backgroundColor = styleEqual(c(1, 0), c('gray', 'yellow'))
+    )
 })  
 
 

@@ -25,10 +25,9 @@ output$selectedUser  <- renderUI({
     posts0 <- mongo_posts$find(field_userID)
     posts <- posts0[posts0$status!="Archive",]
     
-    comments0 <-mongo_comments$find(field_userID_com)
-    comments <- comments0[comments0$comment_status!="Archive"]
+    comments <-mongo_comments$find(field_userID_com)
 
-    tmp_user$total_posts <-  dim(posts)[1]
+    # tmp_user$total_posts <-  dim(posts)[1]
    
     tmp_user$total_views <- sum(posts$cumulative_views)
     
@@ -36,7 +35,7 @@ output$selectedUser  <- renderUI({
     
     tmp_user$last_posted <- posts$timestamp %>% sort2(decreasing=TRUE) %>% "["(1) 
     
-    tmp_user$total_comments_made <-  dim(comments)[1]
+    # tmp_user$total_comments_made <-  dim(comments)[1]
     
     tmp_user$last_commented <- comments$timestamp2 %>% sort2(decreasing=TRUE) %>% "["(1) 
     
