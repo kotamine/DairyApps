@@ -1,5 +1,4 @@
-# DairyApps using R-Shiny
-Shiny projects for Dairy Extension and Research. 
+# Tests of Shiny Apps etc.
 
 ## Collaborator
 *Kota Minegishi* (kotamine@gmail.com)
