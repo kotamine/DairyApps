@@ -1,4 +1,4 @@
-# Tests of Shiny Apps etc.
+# Tests of Shiny Apps etc.  
 
 ## Collaborator
 *Kota Minegishi* (kotamine@gmail.com)
