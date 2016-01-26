@@ -1,7 +1,0 @@
-
-# AppRumen
-
-## Concept
-
-
-
