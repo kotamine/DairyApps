@@ -1,4 +1,4 @@
-# shiny
+# DairyApps using R-Shiny
 Shiny projects for Dairy Extension and Research. 
 
 ## Collaborator
