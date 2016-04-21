@@ -380,6 +380,7 @@ mongoexport -h ds061954.mongolab.com:61954 -d app_rumen -u user1 -p user1 -c mes
 
 $ mongoexport -h ds061954.mongolab.com:61954 -d app_rumen -c domain -o domain-bk.json
 
+  
 
 # mongoimport -h ds061954.mongolab.com:61954 -d app_rumen  -c posts -u user1 -p user1 --file /Volumes/iMacSATA/data/db/app_rumen/posts.csv --headerline --type csv --drop 
 
@@ -403,6 +404,33 @@ mongo_comments$update("{}",'{"$set": {"viewed": 0} }',multiple=TRUE)
 mongo_follow_post$update("{}",'{"$set": {"viewed": 0} }',multiple=TRUE) 
 
 mongo_posts$find()[1,]
+
+
+# ----------------------- Export and import databases -------------------------
+
+# Export from db: app_rumen 
+mongoexport -h ds061954.mlab.com:61954 -d app_rumen -c posts -u user1 -p user1 -o /Volumes/iMacSATA/data/db/app_rumen/posts.json
+mongoexport -h ds061954.mlab.com:61954 -d app_rumen -c users -u user1 -p user1 -o /Volumes/iMacSATA/data/db/app_rumen/users.json
+mongoexport -h ds061954.mlab.com:61954 -d app_rumen -c comments -u user1 -p user1 -o /Volumes/iMacSATA/data/db/app_rumen/comments.json
+mongoexport -h ds061954.mlab.com:61954 -d app_rumen -c messages -u user1 -p user1 -o /Volumes/iMacSATA/data/db/app_rumen/messages.json
+mongoexport -h ds061954.mlab.com:61954 -d app_rumen -c likes -u user1 -p user1 -o /Volumes/iMacSATA/data/db/app_rumen/likes.json
+mongoexport -h ds061954.mlab.com:61954 -d app_rumen -c follow_post -u user1 -p user1 -o /Volumes/iMacSATA/data/db/app_rumen/follow_post.json
+mongoexport -h ds061954.mlab.com:61954 -d app_rumen -c follow_user -u user1 -p user1 -o /Volumes/iMacSATA/data/db/app_rumen/follow_user.json
+mongoexport -h ds061954.mlab.com:61954 -d app_rumen -c announcements -u user1 -p user1 -o /Volumes/iMacSATA/data/db/app_rumen/announcements.json
+mongoexport -h ds061954.mlab.com:61954 -d app_rumen -c picks -u user1 -p user1 -o /Volumes/iMacSATA/data/db/app_rumen/picks.json
+
+
+# Import to db: app_rumen_alpha
+mongoimport -h ds011830.mlab.com:11830 -d app_rumen_alpha -c posts -u user1 -p user1 --file /Volumes/iMacSATA/data/db/app_rumen/posts.json
+mongoimport -h ds011830.mlab.com:11830 -d app_rumen_alpha -c users -u user1 -p user1 --file /Volumes/iMacSATA/data/db/app_rumen/users.json
+mongoimport -h ds011830.mlab.com:11830 -d app_rumen_alpha -c comments -u user1 -p user1 --file /Volumes/iMacSATA/data/db/app_rumen/comments.json
+mongoimport -h ds011830.mlab.com:11830 -d app_rumen_alpha -c messages -u user1 -p user1 --file /Volumes/iMacSATA/data/db/app_rumen/messages.json
+mongoimport -h ds011830.mlab.com:11830 -d app_rumen_alpha -c likes -u user1 -p user1 --file /Volumes/iMacSATA/data/db/app_rumen/likes.json
+mongoimport -h ds011830.mlab.com:11830 -d app_rumen_alpha -c follow_post -u user1 -p user1 --file /Volumes/iMacSATA/data/db/app_rumen/follow_post.json
+mongoimport -h ds011830.mlab.com:11830 -d app_rumen_alpha -c follow_user -u user1 -p user1 --file /Volumes/iMacSATA/data/db/app_rumen/follow_user.json
+mongoimport -h ds011830.mlab.com:11830 -d app_rumen_alpha -c announcements -u user1 -p user1 --file /Volumes/iMacSATA/data/db/app_rumen/announcements.json
+mongoimport -h ds011830.mlab.com:11830 -d app_rumen_alpha -c picks -u user1 -p user1 --file /Volumes/iMacSATA/data/db/app_rumen/picks.json
+
 
 
 # --------------------------------
@@ -475,4 +503,28 @@ mongo_users$update('{}', update='{"$set": {"interests": "Networking"} }', multip
 
 mongo_messages$find()
 mongo_messages$update('{}',update='{"$set": {"viewed_by_receiver": 0} }', multiple=TRUE)
+
+user_img_0 <- readPNG("/Users/kota/Documents/shiny/AppRumen/www/user_img_0.png")
+
+
+str_interests <- input$interests[1]
+lapply(seq_along(input$interests)[-1], 
+       function(i) str_interests <<- paste0(str_interests,",", input$interests[i]))
+
+
+my_pic <- "kotamine.JPG"
+mongo_users$update('{"email_address": "kotamine@gmail.com"}', 
+                   paste0('{"$set": {"picture":"',my_pic,'"} }'))
+mongo_users$find('{"email_address": "kotamine@gmail.com"}')
+
+
+mongo_users$update('{}', '{"$set": {"class":0}}', multiple=TRUE)
+
+mongo_users$update('{"email_address": "airtonjr@umn.edu"}', '{"$set": {"class":1}}')
+mongo_users$update('{"email_address": "johnathannault@gmail.com"}', '{"$set": {"class":1}}')
+mongo_users$update('{"email_address": "kotamine@gmail.com"}', '{"$set": {"class":1}}')
+
+
+
+
 

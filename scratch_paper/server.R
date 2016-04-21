@@ -1,7 +1,30 @@
 library(shiny)
+<<<<<<< Updated upstream
 library(DT)
 
 attach(iris)
+=======
+library(googleAuthR)
+library(googleID)
+
+options(googleAuthR.scopes.selected = c("https://www.googleapis.com/auth/userinfo.email", 
+                                        "https://www.googleapis.com/auth/userinfo.profile"))
+
+# setwd("~/Documents/shiny/Shiny-Tests/scratch_paper")
+# shiny::runApp(port=7209)
+
+CLIENT_ID      <-  "639152778381-ft8ujn57j0mgh4p75lqpnmlr9ih7g6nn.apps.googleusercontent.com"
+CLIENT_SECRET  <-  "xyxdwMCgkUAwqbMaX0LfpoL6"
+CLIENT_URL     <-  "https://kotamine.shinyapps.io/scratch_paper/"
+#CLIENT_URL     <-  'http://127.0.0.1:7209'  # URL on my laptop
+
+
+options("googleAuthR.webapp.client_id" = CLIENT_ID)
+options("googleAuthR.webapp.client_secret" = CLIENT_SECRET)
+options("googleAuthR.scopes.selected" = c("https://www.googleapis.com/auth/userinfo.email",
+                                          "https://www.googleapis.com/auth/userinfo.profile"))
+# 
+>>>>>>> Stashed changes
 
 customHeaderPanel <- function(title,windowTitle=title){
   tagList(
@@ -42,7 +65,29 @@ shinyServer(function(input, output,session) {
   observeEvent(input$action, {
     var3 <- var3 + 100
     # var3 cannot be overwritten!
+    googleAuthR::gar_auth(new_user=TRUE)
+
   })
+  
+  
+  
+  ## Get auth code from return URL
+  access_token  <- reactiveAccessToken(session)
+  
+  ## Make a loginButton to display using loginOutput
+  output$loginButton <- renderLogin(session, access_token())
+  
+  output$user_name <- renderText({
+           browser()
+          if (!is.null(access_token())) {
+            user <- with_shiny(get_user_info, access_token())
+            print(user)
+            paste(user$emails)
+          } else {
+            NULL
+          }
+  })
+  
   
   observeEvent(rv$var4, { 
      rv$var5 <- rv$var5 + 100 
