@@ -1,4 +1,7 @@
 library(shiny)
+library(DT)
+
+attach(iris)
 
 customHeaderPanel <- function(title,windowTitle=title){
   tagList(
@@ -100,7 +103,7 @@ shinyServer(function(input, output,session) {
   })
   
   observe({
-    browser()
+    # browser()
     if (1 < 0 ) {
       # never triggered
       input$var1
@@ -116,4 +119,13 @@ shinyServer(function(input, output,session) {
   updateNumericInput(session,"var1_copy","Var 1 Copy", value=input$var1, step=5)
   })
   
-})
+ output$dt1 <- DT::renderDataTable({
+   datatable(
+     iris, extensions = 'Buttons', options = list(
+       dom = 'Bfrtip',
+       buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+     )
+   )
+ }) 
+  
+}) 

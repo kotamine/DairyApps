@@ -1,5 +1,7 @@
 library(shiny)
 library(mongolite)
+library(DT)
+
 
 shinyUI(pageWithSidebar(
   headerPanel("Scratch Paper"),
@@ -19,6 +21,7 @@ shinyUI(pageWithSidebar(
     uiOutput("showVar5"), br(),
     uiOutput("showVar6"), br(),
     uiOutput("showVar7"), br(),
-    uiOutput("showVar8")
+    uiOutput("showVar8"), br(),
+    DT::dataTableOutput("dt1")
     )
 ))

@@ -471,4 +471,8 @@ mongo(collection="posts", db=db, url = url)$insert(new_row)
 postID <- paste0('{"postID":', 1445138342, '}')
 data1$find(postID)
 
+mongo_users$update('{}', update='{"$set": {"interests": "Networking"} }', multiple=TRUE)
+
+mongo_messages$find()
+mongo_messages$update('{}',update='{"$set": {"viewed_by_receiver": 0} }', multiple=TRUE)
 
